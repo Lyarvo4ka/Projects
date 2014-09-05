@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DiskMasterUIClass</class>
+ <widget class="QMainWindow" name="DiskMasterUIClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>997</width>
+    <height>681</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DiskMasterTool</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="TabWidget" name="mainTabWidget">
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>997</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpenTask"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Task</string>
+    </property>
+    <addaction name="StartAction"/>
+    <addaction name="separator"/>
+    <addaction name="CopyAction"/>
+    <addaction name="EraseAction"/>
+    <addaction name="VerifyAction"/>
+   </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
+   <addaction name="menu"/>
+   <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolbar">
+   <attribute name="toolbarArea">
+    <enum>TopToolbarArea</enum>
+   </attribute>
+   <attribute name="toolbarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpenTask"/>
+   <addaction name="separator"/>
+   <addaction name="CopyAction"/>
+   <addaction name="VerifyAction"/>
+   <addaction name="EraseAction"/>
+   <addaction name="separator"/>
+   <addaction name="StartAction"/>
+   <addaction name="separator"/>
+   <addaction name="actionPreferences"/>
+   <addaction name="separator"/>
+   <addaction name="actionExit"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionExit">
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/application_exit.png</normaloff>:/DiskMasterUI/icons/application_exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="CopyAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/copy_disk.png</normaloff>:/DiskMasterUI/icons/copy_disk.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copying</string>
+   </property>
+  </action>
+  <action name="EraseAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/erase_task.png</normaloff>:/DiskMasterUI/icons/erase_task.png</iconset>
+   </property>
+   <property name="text">
+    <string>Erasing</string>
+   </property>
+  </action>
+  <action name="action_5">
+   <property name="text">
+    <string>приостановить</string>
+   </property>
+  </action>
+  <action name="VerifyAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/verify_task.png</normaloff>:/DiskMasterUI/icons/verify_task.png</iconset>
+   </property>
+   <property name="text">
+    <string>Verification</string>
+   </property>
+  </action>
+  <action name="StartAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/start_task.png</normaloff>:/DiskMasterUI/icons/start_task.png</iconset>
+   </property>
+   <property name="text">
+    <string>Execute task</string>
+   </property>
+  </action>
+  <action name="StopTask">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/stop_task.png</normaloff>:/DiskMasterUI/icons/stop_task.png</iconset>
+   </property>
+   <property name="text">
+    <string>Остановить задачу</string>
+   </property>
+  </action>
+  <action name="actionOpenTask">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/open_task.png</normaloff>:/DiskMasterUI/icons/open_task.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open task</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="diskmasterui.qrc">
+     <normaloff>:/DiskMasterUI/icons/preferences.png</normaloff>:/DiskMasterUI/icons/preferences.png</iconset>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>TabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>tabwidget.h</header>
+   <container>1</container>
+   <slots>
+    <slot>CloseTabWidget(int)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="diskmasterui.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>mainTabWidget</sender>
+   <signal>tabCloseRequested(int)</signal>
+   <receiver>mainTabWidget</receiver>
+   <slot>CloseTabWidget(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>371</x>
+     <y>141</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>253</x>
+     <y>185</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>activated()</signal>
+   <receiver>DiskMasterUIClass</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>498</x>
+     <y>340</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NokiaExtractor", "NokiaExtractor\NokiaExtractor.vcxproj", "{85DC665F-BF4D-4142-8A68-BC51259E30CF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IOUtility", "IOUtility\IOUtility.vcxproj", "{099ADECC-ADA3-437A-B12B-1B6FD58DA7BB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IOUtilityTest", "IOUtilityTest\IOUtilityTest.vcxproj", "{E62B2CAE-1620-4DC0-95A5-8C6CB95E08A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85DC665F-BF4D-4142-8A68-BC51259E30CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{85DC665F-BF4D-4142-8A68-BC51259E30CF}.Debug|Win32.Build.0 = Debug|Win32
+		{85DC665F-BF4D-4142-8A68-BC51259E30CF}.Release|Win32.ActiveCfg = Release|Win32
+		{85DC665F-BF4D-4142-8A68-BC51259E30CF}.Release|Win32.Build.0 = Release|Win32
+		{099ADECC-ADA3-437A-B12B-1B6FD58DA7BB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{099ADECC-ADA3-437A-B12B-1B6FD58DA7BB}.Debug|Win32.Build.0 = Debug|Win32
+		{099ADECC-ADA3-437A-B12B-1B6FD58DA7BB}.Release|Win32.ActiveCfg = Release|Win32
+		{099ADECC-ADA3-437A-B12B-1B6FD58DA7BB}.Release|Win32.Build.0 = Release|Win32
+		{E62B2CAE-1620-4DC0-95A5-8C6CB95E08A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E62B2CAE-1620-4DC0-95A5-8C6CB95E08A6}.Debug|Win32.Build.0 = Debug|Win32
+		{E62B2CAE-1620-4DC0-95A5-8C6CB95E08A6}.Release|Win32.ActiveCfg = Release|Win32
+		{E62B2CAE-1620-4DC0-95A5-8C6CB95E08A6}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

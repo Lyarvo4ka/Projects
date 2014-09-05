@@ -1,0 +1,36 @@
+<RCC>
+  <qresource prefix="/DiskMasterUI">
+    <file>icons/user_copy.png</file>
+    <file>icons/Partition.png</file>
+    <file>icons/hard_drive_clone.png</file>
+    <file>icons/application_exit.png</file>
+    <file>icons/not_ready.png</file>
+    <file>icons/ready.png</file>
+    <file>icons/preferences.png</file>
+    <file>icons/open_task.png</file>
+    <file>icons/stop_task.png</file>
+    <file>icons/map_magnify.png</file>
+    <file>icons/log.png</file>
+    <file>icons/sata_device.png</file>
+    <file>icons/folder_home.png</file>
+    <file>icons/open_folder.png</file>
+    <file>icons/user_home.png</file>
+    <file>icons/arrow_refresh.png</file>
+    <file>icons/right_arrow.png</file>
+    <file>icons/disk_master.png</file>
+    <file>icons/usb_device_blue.png</file>
+    <file>icons/usb_device_green.png</file>
+    <file>icons/usb_device_grey.png</file>
+    <file>icons/usb_device_orange.png</file>
+    <file>icons/stop_task.png</file>
+    <file>icons/start_task.png</file>
+    <file>icons/disk_master.png</file>
+    <file>icons/Hard_Drive.png</file>
+    <file>icons/erase_task.png</file>
+    <file>icons/copy_disk.png</file>
+    <file>icons/verify_task.png</file>
+    <file>icons/backward.png</file>
+    <file>icons/forward.png</file>
+    <file>icons/pause.png</file>
+  </qresource>
+</RCC>

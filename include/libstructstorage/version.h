@@ -1,0 +1,13 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+//  LIBSTRUCTSTORAGE_VERSION % 100 is the patch level
+//  LIBSTRUCTSTORAGE_VERSION / 100 % 1000 is the minor version
+//  LIBSTRUCTSTORAGE_VERSION / 100000 is the major version
+
+#define LIBSTRUCTSTORAGE_VERSION 001000
+
+#define LIBSTRUCTSTORAGE_LIB_VERSION "0_10"
+
+
+#endif

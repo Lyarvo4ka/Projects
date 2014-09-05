@@ -1,0 +1,28 @@
+<RCC>
+  <qresource prefix="/DiskMaster">
+    <file>diskmaster.png</file>
+    <file>DiskVerify.png</file>
+    <file>ChipOpenOk.png</file>
+    <file>kchart.png</file>
+    <file>ok.png</file>
+    <file>chip.png</file>
+    <file>err.png</file>
+    <file>233.png</file>
+    <file>Goodshield.png</file>
+    <file>Warning.png</file>
+    <file>Error.png</file>
+    <file>chip_hide.png</file>
+    <file>pause.png</file>
+    <file>run.png</file>
+    <file>stop.png</file>
+    <file>open.png</file>
+    <file>clear.png</file>
+    <file>download.png</file>
+    <file>open.png</file>
+    <file>print.png</file>
+    <file>refresh.png</file>
+    <file>save.png</file>
+    <file>new.png</file>
+    <file>resume.png</file>
+  </qresource>
+</RCC>
