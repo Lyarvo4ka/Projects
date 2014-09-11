@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 	//std::cout <<  std::endl << "arguments count "<< argc << std::endl;
 
-	auto entropy = getEntropy(nullptr, 1);
+	calcEntropy("d:\\Public\\36141\\GOPR0596.LRV", 524288);
 
 
 
