@@ -364,7 +364,7 @@
 
 	   //printf("\r\n\r\n");
 
-	   std::string source_dir = "E:\\raw\\";
+	   std::string source_dir = "E:\\36123\\raw\\";
 	   std::string target_dir = "E:\\NoName\\doc\\";
 	   std::string bad_dir =	"E:\\NoName\\bad\\";
 	   stringlist ext_list;

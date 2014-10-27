@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterLib", "src\DiskMasterLib\DiskMasterLib.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StructuredStorageReader", "StructuredStorageReader\StructuredStorageReader.vcxproj", "{511F9F74-A60A-472A-94A3-E5C9767868D5}"
@@ -35,7 +37,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AcronisRecovery", "AcronisR
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageWriter", "ImageWriter\ImageWriter.vcxproj", "{184E7B29-4BC0-41DE-9422-ABC10FFDE785}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ByteStatistics", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Entropy", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libstructstorage", "libstructstorage\libstructstorage.vcxproj", "{9B90F2FC-5F26-4390-8A8B-81F6FE875151}"
 EndProject
@@ -44,10 +46,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libstructstorageTest", "libstructstorageTest\libstructstorageTest.vcxproj", "{4CC8B3D3-91C7-42E1-89A5-6F72036A27C8}"
 EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
@@ -242,5 +240,10 @@ Global
 		{4CC8B3D3-91C7-42E1-89A5-6F72036A27C8} = {F5AEE42D-9C64-40AF-95C9-C830A93F32C4}
 		{9B90F2FC-5F26-4390-8A8B-81F6FE875151} = {C813DF1B-5E22-4E38-A1E1-820464994076}
 		{5E05A079-7111-4CCC-89E3-CD5CC0788963} = {C813DF1B-5E22-4E38-A1E1-820464994076}
+		{C0525921-31E3-4E1A-B7B6-4EA88D4DE419} = {C813DF1B-5E22-4E38-A1E1-820464994076}
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 EndGlobal

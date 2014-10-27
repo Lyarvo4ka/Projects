@@ -5,7 +5,7 @@
 
 //#include "IOLibrary\DVR_raw.h"
 //#include "IOLibrary\MXF_raw.h"
-//#include "IOLibrary\MovRaw.h"
+#include "IOLibrary\MovRaw.h"
 //#include "IOLibrary\djvu_raw.h"
 //#include "IOLibrary\RemoveInserts.h"
 #include <conio.h>
@@ -59,15 +59,21 @@ void show_error_invalid_params()
 //	return 0;
 //}
 
-#include "IOLibrary/Entropy.h"
+//#include "IOLibrary/Entropy.h"
 
 int main(int argc, char *argv[])
 {
 	////////////	QtMovRaw	////////////
+	MovRaw canon_mov( "e:\\freespace.bin" , "D:\\PaboTa\\36262\\raw\\" );
+	canon_mov.execute();
 
 	//std::cout <<  std::endl << "arguments count "<< argc << std::endl;
 
-	calcEntropy("d:\\Public\\36141\\GOPR0596.LRV", 524288);
+	//calcEntropy("e:\\GOPR0591.LRV", 131072);
+
+	//removeLRV("e:\\36141\\36141.bin", "e:\\36141\\36141.bin_NO_LRV");
+
+	//removeLRV("e:\\36141\\1.mp4", "e:\\36141\\1.mp4_no_lrv");
 
 
 

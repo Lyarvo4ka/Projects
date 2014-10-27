@@ -110,8 +110,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		FileFinder finder;
 		stringlist filter;
 		filter.push_back(".pdf");
-		std::string target_folder = "\\\\servergiga\\Заказы\\36002\\NoName\\pdf\\";
-		finder.FindFiles( "\\\\servergiga\\Заказы\\36087\\NoName\\pdf\\" , filter );
+		std::string target_folder = "";
+		finder.FindFiles( "E:\\NoName\\pdf\\" , filter );
 		auto files ( finder.getFileNames() );
 	
 		int counter = 0;
