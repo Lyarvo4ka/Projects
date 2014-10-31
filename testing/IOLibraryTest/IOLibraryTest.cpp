@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #define BOOST_TEST_MODULE IOFunctionsTestModule
+#define BOOST_TEST_MAIN
 
 #include <boost/test/unit_test.hpp>
 
@@ -113,21 +114,18 @@ BOOST_AUTO_TEST_CASE( TestNameToValue )
 	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::pnot_name)  , le_pnot );
 }
 
-BOOST_AUTO_TEST_CASE( TestisDataSector )
-{
-	BYTE zero_data[512];
-	ZeroMemory( zero_data , 512 );
+//
+//BOOST_AUTO_TEST_CASE( TestisDataSector )
+//{
+//	BYTE zero_data[512];
+//	ZeroMemory( zero_data , 512 );
+//
+//	BOOST_CHECK_EQUAL( IO::isDataSector( zero_data ), true );
+//
+//	zero_data[10] = 0xFF;
+//	BOOST_CHECK_EQUAL( IO::isDataSector( zero_data ), true );
+//
+//	zero_data[10] = 0xFA;
+//	BOOST_CHECK_EQUAL( IO::isDataSector( zero_data ), false );
+//}
 
-	BOOST_CHECK_EQUAL( IO::isDataSector( zero_data ), true );
-
-	zero_data[10] = 0xFF;
-	BOOST_CHECK_EQUAL( IO::isDataSector( zero_data ), true );
-
-	zero_data[10] = 0xFA;
-	BOOST_CHECK_EQUAL( IO::isDataSector( zero_data ), false );
-}
-
-BOOST_AUTO_TEST_CASE(getEntropyTest)
-{
-	//IO::
-}
