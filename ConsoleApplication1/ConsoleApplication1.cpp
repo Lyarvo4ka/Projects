@@ -59,19 +59,48 @@ void show_error_invalid_params()
 //	return 0;
 //}
 
-//#include "IOLibrary/Entropy.h"
+#include "IOLibrary/Entropy.h"
+#include "IOLibrary\BlockNumber.h"
 
 int main(int argc, char *argv[])
 {
-	////////////	QtMovRaw	////////////
-	MovRaw canon_mov( "e:\\freespace.bin" , "D:\\PaboTa\\36262\\raw\\" );
-	canon_mov.execute();
 
-	//std::cout <<  std::endl << "arguments count "<< argc << std::endl;
+	BlockNumber block_number;
+	if (block_number.OpenDump("d:\\Public\\36564\\01_01.dump"))
+	if (block_number.CreateImage("d:\\Public\\36564\\Image.bin"))
+	{
+		block_number.ReadBank(0, 1107296256);
+		block_number.WriteBank(0);
 
-	//calcEntropy("e:\\GOPR0591.LRV", 131072);
+		block_number.ReadBank(1107296256, 2214592512);
+		block_number.WriteBank(1);
 
-	//removeLRV("e:\\36141\\36141.bin", "e:\\36141\\36141.bin_NO_LRV");
+		block_number.ReadBank(2214592512, 3321888768);
+		block_number.WriteBank(2);
+
+		block_number.ReadBank(3321888768, 4429185024);
+		block_number.WriteBank(3);
+
+		block_number.ReadBank(4429185024, 5536481280);
+		block_number.WriteBank(4);
+
+		block_number.ReadBank(5536481280, 6643777536);
+		block_number.WriteBank(5);
+
+		block_number.ReadBank(6643777536, 7751073792);
+		block_number.WriteBank(6);
+
+		block_number.ReadBank(7751073792, 8858370048);
+		block_number.WriteBank(7);
+	}
+
+
+
+	//IO::calcEntropyForFile("e:\\entropy\\GOPR0595.LRV", 524288);
+	//IO::calcEntropyForFile("e:\\entropy\\GOPR0595.MP4", 524288);
+	//IO::calcEntropyForFile("e:\\entropy\\GOPR0596.LRV", 524288);
+	//IO::calcEntropyForFile("e:\\entropy\\GOPR0596.MP4", 524288);
+	//IO::removeLRV("e:\\36141\\36141.bin", "D:\\36141\\free_space.bin.NO_LRV", 524288);
 
 	//removeLRV("e:\\36141\\1.mp4", "e:\\36141\\1.mp4_no_lrv");
 

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'imagewriter.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'imagewriter.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,12 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_ImageWriter_t {
     QByteArrayData data[11];
-    char stringdata[129];
+    char stringdata[128];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_ImageWriter_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_ImageWriter_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_ImageWriter_t qt_meta_stringdata_ImageWriter = {
     {
@@ -44,7 +44,7 @@ QT_MOC_LITERAL(10, 121, 6)
     "ImageWriter\0FileOpenCliced\0\0HddOpenCliced\0"
     "StartButtonClicked\0OnErrorName\0"
     "error_text\0OnFinishError\0OnFinishOk\0"
-    "OnUpdateLba\0sector\0"
+    "OnUpdateLba\0sector"
 };
 #undef QT_MOC_LITERAL
 
@@ -62,13 +62,13 @@ static const uint qt_meta_data_ImageWriter[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   49,    2, 0x0a,
-       3,    0,   50,    2, 0x0a,
-       4,    0,   51,    2, 0x0a,
-       5,    1,   52,    2, 0x0a,
-       7,    1,   55,    2, 0x0a,
-       8,    0,   58,    2, 0x0a,
-       9,    1,   59,    2, 0x0a,
+       1,    0,   49,    2, 0x0a /* Public */,
+       3,    0,   50,    2, 0x0a /* Public */,
+       4,    0,   51,    2, 0x0a /* Public */,
+       5,    1,   52,    2, 0x0a /* Public */,
+       7,    1,   55,    2, 0x0a /* Public */,
+       8,    0,   58,    2, 0x0a /* Public */,
+       9,    1,   59,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -136,12 +136,12 @@ int ImageWriter::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_CopyThread_t {
     QByteArrayData data[6];
-    char stringdata[58];
+    char stringdata[57];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_CopyThread_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyThread_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyThread_t qt_meta_stringdata_CopyThread = {
     {
@@ -153,7 +153,7 @@ QT_MOC_LITERAL(4, 36, 9),
 QT_MOC_LITERAL(5, 46, 10)
     },
     "CopyThread\0error_name\0\0finish_error\0"
-    "finish_ok\0update_lba\0"
+    "finish_ok\0update_lba"
 };
 #undef QT_MOC_LITERAL
 
@@ -171,10 +171,10 @@ static const uint qt_meta_data_CopyThread[] = {
        4,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   34,    2, 0x06,
-       3,    1,   37,    2, 0x06,
-       4,    0,   40,    2, 0x06,
-       5,    1,   41,    2, 0x06,
+       1,    1,   34,    2, 0x06 /* Public */,
+       3,    1,   37,    2, 0x06 /* Public */,
+       4,    0,   40,    2, 0x06 /* Public */,
+       5,    1,   41,    2, 0x06 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    2,

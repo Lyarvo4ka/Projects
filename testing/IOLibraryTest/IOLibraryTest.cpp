@@ -114,6 +114,19 @@ BOOST_AUTO_TEST_CASE( TestNameToValue )
 	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::pnot_name)  , le_pnot );
 }
 
+BOOST_AUTO_TEST_CASE(BytesToCopyTest)
+{
+	LONGLONG current = 0;
+	LONGLONG max_size = 5368709120;
+	DWORD difference = 1000;
+	LONGLONG block_size = BLOCK_SIZE;
+
+	BOOST_CHECK_EQUAL(IO::BytesToCopy(current, max_size, block_size), BLOCK_SIZE);
+	BOOST_CHECK_EQUAL(IO::BytesToCopy(max_size, max_size, block_size), 0);
+	current = max_size - difference;
+	BOOST_CHECK_EQUAL(IO::BytesToCopy(current, max_size, block_size), difference);
+}
+
 //
 //BOOST_AUTO_TEST_CASE( TestisDataSector )
 //{

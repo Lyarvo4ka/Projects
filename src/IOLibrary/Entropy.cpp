@@ -67,3 +67,54 @@ bool IO::calcEntropyForFile(const std::string & file_name, DWORD block_size)
 	CloseHandle(hRead);
 	return true;
 }
+
+
+void IO::removeLRV(const std::string & input_file, const std::string & output_file , DWORD cluster_size)
+{
+	HANDLE hRead = INVALID_HANDLE_VALUE;
+	if (!IO::open_read(hRead, input_file))
+		return;
+
+	HANDLE hWrite = INVALID_HANDLE_VALUE;
+	if (!IO::create_file(hWrite, output_file))
+		return;
+
+	DWORD bytesRead = 0;
+	DWORD bytesWritten = 0;
+	bool bResult = false;
+	double entropy = 0.0;
+
+	//IO::set_position(hRead, 0x4380000);
+
+	BYTE * pBuffer = new BYTE[cluster_size];
+
+	while (true)
+	{
+		bResult = IO::read_block(hRead, pBuffer, cluster_size, bytesRead);
+		if (!bResult || bytesRead == 0)
+			break;
+
+		if (memcmp(pBuffer, Signatures::qt_header4, SIZEOF_ARRAY(Signatures::qt_header4)) == 0)
+		{
+			bResult = IO::write_block(hWrite, pBuffer, bytesRead, bytesWritten);
+			if (!bResult || bytesWritten == 0)
+				break;
+		}
+		else
+		{
+			entropy = IO::calcEntropy(pBuffer, bytesRead);
+			if (entropy > 7.9990 && entropy < 7.9999)
+			{
+				bResult = IO::write_block(hWrite, pBuffer, bytesRead, bytesWritten);
+				if (!bResult || bytesWritten == 0)
+					break;
+			}
+		}
+	}
+
+	delete pBuffer;
+
+	CloseHandle(hRead);
+	CloseHandle(hWrite);
+}
+

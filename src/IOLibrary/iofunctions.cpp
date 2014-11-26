@@ -44,6 +44,13 @@ bool IO::create_file( HANDLE & handle , const std::string & path )
 	return (handle != INVALID_HANDLE_VALUE) ? true : false;	
 }
 
+LONGLONG IO::getFileSize(HANDLE & handle)
+{
+	LARGE_INTEGER liSize;
+	::GetFileSizeEx(handle, &liSize);
+	return liSize.QuadPart;
+}
+
 void IO::set_position( HANDLE & handle , LONGLONG position )
 {
 	LARGE_INTEGER pos;
@@ -65,7 +72,7 @@ bool IO::read_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & byte
 bool IO::write_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesWritten )
 {
 	assert ( handle != INVALID_HANDLE_VALUE );
-	assert( handle != nullptr );
+	assert(buffer != nullptr);
 	assert( size != 0 );
 
 	bytesWritten = 0;
@@ -126,6 +133,32 @@ bool IO::write_block_to_file( HANDLE & source , LONGLONG source_offset , DWORD b
 	}
 	return true;
 }
+
+bool IO::read_all(HANDLE & handle, BYTE * buffer, LONGLONG size)
+{
+	assert( handle != INVALID_HANDLE_VALUE);
+	assert(buffer != nullptr);
+	assert ( size != 0 );
+
+	LONGLONG cur = 0;
+	DWORD bytesRead = 0;
+	DWORD bytesToRead = BLOCK_SIZE;
+
+
+	while (cur < size)
+	{
+		bytesToRead = IO::BytesToCopy(cur , size , BLOCK_SIZE);
+		if ( !IO::read_block(handle , &buffer[cur] , BLOCK_SIZE , bytesRead ) )
+			return false;
+
+		if ( bytesRead == 0 )
+			return false;
+
+		cur += bytesRead;
+	}
+	return false;
+}
+
 bool IO::copy_to_file( HANDLE & source , LONGLONG source_offset , LONGLONG block_size, HANDLE & target , LONGLONG target_offset )
 {
 	assert( source != INVALID_HANDLE_VALUE );
@@ -182,6 +215,10 @@ bool IO::copy_to_file( HANDLE & source , LONGLONG source_offset , LONGLONG block
 	return true;
 }
 
+DWORD IO::BytesToCopy(LONGLONG current , LONGLONG max_size , DWORD block_size)
+{
+	return ((current + block_size) < max_size) ? block_size : DWORD(max_size - current);
+}
 
 std::string IO::file_path_number( const std::string & folder , DWORD number , const std::string & extension )
 {
@@ -465,6 +502,77 @@ void IO::SaveOnlyData( const std::string & source_file , const std::string & tar
 
 }
 
+void IO::XorFiles(const std::string &file1, const std::string & file2, const std::string & target_file)
+{
+	//HANDLE hFile1 = INVALID_HANDLE_VALUE;
+	//HANDLE hFile2 = INVALID_HANDLE_VALUE;
+	//HANDLE hTarget = INVALID_HANDLE_VALUE;
+
+	//if ( ! IO::open_read(hFile1 , file1) )
+	//{
+	//	printf("Error open file: %s\r\n" , file1.c_str() );
+	//	return;
+	//}
+	//if (!IO::open_read(hFile2, file2))
+	//{
+	//	printf("Error open file: %s\r\n", file2.c_str());
+	//	return;
+	//}
+	//if (!IO::create_file(hTarget, target_file))
+	//{
+	//	printf("Error open file: %s\r\n", target_file.c_str());
+	//	return;
+	//}
+
+	//DWORD bytesRead = 0;
+	//DWORD bytesWritten = 0;
+
+	//BYTE buff1[BLOCK_SIZE];
+	//BYTE buff2[BLOCK_SIZE];
+	//BYTE buff_write[BLOCK_SIZE];
+
+
+	//LONGLONG pos = 0;
+
+	//while (true)
+	//{
+	//	// file 1
+	//	IO::set_position(hFile1 , pos );
+	//	if ( !IO::read_block(hFile1 , buff1 , BLOCK_SIZE , bytesRead ) )
+	//		break;
+
+	//	if ( bytesRead == 0 )
+	//		break;
+
+	//	// file 1
+	//	IO::set_position(hFile2, pos);
+	//	if (!IO::read_block(hFile2, buff2, BLOCK_SIZE, bytesRead))
+	//		break;
+
+	//	if (bytesRead == 0)
+	//		break;
+
+
+	//	for ( DWORD iByte = 0 ; iByte < bytesRead; ++iByte)
+	//		buff_write[iByte] = buff1[iByte]^buff2[iByte];
+
+	//	IO::set_position(hTarget, pos);
+	//	if (!IO::read_block(hTarget, buff_write, BLOCK_SIZE, bytesRead))
+	//		break;
+
+	//	if (bytesRead == 0)
+	//		break;
+
+
+	//}
+
+
+	//CloseHandle(hFile1);
+	//CloseHandle(hFile2);
+	//CloseHandle(hTarget);
+
+
+}
 
 
 

@@ -17,10 +17,14 @@ namespace IO
 	bool IOLIBRARY_EXPORT open_read( HANDLE & handle , const std::string & path );
 	bool IOLIBRARY_EXPORT open_write( HANDLE & handle , const std::string & path );
 	bool IOLIBRARY_EXPORT create_file( HANDLE & handle , const std::string & path );
+	LONGLONG IOLIBRARY_EXPORT getFileSize(HANDLE & handle);
+
 
 	void IOLIBRARY_EXPORT set_position( HANDLE & handle , LONGLONG position );
 	bool IOLIBRARY_EXPORT read_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesRead );
 	bool IOLIBRARY_EXPORT write_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesWritten );
+
+	bool IOLIBRARY_EXPORT read_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
 
 	bool IOLIBRARY_EXPORT write_block_to_file( HANDLE & source , 
 											   LONGLONG source_offset , 
@@ -33,6 +37,8 @@ namespace IO
 										LONGLONG block_size, 
 										HANDLE & target ,
 										LONGLONG target_offset = 0 );
+
+	DWORD IOLIBRARY_EXPORT BytesToCopy(LONGLONG current, LONGLONG max_size, DWORD block_size);
 
 	std::string IOLIBRARY_EXPORT file_path_number( const std::string & folder , DWORD number , const std::string & extension );
 
@@ -56,7 +62,7 @@ namespace IO
 	bool IOLIBRARY_EXPORT isSectorOnly00( const BYTE * data );
 	bool IOLIBRARY_EXPORT isDataSector( const BYTE * data );
 	void IOLIBRARY_EXPORT SaveOnlyData( const std::string & source_file , const std::string & target_file );
-
+	void IOLIBRARY_EXPORT XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);
 
 };
 
