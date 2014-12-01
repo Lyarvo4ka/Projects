@@ -25,6 +25,7 @@ namespace IO
 	bool IOLIBRARY_EXPORT write_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesWritten );
 
 	bool IOLIBRARY_EXPORT read_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
+	bool IOLIBRARY_EXPORT write_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
 
 	bool IOLIBRARY_EXPORT write_block_to_file( HANDLE & source , 
 											   LONGLONG source_offset , 

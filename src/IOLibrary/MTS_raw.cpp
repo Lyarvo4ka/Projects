@@ -1,6 +1,108 @@
 #include "MTS_raw.h"
 
 
+ClusterMap::ClusterMap() 
+: clusterMap_(nullptr)
+, count_(0)
+, first_( UNKNOWN_CLUSER )
+, current_( UNKNOWN_CLUSER )
+, next_( UNKNOWN_CLUSER )
+{
+
+}
+
+void ClusterMap::clear_map()
+{
+	if (clusterMap_)
+	{
+		delete[] clusterMap_;
+		clusterMap_ = nullptr;
+	}
+	count_ = 0;
+}
+
+void ClusterMap::create_map(size_map map_count)
+{
+	clear_map();
+	clusterMap_ = new BYTE[map_count];
+	count_ = map_count;
+}
+
+bool ClusterMap::load(const std::string & file_map)
+{
+	HANDLE hFile = INVALID_HANDLE_VALUE;
+	if (!IO::open_read(hFile, file_map))
+	{
+		printf("Error. Open file to LOAD.\r\n");
+		return false;
+	}
+
+	count_ = IO::getFileSize(hFile);
+	if (count_ == 0)
+	{
+		printf("Error. File is NULL .\r\n");
+		return false;
+	}
+
+	clear_map();
+	create_map(count_);
+
+	bool bResult = IO::read_all(hFile, clusterMap_, count_);
+	CloseHandle(hFile);
+
+	return bResult;
+}
+
+bool ClusterMap::save(const std::string & file_map)
+{
+	HANDLE hFile = INVALID_HANDLE_VALUE;
+	if (!IO::create_file(hFile, file_map))
+	{
+		printf("Error. Create file.\r\n");
+		return false;
+	}
+	bool bResult = IO::write_all(hFile, clusterMap_, count_);
+	CloseHandle(hFile);
+
+	return bResult;
+}
+
+void ClusterMap::set_current(size_map new_current)
+{
+	current_ = new_current;
+}
+
+size_map ClusterMap::current() const
+{
+	return current_;
+}
+
+size_map ClusterMap::first() const
+{
+	for (size_map iCluster = 0; iCluster < count_, ++iCluster)
+	{
+		if (clusterMap_[iCluster] == FREE_CLUSER)
+			return iCluster;
+	}
+	return END_CLUSTER;
+}
+
+size_map ClusterMap::next()
+{
+	bool bLastCluster = true;
+	for (next_ = (current_ + 1); next_ < count_; ++next_)
+	{
+		if (clusterMap_[next_] == ClusterType::FREE_CLUSER)
+		{
+			bLastCluster = false;
+			break;
+		}
+	}
+
+	return (!bLastCluster) ? next_ : END_CLUSTER;
+}
+
+
 
 MTS_raw::MTS_raw(const std::string & file_name, const std::string output_folder) : AbstractRaw(file_name)
 , folder_(output_folder)
@@ -75,17 +177,7 @@ void MTS_raw::execute()
 //
 //LONGLONG MTS_raw::getNextCluster()
 //{
-//	bool bLastCluster = true;
-//	for (nextCluster_ = (curCluster_ + 1); nextCluster_ < clusterCount_; ++nextCluster_)
-//	{
-//		if (pClusterMap_[nextCluster_] == ClusterType::FREE)
-//		{
-//			bLastCluster = false;
-//			break;
-//		}
-//	}
-//
-//	return (!bLastCluster) ? nextCluster_ : EndCluster;
+
 //}
 //
 

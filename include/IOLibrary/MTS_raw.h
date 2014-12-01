@@ -3,7 +3,41 @@
 
 #include "AbstractRaw.h"
 
-enum ClusterType { FREE = 0, USED = 1 };
+
+
+typedef unsigned long size_map;
+
+enum ClusterType { FREE_CLUSER = 0, USED_CLUSER = 1 , UNKNOWN_CLUSER = 0xFF};
+const int END_CLUSTER = ULONG_MAX;
+const int WRONG_CLUSTER = ULONG_MAX - 1;
+
+class ClusterMap
+{
+private:
+	void clear_map();
+	void create_map(size_map map_count);
+
+public:
+	ClusterMap();
+
+	bool load(const std::string & file_map);
+	bool save(const std::string & file_map);
+
+	
+	void set_current( size_map new_current);
+	size_map current() const;
+	size_map first() const;
+	size_map next();
+	
+private:
+	BYTE * clusterMap_;
+	size_map count_;
+
+	size_map first_;
+	size_map current_;
+	size_map next_;
+};
+
 
 
 class MTS_raw
@@ -11,19 +45,12 @@ class MTS_raw
 {
 	
 	static const DWORD ClusterSize = 131072;
-	static const LONGLONG EndCluster = -1;
 public:
 
 	MTS_raw(const std::string & file_name, const std::string output_folder);
 	~MTS_raw();
 
-	//LONGLONG findHeader(LONGLONG start_offset)
-	//{
-
-	//}
 	void execute() override;
-
-
 	//void createClusterMap(LONGLONG cluster_count);
 	//void ChangeClusterMap(LONGLONG cluster_number, ClusterType cluster_type);
 
@@ -34,61 +61,8 @@ public:
 
 private:
 	std::string folder_;
-	LONGLONG first_;
-	LONGLONG current_;
-	LONGLONG next_;
 
 };
 
-class ClusterMap
-{
-private:
-	void clear_map()
-	{
-		if (clusterMap_)
-		{
-			delete [] clusterMap_;
-			clusterMap_ = nullptr;
-		}
-
-	}
-	void create_map( DWORD map_count)
-	{
-		clear_map();
-		clusterMap_ = new BYTE[map_count];
-	}
-
-public:
-	ClusterMap();
-
-	bool save( std::string & file_map )
-	{
-		//IO::	
-	}
-	bool load( std::string & file_map)
-	{
-		HANDLE hFile = INVALID_HANDLE_VALUE;
-		if ( !IO::open_read(hFile , file_map))
-		{
-			printf("Error. Open file to LOAD.\r\n");
-			return false;
-		}
-
-		count_ = IO::getFileSize(hFile);
-		if (count_ == 0)
-		{
-			printf("Error. File is NULL .\r\n");
-			return false;
-		}
-
-		clear_map();
-		create_map(count_);
-
-		return IO::read_all(hFile , clusterMap_ , count_ );
-	}
-private:
-	BYTE * clusterMap_;
-	DWORD count_;
-};
 
 #endif

@@ -364,9 +364,9 @@
 
 	   //printf("\r\n\r\n");
 
-	   std::string source_dir = "G:\\raw\\";
-	   std::string target_dir = "G:\\NoName\\doc\\";
-	   std::string bad_dir =	"G:\\NoName\\bad\\";
+	   std::string source_dir = "E:\\raw\\";
+	   std::string target_dir = "E:\\NoName\\doc\\";
+	   std::string bad_dir =	"E:\\NoName\\bad\\";
 	   stringlist ext_list;
 	   ext_list.push_back(".doc");
 	   ext_list.push_back(".xls");

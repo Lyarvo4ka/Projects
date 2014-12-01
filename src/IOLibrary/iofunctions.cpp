@@ -149,15 +149,42 @@ bool IO::read_all(HANDLE & handle, BYTE * buffer, LONGLONG size)
 	{
 		bytesToRead = IO::BytesToCopy(cur , size , BLOCK_SIZE);
 		if ( !IO::read_block(handle , &buffer[cur] , BLOCK_SIZE , bytesRead ) )
-			return false;
+			break;
 
 		if ( bytesRead == 0 )
-			return false;
+			break;
 
 		cur += bytesRead;
 	}
-	return false;
+	return true;
 }
+
+bool IO::write_all(HANDLE & handle, BYTE * buffer, LONGLONG size)
+{
+	assert(handle != INVALID_HANDLE_VALUE);
+	assert(buffer != nullptr);
+	assert(size != 0);
+
+	LONGLONG cur = 0;
+	DWORD bytesWritten = 0;
+	DWORD bytesToWrite = BLOCK_SIZE;
+
+
+	while (cur < size)
+	{
+		bytesToWrite = IO::BytesToCopy(cur, size, BLOCK_SIZE);
+		if (!IO::read_block(handle, &buffer[cur], BLOCK_SIZE, bytesWritten))
+			break;;
+
+		if (bytesWritten == 0)
+			break;;
+
+		cur += bytesWritten;
+	}
+	return false;
+
+}
+
 
 bool IO::copy_to_file( HANDLE & source , LONGLONG source_offset , LONGLONG block_size, HANDLE & target , LONGLONG target_offset )
 {
