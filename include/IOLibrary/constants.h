@@ -52,6 +52,7 @@ namespace Signatures
 
 	const BYTE mts_header[] = { 0x47, 0x40, 0x00, 0x10, 0x00, 0x00, 0xB0, 0x11, 0x00, 0x00, 0xC1, 0x00 };
 	const int mts_header_size = SIZEOF_ARRAY(mts_header);
+	const int mts_header_offset = 4;
 
 };
 

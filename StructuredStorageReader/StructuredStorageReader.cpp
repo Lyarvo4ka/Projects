@@ -357,7 +357,7 @@
 	   //std::string sTable = "d:\\Public\\35044\\table_2.bin";
 
 
-	   //tablelist table;
+	   //tablelist table;s
 	   //IO::read_table( sTable  , table );
 	   //IO::gatherByTable( sSource , sTarget , &table );
 

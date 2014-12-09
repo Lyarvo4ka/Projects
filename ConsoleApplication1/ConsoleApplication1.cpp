@@ -59,40 +59,44 @@ void show_error_invalid_params()
 //	return 0;
 //}
 
-#include "IOLibrary/Entropy.h"
-#include "IOLibrary\BlockNumber.h"
+//#include "IOLibrary/Entropy.h"
+//#include "IOLibrary\BlockNumber.h"
+
+#include "IOLibrary/MTS_raw.h"
 
 int main(int argc, char *argv[])
 {
+	MTS_raw mts_raw("k:\\36490\\36490.img" , "K:\\36490\\mts\\");
+	mts_raw.execute();
 
-	BlockNumber block_number;
-	if (block_number.OpenDump("d:\\Public\\36564\\01_01.dump"))
-	if (block_number.CreateImage("d:\\Public\\36564\\Image.bin"))
-	{
-		block_number.ReadBank(0, 1107296256);
-		block_number.WriteBank(0);
+	//BlockNumber block_number;
+	//if (block_number.OpenDump("d:\\Public\\36564\\01_01.dump"))
+	//if (block_number.CreateImage("d:\\Public\\36564\\Image.bin"))
+	//{
+	//	block_number.ReadBank(0, 1107296256);
+	//	block_number.WriteBank(0);
 
-		block_number.ReadBank(1107296256, 2214592512);
-		block_number.WriteBank(1);
+	//	block_number.ReadBank(1107296256, 2214592512);
+	//	block_number.WriteBank(1);
 
-		block_number.ReadBank(2214592512, 3321888768);
-		block_number.WriteBank(2);
+	//	block_number.ReadBank(2214592512, 3321888768);
+	//	block_number.WriteBank(2);
 
-		block_number.ReadBank(3321888768, 4429185024);
-		block_number.WriteBank(3);
+	//	block_number.ReadBank(3321888768, 4429185024);
+	//	block_number.WriteBank(3);
 
-		block_number.ReadBank(4429185024, 5536481280);
-		block_number.WriteBank(4);
+	//	block_number.ReadBank(4429185024, 5536481280);
+	//	block_number.WriteBank(4);
 
-		block_number.ReadBank(5536481280, 6643777536);
-		block_number.WriteBank(5);
+	//	block_number.ReadBank(5536481280, 6643777536);
+	//	block_number.WriteBank(5);
 
-		block_number.ReadBank(6643777536, 7751073792);
-		block_number.WriteBank(6);
+	//	block_number.ReadBank(6643777536, 7751073792);
+	//	block_number.WriteBank(6);
 
-		block_number.ReadBank(7751073792, 8858370048);
-		block_number.WriteBank(7);
-	}
+	//	block_number.ReadBank(7751073792, 8858370048);
+	//	block_number.WriteBank(7);
+	//}
 
 
 

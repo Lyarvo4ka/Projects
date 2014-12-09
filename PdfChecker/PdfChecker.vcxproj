@@ -56,13 +56,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>c:\boost\boost_1_56_0\;$(SolutionDir)include\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%BOOST_ROOT%;$(SolutionDir)include\;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libboost_filesystem-vc120-mt-gd-1_56.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>c:\boost\boost_1_56_0\stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%BOOST_ROOT%stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

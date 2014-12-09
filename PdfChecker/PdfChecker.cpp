@@ -79,6 +79,15 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	if (hModule != NULL)
 	{
+		if ( argc != 2 )
+		{
+			printf("Wrong arguments count");
+			return -3;
+		}
+		std::string folder( argv[1] );
+
+		//std::string folder("D:\\ןנטלונû פאיכמג\\pdf\\");
+
 		// initialize MFC and print and error on failure
 		if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
 		{
@@ -111,7 +120,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		stringlist filter;
 		filter.push_back(".pdf");
 		std::string target_folder = "";
-		finder.FindFiles( "E:\\NoName\\pdf\\" , filter );
+		finder.FindFiles(folder, filter);
 		auto files ( finder.getFileNames() );
 	
 		int counter = 0;
