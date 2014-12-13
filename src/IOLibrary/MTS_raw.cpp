@@ -292,3 +292,8 @@ bool isPresentInArray(DWORD diff_value)
 		return true;
 	return false;
 }
+
+void get_difference(const std::string & file_name, const DWORD packed_size)
+{
+
+}

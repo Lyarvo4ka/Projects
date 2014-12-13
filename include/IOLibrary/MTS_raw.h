@@ -26,7 +26,6 @@ DWORD diff_array[diff_count] = { 0x05AB, 0x08d0, 0x11A0, 0x04f0 , 0x4f5a };
 
 
 
-
 class ClusterMap
 {
 private:
@@ -81,6 +80,7 @@ private:
 };
 
 bool isPresentInArray(DWORD diff_value);
+void IOLIBRARY_EXPORT get_difference(const std::string & file_name, const DWORD packed_size);
 
 
 #endif
