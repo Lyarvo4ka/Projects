@@ -126,6 +126,7 @@ size_map ClusterMap::next()
 MTS_raw::MTS_raw(const std::string & file_name, const std::string output_folder) : AbstractRaw(file_name)
 , folder_(output_folder)
 , cluster_map_(nullptr)
+, add_offset_( 0 )
 {
 
 }
@@ -164,7 +165,7 @@ void MTS_raw::execute()
 	DWORD bytesWritten = 0;
 
 
-	cur_cluster = 254;
+	cur_cluster = 0;
 	while (true)
 	{
 		cluster_map_->set_current(cur_cluster);
@@ -199,16 +200,14 @@ void MTS_raw::execute()
 			DWORD cur_value = 0;
 			DWORD prev_value = 0;
 
-			while (true )
+			DWORD skip_count = 0;
+
+			while (skip_count < 200000)
 			{
 				cur_offset = array_offsets[cluster_counter%offset_count];
 
 				next_cluster = cluster_map_->next();
-				if (next_cluster == 21758)
-				{
-					int k = 1;
-					k =2;
-				}
+
 				cluster_map_->set_current(next_cluster);
 				if (!this->ReadCluster(new_buffer, ClusterSize, next_cluster))
 				{
@@ -234,11 +233,14 @@ void MTS_raw::execute()
 					cluster_map_->update(next_cluster, USED_CLUSER);
 					memcpy(prev_buffer, new_buffer, ClusterSize);
 					++cluster_counter;
+					skip_count = 0;
 				}
+				else
+					++skip_count;
 
 			}
 
-
+			CloseHandle(hWrite);
 
 		}
 		cluster_map_->set_current(cur_cluster);
@@ -257,7 +259,7 @@ bool MTS_raw::ReadCluster(BYTE * buffer, DWORD cluster_size, size_map cluster_nu
 	DWORD bytesRead = 0;
 
 	auto offset = (LONGLONG)cluster_number * (LONGLONG)cluster_size ;
-	offset += 25230848;
+	offset += add_offset_;
 	IO::set_position(*this->getHandle(), offset);
 
 	bool bResult = IO::read_block(*this->getHandle() , buffer , cluster_size , bytesRead ) ;
@@ -295,5 +297,65 @@ bool isPresentInArray(DWORD diff_value)
 
 void get_difference(const std::string & file_name, const DWORD packed_size)
 {
+	HANDLE hRead = INVALID_HANDLE_VALUE;
+	if ( ! IO::open_read(hRead , file_name) )
+	{
+		printf("Error. Open file to Read.");
+		return;
+	}
 
+	HANDLE hWrite = INVALID_HANDLE_VALUE;
+	std::string file_write = file_name + ".txt";
+	if ( ! IO::create_file(hWrite , file_write ) )
+	if (!IO::open_read(hRead, file_name))
+	{
+		printf("Error. Open file to Read.");
+		return;
+	}
+	
+	BYTE buffer[atom_size];
+	DWORD bytesRead = 0;
+	
+	DWORD * ptrVal = nullptr;
+
+	DWORD prev_val = 0;
+	DWORD cur_val = 0;
+	DWORD diff_value = 0;
+
+	char buff[16];
+	std::string write_string;
+	DWORD bytesWritten = 0;
+
+	do 
+	{
+		if (! IO::read_block(hRead, buffer, packed_size, bytesRead) )
+			break;
+		if ( bytesRead == 0 )
+			break;
+
+		ptrVal = (DWORD *) &buffer[0];
+		cur_val = * ptrVal;
+		to_big_endian(cur_val);
+		diff_value = cur_val - prev_val;
+		if (!isPresentInArray(diff_value))
+		{
+			memset(buff, 0, 16);
+			sprintf_s(buff, 16, "%#x", diff_value);
+			write_string = buff;
+			write_string += ", ";
+
+			if (!IO::write_block(hWrite, (BYTE*)write_string.data(), write_string.size(), bytesWritten))
+				break;
+			if (bytesWritten == 0)
+				break;
+		}
+		prev_val = cur_val;
+
+	} while (true);
+
+
+
+
+	CloseHandle(hWrite);
+	CloseHandle(hRead);
 }

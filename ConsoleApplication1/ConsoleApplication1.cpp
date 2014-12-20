@@ -66,8 +66,10 @@ void show_error_invalid_params()
 
 int main(int argc, char *argv[])
 {
-	MTS_raw mts_raw("k:\\36490\\36490.img" , "K:\\36490\\mts\\");
+	MTS_raw mts_raw("g:\\36501_FreeSpace.bin ", "G:\\mts\\");
 	mts_raw.execute();
+
+	//get_difference("d:\\PaboTa\\36490\\00468.MTS", atom_size);
 
 	//BlockNumber block_number;
 	//if (block_number.OpenDump("d:\\Public\\36564\\01_01.dump"))
