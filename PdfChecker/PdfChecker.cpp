@@ -84,7 +84,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			printf("Wrong arguments count");
 			return -3;
 		}
-		std::string folder( "D:\\PaboTa\\36727\\NoName\\pdf\\" );
+		std::string folder( "F:\\37166\\pdf\\" );
 
 		//std::string folder("D:\\ןנטלונû פאיכמג\\pdf\\");
 

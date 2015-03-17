@@ -173,9 +173,49 @@ private:
 short pair_table[] =	{234, 976, 1214, 3846, 4042, 5266, 5444, 7614, 8584 };
 short unpair_table[] =	{114, 266, 690, 2354, 5074, 6094, 7470, 7710, 8136, 8508};
 
+short block_1[] = { 104, 252, 1282, 1586, 1630, 1954, 2186, 2456, 2586, 3074, 3306, 4650, 4756, 4854, 5130, 5642, 5774, 5950, 6146, 6498, 7266, 7274, 7610, 8286, 8400, 8490, 8546, 8558, 8772, 8994 };
+short block_2[] = { 548, 862, 1068, 1084, 1218, 1410, 1858, 2018, 2110, 2140, 2542, 2586, 2780, 3106, 3818, 4222, 4416, 4768, 5538, 6848, 7082, 7250, 8274, 8926, 8938, 9112 };
+short block_3[] = { 832, 940, 992, 1248, 1510, 2256, 2870, 2928, 3082, 3300, 3518, 3588, 4958, 5140, 5454, 6292, 6522, 7098, 7486, 7648, 7758, 8256, 8612 };
+short block_4[] = { 124, 590, 964, 2742, 2762, 4856, 5168, 5548, 5640, 6654, 8574, 8796, 8870, 9000, 9004 };
+
 bool isPairValue( const int iValue )
 {
 	return ( ( iValue % 2 ) == 0 );
+}
+
+short * tableByFour( const int iValue)
+{
+	int iBlock = iValue % 4;
+	switch ( iBlock )
+	{
+	case 0 : 
+		return block_1;
+	case 1:
+		return block_2;
+	case 2:
+		return block_3;
+	case 3: 
+		return block_4;
+	};
+	return nullptr;
+}
+
+int getSizeOfArray(const int iValue)
+{
+	int iBlock = iValue % 4;
+	switch (iBlock)
+	{
+	case 0:
+		return SIZEOF_ARRAY(block_1);
+	case 1:
+		return SIZEOF_ARRAY(block_2);
+	case 2:
+		return SIZEOF_ARRAY(block_3);
+	case 3:
+		return SIZEOF_ARRAY(block_4);
+
+	};
+	return -1;
 }
 
 void removeBytesInPage( BYTE * source_page , BYTE * target_page , int block_number , int page_size )
@@ -185,9 +225,11 @@ void removeBytesInPage( BYTE * source_page , BYTE * target_page , int block_numb
 	short target_offset = 0;
 
 	
-
-	short * pTable = isPairValue(block_number)  ? pair_table : unpair_table ;
-	int size_table = isPairValue(block_number) ? SIZEOF_ARRAY( pair_table) : SIZEOF_ARRAY( unpair_table );
+	
+	//short * pTable = isPairValue(block_number)  ? pair_table : unpair_table ;
+	//int size_table = isPairValue(block_number) ? SIZEOF_ARRAY( pair_table) : SIZEOF_ARRAY( unpair_table );
+	short * pTable = tableByFour(block_number);
+	int size_table = getSizeOfArray(block_number);
 
 	memset( target_page , 0xFF , page_size );
 

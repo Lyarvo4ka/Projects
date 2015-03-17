@@ -51,6 +51,8 @@ public:
 	size_map current() const;
 	size_map first();
 	size_map next();
+
+	int getClusterType( const size_map pos);
 	
 private:
 	BYTE * clusterMap_;
@@ -66,8 +68,8 @@ private:
 class IOLIBRARY_EXPORT MTS_raw
 	: public AbstractRaw
 {
-	
-	static const DWORD ClusterSize = 131072;
+public:
+	static const DWORD ClusterSize = 32768;
 public:
 
 	MTS_raw(const std::string & file_name, const std::string output_folder);
@@ -78,16 +80,36 @@ public:
 	bool isHeader(const BYTE * buffer) const;
 	bool ReadCluster(BYTE * buffer, DWORD cluster_size, size_map cluster_number);
 	bool WriteCluster(HANDLE & hWrite, BYTE * buffer, DWORD cluster_size);
-private:
+
+protected:
 	std::string folder_;
+//private:
 	DWORD add_offset_;
 
 	ClusterMap * cluster_map_;
 
 };
 
+
+const BYTE mts_footer[] =	{ 0x4D, 0x50, 0x4C, 0x53, 0x30, 0x31, 0x30, 0x30 };
+const BYTE HDMV0100[] =		{ 0x48, 0x44, 0x4D, 0x56, 0x30, 0x31, 0x30, 0x30 };
+const BYTE CLEX_str[] =		{ 0x43 , 0x4C , 0x45 , 0x58 };
+class IOLIBRARY_EXPORT MTS_raw_new
+	:public MTS_raw
+{
+public:
+
+	MTS_raw_new(const std::string & file_name, const std::string output_folder);
+	~MTS_raw_new();
+	void execute() override;
+	bool isFooter(BYTE * buffer);
+	bool isHDMV0100(BYTE * buffer);
+	int isCLEX(BYTE * buffer , const DWORD cluster_size);
+};
+
 bool isPresentInArray(DWORD diff_value);
 void IOLIBRARY_EXPORT get_difference(const std::string & file_name, const DWORD packed_size);
+void IOLIBRARY_EXPORT save_free_space( const std::string & file_name , const std::string & file_map , const DWORD cluster_size);
 
 
 #endif

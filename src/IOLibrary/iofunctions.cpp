@@ -5,6 +5,7 @@
 #include "constants.h"
 
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 
 bool IO::open_read( HANDLE & handle , const std::string & path)
 {
@@ -168,20 +169,22 @@ bool IO::write_all(HANDLE & handle, BYTE * buffer, LONGLONG size)
 	LONGLONG cur = 0;
 	DWORD bytesWritten = 0;
 	DWORD bytesToWrite = BLOCK_SIZE;
+	//BYTE tmp_buffer[BLOCK_SIZE];
 
 
 	while (cur < size)
 	{
 		bytesToWrite = IO::BytesToCopy(cur, size, BLOCK_SIZE);
-		if (!IO::read_block(handle, &buffer[cur], BLOCK_SIZE, bytesWritten))
-			break;;
+		//memcpy(tmp_buffer, buffer + cur , bytesToWrite);
+		if (!IO::write_block(handle, &buffer[cur] , bytesToWrite, bytesWritten))
+			return false;
 
 		if (bytesWritten == 0)
-			break;;
+			return false;
 
 		cur += bytesWritten;
 	}
-	return false;
+	return true;
 
 }
 
@@ -297,7 +300,9 @@ std::string IO::make_file_path( const std::string & folder , const std::string &
 
 bool IO::isPresentInList( const stringlist & strlist , const std::string & text )
 {
-	auto findIter = std::find( strlist.begin() , strlist.end() , text );
+	auto str = text;
+	boost::algorithm::to_lower(str);
+	auto findIter = std::find( strlist.begin() , strlist.end() , str );
 	return (findIter != strlist.end() ) ? true : false;
 }
 
@@ -414,18 +419,85 @@ void IO::gatherByTable( const std::string & source_file , const std::string & ta
 
 }
 
-void IO::joinWithBad( const std::string & withBad , const std::string & withoutBad , const std::string & target_file)
+void IO::replaceBads(const std::string & withBad, const std::string & withoutBad, const std::string & target_file)
 {
 	DWORD max_size = 0;
 	HANDLE hWithBad = INVALID_HANDLE_VALUE;
 	HANDLE hWithoutBad = INVALID_HANDLE_VALUE;
-	if ( !IO::open_read( hWithBad , withBad ) )
-		return ;
-	if ( !IO::open_read( hWithoutBad , withoutBad ) )
-		return ;
+	if (!IO::open_read(hWithBad, withBad))
+	{
+		printf("Error to open file %s",withBad.c_str());
+		return;
+	}
+	if (!IO::open_read(hWithoutBad, withoutBad))
+	{
+		printf("Error to open file %s", withoutBad.c_str());
+		return;
+	}
 
-	DWORD size1 = ::GetFileSize( hWithBad , NULL );
-	DWORD size2 = ::GetFileSize( hWithoutBad , NULL );
+	DWORD size_with_bad = ::GetFileSize( hWithBad , NULL );
+	DWORD size_without_bad = ::GetFileSize(hWithoutBad, NULL);
+
+	DWORD min_size = (size_without_bad < size_with_bad) ? size_without_bad : size_with_bad;
+
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
+	if ( !IO::create_file(hTarget , target_file ))
+	{
+		printf("Error to create file %s", target_file.c_str());
+		return;
+	}
+
+	DWORD bytesRead1 = 0;
+	DWORD bytesRead2 = 0;
+	DWORD bytesWritten = 0;
+	const int block_count = 16;
+	const int block_size = SECTOR_SIZE*block_count;
+	BYTE buffer1[block_size];
+	BYTE buffer2[block_size];
+	BYTE target[block_size];
+
+	bool bSecondEnd = false;
+
+	bool bResult = false;
+
+	while (true)
+	{
+		bResult = IO::read_block(hWithBad, buffer1, block_size, bytesRead1);
+		if ( !bResult || (bytesRead1 == 0 ))
+			break;
+
+		if (!bSecondEnd)
+		{
+			bResult = IO::read_block(hWithoutBad, buffer2, block_size, bytesRead2);
+			if (!bResult || (bytesRead2 == 0))
+				bSecondEnd = true;
+		}
+
+		ZeroMemory(target, block_size);
+		for (auto iSector = 0; iSector < block_size; iSector += SECTOR_SIZE)
+		{
+			if (memcmp(buffer1 + iSector, Signatures::bad_sector_header, SIZEOF_ARRAY(Signatures::bad_sector_header) ) != 0 )
+				memcpy(target + iSector, buffer1 + iSector, SECTOR_SIZE);
+			else
+			{
+				if (!bSecondEnd)
+					memcpy(target + iSector, buffer2 + iSector, SECTOR_SIZE);
+			}
+
+		}
+		bResult = IO::write_block(hTarget, target, block_size, bytesWritten);
+		if (!bResult || (bytesWritten == 0))
+			break;
+
+
+
+	}
+
+
+
+	CloseHandle(hWithBad);
+	CloseHandle(hWithoutBad);
+	CloseHandle(hTarget);
 
 }
 
@@ -600,7 +672,72 @@ void IO::XorFiles(const std::string &file1, const std::string & file2, const std
 
 
 }
+void IO::JoinWithService(const std::string & data_file, const std::string & service_file, const std::string target_file)
+{
+	HANDLE hData = INVALID_HANDLE_VALUE;
+	HANDLE hService = INVALID_HANDLE_VALUE;
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
 
+	const int data_size = 8192;
+	const int service_size = 16;
+	const int page_size = data_size + service_size;
+
+	if (!IO::open_read(hData, data_file))
+	{
+		printf("Error open file: %s\r\n", data_file.c_str());
+		return;
+	}
+	if (!IO::open_read(hService, service_file))
+	{
+		printf("Error open file: %s\r\n", service_file.c_str());
+		return;
+	}
+	if (!IO::create_file(hTarget, target_file))
+	{
+		printf("Error open file: %s\r\n", target_file.c_str());
+		return;
+	}
+
+	DWORD bytesRead = 0;
+	DWORD bytesWritten = 0;
+
+	BYTE data_buffer[data_size];
+	BYTE service_buffer[service_size];
+	BYTE page_buffer[page_size];
+	bool bResult = false;
+
+	LONGLONG max_size = IO::getFileSize(hData);
+
+	LONGLONG cur = 0;
+	while (cur < max_size)
+	{
+
+		bResult = IO::read_block(hData , data_buffer , data_size , bytesRead );
+		if ( ( bytesRead == 0 ) && !bResult )
+			break;
+
+		bytesRead = 0;
+		bResult = IO::read_block(hService, service_buffer, service_size, bytesRead);
+		if ((bytesRead == 0) && !bResult)
+			break;
+
+		memcpy(page_buffer , data_buffer , data_size);
+		memcpy(page_buffer + data_size, service_buffer, service_size);
+
+		bResult = IO::write_block(hTarget, page_buffer, page_size, bytesWritten);
+		if ((bytesWritten == 0) & !bResult )
+			break;
+
+		cur += data_size;
+
+	}
+
+
+
+	CloseHandle(hData);
+	CloseHandle(hService);
+	CloseHandle(hTarget);
+}
 
 
 void to_big_endian( DWORD & val )

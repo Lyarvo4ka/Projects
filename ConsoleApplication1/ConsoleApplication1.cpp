@@ -62,12 +62,25 @@ void show_error_invalid_params()
 //#include "IOLibrary/Entropy.h"
 //#include "IOLibrary\BlockNumber.h"
 
-#include "IOLibrary/MTS_raw.h"
+
+//#include "IOLibrary/SignatureTest.h"
+//#include "IOLibrary/MTS_raw.h"
 
 int main(int argc, char *argv[])
 {
-	MTS_raw mts_raw("g:\\36501_FreeSpace.bin ", "G:\\mts\\");
-	mts_raw.execute();
+	CanonMovRaw mov_raw("d:\\PaboTa\\37277\\image.bin" , "D:\\PaboTa\\37277\\mov\\");
+	mov_raw.execute();
+
+	//IO::JoinWithService("d:\\Public\\37132\\raw.image", "d:\\Public\\37132\\sa.image" , "d:\\Public\\37132\\dump.dump");
+	//RemoveBytesByBitMap("d:\\Public\\37132\\0001.dmp" , "d:\\Public\\37132\\target.dump");
+
+	//std::string folder = "H:\\36820\\Partition 2\\!Problem\\";
+	//Signture_Testing(folder);
+
+	//save_free_space("i:\\36490\\Free_space.bin", "i:\\36490\\cluster.map", 32768);
+	//IO::replaceBads("d:\\PaboTa\\1C\\bads.1CD" , "d:\\PaboTa\\1C\\1Cv8 091214.1CD"  , "D:\\PaboTa\\1C\\target.1CD" );
+	//MTS_raw_new mts_raw("m:\\free_space.bin", "M:\\36984\\");
+	//mts_raw.execute();
 
 	//get_difference("d:\\PaboTa\\36490\\00468.MTS", atom_size);
 

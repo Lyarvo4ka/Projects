@@ -63,6 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>$(SolutionDir)_lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%BOOST_ROOT%stage\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -102,6 +103,7 @@
     <ClCompile Include="iofunctions.cpp" />
     <ClCompile Include="IOLibrary.cpp" />
     <ClCompile Include="MTS_raw.cpp" />
+    <ClCompile Include="SignatureTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -125,6 +127,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\r3d_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\RemoveInserts.h" />
+    <ClInclude Include="..\..\include\IOLibrary\SignatureTest.h" />
     <ClInclude Include="..\..\include\IOLibrary\stdafx.h" />
     <ClInclude Include="..\..\include\IOLibrary\targetver.h" />
     <ClInclude Include="..\..\include\IOLibrary\Translator.h" />

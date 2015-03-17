@@ -39,6 +39,9 @@
     <ClCompile Include="MTS_raw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SignatureTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h">
@@ -96,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\MTS_raw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\SignatureTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

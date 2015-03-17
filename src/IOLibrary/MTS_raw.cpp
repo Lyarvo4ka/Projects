@@ -38,6 +38,8 @@ void ClusterMap::create_map(size_map map_count)
 
 bool ClusterMap::load(const std::string & file_map)
 {
+	clear_map();
+
 	HANDLE hFile = INVALID_HANDLE_VALUE;
 	if (!IO::open_read(hFile, file_map))
 	{
@@ -52,7 +54,6 @@ bool ClusterMap::load(const std::string & file_map)
 		return false;
 	}
 
-	clear_map();
 	create_map(count_);
 
 	bool bResult = IO::read_all(hFile, clusterMap_, count_);
@@ -116,6 +117,11 @@ size_map ClusterMap::next()
 	}
 
 	return (!bLastCluster) ? next_ : END_CLUSTER;
+}
+
+int ClusterMap::getClusterType(const size_map pos)
+{
+	return (pos < count_) ? clusterMap_[pos] : END_CLUSTER;
 }
 
 
@@ -247,11 +253,14 @@ void MTS_raw::execute()
 		cur_cluster = cluster_map_->next();
 
 	}
+
+	cluster_map_->save("D:\\PaboTa\\36490\\cluster.map");
+
 }
 
 bool MTS_raw::isHeader(const BYTE * buffer) const
 {
-	return ( memcmp( & buffer[Signatures::mts_header_offset] , Signatures::mts_header , Signatures::mts_header_size) == 0);
+	return (memcmp(&buffer[Signatures::mts_header_offset], Signatures::mts_header, Signatures::mts_header_size) == 0);
 }
 
 bool MTS_raw::ReadCluster(BYTE * buffer, DWORD cluster_size, size_map cluster_number)
@@ -286,6 +295,123 @@ bool MTS_raw::WriteCluster(HANDLE & hWrite, BYTE * buffer, DWORD cluster_size)
 
 }
 
+
+MTS_raw_new::MTS_raw_new(const std::string & file_name, const std::string output_folder)
+:MTS_raw(file_name, output_folder)
+{
+
+}
+
+MTS_raw_new::~MTS_raw_new()
+{
+	
+}
+
+void MTS_raw_new::execute()
+{
+	if (!this->isReady())
+	{
+		printf("Error source device not ready.");
+		return;
+	}
+	size_map nCluster = 0;
+	BYTE buffer[ClusterSize];
+	DWORD counter = 0;
+
+	while (true)
+	{
+		if ( !this->ReadCluster(buffer,ClusterSize , nCluster) )
+		{
+			printf("Error. Read cluster #%d\r\n", nCluster);
+			break;
+		}
+
+		if ( this->isHeader(buffer) )
+		{
+			printf("Found mts header cluster #%d\r\n", nCluster);
+			auto target_name = IO::file_path_number(folder_, counter++, ".mts");
+
+			HANDLE hWrite = INVALID_HANDLE_VALUE;
+			if (!IO::create_file(hWrite, target_name))
+			{
+				printf("Error. Couldn't create file %s.\r\n", target_name.c_str());
+				break;
+			}
+
+			bool bFooter = false;
+			int iClex_pos = 0;
+			do 
+			{
+				if (!this->WriteCluster(hWrite, buffer, ClusterSize))
+				{
+					printf("Error. Write cluster #%d\r\n", nCluster);
+					break;
+				}
+				++nCluster;
+				
+				if (!this->ReadCluster(buffer, ClusterSize, nCluster))
+				{
+					printf("Error. Read cluster #%d\r\n", nCluster);
+					break;
+				}
+
+				if (this->isHeader(buffer))
+				{
+					--nCluster;
+					break;
+				}
+
+				bFooter = this->isFooter(buffer);
+				//bFooter = this->isHDMV0100(buffer);
+				//iClex_pos = this->isCLEX(buffer, ClusterSize);
+				//if (iClex_pos != -1)
+				//{
+				//	bFooter == true;
+				//	auto footer_size = iClex_pos - 16;
+				//	if (footer_size > 0)
+				//	{
+				//		WORD * pCLEX_Size = (WORD *)&buffer[footer_size];
+				//		WORD size_val = ntohs(*pCLEX_Size);
+				//		footer_size += size_val;
+				//		DWORD bytesWritten = 0;
+				//		if (!IO::write_block(hWrite, buffer, footer_size, bytesWritten))
+				//			break;
+				//		if (bytesWritten == 0)
+				//			break;
+				//	}
+				//}
+
+			} while (!bFooter);
+
+
+			CloseHandle(hWrite);
+		}
+		
+
+		++nCluster;
+	}
+
+}
+
+bool MTS_raw_new::isFooter(BYTE * buffer)
+{
+	return (memcmp(buffer, mts_footer, SIZEOF_ARRAY(mts_footer)) == 0);
+}
+bool MTS_raw_new::isHDMV0100(BYTE * buffer)
+{
+	return (memcmp(buffer, HDMV0100, SIZEOF_ARRAY(HDMV0100)) == 0);
+}
+
+int MTS_raw_new::isCLEX(BYTE * buffer, const DWORD cluster_size)
+{
+	
+	for ( auto nByte = 0; nByte < cluster_size - SIZEOF_ARRAY(CLEX_str) ; ++nByte)
+	{
+		if (memcmp(buffer + nByte, CLEX_str, SIZEOF_ARRAY(CLEX_str)) == 0)
+			return nByte;
+	}
+	return -1;
+}
 
 bool isPresentInArray(DWORD diff_value)
 {
@@ -358,4 +484,73 @@ void get_difference(const std::string & file_name, const DWORD packed_size)
 
 	CloseHandle(hWrite);
 	CloseHandle(hRead);
+}
+
+void IOLIBRARY_EXPORT save_free_space(const std::string & file_name, const std::string & file_map, const DWORD cluster_size)
+{
+	ClusterMap cluster_map;
+	cluster_map.load(file_map);
+
+	HANDLE hSource = INVALID_HANDLE_VALUE;
+	if ( !IO::open_read(hSource , file_name) )
+	{
+		printf("Error to open file");
+		return;
+	}
+
+	std::string target_name = file_name + ".free";
+
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
+	if ( !IO::create_file(hTarget , target_name))
+	{
+		printf("Error create file");
+		return;
+	}
+
+	size_map cluster_number = 0;
+	LONGLONG offset = 0;
+
+	DWORD bytesRead = 0;
+	DWORD bytesWritten = 0;
+	BYTE *buffer = new BYTE[cluster_size];
+
+	int cluster_type = FREE_CLUSER;
+	do
+	{
+		cluster_type = cluster_map.getClusterType(cluster_number);
+		if ( cluster_type == END_CLUSTER )
+			break;
+
+		if ( cluster_type == FREE_CLUSER )
+		{
+			offset = cluster_number;
+			offset *= cluster_size;
+			IO::set_position(hSource , offset);
+			if (!IO::read_block(hSource, buffer , cluster_size , bytesRead ))
+			{
+				printf("Error read file");
+				break;
+			}
+			if ( bytesRead == 0 )
+				break;
+
+
+			if (!IO::write_block(hTarget, buffer, cluster_size, bytesWritten))
+			{
+				printf("Error write file");
+				break;
+			}
+			if (bytesWritten == 0)
+				break;
+
+		}
+
+		++cluster_number;
+	} while (cluster_type != END_CLUSTER);
+
+
+	delete[] buffer;
+
+	CloseHandle(hTarget);
+	CloseHandle(hSource);
 }
