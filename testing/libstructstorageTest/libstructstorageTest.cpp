@@ -7,8 +7,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-BOOST_AUTO_TEST_CASE( Test )
+#include "libstructstorage\libstructstorage.h"
+
+BOOST_AUTO_TEST_CASE(getTimeFromFileTimeTest)
 {
-	BOOST_CHECK_EQUAL( IO::isLastBackspace("c:\\asd\\" ) , true );
-	BOOST_CHECK_EQUAL( IO::isLastBackspace("c:\\asd" ) , false );
+	FILETIME file_time;
+
+	BOOST_CHECK_EQUAL( getTimeFromFileTime(file_time) , "");
+
 }
