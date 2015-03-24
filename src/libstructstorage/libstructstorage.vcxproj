@@ -98,11 +98,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\libstructstorage\libstructstorage.h" />
-    <ClInclude Include="..\include\libstructstorage\libstructstorage_global.h" />
-    <ClInclude Include="..\include\libstructstorage\stdafx.h" />
-    <ClInclude Include="..\include\libstructstorage\targetver.h" />
-    <ClInclude Include="..\include\libstructstorage\version.h" />
+    <ClInclude Include="..\..\include\libstructstorage\libstructstorage.h" />
+    <ClInclude Include="..\..\include\libstructstorage\libstructstorage_global.h" />
+    <ClInclude Include="..\..\include\libstructstorage\stdafx.h" />
+    <ClInclude Include="..\..\include\libstructstorage\targetver.h" />
+    <ClInclude Include="..\..\include\libstructstorage\version.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

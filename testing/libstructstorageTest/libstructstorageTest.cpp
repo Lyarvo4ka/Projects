@@ -11,8 +11,19 @@
 
 BOOST_AUTO_TEST_CASE(getTimeFromFileTimeTest)
 {
+	SYSTEMTIME sys_time = { 2015, 03, 3, 25, 18, 50, 45, 0 };
 	FILETIME file_time;
+	if (::SystemTimeToFileTime(&sys_time, &file_time))
+	{
+		std::string time_actual = getTimeFromFileTime(file_time);
+		std::string time_expected = "18-50-45";
 
-	BOOST_CHECK_EQUAL( getTimeFromFileTime(file_time) , "");
+		BOOST_CHECK_EQUAL(time_actual, time_expected);
 
+	}
+
+	DWORD dwError = ::GetLastError();
+
+	int k = 1;
+	k = 1;
 }

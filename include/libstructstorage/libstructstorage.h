@@ -2,19 +2,11 @@
 #define LIBSTRUCTSTORAGE_H
 
 #include <Windows.h>
+#include <string>
+#include "libstructstorage_global.h"
 
-inline std::string getTimeFromFileTime( const FILETIME & file_time )
-{
-	SYSTEMTIME st = {0};
-	std::string time_nane;
-	if ( FileTimeToSystemTime( &file_time , &st ) )
-	{
-		char time_buffer[255];
-		GetTimeFormatA( LOCALE_USER_DEFAULT , 0 , &st , "HH-mm-ss" , time_buffer , 255);
-		time_nane = time_buffer;
-	}
-	return time_nane;
-}
+std::string LIBSTRUCTSTORAGE_API getTimeFromFileTime(const FILETIME & file_time);
+
 inline std::string getDateFromFileTime( const FILETIME & file_time )
 {
 	SYSTEMTIME st = {0};
