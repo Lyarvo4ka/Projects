@@ -17,13 +17,16 @@ BOOST_AUTO_TEST_CASE(getTimeFromFileTimeTest)
 	{
 		std::string time_actual = getTimeFromFileTime(file_time);
 		std::string time_expected = "18-50-45";
-
 		BOOST_CHECK_EQUAL(time_actual, time_expected);
 
+		time_actual = getDateFromFileTime(file_time);
+		time_expected = "2015-03-25";
+		BOOST_CHECK_EQUAL(time_actual, time_expected);
+
+		time_actual = getDateTimeFromFileTime(file_time);
+		time_expected = "2015-03-25-18-50-45";
+		BOOST_CHECK_EQUAL(time_actual, time_expected);
+
+
 	}
-
-	DWORD dwError = ::GetLastError();
-
-	int k = 1;
-	k = 1;
 }

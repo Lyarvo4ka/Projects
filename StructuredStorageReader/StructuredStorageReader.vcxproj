@@ -59,7 +59,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>IOLibrary.lib;libboost_filesystem-vc120-mt-gd-1_56.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IOLibrary.lib;libboost_filesystem-vc120-mt-gd-1_57.lib;libstructstorage.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
       <StackReserveSize>8000000 </StackReserveSize>
     </Link>

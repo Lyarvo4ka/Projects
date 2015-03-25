@@ -94,11 +94,6 @@
     </ClCompile>
     <ClCompile Include="unittest1.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\libpdf\libpdf.vcxproj">
-      <Project>{5e05a079-7111-4ccc-89e3-cd5cc0788963}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
