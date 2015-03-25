@@ -739,6 +739,32 @@ void IO::JoinWithService(const std::string & data_file, const std::string & serv
 	CloseHandle(hTarget);
 }
 
+bool IO::isFileHeader00(const std::string & file_name)
+{
+	HANDLE hFile = INVALID_HANDLE_VALUE;
+
+	if ( !IO::open_read(hFile , file_name))
+		return false;
+
+	BYTE sector[SECTOR_SIZE];
+
+	LONGLONG file_size = IO::getFileSize(hFile);
+
+	if ( file_size < SECTOR_SIZE)
+		return false;
+
+	DWORD bytesRead = 0;
+	bool bResult = IO::read_block(hFile, sector, SECTOR_SIZE, bytesRead);
+	if ( !bResult )
+		return false;
+	if ( bytesRead == 0)
+		return false;
+
+
+	CloseHandle(hFile);
+	return IO::cmpSectorWithByte(sector, 0x00);
+}
+
 
 void to_big_endian( DWORD & val )
 {

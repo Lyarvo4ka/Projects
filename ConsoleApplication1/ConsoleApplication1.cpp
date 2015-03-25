@@ -5,9 +5,11 @@
 
 //#include "IOLibrary\DVR_raw.h"
 //#include "IOLibrary\MXF_raw.h"
-#include "IOLibrary\MovRaw.h"
+//#include "IOLibrary\MovRaw.h"
 //#include "IOLibrary\djvu_raw.h"
 //#include "IOLibrary\RemoveInserts.h"
+#include "IOLibrary/FileFinder.h"
+
 #include <conio.h>
 
 
@@ -66,10 +68,39 @@ void show_error_invalid_params()
 //#include "IOLibrary/SignatureTest.h"
 //#include "IOLibrary/MTS_raw.h"
 
+#include "boost/filesystem.hpp"
+
 int main(int argc, char *argv[])
 {
-	CanonMovRaw mov_raw("d:\\PaboTa\\37277\\image.bin" , "D:\\PaboTa\\37277\\mov\\");
-	mov_raw.execute();
+	FileFinder finder;
+	stringlist cr2_ext;
+	cr2_ext.push_back(".*");
+	finder.FindFiles("F:\\37115\\",cr2_ext);
+	stringlist files = finder.getFileNames();
+	auto iter = files.begin();
+
+
+	while ( iter != files.end())
+	{
+		auto test_file = *iter;
+		if (IO::isFileHeader00(test_file))
+		{
+			try
+			{
+				boost::filesystem::rename(test_file, test_file + ".bad_file");
+			}
+			catch (const boost::filesystem::filesystem_error& e)
+			{
+				printf("File name (%s)Error (%s)\r\n", test_file.c_str(),e.code().message().c_str());
+			}
+
+		}
+
+		++iter;
+	}
+
+	//CanonMovRaw mov_raw("d:\\PaboTa\\37277\\image.bin" , "D:\\PaboTa\\37277\\mov\\");
+	//mov_raw.execute();
 
 	//IO::JoinWithService("d:\\Public\\37132\\raw.image", "d:\\Public\\37132\\sa.image" , "d:\\Public\\37132\\dump.dump");
 	//RemoveBytesByBitMap("d:\\Public\\37132\\0001.dmp" , "d:\\Public\\37132\\target.dump");

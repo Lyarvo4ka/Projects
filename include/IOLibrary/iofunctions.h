@@ -60,11 +60,12 @@ namespace IO
 
 	void IOLIBRARY_EXPORT replaceBads( const std::string & withBad , const std::string & withoutBad , const std::string & target_file );
 	bool IOLIBRARY_EXPORT cmpSectorWithByte( const BYTE * data , BYTE byte_value);
-	bool IOLIBRARY_EXPORT isSectorOnly00( const BYTE * data );
 	bool IOLIBRARY_EXPORT isDataSector( const BYTE * data );
 	void IOLIBRARY_EXPORT SaveOnlyData( const std::string & source_file , const std::string & target_file );
 	void IOLIBRARY_EXPORT XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);
 	void IOLIBRARY_EXPORT JoinWithService( const std::string & data_file , const std::string & service_file, const std::string target_file);
+
+	bool IOLIBRARY_EXPORT isFileHeader00( const std::string & file_name);
 
 
 };
