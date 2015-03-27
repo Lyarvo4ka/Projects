@@ -5,9 +5,53 @@
 #include <string>
 #include "libstructstorage_global.h"
 
+
+class FileDateTime
+{
+private:
+	FILETIME filetime_;
+	SYSTEMTIME systime_;
+	bool bConverted_;
+
+public:
+	FileDateTime(const FILETIME & file_time )
+		: filetime_( file_time)
+		, systime_({0})
+	{
+		this->convert();
+
+	}
+	void setFileTime(const FILETIME & file_time)
+	{
+		filetime_ = file_time;
+		this->convert();
+	}
+	bool isValid() const
+	{
+		return bConverted_;
+	}
+	SYSTEMTIME getSystime() const
+	{
+		return systime_;
+	}
+	FILETIME getFiletime() const
+	{
+		return filetime_;
+	}
+private:
+	void convert()
+	{
+		bConverted_ = ::FileTimeToSystemTime(&filetime_, &systime_);
+	}
+
+
+};
+
+
 std::string LIBSTRUCTSTORAGE_API getTimeFromFileTime(const FILETIME & file_time);
 std::string LIBSTRUCTSTORAGE_API getDateFromFileTime(const FILETIME & file_time);
 std::string LIBSTRUCTSTORAGE_API getDateTimeFromFileTime(const FILETIME & file_time);
+SYSTEMTIME LIBSTRUCTSTORAGE_API toSysTime(const FILETIME & file_time);
 
 
 #include "Objbase.h"
@@ -85,9 +129,11 @@ inline std::string SummaryInformationName(PROPID prop_id)
 }
 
 
+
 class LIBSTRUCTSTORAGE_API SummaryInformation
 {
 public:
+
 	SummaryInformation();
 	void setTitile(const std::string & title);
 	std::string title() const;
@@ -134,13 +180,12 @@ class LIBSTRUCTSTORAGE_API SSReader
 {
 private:
 	IPropertySetStorage * toPropertySetStorage(IStorage * pStorage);
+
+	// Open the document as an OLE compound document.
 	IStorage * open_storage(const std::wstring & file);
 
 public:
 	SSReader();
-
-	// Open the document as an OLE compound document.
-
 
 	// read properties of a property storage
 	bool read_properties(const std::string & file_path, SummaryInformation & summary_information);

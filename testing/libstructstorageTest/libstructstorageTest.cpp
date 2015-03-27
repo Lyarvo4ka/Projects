@@ -13,20 +13,21 @@ BOOST_AUTO_TEST_CASE(getTimeFromFileTimeTest)
 {
 	SYSTEMTIME sys_time = { 2015, 03, 3, 25, 18, 50, 45, 0 };
 	FILETIME file_time;
-	if (::SystemTimeToFileTime(&sys_time, &file_time))
-	{
-		std::string time_actual = getTimeFromFileTime(file_time);
-		std::string time_expected = "18-50-45";
-		BOOST_CHECK_EQUAL(time_actual, time_expected);
+	file_time.dwHighDateTime = 30435116;
+	file_time.dwLowDateTime = 2580033664;
 
-		time_actual = getDateFromFileTime(file_time);
-		time_expected = "2015-03-25";
-		BOOST_CHECK_EQUAL(time_actual, time_expected);
+	std::string time_actual = getTimeFromFileTime(file_time);
+	std::string time_expected = "18-50-45";
+	BOOST_CHECK_EQUAL(time_actual, time_expected);
 
-		time_actual = getDateTimeFromFileTime(file_time);
-		time_expected = "2015-03-25-18-50-45";
-		BOOST_CHECK_EQUAL(time_actual, time_expected);
+	time_actual = getDateFromFileTime(file_time);
+	time_expected = "2015-03-25";
+	BOOST_CHECK_EQUAL(time_actual, time_expected);
+
+	time_actual = getDateTimeFromFileTime(file_time);
+	time_expected = "2015-03-25-18-50-45";
+	BOOST_CHECK_EQUAL(time_actual, time_expected);
 
 
-	}
+	//}
 }

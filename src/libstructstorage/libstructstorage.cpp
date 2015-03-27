@@ -22,20 +22,23 @@ std::string getTimeFromFileTime(const FILETIME & file_time)
 std::string getDateFromFileTime(const FILETIME & file_time)
 {
 	SYSTEMTIME st = { 0 };
-	std::string date_nane;
+	std::string date_name;
 	if (FileTimeToSystemTime(&file_time, &st))
 	{
 		char date_buffer[255];
 		GetDateFormatA(LOCALE_USER_DEFAULT, 0, &st, "yyyy-MM-dd", date_buffer, 255);
-		date_nane = date_buffer;
+		date_name = date_buffer;
 	}
-	return date_nane;
+	return date_name;
 }
 
 std::string LIBSTRUCTSTORAGE_API getDateTimeFromFileTime(const FILETIME & file_time)
 {
 	return getDateFromFileTime(file_time) + "-" + getTimeFromFileTime(file_time);
 }
+
+SYSTEMTIME LIBSTRUCTSTORAGE_API toSysTime(const FILETIME & file_time);
+
 
 SummaryInformation::SummaryInformation() : Title_("")
 , Subject_("")
