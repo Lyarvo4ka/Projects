@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'maintaskwidget.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'maintaskwidget.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,12 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SectorModifyDialog_t {
     QByteArrayData data[5];
-    char stringdata[68];
+    char stringdata[67];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_SectorModifyDialog_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_SectorModifyDialog_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_SectorModifyDialog_t qt_meta_stringdata_SectorModifyDialog = {
     {
@@ -36,7 +36,7 @@ QT_MOC_LITERAL(3, 36, 14),
 QT_MOC_LITERAL(4, 51, 15)
     },
     "SectorModifyDialog\0ModifySignature\0\0"
-    "WriteSignature\0VerifySignature\0"
+    "WriteSignature\0VerifySignature"
 };
 #undef QT_MOC_LITERAL
 
@@ -54,9 +54,9 @@ static const uint qt_meta_data_SectorModifyDialog[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   29,    2, 0x0a,
-       3,    0,   30,    2, 0x0a,
-       4,    0,   31,    2, 0x0a,
+       1,    0,   29,    2, 0x0a /* Public */,
+       3,    0,   30,    2, 0x0a /* Public */,
+       4,    0,   31,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -117,12 +117,12 @@ int SectorModifyDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_MainTaskWidget_t {
     QByteArrayData data[29];
-    char stringdata[417];
+    char stringdata[416];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_MainTaskWidget_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_MainTaskWidget_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_MainTaskWidget_t qt_meta_stringdata_MainTaskWidget = {
     {
@@ -166,7 +166,7 @@ QT_MOC_LITERAL(28, 399, 16)
     "Double_Clicked\0ElementSelected\0"
     "QItemSelection\0selected\0deselected\0"
     "setButtonEnable\0enable\0changeEnable\0"
-    "model_index\0UpdateTreeView\0LoadTask_ckicked\0"
+    "model_index\0UpdateTreeView\0LoadTask_ckicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -184,27 +184,27 @@ static const uint qt_meta_data_MainTaskWidget[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,  109,    2, 0x06,
-       4,    2,  114,    2, 0x06,
-       5,    1,  119,    2, 0x06,
-       6,    0,  122,    2, 0x06,
-       7,    1,  123,    2, 0x06,
+       1,    2,  109,    2, 0x06 /* Public */,
+       4,    2,  114,    2, 0x06 /* Public */,
+       5,    1,  119,    2, 0x06 /* Public */,
+       6,    0,  122,    2, 0x06 /* Public */,
+       7,    1,  123,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       8,    1,  126,    2, 0x08,
-      11,    1,  129,    2, 0x08,
-      12,    0,  132,    2, 0x08,
-      13,    0,  133,    2, 0x08,
-      14,    0,  134,    2, 0x08,
-      15,    0,  135,    2, 0x08,
-      16,    1,  136,    2, 0x08,
-      18,    1,  139,    2, 0x08,
-      19,    2,  142,    2, 0x08,
-      23,    1,  147,    2, 0x08,
-      23,    0,  150,    2, 0x28,
-      25,    1,  151,    2, 0x08,
-      27,    0,  154,    2, 0x08,
-      28,    0,  155,    2, 0x08,
+       8,    1,  126,    2, 0x08 /* Private */,
+      11,    1,  129,    2, 0x08 /* Private */,
+      12,    0,  132,    2, 0x08 /* Private */,
+      13,    0,  133,    2, 0x08 /* Private */,
+      14,    0,  134,    2, 0x08 /* Private */,
+      15,    0,  135,    2, 0x08 /* Private */,
+      16,    1,  136,    2, 0x08 /* Private */,
+      18,    1,  139,    2, 0x08 /* Private */,
+      19,    2,  142,    2, 0x08 /* Private */,
+      23,    1,  147,    2, 0x08 /* Private */,
+      23,    0,  150,    2, 0x28 /* Private | MethodCloned */,
+      25,    1,  151,    2, 0x08 /* Private */,
+      27,    0,  154,    2, 0x08 /* Private */,
+      28,    0,  155,    2, 0x08 /* Private */,
 
  // signals: parameters
     QMetaType::Void, 0x80000000 | 3, QMetaType::Int,    2,    2,

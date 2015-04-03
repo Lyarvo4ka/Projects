@@ -135,40 +135,40 @@ std::string SummaryInformation::RevisionNumber() const
 
 void SummaryInformation::setTotalEditingTime(const FILETIME & file_time)
 {
-	TotalEditTime_ = file_time;
+	TotalEditTime_.setFileTime(file_time);
 }
 
-FILETIME SummaryInformation::totalEditTime() const
+FileDateTime SummaryInformation::totalEditTime() const
 {
 	return TotalEditTime_;
 }
 
 void SummaryInformation::setLastPrintedTime(const FILETIME & file_time)
 {
-	LastPrinted_ = file_time;
+	LastPrinted_.setFileTime(file_time);
 }
 
-FILETIME SummaryInformation::lastPrintedTime() const
+FileDateTime SummaryInformation::lastPrintedTime() const
 {
 	return LastPrinted_;
 }
 
 void SummaryInformation::setCreateTime(const FILETIME & file_time)
 {
-	CreateTime_ = file_time;
+	CreateTime_.setFileTime(file_time);
 }
 
-FILETIME SummaryInformation::createTime() const
+FileDateTime SummaryInformation::createTime() const
 {
 	return CreateTime_;
 }
 
 void SummaryInformation::setLastSavedTime(const FILETIME & file_time)
 {
-	LastSavedTime_ = file_time;
+	LastSavedTime_.setFileTime( file_time );
 }
 
-FILETIME SummaryInformation::lastSavedTime() const
+FileDateTime SummaryInformation::lastSavedTime() const
 {
 	return LastSavedTime_;
 }

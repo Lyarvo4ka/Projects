@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>721</width>
-    <height>568</height>
+    <width>634</width>
+    <height>589</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,15 +19,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>721</width>
+     <width>634</width>
      <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuTask">
     <property name="title">
-     <string>Task</string>
+     <string>Задача</string>
     </property>
-    <addaction name="actionGet_date_from_Office_2003"/>
+    <addaction name="actionOffice_2003"/>
    </widget>
    <addaction name="menuTask"/>
   </widget>
@@ -38,11 +38,16 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionOffice_2003"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionGet_date_from_Office_2003">
+  <action name="actionOffice_2003">
+   <property name="icon">
+    <iconset resource="filechecker.qrc">
+     <normaloff>:/FileChecker/icons/office_icon.png</normaloff>:/FileChecker/icons/office_icon.png</iconset>
+   </property>
    <property name="text">
-    <string>Get date from Office 2003</string>
+    <string>Office 2003</string>
    </property>
   </action>
  </widget>

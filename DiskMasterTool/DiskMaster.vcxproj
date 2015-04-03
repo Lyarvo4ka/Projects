@@ -2444,7 +2444,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" QtVersion_x0020_Win32="4.8.4" Qt5Version_x0020_x64="msvc2012_64" Qt5Version_x0020_Win32="msvc_2012" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_Win32="msvc2013" Qt5Version_x0020_x64="msvc2012_64" MocOptions="" QtVersion_x0020_Win32="4.8.4" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

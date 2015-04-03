@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'copypropertiesui.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'copypropertiesui.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,12 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_CopyPropertiesUi_t {
     QByteArrayData data[8];
-    char stringdata[107];
+    char stringdata[106];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_CopyPropertiesUi_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyPropertiesUi_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyPropertiesUi_t qt_meta_stringdata_CopyPropertiesUi = {
     {
@@ -40,7 +40,7 @@ QT_MOC_LITERAL(7, 94, 11)
     },
     "CopyPropertiesUi\0JumpSizeChanged\0\0"
     "size_value\0DirectionChanged\0new_direction\0"
-    "ReadUnReadChanged\0check_value\0"
+    "ReadUnReadChanged\0check_value"
 };
 #undef QT_MOC_LITERAL
 
@@ -58,9 +58,9 @@ static const uint qt_meta_data_CopyPropertiesUi[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   29,    2, 0x09,
-       4,    1,   32,    2, 0x09,
-       6,    1,   35,    2, 0x09,
+       1,    1,   29,    2, 0x09 /* Protected */,
+       4,    1,   32,    2, 0x09 /* Protected */,
+       6,    1,   35,    2, 0x09 /* Protected */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int,    3,

@@ -6,6 +6,30 @@
 #include "libstructstorage_global.h"
 
 
+inline std::string toString(WORD nYear, const int size)
+{
+	std::string sDate;
+	char *chDate = new char[size + 1];
+
+	if (sprintf_s(chDate, size + 1, "%.*i", size, nYear) == size)
+		sDate = chDate;
+
+	delete[] chDate;
+	return sDate;
+}
+
+
+inline std::string toYearString(WORD nYear)
+{
+	return toString(nYear, 4);
+}
+inline std::string toStringDate(WORD nDateTime)
+{
+	return toString(nDateTime, 2);
+}
+
+
+
 class FileDateTime
 {
 private:
@@ -14,9 +38,15 @@ private:
 	bool bConverted_;
 
 public:
-	FileDateTime(const FILETIME & file_time )
-		: filetime_( file_time)
-		, systime_({0})
+	FileDateTime()
+		: filetime_({ 0 })
+		, systime_({ 0 })
+	{
+		this->convert();
+	}
+	FileDateTime(const FILETIME & file_time)
+		: filetime_(file_time)
+		, systime_({ 0 })
 	{
 		this->convert();
 
@@ -37,6 +67,14 @@ public:
 	FILETIME getFiletime() const
 	{
 		return filetime_;
+	}
+	std::string getYear() const
+	{
+		return toYearString(systime_.wYear);
+	}
+	std:: string getMonth() const
+	{
+		return toStringDate( systime_.wMonth);
 	}
 private:
 	void convert()
@@ -152,13 +190,13 @@ public:
 	void setRevisionNumber(const std::string & RevisionNumber);
 	std::string RevisionNumber() const;
 	void setTotalEditingTime(const FILETIME & file_time);
-	FILETIME totalEditTime() const;
+	FileDateTime totalEditTime() const;
 	void setLastPrintedTime(const FILETIME & file_time);
-	FILETIME lastPrintedTime() const;
+	FileDateTime lastPrintedTime() const;
 	void setCreateTime(const FILETIME & file_time);
-	FILETIME createTime() const;
+	FileDateTime createTime() const;
 	void setLastSavedTime(const FILETIME & file_time);
-	FILETIME lastSavedTime() const;
+	FileDateTime lastSavedTime() const;
 private:
 	std::string Title_;
 	std::string Subject_;
@@ -168,10 +206,10 @@ private:
 	std::string Template_;
 	std::string LastSavedBy_;
 	std::string RevisionNumber_;
-	FILETIME TotalEditTime_;
-	FILETIME LastPrinted_;
-	FILETIME CreateTime_;
-	FILETIME LastSavedTime_;
+	FileDateTime TotalEditTime_;
+	FileDateTime LastPrinted_;
+	FileDateTime CreateTime_;
+	FileDateTime LastSavedTime_;
 
 };
 

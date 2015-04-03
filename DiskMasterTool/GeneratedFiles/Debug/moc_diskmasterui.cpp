@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'diskmasterui.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'diskmasterui.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,12 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DiskMasterUI_t {
     QByteArrayData data[6];
-    char stringdata[74];
+    char stringdata[73];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_DiskMasterUI_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_DiskMasterUI_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_DiskMasterUI_t qt_meta_stringdata_DiskMasterUI = {
     {
@@ -38,7 +38,7 @@ QT_MOC_LITERAL(5, 65, 7)
     },
     "DiskMasterUI\0ItemIsSelected\0\0"
     "const DMItemIdex*\0EnableTaskActions\0"
-    "bEnable\0"
+    "bEnable"
 };
 #undef QT_MOC_LITERAL
 
@@ -56,8 +56,8 @@ static const uint qt_meta_data_DiskMasterUI[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   24,    2, 0x09,
-       4,    1,   27,    2, 0x09,
+       1,    1,   24,    2, 0x09 /* Protected */,
+       4,    1,   27,    2, 0x09 /* Protected */,
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 3,    2,

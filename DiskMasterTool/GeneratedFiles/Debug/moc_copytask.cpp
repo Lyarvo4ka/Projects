@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'copytask.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'copytask.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,18 +20,18 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_QuickCopyTask_t {
     QByteArrayData data[1];
-    char stringdata[15];
+    char stringdata[14];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_QuickCopyTask_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_QuickCopyTask_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_QuickCopyTask_t qt_meta_stringdata_QuickCopyTask = {
     {
 QT_MOC_LITERAL(0, 0, 13)
     },
-    "QuickCopyTask\0"
+    "QuickCopyTask"
 };
 #undef QT_MOC_LITERAL
 
@@ -89,18 +89,18 @@ int QuickCopyTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_SmartCopyTask_t {
     QByteArrayData data[1];
-    char stringdata[15];
+    char stringdata[14];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_SmartCopyTask_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_SmartCopyTask_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_SmartCopyTask_t qt_meta_stringdata_SmartCopyTask = {
     {
 QT_MOC_LITERAL(0, 0, 13)
     },
-    "SmartCopyTask\0"
+    "SmartCopyTask"
 };
 #undef QT_MOC_LITERAL
 
@@ -156,12 +156,12 @@ int SmartCopyTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_CopyTabWidget_t {
     QByteArrayData data[22];
-    char stringdata[289];
+    char stringdata[288];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_CopyTabWidget_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyTabWidget_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyTabWidget_t qt_meta_stringdata_CopyTabWidget = {
     {
@@ -195,7 +195,7 @@ QT_MOC_LITERAL(21, 276, 11)
     "cancelDetection\0result\0DeviceNotDetected\0"
     "current_lba\0task_finished\0thread_finished\0"
     "task_breaked\0detect_finished\0task_error\0"
-    "BadSector\0sector\0onTimeTimer\0"
+    "BadSector\0sector\0onTimeTimer"
 };
 #undef QT_MOC_LITERAL
 
@@ -213,21 +213,21 @@ static const uint qt_meta_data_CopyTabWidget[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    1,   89,    2, 0x0a,
-       3,    1,   92,    2, 0x0a,
-       4,    0,   95,    2, 0x0a,
-       5,    0,   96,    2, 0x0a,
-       6,    2,   97,    2, 0x0a,
-      10,    1,  102,    2, 0x0a,
-      12,    2,  105,    2, 0x0a,
-      13,    1,  110,    2, 0x0a,
-      14,    1,  113,    2, 0x0a,
-      15,    0,  116,    2, 0x0a,
-      16,    1,  117,    2, 0x0a,
-      17,    0,  120,    2, 0x0a,
-      18,    1,  121,    2, 0x0a,
-      19,    1,  124,    2, 0x0a,
-      21,    0,  127,    2, 0x0a,
+       1,    1,   89,    2, 0x0a /* Public */,
+       3,    1,   92,    2, 0x0a /* Public */,
+       4,    0,   95,    2, 0x0a /* Public */,
+       5,    0,   96,    2, 0x0a /* Public */,
+       6,    2,   97,    2, 0x0a /* Public */,
+      10,    1,  102,    2, 0x0a /* Public */,
+      12,    2,  105,    2, 0x0a /* Public */,
+      13,    1,  110,    2, 0x0a /* Public */,
+      14,    1,  113,    2, 0x0a /* Public */,
+      15,    0,  116,    2, 0x0a /* Public */,
+      16,    1,  117,    2, 0x0a /* Public */,
+      17,    0,  120,    2, 0x0a /* Public */,
+      18,    1,  121,    2, 0x0a /* Public */,
+      19,    1,  124,    2, 0x0a /* Public */,
+      21,    0,  127,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void, QMetaType::Int,    2,

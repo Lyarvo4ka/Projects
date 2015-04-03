@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'tabwidgets.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.2.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'tabwidgets.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.2.0. It"
+#error "This file was generated using the moc from 5.3.2. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,12 +20,12 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_BaseTabWidget_t {
     QByteArrayData data[19];
-    char stringdata[237];
+    char stringdata[236];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    offsetof(qt_meta_stringdata_BaseTabWidget_t, stringdata) + ofs \
-        - idx * sizeof(QByteArrayData) \
+    qptrdiff(offsetof(qt_meta_stringdata_BaseTabWidget_t, stringdata) + ofs \
+        - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_BaseTabWidget_t qt_meta_stringdata_BaseTabWidget = {
     {
@@ -55,7 +55,7 @@ QT_MOC_LITERAL(18, 223, 12)
     "cancel_clicked\0exit_clicked\0DeviceDetected\0"
     "const DM::PORT*\0port\0DeviceDisconencted\0"
     "FinishDetected\0DeviceNotDetected\0"
-    "error_number\0"
+    "error_number"
 };
 #undef QT_MOC_LITERAL
 
@@ -73,21 +73,21 @@ static const uint qt_meta_data_BaseTabWidget[] = {
        5,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    0,   79,    2, 0x06,
-       3,    0,   80,    2, 0x06,
-       4,    1,   81,    2, 0x06,
-       6,    3,   84,    2, 0x06,
-       8,    2,   91,    2, 0x06,
+       1,    0,   79,    2, 0x06 /* Public */,
+       3,    0,   80,    2, 0x06 /* Public */,
+       4,    1,   81,    2, 0x06 /* Public */,
+       6,    3,   84,    2, 0x06 /* Public */,
+       8,    2,   91,    2, 0x06 /* Public */,
 
  // slots: name, argc, parameters, tag, flags
-       9,    0,   96,    2, 0x09,
-      10,    0,   97,    2, 0x09,
-      11,    0,   98,    2, 0x09,
-      12,    1,   99,    2, 0x09,
-      15,    1,  102,    2, 0x09,
-      16,    0,  105,    2, 0x09,
-      17,    1,  106,    2, 0x09,
-      17,    2,  109,    2, 0x09,
+       9,    0,   96,    2, 0x09 /* Protected */,
+      10,    0,   97,    2, 0x09 /* Protected */,
+      11,    0,   98,    2, 0x09 /* Protected */,
+      12,    1,   99,    2, 0x09 /* Protected */,
+      15,    1,  102,    2, 0x09 /* Protected */,
+      16,    0,  105,    2, 0x09 /* Protected */,
+      17,    1,  106,    2, 0x09 /* Protected */,
+      17,    2,  109,    2, 0x09 /* Protected */,
 
  // signals: parameters
     QMetaType::Void,
