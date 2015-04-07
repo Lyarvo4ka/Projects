@@ -13,9 +13,11 @@ public:
 	~FolderUI();
 	void setLableName(const QString & newName);
 	void setFolderPath(const QString & folderPath);
+protected slots:
+	void onFolderDialogClicked();
 
 private:
-	Ui::FolderUI ui;
+	Ui::FolderUI * ui_;
 };
 
 #endif // FOLDERUI_H
