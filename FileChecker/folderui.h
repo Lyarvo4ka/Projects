@@ -11,6 +11,8 @@ class FolderUI : public QWidget
 public:
 	FolderUI(QWidget *parent = 0);
 	~FolderUI();
+	void setLableName(const QString & newName);
+	void setFolderPath(const QString & folderPath);
 
 private:
 	Ui::FolderUI ui;

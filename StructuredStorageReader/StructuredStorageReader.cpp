@@ -16,9 +16,9 @@
    void main(int argc, char **argv) {
 	   setlocale(LC_ALL, "Ukranian");
 
-	   std::string source_dir = "F:\\raw\\";
-	   std::string target_dir = "F:\\doc\\";
-	   std::string bad_dir =	"F:\\bad\\";
+	   std::string source_dir = "G:\\raw\\";
+	   std::string target_dir = "G:\\NoName\\doc\\";
+	   std::string bad_dir =	"G:\\NoName\\bad\\";
 	   stringlist ext_list;
 	   ext_list.push_back(".doc");
 	   ext_list.push_back(".xls");
@@ -47,7 +47,7 @@
 
 		   if ( ssreader.read_properties ( source_name , sammary_info ) )
 		   {
-			   std::string dataName = getDateTimeFromFileTime( sammary_info.lastSavedTime() );
+			   std::string dataName = getDateTimeFromFileTime( sammary_info.lastSavedTime().getFiletime() );
 
 			   std::string target_name ( IO::make_file_path( target_dir , dataName ) + IO::numberToString( counter++ ) + ext);
 			   printf("target name: %s\r\n", target_name.c_str() );
