@@ -3,7 +3,6 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_filechecker.h"
-#include "folderui.h"
 
 class FileChecker : public QMainWindow
 {
@@ -15,7 +14,6 @@ public:
 
 private:
 	Ui::FileCheckerClass ui;
-	FolderUI *folderUI_;
 };
 
 #endif // FILECHECKER_H
