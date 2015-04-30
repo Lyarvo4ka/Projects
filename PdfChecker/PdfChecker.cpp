@@ -79,12 +79,12 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	if (hModule != NULL)
 	{
-		if ( argc != 2 )
-		{
-			printf("Wrong arguments count");
-			return -3;
-		}
-		std::string folder( "D:\\PaboTa\\37372\\pdf\\" );
+		//if ( argc != 2 )
+		//{
+		//	printf("Wrong arguments count");
+		//	return -3;
+		//}
+		std::string folder( "d:\\PaboTa\\37473\\NoName\\pdf\\" );
 
 		//std::string folder("D:\\ןנטלונû פאיכמג\\pdf\\");
 
@@ -119,7 +119,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		FileFinder finder;
 		stringlist filter;
 		filter.push_back(".pdf");
-		std::string target_folder = "";
+		std::string target_folder = folder;
 		finder.FindFiles(folder, filter);
 		auto files ( finder.getFileNames() );
 	
@@ -130,42 +130,49 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			PdfDocument pdfDoc;
 			if ( pdfDoc.CreateDocument( e ) )
 			{
-				
-				if ( pdfDoc.Open( *iter ) )
-				{
-				//	auto docInfo = pdfDoc.getInfo();
-				//	DateString data_string;
-				//	CString targe_name = IO::numberToString(counter).c_str();
+					if (pdfDoc.Open(*iter))
+					{
+						auto docInfo = pdfDoc.getInfo();
+						DateString data_string;
+						CString targe_name = IO::numberToString(counter).c_str();
 
-				//	CString dataToParse = ( !docInfo.ModDate.IsEmpty() ) ? docInfo.ModDate : docInfo.CreationDate;
-				//	if ( ! dataToParse.IsEmpty() )
-				//	if ( ParseDateString( dataToParse , data_string ) )
-				//	{
-				//		targe_name = data_string.YEAR + "-" +
-				//					 data_string.MONTH + "-" +
-				//					 data_string.DAY + "-" +
-				//					 data_string.HOUR + "-" +
-				//					 data_string.MINUTES + "-" +
-				//					 data_string.SECONDS + "-" +
-				//					 IO::numberToString(counter).c_str();
+						CString dataToParse = (!docInfo.ModDate.IsEmpty()) ? docInfo.ModDate : docInfo.CreationDate;
+						if (!dataToParse.IsEmpty())
+							if (ParseDateString(dataToParse, data_string))
+							{
+								targe_name = data_string.YEAR + "-" +
+									data_string.MONTH + "-" +
+									data_string.DAY + "-" +
+									data_string.HOUR + "-" +
+									data_string.MINUTES + "-" +
+									data_string.SECONDS + "-" +
+									IO::numberToString(counter).c_str();
+							}
+						target_file = target_folder + targe_name.GetString() + ".pdf";
 
-				//	}
+						pdfDoc.DestroyDocument();
+						//target_file += ".good";
+						try
+						{
+							boost::filesystem::rename(*iter, target_file);
+						}
+						catch (const boost::filesystem::filesystem_error& e)
+						{
+							std::cout << "Error: " << e.what() << std::endl;
+						}
 
-					//target_file = target_folder + targe_name.GetString() + ".pdf"; 
-					target_file += ".good";
-					boost::filesystem::copy_file( *iter ,  target_file );
-					printf("File %s was opened OK\n", iter->c_str() );
-					++counter;
-				}
-				
-				else
-				{
-					printf("File %s wasn't opened\n", iter->c_str() );
-					target_file += ".bad_file"; 
-					boost::filesystem::copy_file(  *iter , target_file );
+						printf("File %s was opened OK\n", iter->c_str());
+						++counter;
+					}
+					else
+					{
+						printf("File %s wasn't opened\n", iter->c_str());
+						target_file += ".bad_file";
+						boost::filesystem::rename(*iter, target_file);
 
-				}
-				pdfDoc.Close();
+					}
+
+
 			}
 
 		}
@@ -176,7 +183,6 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	}
 	else
 	{
-		// TODO: change error code to suit your needs
 		_tprintf(_T("Fatal Error: GetModuleHandle failed\n"));
 		nRetCode = 1;
 	}

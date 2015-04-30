@@ -126,7 +126,20 @@ BOOST_AUTO_TEST_CASE(BytesToCopyTest)
 	current = max_size - difference;
 	BOOST_CHECK_EQUAL(IO::BytesToCopy(current, max_size, block_size), difference);
 }
+BOOST_AUTO_TEST_CASE(FileOffsetNameTest)
+{
+	std::string folder = "c:\\folder\\";
+	std::string ext = ".dat";
+	LONGLONG val = 512;
+	std::string actual = IO::file_offset_name(folder, val, ext);
+	std::string expected = "c:\\folder\\200.dat";
+	BOOST_CHECK_EQUAL(actual, expected);
 
+	val = 5368709120;
+	actual = IO::file_offset_name(folder, val, ext);
+	expected = "c:\\folder\\140000000.dat";
+	BOOST_CHECK_EQUAL(actual, expected);
+}
 //
 //BOOST_AUTO_TEST_CASE( TestisDataSector )
 //{

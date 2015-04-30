@@ -76,10 +76,10 @@ void PdfDocument::DestroyDocument()
 	this->Close();
 	if ( m_pAcroPdDoc )
 	{
+		m_pAcroPdDoc->ReleaseDispatch();
 		delete m_pAcroPdDoc;
 		m_pAcroPdDoc = nullptr;
 	}
-
 }
 
 BOOL PdfDocument::Open( const std::string & pdf_file )

@@ -8,7 +8,8 @@
 //#include "IOLibrary\MovRaw.h"
 //#include "IOLibrary\djvu_raw.h"
 //#include "IOLibrary\RemoveInserts.h"
-#include "IOLibrary/FileFinder.h"
+//#include "IOLibrary/FileFinder.h"
+#include "IOLibrary/HexTexRaw.h"
 
 #include <conio.h>
 
@@ -69,35 +70,79 @@ void show_error_invalid_params()
 //#include "IOLibrary/MTS_raw.h"
 
 #include "boost/filesystem.hpp"
+#include "IOLibrary/dbf.h"
 
 int main(int argc, char *argv[])
 {
-	FileFinder finder;
-	stringlist cr2_ext;
-	cr2_ext.push_back(".*");
-	finder.FindFiles("F:\\37115\\",cr2_ext);
-	stringlist files = finder.getFileNames();
-	auto iter = files.begin();
-
-
-	while ( iter != files.end())
+	if (argc == 2)
 	{
-		auto test_file = *iter;
-		if (IO::isFileHeader00(test_file))
-		{
-			try
-			{
-				boost::filesystem::rename(test_file, test_file + ".bad_file");
-			}
-			catch (const boost::filesystem::filesystem_error& e)
-			{
-				printf("File name (%s)Error (%s)\r\n", test_file.c_str(),e.code().message().c_str());
-			}
+		if (argv[1] == "?")
+			show_help();
 
+		return 0;
+	}
+	else
+		if (argc == 3)
+		{
+			std::string source_file(argv[1]);
+			std::string target_folder(argv[2]);
+
+			HexTextRaw hax_raw(source_file, target_folder);
+			hax_raw.execute();
+		}
+		else
+		{
+			show_error_invalid_params();
+			return -1;
 		}
 
-		++iter;
-	}
+
+
+	//FileFinder finder;
+	//stringlist dbf_ext;
+	//dbf_ext.push_back(".dbf");
+	//finder.FindFiles("d:\\PaboTa\\37294\\2012_new\\", dbf_ext);
+	//stringlist files = finder.getFileNames();
+	//auto iter = files.begin();
+
+
+	//while (iter != files.end())
+	//{
+	//	auto dbf_file = *iter;
+	//	HANDLE hDBF = INVALID_HANDLE_VALUE;
+	//	if ( !IO::open_write(hDBF, dbf_file) )
+	//		break;
+
+	//	DWORD file_size = 0;
+
+	//	DWORD bytesRead = 0;
+	//	dbf_header dbf_data = {0};
+	//	if (!IO::read_block(hDBF, (BYTE*)&dbf_data, dbf_header_size, bytesRead))
+	//		break;
+	//	if ( bytesRead == 0 )
+	//		break;
+
+	//	if (dbf_data.numRecords > 0)
+	//	{
+	//		file_size = dbf_data.numRecords*dbf_data.record_size;
+	//		file_size += dbf_data.header_size;
+
+	//		::SetFilePointer(hDBF, file_size, NULL, FILE_BEGIN);
+	//		::SetEndOfFile(hDBF);
+
+	//		BYTE end_line = 0x1A;
+	//		DWORD bytesWritten = 0;
+	//		if (!IO::write_block(hDBF, &end_line, 1, bytesWritten))
+	//			break;
+	//		if (bytesWritten == 0)
+	//			break;
+	//	}
+
+	//	::CloseHandle(hDBF);
+
+	//	++iter;
+
+	//}
 
 	//CanonMovRaw mov_raw("d:\\PaboTa\\37277\\image.bin" , "D:\\PaboTa\\37277\\mov\\");
 	//mov_raw.execute();

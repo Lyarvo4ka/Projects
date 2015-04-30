@@ -35,10 +35,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="libui_global.h">
+    <ClInclude Include="GeneratedFiles\ui_wselectfolder.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libui\libui_global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_wselectfolder.h">
+    <ClInclude Include="GeneratedFiles\ui_wofficetools.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -52,13 +55,28 @@
     <ClCompile Include="GeneratedFiles\Release\moc_wselectfolder.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="wofficetools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wofficetools.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wofficetools.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="wselectfolder.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="wselectfolder.ui">
       <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\include\libui\wselectfolder.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="wofficetools.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\include\libui\wofficetools.h">
+      <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

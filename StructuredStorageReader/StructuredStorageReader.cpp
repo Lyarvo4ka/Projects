@@ -7,6 +7,7 @@
 
 #include <string>
 #include <stdlib.h>
+#include <iostream>
 
 #include "IOLibrary\FileFinder.h"
 #include "boost/filesystem.hpp"
@@ -16,56 +17,10 @@
    void main(int argc, char **argv) {
 	   setlocale(LC_ALL, "Ukranian");
 
-	   std::string source_dir = "E:\\raw\\";
-	   std::string target_dir = "E:\\NoName\\doc\\";
-	   std::string bad_dir =	"E:\\NoName\\bad\\";
-	   stringlist ext_list;
-	   ext_list.push_back(".doc");
-	   ext_list.push_back(".xls");
-	   ext_list.push_back(".ppt");
-
-	   FileFinder finder;
-	   finder.FindFiles(source_dir , ext_list);
-	   auto file_list = finder.getFileNames();
-
-	   DWORD counter = 0;
-	
-	   auto fileIter = file_list.begin();
-
-	   while ( fileIter != file_list.end() )
-	   {
-		   std::string source_name( *fileIter );
-		   SSReader ssreader;
-		   SummaryInformation sammary_info ;
-
-		   boost::filesystem::path file_path( source_name );
-
-		   std::string ext = file_path.extension().generic_string();
-		   std::string file_name = file_path.filename().generic_string();
-		   std::string path = file_path. root_path().generic_string();
-
-
-		   if ( ssreader.read_properties ( source_name , sammary_info ) )
-		   {
-			   std::string dataName = getDateTimeFromFileTime( sammary_info.lastSavedTime().getFiletime() );
-
-			   std::string target_name ( IO::make_file_path( target_dir , dataName ) + IO::numberToString( counter++ ) + ext);
-			   printf("target name: %s\r\n", target_name.c_str() );
-			   boost::filesystem::copy_file( source_name , target_name );
-			   
-			   int k = 1;
-			   k = 2;
-		   }
-		   else
-		   {
-			   std::string bad_file_name = IO::make_file_path( bad_dir , file_name );
-			   boost::filesystem::copy_file( source_name , bad_file_name );
-		   }
-					
-
-		   ++fileIter;
-	   }
-
+	   std::string source_dir = "h:\\raw\\";
+	   std::string target_dir = "h:\\36637\\";
+		
+	   identify_files(source_dir, target_dir);
 
 	  
 	  printf("\r\nPress any key.");

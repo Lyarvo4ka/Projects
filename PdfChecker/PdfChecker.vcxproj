@@ -61,7 +61,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libboost_filesystem-vc120-mt-gd-1_56.lib</AdditionalDependencies>
+      <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libboost_filesystem-vc120-mt-gd-1_57.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%BOOST_ROOT%stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

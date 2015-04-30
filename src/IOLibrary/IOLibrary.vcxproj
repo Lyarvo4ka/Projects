@@ -115,10 +115,12 @@
     <ClInclude Include="..\..\include\IOLibrary\BlockNumber.h" />
     <ClInclude Include="..\..\include\IOLibrary\ChangeHeader.h" />
     <ClInclude Include="..\..\include\IOLibrary\constants.h" />
+    <ClInclude Include="..\..\include\IOLibrary\dbf.h" />
     <ClInclude Include="..\..\include\IOLibrary\djvu_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\DVR_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\Entropy.h" />
     <ClInclude Include="..\..\include\IOLibrary\FileFinder.h" />
+    <ClInclude Include="..\..\include\IOLibrary\HexTexRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h" />
     <ClInclude Include="..\..\include\IOLibrary\iolibrary_global.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />

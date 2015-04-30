@@ -42,6 +42,7 @@ namespace IO
 	DWORD IOLIBRARY_EXPORT BytesToCopy(LONGLONG current, LONGLONG max_size, DWORD block_size);
 
 	std::string IOLIBRARY_EXPORT file_path_number( const std::string & folder , DWORD number , const std::string & extension );
+	std::string IOLIBRARY_EXPORT file_offset_name(const std::string & folder, LONGLONG number, const std::string & extension);
 
 	bool IOLIBRARY_EXPORT isLastBackspace( const std::string str );
 	void IOLIBRARY_EXPORT addBackspace( std::string & str );

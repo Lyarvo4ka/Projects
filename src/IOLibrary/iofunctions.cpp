@@ -262,7 +262,19 @@ std::string IO::file_path_number( const std::string & folder , DWORD number , co
 
 	return file_name;
 }
+std::string IO::file_offset_name(const std::string & folder, LONGLONG number, const std::string & extension)
+{
+	const int buff_size = 20;
+	char buff[buff_size];
+	memset(buff, 0, buff_size);
+	sprintf_s(buff, buff_size, "%llX", number);
+	std::string file_name(folder);
 
+	file_name.append(buff);
+	file_name.append(extension);
+
+	return file_name;
+}
 bool IO::isLastBackspace( const std::string str )
 {
 	if ( !str.empty() )

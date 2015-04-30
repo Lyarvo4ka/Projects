@@ -6,6 +6,8 @@
 #include <boost/filesystem.hpp>
 
 
+//class AbstractFolder
+
 
 
 
@@ -26,7 +28,7 @@ public:
 		std::string mask_folder(folder + "*.*" );
 
 		HANDLE hFindFile = INVALID_HANDLE_VALUE;
-		WIN32_FIND_DATAA findData;
+		WIN32_FIND_DATAA findData = { 0 };
 
 		hFindFile = FindFirstFileA( mask_folder.c_str() , &findData );
 		if ( hFindFile != INVALID_HANDLE_VALUE )

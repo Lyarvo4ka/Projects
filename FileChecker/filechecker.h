@@ -11,9 +11,10 @@ class FileChecker : public QMainWindow
 public:
 	FileChecker(QWidget *parent = 0);
 	~FileChecker();
-
+private slots:
+	void on_office_2003();
 private:
-	Ui::FileCheckerClass ui;
+	Ui::FileCheckerClass ui_;
 };
 
 #endif // FILECHECKER_H

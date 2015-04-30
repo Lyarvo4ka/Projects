@@ -233,5 +233,16 @@ public:
 };
 
 
+#include "IOLibrary/iofunctions.h"
+#include "IOLibrary/FileFinder.h"
+#include <iostream>
+std::string LIBSTRUCTSTORAGE_API add_folder(const std::string & current_dir, std::string new_folder);
+
+
+
+void LIBSTRUCTSTORAGE_API identify_files(const std::string & source_dir, const std::string & target_dir);
+
+
+
 
 #endif
