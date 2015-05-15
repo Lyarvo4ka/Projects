@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>478</width>
-    <height>204</height>
+    <height>114</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QWidget" name="src_folderwidget" native="true"/>
+      <widget class="WSelectFolder" name="src_folderwidget" native="true"/>
      </item>
      <item>
       <spacer name="verticalSpacer">
@@ -33,7 +33,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QWidget" name="dst_folderwidget" native="true"/>
+      <widget class="WSelectFolder" name="dst_folderwidget" native="true"/>
      </item>
     </layout>
    </item>
@@ -89,6 +89,14 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>WSelectFolder</class>
+   <extends>QWidget</extends>
+   <header>wselectfolder.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

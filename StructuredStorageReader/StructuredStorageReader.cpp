@@ -17,8 +17,8 @@
    void main(int argc, char **argv) {
 	   setlocale(LC_ALL, "Ukranian");
 
-	   std::string source_dir = "h:\\raw\\";
-	   std::string target_dir = "h:\\36637\\";
+	   std::string source_dir = "f:\\raw\\";
+	   std::string target_dir = "f:\\NoName\\";
 		
 	   identify_files(source_dir, target_dir);
 

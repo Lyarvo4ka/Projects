@@ -84,7 +84,6 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		//	printf("Wrong arguments count");
 		//	return -3;
 		//}
-		std::string folder( "d:\\PaboTa\\37473\\NoName\\pdf\\" );
 
 		//std::string folder("D:\\ןנטלונû פאיכמג\\pdf\\");
 
@@ -119,7 +118,9 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 		FileFinder finder;
 		stringlist filter;
 		filter.push_back(".pdf");
-		std::string target_folder = folder;
+		std::string folder("F:\\raw\\");
+		std::string target_folder = "f:\\NoName\\pdf\\";
+		std::string bad_dir = "f:\\NoName\\bad\\";
 		finder.FindFiles(folder, filter);
 		auto files ( finder.getFileNames() );
 	
@@ -154,7 +155,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 						//target_file += ".good";
 						try
 						{
-							boost::filesystem::rename(*iter, target_file);
+							boost::filesystem::copy_file(*iter, target_file);
 						}
 						catch (const boost::filesystem::filesystem_error& e)
 						{
@@ -167,8 +168,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 					else
 					{
 						printf("File %s wasn't opened\n", iter->c_str());
-						target_file += ".bad_file";
-						boost::filesystem::rename(*iter, target_file);
+						target_file = bad_dir + IO::numberToString(counter++).c_str() + ".pdf";
+						boost::filesystem::copy_file(*iter, target_file);
 
 					}
 

@@ -63,7 +63,7 @@ namespace Signatures
 };
 
 const int SECTOR_SIZE = 512;
-const int SECTOR_COUNT = 256;
+const int SECTOR_COUNT = 64;
 const int BLOCK_SIZE = SECTOR_SIZE * SECTOR_COUNT;
 
 namespace BS

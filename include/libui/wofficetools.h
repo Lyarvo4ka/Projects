@@ -1,10 +1,12 @@
 #ifndef WOFFICETOOLS_H
 #define WOFFICETOOLS_H
 
+#include "libui_global.h"
+
 #include <QWidget>
 namespace Ui {class wOfficeTools;};
 
-class wOfficeTools : public QWidget
+class LIBUI_EXPORT wOfficeTools : public QWidget
 {
 	Q_OBJECT
 

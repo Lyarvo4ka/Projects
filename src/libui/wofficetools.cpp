@@ -11,10 +11,6 @@ wOfficeTools::wOfficeTools(QWidget *parent)
 	source_widget->setLabelText("Источник:");
 	auto target_widget = qobject_cast<WSelectFolder*>(ui->dst_folderwidget);
 	target_widget->setLabelText("Приемник:");
-
-
-	
-
 }
 
 wOfficeTools::~wOfficeTools()

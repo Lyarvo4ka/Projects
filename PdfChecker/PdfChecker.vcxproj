@@ -14,6 +14,7 @@
     <ProjectGuid>{25E7C402-13A6-4865-87A0-37675EABA997}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>PdfChecker</RootNamespace>
+    <ProjectName>FileCheckerConsole</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

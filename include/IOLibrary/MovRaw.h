@@ -382,7 +382,7 @@ public:
 					}
 					else
 					{
-						pos += Header_start;
+						pos = Header_start;
 						Header_start += BLOCK_SIZE;
 						if ( find_mdat( data , bytes_header , block_offset ) )
 						{

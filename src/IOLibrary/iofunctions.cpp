@@ -300,6 +300,17 @@ std::string IO::addFolderName( const std::string & folder , std::string new_fold
 	result_name.append( new_folder );
 	return result_name;
 }
+
+std::string IO::add_folder(const std::string & current_dir, std::string new_folder)
+{
+	std::string target_folder = current_dir;
+	target_folder = IO::addFolderName(target_folder, new_folder);
+	if (!boost::filesystem::exists(target_folder))
+		boost::filesystem::create_directory(target_folder);
+
+	return target_folder;
+}
+
 std::string IO::make_file_path( const std::string & folder , const std::string & file )
 {
 	std::string new_file( folder );

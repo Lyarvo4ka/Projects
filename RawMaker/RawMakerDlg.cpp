@@ -368,17 +368,17 @@ void CRawMakerDlg::OnBnClickedButtonStart()
 	CString sFileName;
 	m_EditFileName.GetWindowText(sFileName);
 
-	//CFileFactory FileFactory;
-	//DevicePtr pFileDevice(FileFactory.CreateDevice());
-	//pFileDevice->SetPath(sFileName.GetBuffer());
+	CFileFactory FileFactory;
+	DevicePtr pFileDevice(FileFactory.CreateDevice());
+	pFileDevice->SetPath(sFileName.GetBuffer());
 
-	CPhysicalDevice physicalDev;
-	CDiviceList DeviceList;
-	physicalDev.GetDevices(DeviceList);
-	DevicePtr hddDevice(DeviceList.FindDevice(1));
+	//CPhysicalDevice physicalDev;
+	//CDiviceList DeviceList;
+	//physicalDev.GetDevices(DeviceList);
+	//DevicePtr hddDevice(DeviceList.FindDevice(1));
 
 	CReaderFactory ReaderFactory;
-	IReader * pReader = ReaderFactory.CreateReader(hddDevice);
+	IReader * pReader = ReaderFactory.CreateReader(pFileDevice);
 	pReader->Open();
 	CString str;
 	m_Offset.GetWindowText( str );
@@ -394,8 +394,8 @@ void CRawMakerDlg::OnBnClickedButtonStart()
 	CQueue * pQueue = (CQueue * ) QueueFactory.CreateQueue();
 
 	ReaderConsistent_ = ( CReaderConsistent *) ConsistentFactory.CreateStreamReader(pReader,pQueue,pAllocator);
-	ReaderConsistent_->SetDevice(hddDevice);
-	ReaderConsistent_->SetSectorsCount( hddDevice->GetSectorCount() - offset );
+	ReaderConsistent_->SetDevice(pFileDevice);
+	ReaderConsistent_->SetSectorsCount(pFileDevice->GetSectorCount() - offset);
 	ReaderConsistent_->SetBlockSize(DefaultBuffer);
 	ReaderConsistent_->SetOffset( offset );
 	/*ReaderConsistent_->Attach( new CReaderObserver( this->GetSafeHwnd() ) );*/
@@ -412,8 +412,8 @@ void CRawMakerDlg::OnBnClickedButtonStart()
 	TaskManager_->Add(pRawCreater);
 	TaskManager_->Attach( new CSpeedObserver(this->GetSafeHwnd() , MaxProgress));
 	TaskManager_->SetErrorObserver( new CErrorObserver(this->GetSafeHwnd()));
-	LONGLONG lUpdateSize = hddDevice->GetSectorCount() / MaxProgress;
-	lUpdateSize /= DefaultBuffer / hddDevice->GetBytesPerSector();
+	LONGLONG lUpdateSize = pFileDevice->GetSectorCount() / MaxProgress;
+	lUpdateSize /= DefaultBuffer / pFileDevice->GetBytesPerSector();
 	TaskManager_->Attach( new CProgressObserver (this->GetSafeHwnd() , lUpdateSize) );
 	m_TransferSize = MaxProgress * DefaultBuffer;
 	m_TransferSize /= 1024;

@@ -67,10 +67,10 @@ void show_error_invalid_params()
 
 
 //#include "IOLibrary/SignatureTest.h"
-//#include "IOLibrary/MTS_raw.h"
+#include "IOLibrary/MovRaw.h"
 
 #include "boost/filesystem.hpp"
-#include "IOLibrary/dbf.h"
+//#include "IOLibrary/dbf.h"
 
 int main(int argc, char *argv[])
 {
@@ -87,8 +87,8 @@ int main(int argc, char *argv[])
 			std::string source_file(argv[1]);
 			std::string target_folder(argv[2]);
 
-			HexTextRaw hax_raw(source_file, target_folder);
-			hax_raw.execute();
+			CanonMovRaw canon_raw(source_file, target_folder);
+			canon_raw.execute();
 		}
 		else
 		{

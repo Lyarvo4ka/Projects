@@ -47,6 +47,7 @@ namespace IO
 	bool IOLIBRARY_EXPORT isLastBackspace( const std::string str );
 	void IOLIBRARY_EXPORT addBackspace( std::string & str );
 	std::string IOLIBRARY_EXPORT addFolderName( const std::string & folder , std::string new_folder);
+	std::string IOLIBRARY_EXPORT add_folder(const std::string & current_dir, std::string new_folder);
 	std::string IOLIBRARY_EXPORT make_file_path( const std::string & folder , const std::string & file );
 
 	bool IOLIBRARY_EXPORT isPresentInList( const std::list< std::string > & strlist , const std::string & text );
