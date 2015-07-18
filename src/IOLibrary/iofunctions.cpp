@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 bool IO::open_read( HANDLE & handle , const std::string & path)
 {
@@ -250,7 +251,13 @@ DWORD IO::BytesToCopy(LONGLONG current , LONGLONG max_size , DWORD block_size)
 	return ((current + block_size) < max_size) ? block_size : DWORD(max_size - current);
 }
 
-std::string IO::file_path_number( const std::string & folder , DWORD number , const std::string & extension )
+std::string IO::get_extension(const std::string & file_name)
+{
+	boost::filesystem::path file_path(file_name);
+	return file_path.extension().generic_string();
+}
+
+std::string IO::file_path_number(const std::string & folder, DWORD number, const std::string & extension)
 {
 	char buff[10];
 	memset(buff,0,10);
@@ -504,7 +511,10 @@ void IO::replaceBads(const std::string & withBad, const std::string & withoutBad
 			else
 			{
 				if (!bSecondEnd)
-					memcpy(target + iSector, buffer2 + iSector, SECTOR_SIZE);
+					if (IO::cmpSectorWithByte(buffer2 + iSector, 0x00))
+						memcpy(target + iSector, buffer1 + iSector, SECTOR_SIZE);
+					else
+						memcpy(target + iSector, buffer2 + iSector, SECTOR_SIZE);
 			}
 
 		}
@@ -526,7 +536,7 @@ void IO::replaceBads(const std::string & withBad, const std::string & withoutBad
 
 bool IO::cmpSectorWithByte( const BYTE * data , BYTE byte_value)
 {
-	for ( int i = 8; i < 512; ++i )
+	for ( int i = 0; i < 512; ++i )
 	{
 		if ( data[i] != byte_value )
 			return false;

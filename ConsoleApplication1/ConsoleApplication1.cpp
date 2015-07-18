@@ -5,11 +5,11 @@
 
 //#include "IOLibrary\DVR_raw.h"
 //#include "IOLibrary\MXF_raw.h"
-//#include "IOLibrary\MovRaw.h"
+#include "IOLibrary\MovRaw.h"
 //#include "IOLibrary\djvu_raw.h"
 //#include "IOLibrary\RemoveInserts.h"
 //#include "IOLibrary/FileFinder.h"
-#include "IOLibrary/HexTexRaw.h"
+//#include "IOLibrary/HexTexRaw.h"
 
 #include <conio.h>
 
@@ -67,34 +67,31 @@ void show_error_invalid_params()
 
 
 //#include "IOLibrary/SignatureTest.h"
-#include "IOLibrary/MovRaw.h"
+#include "IOLibrary/SignatureTest.h"
+//#include "IOLibrary/iofunctions.h"
 
 #include "boost/filesystem.hpp"
 //#include "IOLibrary/dbf.h"
+#include "IOLibrary/Translator.h"
 
 int main(int argc, char *argv[])
 {
-	if (argc == 2)
-	{
-		if (argv[1] == "?")
-			show_help();
-
-		return 0;
-	}
-	else
-		if (argc == 3)
-		{
-			std::string source_file(argv[1]);
-			std::string target_folder(argv[2]);
-
-			CanonMovRaw canon_raw(source_file, target_folder);
-			canon_raw.execute();
-		}
-		else
-		{
-			show_error_invalid_params();
-			return -1;
-		}
+	Translator::FlyTranslator flyTranslator("d:\\incoming\\fly\\fly_0.dat");
+	flyTranslator.setPageParams(2112, 2048, 64);
+	flyTranslator.setMarkers(2054, 2058);
+	//flyTranslator.make_table();
+	flyTranslator.save_data();
+		//Signture_Testing("h:\\37870\\");
+		//if (argc == 2)
+		//{
+		//	
+		//	
+		//}
+		//else
+		//{
+		//	show_error_invalid_params();
+		//	return -1;
+		//}
 
 
 

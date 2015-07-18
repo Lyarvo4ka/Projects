@@ -13,6 +13,13 @@ std::string LIBSTRUCTSTORAGE_API getDateFromFileTime(const FILETIME & file_time)
 std::string LIBSTRUCTSTORAGE_API getDateTimeFromFileTime(const FILETIME & file_time);
 SYSTEMTIME LIBSTRUCTSTORAGE_API toSysTime(const FILETIME & file_time);
 
+std::string LIBSTRUCTSTORAGE_API toString(WORD nYear, const int size);
+
+
+std::string LIBSTRUCTSTORAGE_API toYearString(WORD nYear);
+std::string LIBSTRUCTSTORAGE_API toStringDate(WORD nDateTime);
+
+
 class FileDateTime
 {
 private:
@@ -69,30 +76,9 @@ private:
 };
 
 
-inline std::string toString(WORD nYear, const int size)
-{
-	std::string sDate;
-	char *chDate = new char[size + 1];
 
-	if (sprintf_s(chDate, size + 1, "%.*i", size, nYear) == size)
-		sDate = chDate;
-
-	delete[] chDate;
-	return sDate;
-}
-
-
-inline std::string toYearString(WORD nYear)
-{
-	return toString(nYear, 4);
-}
-inline std::string toStringDate(WORD nDateTime)
-{
-	return toString(nDateTime, 2);
-}
-
-namespace StructStorage
-{
+//namespace StructStorage
+//{
 
 	namespace idNames
 	{
@@ -231,7 +217,7 @@ namespace StructStorage
 
 	};
 
-}
+//}
 
 
 #endif

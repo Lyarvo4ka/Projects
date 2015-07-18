@@ -1,6 +1,0 @@
-#ifndef STRUCTUREDSTORAGEREADER_H
-#define STRUCTUREDSTORAGEREADER_H
-
-#include <string>
-
-#endif

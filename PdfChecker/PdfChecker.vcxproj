@@ -57,12 +57,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>%BOOST_ROOT%;$(SolutionDir)include\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libboost_filesystem-vc120-mt-gd-1_57.lib</AdditionalDependencies>
+      <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libstructstorage.lib;libboost_filesystem-vc120-mt-gd-1_57.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%BOOST_ROOT%stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

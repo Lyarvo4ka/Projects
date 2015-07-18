@@ -102,6 +102,7 @@
     <ClCompile Include="Entropy.cpp" />
     <ClCompile Include="iofunctions.cpp" />
     <ClCompile Include="IOLibrary.cpp" />
+    <ClCompile Include="MovRaw.cpp" />
     <ClCompile Include="MTS_raw.cpp" />
     <ClCompile Include="SignatureTest.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -122,6 +123,7 @@
     <ClInclude Include="..\..\include\IOLibrary\FileFinder.h" />
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h" />
     <ClInclude Include="..\..\include\IOLibrary\HexTexRaw.h" />
+    <ClInclude Include="..\..\include\IOLibrary\iofs.h" />
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h" />
     <ClInclude Include="..\..\include\IOLibrary\iolibrary_global.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />

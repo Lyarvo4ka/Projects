@@ -37,7 +37,27 @@ std::string  getDateTimeFromFileTime(const FILETIME & file_time)
 	return getDateFromFileTime(file_time) + "-" + getTimeFromFileTime(file_time);
 }
 
+std::string LIBSTRUCTSTORAGE_API toString(WORD nYear, const int size)
+{
+	std::string sDate;
+	char *chDate = new char[size + 1];
 
+	if (sprintf_s(chDate, size + 1, "%.*i", size, nYear) == size)
+		sDate = chDate;
+
+	delete[] chDate;
+	return sDate;
+}
+
+std::string LIBSTRUCTSTORAGE_API toYearString(WORD nYear)
+{
+	return toString(nYear, 4);
+}
+
+std::string LIBSTRUCTSTORAGE_API toStringDate(WORD nDateTime)
+{
+	return toString(nDateTime, 2);
+}
 
 SummaryInformation::SummaryInformation() : Title_("")
 , Subject_("")

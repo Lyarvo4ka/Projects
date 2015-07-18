@@ -2,12 +2,13 @@
 #include "constants.h"
 
 #include "boost/filesystem.hpp"
+#include "constants.h"
 
 void Signture_Testing(const std::string & folder)
 {
 	
 	FileFinder finder;
-	stringlist extList = {".mov"};
+	stringlist extList = {"*.*"};
 	finder.FindFiles(folder, extList);
 	auto file_list = finder.getFileNames();
 
@@ -44,8 +45,15 @@ void Signture_Testing(const std::string & folder)
 				break;
 			}
 
-		if ( !isGoodHeader )
-			boost::filesystem::rename(file_name , file_name + ".bad_file");
+		if (!isGoodHeader)
+		{
+			boost::filesystem::rename(file_name, file_name + ".bad_file");
+		}
+		else
+		{
+			if (memcmp(buff, Signatures::bad_sector_header, SIZEOF_ARRAY(Signatures::bad_sector_header)) == 0)
+				boost::filesystem::rename(file_name, file_name + ".bad_file");
+		}
 		++fileIter;
 	}
 }

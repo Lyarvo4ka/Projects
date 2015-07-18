@@ -42,6 +42,9 @@
     <ClCompile Include="SignatureTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MovRaw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\iofs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

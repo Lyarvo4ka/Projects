@@ -254,38 +254,20 @@ public:
 };
 
 
-class CanonMovRaw
+class IOLIBRARY_EXPORT CanonMovRaw
 	: public MovRaw
 {
+private:
+	DWORD cluster_size_;
+	LONGLONG offset_;
 public:
-	CanonMovRaw(const std::string & file_name , const std::string & output_folder )
-		: MovRaw( file_name , output_folder )
-	{
+	CanonMovRaw(const std::string & file_name , const std::string & output_folder );
+	CanonMovRaw(const DWORD number , const std::string & output_folder );
 
-	}
-	CanonMovRaw(const DWORD number , const std::string & output_folder )
-		: MovRaw( number , output_folder )
-	{
-	}
+	void show_error( const std::string & error_text);
 
-	bool cmp_mdat( const BYTE * data )
-	{
-		return (memcmp( &data[ 4 ] , Signatures::mdat , Signatures::mdat_size ) == 0 );
-	}
-	bool find_mdat( const BYTE * data , const int data_size , int & offset )
-	{
-			for ( int iSector = 0 ; iSector < data_size ; iSector += SECTOR_SIZE )
-			{
-				if ( cmp_mdat( &data[iSector] ) )
-				{
-					offset = iSector;
-					return true;
-				}
-
-			}
-			return false;
-
-	}
+	bool cmp_mdat( const BYTE * data );
+	bool find_mdat( const BYTE * data , const int data_size , int & offset );
 	DWORD getMdatSize( const BYTE * data )
 	{
 		DWORD * pSize = ( DWORD *) data;
@@ -293,118 +275,12 @@ public:
 		to_big_endian( mdat_size );
 		return mdat_size;
 	}
+	void setClusterSize(const DWORD cluster_size);
+	void setOffset(const LONGLONG offset);
+	void execute() override;
 
-	void execute() override
-	{
-		if ( ! this->isReady() )
-		{
-			printf( "Error. File isn't ready. \r\nProgram will be closed." ) ;
-			_getch();
-			return;
-		}
+	bool check_parameters();
 
-		LONGLONG pos = 0;
-		BYTE data[ BLOCK_SIZE ];
-		DWORD bytesRead = 0;
-
-		auto hSource = this->getHandle();
-
-		LONGLONG mdat_offset = 0;
-		int block_offset = 0;
-
-		int counter = 0;
-
-		while ( true )
-		{
-			IO::set_position( *hSource , pos );
-			if ( !IO::read_block( *hSource , data , BLOCK_SIZE , bytesRead ) )
-				break;
-
-			if ( bytesRead == 0 ) 
-				break;
-
-		
-			if ( find_mdat( data , bytesRead , block_offset) )
-			{
-				InfoPartData mdat_data;
-				mdat_data.offset =  (LONGLONG)pos +  (LONGLONG)block_offset;
-				mdat_data.size = getMdatSize( &data[ block_offset] );
-				mdat_data.size += 16;
-
-				printf("Found mdat %lld (sectors) \r\n" , IO::toSectors( mdat_data.offset ) );
-
-				LONGLONG Header_start = mdat_data.getLastPos();
-				Header_start /= SECTOR_SIZE;
-				Header_start *= SECTOR_SIZE;
-
-				DWORD bytes_header = 0;
-				bool bFound = false;
-
-				while ( true )
-				{
-					IO::set_position( * hSource , Header_start );
-					if ( !IO::read_block( *hSource , data , BLOCK_SIZE , bytes_header ) )
-						break;
-
-					if ( bytesRead == 0 ) 
-						break;
-
-					if ( find_header( data , bytes_header , block_offset ) )
-					{
-						InfoPartData header_data;
-						header_data.offset = ( LONGLONG )Header_start +  (LONGLONG)block_offset;
-						header_data.size = getDataSize( & data[ block_offset] );
-						header_data.size += 24;
-
-						printf("Found header %lld (sectors) \r\n" , IO::toSectors( header_data.offset ) );
-
-						std::string write_name( IO::file_path_number( this->folder() , counter++ , ".mov" ) );
-
-						HANDLE hWrite = INVALID_HANDLE_VALUE;
-						if ( IO::create_file( hWrite , write_name ) )
-						{
-							if ( IO::write_block_to_file( *hSource , header_data.offset , header_data.size , hWrite ) )
-								if ( IO::write_block_to_file( * hSource , mdat_data.offset , mdat_data.size , hWrite , header_data.size ) )
-								{
-									printf( "Write to file: %s - OK.\r\n", write_name.c_str() );
-
-								}
-
-						}
-
-						CloseHandle( hWrite );
-
-						pos = header_data.getLastPos();
-						pos /= SECTOR_SIZE;
-						pos *= SECTOR_SIZE;
-						bFound = true;
-						break;
-					}
-					else
-					{
-						pos = Header_start;
-						Header_start += BLOCK_SIZE;
-						if ( find_mdat( data , bytes_header , block_offset ) )
-						{
-							printf( "Not Found header \r\n" );
-							break;
-						}
-					}
-
-				}
-				if ( bFound )
-					bFound = false;
-				else
-					pos += SECTOR_SIZE;
-			}
-			else
-				pos += bytesRead;
-
-		}
-
-
-
-	}
 };
 
 

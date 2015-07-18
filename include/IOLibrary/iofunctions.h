@@ -41,6 +41,7 @@ namespace IO
 
 	DWORD IOLIBRARY_EXPORT BytesToCopy(LONGLONG current, LONGLONG max_size, DWORD block_size);
 
+	std::string IOLIBRARY_EXPORT get_extension(const std::string & file_name);
 	std::string IOLIBRARY_EXPORT file_path_number( const std::string & folder , DWORD number , const std::string & extension );
 	std::string IOLIBRARY_EXPORT file_offset_name(const std::string & folder, LONGLONG number, const std::string & extension);
 
@@ -54,6 +55,7 @@ namespace IO
 
 	// from 1 to "00001"
 	std::string IOLIBRARY_EXPORT numberToString( const int number );
+
 
 	LONGLONG IOLIBRARY_EXPORT toSectors( const LONGLONG data_val );
 

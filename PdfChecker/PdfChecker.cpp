@@ -11,6 +11,7 @@
 
 #include "IOLibrary\FileFinder.h"
 #include <boost/filesystem.hpp>
+#include "libstructstorage/libstructstorage.h"
 
 
 CWinApp theApp;
@@ -27,49 +28,7 @@ using namespace std;
 
 
 #include "libpdf\Pdfdocument.h"
-/*
-BOOL CheckPdfFile( const std::string & fileName , const std::string & target_folder )
-{
-		CAcroPDDoc * pAcroPdDoc = new CAcroPDDoc();
 
-
-
-		// === Create an Acrobat IAC PDDoc object  
-		COleException e;
-		BOOL bCreate = pAcroPdDoc->CreateDispatch("AcroExch.PDDoc", &e);
-		if(!bCreate) {
-			AfxMessageBox("Creating Acrobat IAC object failed in BasicIacVc sample.");
-			return FALSE;
-		}
-	
-		// === Open a pdf file.  
-
-		if( !pAcroPdDoc->Open(fileName.c_str() ) ) {
-			printf("File %s Error to open.\r\n" , fileName.c_str() );
-			return FALSE;
-		}
-
-		CString date = pAcroPdDoc->GetInfo("ModDate");
-		printf("File %s has %s\r\n", fileName.c_str() , date ); 
-
-		std::string good_file(fileName + ".good" );
-
-		VARIANT_BOOL saved_ok = pAcroPdDoc->Save( PDSaveFull , good_file.c_str() );
-		if ( !saved_ok )
-		{
-			printf("%s Document is corrupted.\r\n" , fileName.c_str() );
-		
-		}
-		printf("%s Document opened OK.\r\n" , fileName.c_str() );
-
-		// === Code to finish program.
-		pAcroPdDoc->Close();
-		delete pAcroPdDoc;
-		pAcroPdDoc = NULL;
-
-		return TRUE;
-}
-*/
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
@@ -79,13 +38,6 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	if (hModule != NULL)
 	{
-		//if ( argc != 2 )
-		//{
-		//	printf("Wrong arguments count");
-		//	return -3;
-		//}
-
-		//std::string folder("D:\\ןנטלונû פאיכמג\\pdf\\");
 
 		// initialize MFC and print and error on failure
 		if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
@@ -111,75 +63,19 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			printf( "Error to start acrobat app." );
 			return -1;
 		}
-
-		//ParseDateString( "D:20020314220331" );
-
-
-		FileFinder finder;
-		stringlist filter;
-		filter.push_back(".pdf");
-		std::string folder("F:\\raw\\");
-		std::string target_folder = "f:\\NoName\\pdf\\";
-		std::string bad_dir = "f:\\NoName\\bad\\";
-		finder.FindFiles(folder, filter);
-		auto files ( finder.getFileNames() );
-	
-		int counter = 0;
-		for ( auto iter = files.begin() ; iter != files.end() ; ++iter )
+		if (argc == 3)
 		{
-			std::string target_file = *iter;
-			PdfDocument pdfDoc;
-			if ( pdfDoc.CreateDocument( e ) )
-			{
-					if (pdfDoc.Open(*iter))
-					{
-						auto docInfo = pdfDoc.getInfo();
-						DateString data_string;
-						CString targe_name = IO::numberToString(counter).c_str();
+			std::string source_folder(argv[1]);
+			std::string target_folder(argv[2]);
 
-						CString dataToParse = (!docInfo.ModDate.IsEmpty()) ? docInfo.ModDate : docInfo.CreationDate;
-						if (!dataToParse.IsEmpty())
-							if (ParseDateString(dataToParse, data_string))
-							{
-								targe_name = data_string.YEAR + "-" +
-									data_string.MONTH + "-" +
-									data_string.DAY + "-" +
-									data_string.HOUR + "-" +
-									data_string.MINUTES + "-" +
-									data_string.SECONDS + "-" +
-									IO::numberToString(counter).c_str();
-							}
-						target_file = target_folder + targe_name.GetString() + ".pdf";
-
-						pdfDoc.DestroyDocument();
-						//target_file += ".good";
-						try
-						{
-							boost::filesystem::copy_file(*iter, target_file);
-						}
-						catch (const boost::filesystem::filesystem_error& e)
-						{
-							std::cout << "Error: " << e.what() << std::endl;
-						}
-
-						printf("File %s was opened OK\n", iter->c_str());
-						++counter;
-					}
-					else
-					{
-						printf("File %s wasn't opened\n", iter->c_str());
-						target_file = bad_dir + IO::numberToString(counter++).c_str() + ".pdf";
-						boost::filesystem::copy_file(*iter, target_file);
-
-					}
-
-
-			}
-
+			identify_files(source_folder, target_folder);
 		}
-		
+		else
+			printf("Error. You entered invalid params.\r\n");
 
-		CoInitialize ( NULL );
+		CoUninitialize();
+
+
 		}
 	}
 	else
@@ -189,4 +85,121 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	}
 
 	return nRetCode;
+}
+
+
+
+void identify_files(const std::string & source_dir, const std::string & target_dir)
+{
+	std::string bad_dir = "bad";
+	stringlist ext_list;
+	ext_list.push_back(".doc");
+	ext_list.push_back(".xls");
+	ext_list.push_back(".ppt");
+	ext_list.push_back(".pdf");
+
+	FileFinder finder;
+	finder.FindFiles(source_dir, ext_list);
+	auto file_list = finder.getFileNames();
+
+	DWORD counter = 0;
+
+	auto fileIter = file_list.begin();
+
+	while (fileIter != file_list.end())
+	{
+		std::string source_name(*fileIter);
+
+
+		boost::filesystem::path file_path(source_name);
+		std::string ext = file_path.extension().generic_string();
+		3
+
+		bool bResult = false;
+		std::string target_name;
+
+		if (ext.compare(".pdf") == 0)
+			bResult = identify_pdf(source_name, target_name, counter);
+		else
+			bResult = identify_office2003(source_name, target_name, counter);
+		++counter;
+
+		std::string target_file_path;
+		std::string ext_folder = ext.substr(1);
+		std::string new_folder = (bResult) ? ext_folder : bad_dir;
+		std::string target_folder = IO::add_folder(target_dir, new_folder);
+		target_file_path = IO::make_file_path(target_folder, target_name);
+
+		try
+		{
+			boost::filesystem::copy_file(source_name, target_file_path);
+		}
+		catch (const boost::filesystem::filesystem_error& e)
+		{
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+
+		++fileIter;
+	}
+}
+bool identify_office2003(const std::string & file_name, std::string & new_filename, int counter)
+{
+	SSReader ssreader;
+	SummaryInformation sammary_info;
+
+	std::string ext = IO::get_extension(file_name);
+
+	new_filename = IO::numberToString(counter++) + ext;
+
+	if ( ssreader.read_properties(file_name, sammary_info))
+	{
+		std::string dataName = getDateTimeFromFileTime(sammary_info.lastSavedTime().getFiletime());
+		if (!dataName.empty())
+			new_filename = dataName + IO::numberToString(counter) + ext;
+		else
+			new_filename = IO::numberToString(counter) + ext;
+
+		return true;
+	}
+
+	return false;
+}
+
+bool identify_pdf(const std::string & file_name, std::string & new_filename, int counter)
+{
+	COleException e;
+	PdfDocument pdfDoc;
+	std::string ext = IO::get_extension(file_name);
+	new_filename = IO::numberToString(counter) + ext;
+	if (pdfDoc.CreateDocument(e))
+	{
+		if (pdfDoc.Open(file_name))
+		{
+			auto docInfo = pdfDoc.getInfo();
+			DateString data_string;
+			CString targe_name = IO::numberToString(counter).c_str();
+
+			CString dataToParse = (!docInfo.ModDate.IsEmpty()) ? docInfo.ModDate : docInfo.CreationDate;
+			if (!dataToParse.IsEmpty())
+				if (ParseDateString(dataToParse, data_string))
+				{
+					targe_name = data_string.YEAR + "-" +
+						data_string.MONTH + "-" +
+						data_string.DAY + "-" +
+						data_string.HOUR + "-" +
+						data_string.MINUTES + "-" +
+						data_string.SECONDS + "-" +
+						IO::numberToString(counter).c_str();
+				}
+			new_filename = targe_name.GetString() + ext;
+
+			pdfDoc.DestroyDocument();
+			return true;
+		}
+
+	}
+	else
+		printf("Error to create pdf document application\r\n");
+
+	return false;
 }

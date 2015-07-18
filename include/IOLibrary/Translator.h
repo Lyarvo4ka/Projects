@@ -4,12 +4,188 @@
 #include "iolibrary_global.h"
 
 #include "iofunctions.h"
-
+#include <map>
+#include <vector>
 
 
 namespace Translator
 {
+class FlyTranslator
+{
+	typedef std::map<WORD, LONGLONG> Page_Offset;
+	typedef std::pair<WORD, LONGLONG> Page_Offset_pair;
+	typedef std::map<WORD, Page_Offset > FlashTable;
+	typedef std::pair<WORD, Page_Offset > TablePair;
 
+
+private:
+	std::string dump_;
+	HANDLE hDump_;
+	FlashTable table_;
+
+	DWORD page_size_;
+	DWORD data_size_;
+	DWORD service_size_;
+	WORD block_marker_;
+	WORD page_marker_;
+public:
+	FlyTranslator(const std::string &dump_file)
+		: dump_(dump_file)
+		, hDump_(INVALID_HANDLE_VALUE)
+		, page_size_(0)
+		, data_size_(0)
+		, service_size_(0)
+	{
+
+	}
+	void setPageParams(const DWORD page_size, const DWORD data_size, const DWORD service_size)
+	{
+		page_size_ = page_size;
+		data_size_ = data_size;
+		service_size_ = service_size;
+	}
+	void setMarkers(const WORD block_marker, const WORD page_marker)
+	{
+		block_marker_ = block_marker;
+		page_marker_ = page_marker;
+	}
+	bool open()
+	{
+		return IO::open_read(hDump_, dump_);
+	}
+	void close()
+	{
+		CloseHandle(hDump_);
+	}
+	void make_table()
+	{
+		if (!open())
+		{
+			printf("Error open file");
+			return; 
+		}
+
+		bool bResult = false;
+
+		BYTE * page_data = new BYTE[page_size_];
+		DWORD bytes_read = 0;
+		WORD * pBlock_marker = nullptr;
+		WORD * pPage_marker = nullptr;
+		FlashTable::iterator table_iter;
+		LONGLONG offset = 0;
+		WORD block_marker = 0;
+		WORD page_marker = 0;
+		offset = 0;
+
+		while (true)
+		{
+			IO::set_position(hDump_, offset);
+			bResult = IO::read_block(hDump_, page_data, page_size_, bytes_read);
+			if ( !bResult)
+				break;
+			if ( bytes_read == 0)
+				break;
+
+			pBlock_marker = (WORD *)&page_data[block_marker_];
+			pPage_marker = (WORD *)&page_data[page_marker_];
+			block_marker = *pBlock_marker;
+			page_marker = *pPage_marker;
+
+			if ((block_marker != 0xFFFF) && (page_marker != 0xFFFF))
+			{
+
+				table_iter = table_.find(block_marker);
+				if (table_iter != table_.end())
+				{
+					Page_Offset::iterator page_iter;
+					page_iter = table_iter->second.find(page_marker);
+					if (page_iter == table_iter->second.end())
+						table_iter->second.insert(Page_Offset_pair(page_marker, offset));
+					else
+						page_iter->second = offset;
+
+				}
+				else
+				{
+					Page_Offset page_table;
+					page_table.insert(Page_Offset_pair(*pPage_marker, offset));
+					table_.insert(TablePair(*pBlock_marker, page_table));
+				}
+			}
+
+			offset += bytes_read;
+		}
+
+		delete[] page_data;
+		close();
+	}
+	void save_data()
+	{
+		if (!open())
+		{
+			printf("Error open file");
+			return;
+		}
+		HANDLE hImage = INVALID_HANDLE_VALUE;
+		if ( !IO::create_file(hImage, "d:\\incoming\\fly\\image.dump"))
+		{
+			printf("Error create file");
+			return;
+		}
+		LONGLONG dump_offset = 0;
+
+		BYTE * data_page = new BYTE[page_size_];
+		BYTE * write_page = new BYTE[page_size_];
+		DWORD bytesRead = 0;
+		DWORD bytesWritten = 0;
+
+		while (true)
+		{
+			if (!IO::read_block(hDump_, data_page, page_size_, bytesRead))
+				break;
+			if (bytesRead == 0)
+				break;
+			memset(write_page, 0xFF, 2112);
+			memcpy(write_page, data_page, 2048);
+			memcpy(write_page + 2048, data_page + 2048 + 2, 34);
+			memcpy(write_page + 2048 + 34 + 4, data_page + 2086, 26);
+
+			if (!IO::write_block(hImage, write_page, bytesRead, bytesWritten))
+				break;
+			if (bytesWritten == 0)
+				break;
+
+		}
+		CloseHandle(hImage);
+		//FlashTable::iterator table_iter = table_.begin();
+		//while (table_iter != table_.end())
+		//{
+		//	Page_Offset::iterator page_iter = table_iter->second.begin();
+		//	while (page_iter != table_iter->second.end())
+		//	{
+		//		dump_offset = page_iter->second;
+		//		IO::set_position(hDump_, dump_offset);
+		//		if ( !IO::read_block(hDump_, data_page, data_size_, bytesRead))
+		//			break;
+		//		if ( bytesRead == 0 )
+		//			break;
+
+		//		if ( !IO::write_block(hImage , data_page , bytesRead , bytesWritten))
+		//			break;
+		//		if (bytesWritten == 0 )
+		//			break;
+
+		//		++page_iter;
+		//	}
+
+		//	
+
+		//	++table_iter;
+		//}
+		delete[] data_page;
+		close();
+	}
+};
 
 class iPhone1
 {
