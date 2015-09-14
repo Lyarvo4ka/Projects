@@ -60,7 +60,6 @@ int main(int argc, char* argv[])
 	cout << "File Path : ";
 	cin >> buffInput;
 
-
 	// Set Path to File
 	HANDLE hFile;
 	if (OpenFileRead(buffInput,hFile) == false)
@@ -82,65 +81,77 @@ int main(int argc, char* argv[])
 		_getch();
 		exit (-1);
 	}
-
-
-
-	cout << "Wait for Executing"<< endl;
-	while (lReadPos < lMaxFileSize)
+	try
 	{
-		dwBytesRead = pReader->Read(pBuffer,lReadPos);
-		if (dwBytesRead == 0)
-			break;
+		ByteCounts *pByteCounts = new ByteCounts[dwBlockSize];
 
-		tempSize = dwBytesRead;
-
-		bFullBlock = FALSE;
-		for ( DWORD dwIndex = 0; dwIndex < tempSize; ++dwIndex)
+		BOOL bFullBlock = FALSE;
+		lReadPos
+		cout << "Wait for Executing" << endl;
+		while (lReadPos < lMaxFileSize)
 		{
-			if ( pDataBuffer[dwIndex] != 0xFF && pDataBuffer[dwIndex] != 0 )
-			{
-				bFullBlock = TRUE;
+			dwBytesRead = pReader->Read(pBuffer, lReadPos);
+			if (dwBytesRead == 0)
 				break;
+
+			tempSize = dwBytesRead;
+
+			bFullBlock = FALSE;
+			for (DWORD dwIndex = 0; dwIndex < tempSize; ++dwIndex)
+			{
+				if (pDataBuffer[dwIndex] != 0xFF && pDataBuffer[dwIndex] != 0)
+				{
+					bFullBlock = TRUE;
+					break;
+				}
 			}
+			if (bFullBlock == TRUE)
+				for (DWORD dwIndex = 0; dwIndex < dwBlockSize; ++dwIndex)
+				{
+					pByteCounts[dwIndex].Add(pDataBuffer[dwIndex]);
+				}
+			lReadPos += dwBytesRead;
+
 		}
-		if (bFullBlock == TRUE)
-		for ( DWORD dwIndex = 0; dwIndex < dwBlockSize; ++dwIndex)
+		//CloseHandle(hFile);
+		delete pBuffer;
+		delete pReader;
+		for (DWORD dwIndex = 0; dwIndex < dwBlockSize; ++dwIndex)
 		{
-			pByteCounts[dwIndex].Add(pDataBuffer[dwIndex]);
+			pByteCounts[dwIndex].Show();
 		}
-		lReadPos += dwBytesRead;
+		pByteCounts[0].ShowStatictics();
+
+		_getch();
+
+
+
+		int iCode = 0;
+		while (iCode != KEY_QUIT)
+		{
+			cout << "Enter byte to show statistics : ";
+			scanf_s("%d", &iCode);
+			cout << " Entered #(" << iCode << ")" << endl;
+			if (iCode >= 0 && iCode < dwBlockSize)
+			{
+				pByteCounts[iCode].ShowStatictics();
+			}
+			cout << "Press any key to continue. (Q) Quit.";
+			iCode = _getch();
+			cout << endl;
+		}
+
+		SaveToFile(pByteCounts, dwBlockSize);
+		delete[] pByteCounts;
 
 	}
-	//CloseHandle(hFile);
-	delete pBuffer;
-	delete pReader;
-	for ( DWORD dwIndex = 0; dwIndex < dwBlockSize; ++dwIndex)
-	{	
-		pByteCounts[dwIndex].Show();
-	}
-	pByteCounts[0].ShowStatictics();
-
-	_getch();
-
-
-	
-	int iCode = 0;
-	while (iCode != KEY_QUIT)
+	catch (const std::exception& e)
 	{
-	cout << "Enter byte to show statistics : ";
-	scanf_s("%d",&iCode);
-	cout << " Entered #(" << iCode << ")"<<endl;
-	if ( iCode >= 0 && iCode < dwBlockSize)
-	{
-	pByteCounts[iCode].ShowStatictics();
-	}
-	cout << "Press any key to continue. (Q) Quit.";
-	iCode = _getch();
-	cout << endl;
+		printf("Error. Allocation memory failed. \r\n(%s)" ,e.what());
+		_getch();
+		exit(-3);
 	}
 
-	SaveToFile(pByteCounts,dwBlockSize);
-	delete [] pByteCounts;
 
 	
 

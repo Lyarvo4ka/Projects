@@ -113,5 +113,8 @@
     <ClInclude Include="..\..\include\DeviceLibrary\Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\DeviceLibrary\RaidArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

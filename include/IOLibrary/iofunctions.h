@@ -64,6 +64,7 @@ namespace IO
 
 	void IOLIBRARY_EXPORT replaceBads( const std::string & withBad , const std::string & withoutBad , const std::string & target_file );
 	bool IOLIBRARY_EXPORT cmpSectorWithByte( const BYTE * data , BYTE byte_value);
+	bool IOLIBRARY_EXPORT isBlockNot00andFF(const BYTE * data, DWORD size);
 	bool IOLIBRARY_EXPORT isDataSector( const BYTE * data );
 	void IOLIBRARY_EXPORT SaveOnlyData( const std::string & source_file , const std::string & target_file );
 	void IOLIBRARY_EXPORT XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);

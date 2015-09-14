@@ -139,6 +139,7 @@
     <ClInclude Include="..\..\include\DeviceLibrary\Imports.h" />
     <ClInclude Include="..\..\include\DeviceLibrary\Log.h" />
     <ClInclude Include="..\..\include\DeviceLibrary\Queue.h" />
+    <ClInclude Include="..\..\include\DeviceLibrary\RaidArray.h" />
     <ClInclude Include="..\..\include\DeviceLibrary\Reader.h" />
     <ClInclude Include="..\..\include\DeviceLibrary\Solver.h" />
     <ClInclude Include="..\..\include\DeviceLibrary\stdafx.h" />

@@ -74,7 +74,7 @@ void CanonMovRaw::execute()
 		if (bytesRead == 0)
 			break;
 
-
+		
 		if (find_mdat(data_buffer, bytesRead, block_offset))
 		{
 			InfoPartData mdat_data;
@@ -85,6 +85,7 @@ void CanonMovRaw::execute()
 			printf("Found mdat %lld (sectors) \r\n", IO::toSectors(mdat_data.offset));
 
 			LONGLONG Header_start = IO::toSectors(mdat_data.getLastPos());
+			Header_start *= SECTOR_SIZE;
 
 			DWORD bytes_header = 0;
 			bool bFound = false;
@@ -121,7 +122,9 @@ void CanonMovRaw::execute()
 
 					CloseHandle(hWrite);
 
-					pos = IO::toSectors(header_data.getLastPos());
+					pos = IO::toSectors(header_data.offset);
+					pos *= SECTOR_SIZE;
+					pos += SECTOR_SIZE;
 					bFound = true;
 					break;
 				}

@@ -544,7 +544,17 @@ bool IO::cmpSectorWithByte( const BYTE * data , BYTE byte_value)
 	return true;
 }
 
-bool IO::isDataSector( const BYTE * data )
+bool IOLIBRARY_EXPORT IO::isBlockNot00andFF(const BYTE * data, DWORD size)
+{
+	for (DWORD nByte = 0; nByte < size; ++nByte)
+	{
+		if (data[nByte] != 0 && data[nByte] != 0xFF)
+			return true;
+	}
+	return false;
+}
+
+bool IO::isDataSector(const BYTE * data)
 {
 	if ( !data )
 		return false;

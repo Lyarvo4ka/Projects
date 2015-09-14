@@ -2,21 +2,10 @@
 //
 
 #include "stdafx.h"
-
-//#include "IOLibrary\DVR_raw.h"
-//#include "IOLibrary\MXF_raw.h"
-#include "IOLibrary\MovRaw.h"
-//#include "IOLibrary\djvu_raw.h"
-//#include "IOLibrary\RemoveInserts.h"
-//#include "IOLibrary/FileFinder.h"
-//#include "IOLibrary/HexTexRaw.h"
-
 #include <conio.h>
-
-
 #include <iostream>
-
 #include <string>
+
 
 void show_help()
 {
@@ -72,15 +61,37 @@ void show_error_invalid_params()
 
 #include "boost/filesystem.hpp"
 //#include "IOLibrary/dbf.h"
-#include "IOLibrary/Translator.h"
+//#include "IOLibrary/XorAnalyzer.h"
+#include "IOLibrary/MovRaw.h"
 
 int main(int argc, char *argv[])
 {
-	Translator::FlyTranslator flyTranslator("d:\\incoming\\fly\\fly_0.dat");
-	flyTranslator.setPageParams(2112, 2048, 64);
-	flyTranslator.setMarkers(2054, 2058);
-	//flyTranslator.make_table();
-	flyTranslator.save_data();
+	CanonMovRaw mov_raw("d:\\PaboTa\\38208\\image.bin" , "e:\\38208\\");
+	mov_raw.setClusterSize(131072);
+	mov_raw.execute();
+
+	////9347072
+	//if (argc == 4)
+	//{
+	//	std::string dump_file = argv[1];
+	//	std::string xor_file = argv[2];
+	//	std::string block_str = argv[3];
+	//	DWORD block_size = strtol(block_str.c_str(), NULL, 10);
+
+
+	//	XorAnalyzer xorFinder(dump_file);
+	//	xorFinder.Analize(xor_file, block_size);
+	//}
+	//else
+	//	show_error_invalid_params();
+
+	printf("finished");
+	_getch();
+	//Translator::FlyTranslator flyTranslator("d:\\incoming\\fly\\fly_0.dat");
+	//flyTranslator.setPageParams(2112, 2048, 64);
+	//flyTranslator.setMarkers(2054, 2058);
+	////flyTranslator.make_table();
+	//flyTranslator.save_data();
 		//Signture_Testing("h:\\37870\\");
 		//if (argc == 2)
 		//{

@@ -272,7 +272,7 @@ public:
 /*			CDiviceList					*/
 //////////////////////////////////////////
 //typedef shared_ptr<IDevice> DevicePtr;
-typedef std::tr1::shared_ptr<IDevice> DevicePtr;
+typedef std::shared_ptr<IDevice> DevicePtr;
 
 class DllExport CDiviceList
 {

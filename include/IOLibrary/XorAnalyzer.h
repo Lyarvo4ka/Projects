@@ -7,19 +7,17 @@
 using std::vector;
 
 ULONGLONG NumBytesForBlock( DWORD block_size );
-int chuncksPrerBlock( ULONGLONG block_size );
+int chunksPrerBlock( ULONGLONG block_size );
 
-class IOLIBRARY_EXPORT ByteCounts
+class IOLIBRARY_EXPORT ByteCount
 {
 public:
-	ByteCounts(void);
-	void Add(unsigned char _byte);
-	virtual unsigned char GetMax();
-	virtual void ShowMaxVal();
-	virtual void ShowStatictics();
-	virtual ~ByteCounts(void);
+	ByteCount(void);
+	~ByteCount(void);
+	void add(BYTE byte_value);
+	BYTE getMax();
 private:
-	vector<WORD> m_vecBytes;
+	WORD * bytes_;
 };
 
 
@@ -27,11 +25,20 @@ private:
 
 class IOLIBRARY_EXPORT XorAnalyzer
 {
+private:
+	std::string dump_file_;
+	HANDLE hDump_;
 public:
-	XorAnalyzer(void);
+	XorAnalyzer()
+	{}
+	XorAnalyzer(const std::string & dump_file);
 	~XorAnalyzer(void);
+	bool open();
+	void close();
 
-	void Analize( const std::string & dump_file , const std::string & result_xor , DWORD xor_size);
+	void Analize(const std::string & result_xor, DWORD xor_size);
+
+	DWORD getChunckBufferSize(DWORD chunck_size, int nChunck, DWORD xor_size );
 
 };
 
