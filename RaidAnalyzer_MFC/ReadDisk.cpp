@@ -221,6 +221,7 @@ UINT CReadDisk::run()
 
 	DWORD dwResultWait = 0;
 	//::SetFilePointerEx(m_hDevice,liPosMOVE,NULL,FILE_BEGIN);
+	LONGLONG lSector = 0;
 	while (liPosMOVE.QuadPart < m_ReadRange.lTo)
 	{
 		dwResultWait = ::WaitForMultipleObjects(2,m_hLockThread,FALSE,INFINITE);
@@ -237,7 +238,9 @@ UINT CReadDisk::run()
 				if (ReadData(pBuffer->m_pAddess,&dwBytesRead,&m_oOverlap,dwBlockSize) )
 				{
 					pBuffer->setDiskNumber(m_iDriveNumber);
-					pBuffer->setLBA(liPosMOVE.QuadPart / m_dwSectorSize); // ??????????????
+					lSector = liPosMOVE.QuadPart;
+					lSector /= m_dwSectorSize;
+					pBuffer->setLBA(lSector); 
 					pBuffer->setSize(dwBytesRead);
 					m_pMap->addToQueueList(pBuffer);
 				}

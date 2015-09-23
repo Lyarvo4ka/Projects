@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'erasetask.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'erasetask.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,16 +20,17 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_QuickEraseTask_t {
     QByteArrayData data[1];
-    char stringdata[15];
+    char stringdata0[15];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_QuickEraseTask_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_QuickEraseTask_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_QuickEraseTask_t qt_meta_stringdata_QuickEraseTask = {
     {
-QT_MOC_LITERAL(0, 0, 14)
+QT_MOC_LITERAL(0, 0, 14) // "QuickEraseTask"
+
     },
     "QuickEraseTask"
 };
@@ -61,7 +62,7 @@ void QuickEraseTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
 
 const QMetaObject QuickEraseTask::staticMetaObject = {
     { &QuickVerifyTask::staticMetaObject, qt_meta_stringdata_QuickEraseTask.data,
-      qt_meta_data_QuickEraseTask,  qt_static_metacall, 0, 0}
+      qt_meta_data_QuickEraseTask,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -72,8 +73,8 @@ const QMetaObject *QuickEraseTask::metaObject() const
 
 void *QuickEraseTask::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_QuickEraseTask.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_QuickEraseTask.stringdata0))
         return static_cast<void*>(const_cast< QuickEraseTask*>(this));
     return QuickVerifyTask::qt_metacast(_clname);
 }
@@ -87,32 +88,33 @@ int QuickEraseTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_EraseTabWidget_t {
     QByteArrayData data[17];
-    char stringdata[202];
+    char stringdata0[202];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_EraseTabWidget_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_EraseTabWidget_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_EraseTabWidget_t qt_meta_stringdata_EraseTabWidget = {
     {
-QT_MOC_LITERAL(0, 0, 14),
-QT_MOC_LITERAL(1, 15, 14),
-QT_MOC_LITERAL(2, 30, 0),
-QT_MOC_LITERAL(3, 31, 6),
-QT_MOC_LITERAL(4, 38, 17),
-QT_MOC_LITERAL(5, 56, 15),
-QT_MOC_LITERAL(6, 72, 4),
-QT_MOC_LITERAL(7, 77, 11),
-QT_MOC_LITERAL(8, 89, 14),
-QT_MOC_LITERAL(9, 104, 13),
-QT_MOC_LITERAL(10, 118, 10),
-QT_MOC_LITERAL(11, 129, 15),
-QT_MOC_LITERAL(12, 145, 12),
-QT_MOC_LITERAL(13, 158, 15),
-QT_MOC_LITERAL(14, 174, 10),
-QT_MOC_LITERAL(15, 185, 9),
-QT_MOC_LITERAL(16, 195, 6)
+QT_MOC_LITERAL(0, 0, 14), // "EraseTabWidget"
+QT_MOC_LITERAL(1, 15, 14), // "device_changed"
+QT_MOC_LITERAL(2, 30, 0), // ""
+QT_MOC_LITERAL(3, 31, 6), // "nIndex"
+QT_MOC_LITERAL(4, 38, 17), // "StartDetectDevice"
+QT_MOC_LITERAL(5, 56, 15), // "const DM::PORT*"
+QT_MOC_LITERAL(6, 72, 4), // "port"
+QT_MOC_LITERAL(7, 77, 11), // "current_lba"
+QT_MOC_LITERAL(8, 89, 14), // "current_sector"
+QT_MOC_LITERAL(9, 104, 13), // "task_finished"
+QT_MOC_LITERAL(10, 118, 10), // "lastSector"
+QT_MOC_LITERAL(11, 129, 15), // "thread_finished"
+QT_MOC_LITERAL(12, 145, 12), // "task_breaked"
+QT_MOC_LITERAL(13, 158, 15), // "detect_finished"
+QT_MOC_LITERAL(14, 174, 10), // "task_error"
+QT_MOC_LITERAL(15, 185, 9), // "BadSector"
+QT_MOC_LITERAL(16, 195, 6) // "sector"
+
     },
     "EraseTabWidget\0device_changed\0\0nIndex\0"
     "StartDetectDevice\0const DM::PORT*\0"
@@ -167,6 +169,7 @@ void EraseTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         EraseTabWidget *_t = static_cast<EraseTabWidget *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->device_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->StartDetectDevice((*reinterpret_cast< const DM::PORT*(*)>(_a[1]))); break;
@@ -185,7 +188,7 @@ void EraseTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
 
 const QMetaObject EraseTabWidget::staticMetaObject = {
     { &BaseTabWidget::staticMetaObject, qt_meta_stringdata_EraseTabWidget.data,
-      qt_meta_data_EraseTabWidget,  qt_static_metacall, 0, 0}
+      qt_meta_data_EraseTabWidget,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -196,8 +199,8 @@ const QMetaObject *EraseTabWidget::metaObject() const
 
 void *EraseTabWidget::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_EraseTabWidget.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_EraseTabWidget.stringdata0))
         return static_cast<void*>(const_cast< EraseTabWidget*>(this));
     return BaseTabWidget::qt_metacast(_clname);
 }

@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'optionsmanager.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'optionsmanager.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,22 +20,23 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_DevicePresenter_t {
     QByteArrayData data[7];
-    char stringdata[81];
+    char stringdata0[81];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_DevicePresenter_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_DevicePresenter_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_DevicePresenter_t qt_meta_stringdata_DevicePresenter = {
     {
-QT_MOC_LITERAL(0, 0, 15),
-QT_MOC_LITERAL(1, 16, 13),
-QT_MOC_LITERAL(2, 30, 0),
-QT_MOC_LITERAL(3, 31, 6),
-QT_MOC_LITERAL(4, 38, 15),
-QT_MOC_LITERAL(5, 54, 10),
-QT_MOC_LITERAL(6, 65, 15)
+QT_MOC_LITERAL(0, 0, 15), // "DevicePresenter"
+QT_MOC_LITERAL(1, 16, 13), // "Chirp_changed"
+QT_MOC_LITERAL(2, 30, 0), // ""
+QT_MOC_LITERAL(3, 31, 6), // "iChirp"
+QT_MOC_LITERAL(4, 38, 15), // "EndBeep_changed"
+QT_MOC_LITERAL(5, 54, 10), // "iBeepValue"
+QT_MOC_LITERAL(6, 65, 15) // "CRCBeep_changed"
+
     },
     "DevicePresenter\0Chirp_changed\0\0iChirp\0"
     "EndBeep_changed\0iBeepValue\0CRCBeep_changed"
@@ -72,6 +73,7 @@ void DevicePresenter::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         DevicePresenter *_t = static_cast<DevicePresenter *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->Chirp_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->EndBeep_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
@@ -83,7 +85,7 @@ void DevicePresenter::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
 
 const QMetaObject DevicePresenter::staticMetaObject = {
     { &QObject::staticMetaObject, qt_meta_stringdata_DevicePresenter.data,
-      qt_meta_data_DevicePresenter,  qt_static_metacall, 0, 0}
+      qt_meta_data_DevicePresenter,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -94,8 +96,8 @@ const QMetaObject *DevicePresenter::metaObject() const
 
 void *DevicePresenter::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_DevicePresenter.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_DevicePresenter.stringdata0))
         return static_cast<void*>(const_cast< DevicePresenter*>(this));
     return QObject::qt_metacast(_clname);
 }

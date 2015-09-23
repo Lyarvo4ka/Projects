@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'maintaskwidget.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'maintaskwidget.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,20 +20,21 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_SectorModifyDialog_t {
     QByteArrayData data[5];
-    char stringdata[67];
+    char stringdata0[67];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_SectorModifyDialog_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_SectorModifyDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_SectorModifyDialog_t qt_meta_stringdata_SectorModifyDialog = {
     {
-QT_MOC_LITERAL(0, 0, 18),
-QT_MOC_LITERAL(1, 19, 15),
-QT_MOC_LITERAL(2, 35, 0),
-QT_MOC_LITERAL(3, 36, 14),
-QT_MOC_LITERAL(4, 51, 15)
+QT_MOC_LITERAL(0, 0, 18), // "SectorModifyDialog"
+QT_MOC_LITERAL(1, 19, 15), // "ModifySignature"
+QT_MOC_LITERAL(2, 35, 0), // ""
+QT_MOC_LITERAL(3, 36, 14), // "WriteSignature"
+QT_MOC_LITERAL(4, 51, 15) // "VerifySignature"
+
     },
     "SectorModifyDialog\0ModifySignature\0\0"
     "WriteSignature\0VerifySignature"
@@ -70,6 +71,7 @@ void SectorModifyDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         SectorModifyDialog *_t = static_cast<SectorModifyDialog *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->ModifySignature(); break;
         case 1: _t->WriteSignature(); break;
@@ -82,7 +84,7 @@ void SectorModifyDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
 
 const QMetaObject SectorModifyDialog::staticMetaObject = {
     { &QDialog::staticMetaObject, qt_meta_stringdata_SectorModifyDialog.data,
-      qt_meta_data_SectorModifyDialog,  qt_static_metacall, 0, 0}
+      qt_meta_data_SectorModifyDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -93,8 +95,8 @@ const QMetaObject *SectorModifyDialog::metaObject() const
 
 void *SectorModifyDialog::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_SectorModifyDialog.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_SectorModifyDialog.stringdata0))
         return static_cast<void*>(const_cast< SectorModifyDialog*>(this));
     return QDialog::qt_metacast(_clname);
 }
@@ -117,44 +119,45 @@ int SectorModifyDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_MainTaskWidget_t {
     QByteArrayData data[29];
-    char stringdata[416];
+    char stringdata0[416];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_MainTaskWidget_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_MainTaskWidget_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_MainTaskWidget_t qt_meta_stringdata_MainTaskWidget = {
     {
-QT_MOC_LITERAL(0, 0, 14),
-QT_MOC_LITERAL(1, 15, 17),
-QT_MOC_LITERAL(2, 33, 0),
-QT_MOC_LITERAL(3, 34, 17),
-QT_MOC_LITERAL(4, 52, 8),
-QT_MOC_LITERAL(5, 61, 16),
-QT_MOC_LITERAL(6, 78, 12),
-QT_MOC_LITERAL(7, 91, 12),
-QT_MOC_LITERAL(8, 104, 13),
-QT_MOC_LITERAL(9, 118, 19),
-QT_MOC_LITERAL(10, 138, 11),
-QT_MOC_LITERAL(11, 150, 20),
-QT_MOC_LITERAL(12, 171, 17),
-QT_MOC_LITERAL(13, 189, 19),
-QT_MOC_LITERAL(14, 209, 18),
-QT_MOC_LITERAL(15, 228, 12),
-QT_MOC_LITERAL(16, 241, 14),
-QT_MOC_LITERAL(17, 256, 13),
-QT_MOC_LITERAL(18, 270, 14),
-QT_MOC_LITERAL(19, 285, 15),
-QT_MOC_LITERAL(20, 301, 14),
-QT_MOC_LITERAL(21, 316, 8),
-QT_MOC_LITERAL(22, 325, 10),
-QT_MOC_LITERAL(23, 336, 15),
-QT_MOC_LITERAL(24, 352, 6),
-QT_MOC_LITERAL(25, 359, 12),
-QT_MOC_LITERAL(26, 372, 11),
-QT_MOC_LITERAL(27, 384, 14),
-QT_MOC_LITERAL(28, 399, 16)
+QT_MOC_LITERAL(0, 0, 14), // "MainTaskWidget"
+QT_MOC_LITERAL(1, 15, 17), // "ShowCurrentWidget"
+QT_MOC_LITERAL(2, 33, 0), // ""
+QT_MOC_LITERAL(3, 34, 17), // "const DMItemIdex*"
+QT_MOC_LITERAL(4, 52, 8), // "LoadTask"
+QT_MOC_LITERAL(5, 61, 16), // "DeviceDisappered"
+QT_MOC_LITERAL(6, 78, 12), // "SelectedItem"
+QT_MOC_LITERAL(7, 91, 12), // "ItemSelected"
+QT_MOC_LITERAL(8, 104, 13), // "AddDiskMaster"
+QT_MOC_LITERAL(9, 118, 19), // "DM::DiskController*"
+QT_MOC_LITERAL(10, 138, 11), // "disk_master"
+QT_MOC_LITERAL(11, 150, 20), // "RemoveDiskMasterItem"
+QT_MOC_LITERAL(12, 171, 17), // "CopyButtonClicked"
+QT_MOC_LITERAL(13, 189, 19), // "VerifyButtonClicked"
+QT_MOC_LITERAL(14, 209, 18), // "EraseButtonClicked"
+QT_MOC_LITERAL(15, 228, 12), // "ModifySector"
+QT_MOC_LITERAL(16, 241, 14), // "ElementClicked"
+QT_MOC_LITERAL(17, 256, 13), // "clicked_index"
+QT_MOC_LITERAL(18, 270, 14), // "Double_Clicked"
+QT_MOC_LITERAL(19, 285, 15), // "ElementSelected"
+QT_MOC_LITERAL(20, 301, 14), // "QItemSelection"
+QT_MOC_LITERAL(21, 316, 8), // "selected"
+QT_MOC_LITERAL(22, 325, 10), // "deselected"
+QT_MOC_LITERAL(23, 336, 15), // "setButtonEnable"
+QT_MOC_LITERAL(24, 352, 6), // "enable"
+QT_MOC_LITERAL(25, 359, 12), // "changeEnable"
+QT_MOC_LITERAL(26, 372, 11), // "model_index"
+QT_MOC_LITERAL(27, 384, 14), // "UpdateTreeView"
+QT_MOC_LITERAL(28, 399, 16) // "LoadTask_ckicked"
+
     },
     "MainTaskWidget\0ShowCurrentWidget\0\0"
     "const DMItemIdex*\0LoadTask\0DeviceDisappered\0"
@@ -236,6 +239,7 @@ void MainTaskWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         MainTaskWidget *_t = static_cast<MainTaskWidget *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->ShowCurrentWidget((*reinterpret_cast< const DMItemIdex*(*)>(_a[1])),(*reinterpret_cast< int(*)>(_a[2]))); break;
         case 1: _t->LoadTask((*reinterpret_cast< const DMItemIdex*(*)>(_a[1])),(*reinterpret_cast< const QString(*)>(_a[2]))); break;
@@ -257,6 +261,18 @@ void MainTaskWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         case 17: _t->UpdateTreeView(); break;
         case 18: _t->LoadTask_ckicked(); break;
         default: ;
+        }
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 13:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 1:
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QItemSelection >(); break;
+            }
+            break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
@@ -296,7 +312,7 @@ void MainTaskWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
 
 const QMetaObject MainTaskWidget::staticMetaObject = {
     { &QWidget::staticMetaObject, qt_meta_stringdata_MainTaskWidget.data,
-      qt_meta_data_MainTaskWidget,  qt_static_metacall, 0, 0}
+      qt_meta_data_MainTaskWidget,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -307,8 +323,8 @@ const QMetaObject *MainTaskWidget::metaObject() const
 
 void *MainTaskWidget::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_MainTaskWidget.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_MainTaskWidget.stringdata0))
         return static_cast<void*>(const_cast< MainTaskWidget*>(this));
     return QWidget::qt_metacast(_clname);
 }
@@ -324,7 +340,7 @@ int MainTaskWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         _id -= 19;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         if (_id < 19)
-            *reinterpret_cast<int*>(_a[0]) = -1;
+            qt_static_metacall(this, _c, _id, _a);
         _id -= 19;
     }
     return _id;
@@ -333,34 +349,34 @@ int MainTaskWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 // SIGNAL 0
 void MainTaskWidget::ShowCurrentWidget(const DMItemIdex * _t1, int _t2)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
 void MainTaskWidget::LoadTask(const DMItemIdex * _t1, const QString & _t2)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
 void MainTaskWidget::DeviceDisappered(const DMItemIdex * _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
 // SIGNAL 3
 void MainTaskWidget::SelectedItem()
 {
-    QMetaObject::activate(this, &staticMetaObject, 3, 0);
+    QMetaObject::activate(this, &staticMetaObject, 3, Q_NULLPTR);
 }
 
 // SIGNAL 4
 void MainTaskWidget::ItemSelected(const DMItemIdex * _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 QT_END_MOC_NAMESPACE

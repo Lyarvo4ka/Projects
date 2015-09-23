@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'copypropertiesui.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'copypropertiesui.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,23 +20,24 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_CopyPropertiesUi_t {
     QByteArrayData data[8];
-    char stringdata[106];
+    char stringdata0[106];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_CopyPropertiesUi_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyPropertiesUi_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyPropertiesUi_t qt_meta_stringdata_CopyPropertiesUi = {
     {
-QT_MOC_LITERAL(0, 0, 16),
-QT_MOC_LITERAL(1, 17, 15),
-QT_MOC_LITERAL(2, 33, 0),
-QT_MOC_LITERAL(3, 34, 10),
-QT_MOC_LITERAL(4, 45, 16),
-QT_MOC_LITERAL(5, 62, 13),
-QT_MOC_LITERAL(6, 76, 17),
-QT_MOC_LITERAL(7, 94, 11)
+QT_MOC_LITERAL(0, 0, 16), // "CopyPropertiesUi"
+QT_MOC_LITERAL(1, 17, 15), // "JumpSizeChanged"
+QT_MOC_LITERAL(2, 33, 0), // ""
+QT_MOC_LITERAL(3, 34, 10), // "size_value"
+QT_MOC_LITERAL(4, 45, 16), // "DirectionChanged"
+QT_MOC_LITERAL(5, 62, 13), // "new_direction"
+QT_MOC_LITERAL(6, 76, 17), // "ReadUnReadChanged"
+QT_MOC_LITERAL(7, 94, 11) // "check_value"
+
     },
     "CopyPropertiesUi\0JumpSizeChanged\0\0"
     "size_value\0DirectionChanged\0new_direction\0"
@@ -74,6 +75,7 @@ void CopyPropertiesUi::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         CopyPropertiesUi *_t = static_cast<CopyPropertiesUi *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->JumpSizeChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->DirectionChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
@@ -85,7 +87,7 @@ void CopyPropertiesUi::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
 
 const QMetaObject CopyPropertiesUi::staticMetaObject = {
     { &QWidget::staticMetaObject, qt_meta_stringdata_CopyPropertiesUi.data,
-      qt_meta_data_CopyPropertiesUi,  qt_static_metacall, 0, 0}
+      qt_meta_data_CopyPropertiesUi,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -96,8 +98,8 @@ const QMetaObject *CopyPropertiesUi::metaObject() const
 
 void *CopyPropertiesUi::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_CopyPropertiesUi.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_CopyPropertiesUi.stringdata0))
         return static_cast<void*>(const_cast< CopyPropertiesUi*>(this));
     return QWidget::qt_metacast(_clname);
 }

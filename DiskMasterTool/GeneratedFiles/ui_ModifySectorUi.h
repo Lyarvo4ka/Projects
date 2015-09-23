@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ModifySectorUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.3.2
+** Created by: Qt User Interface Compiler version 5.5.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -68,7 +68,6 @@ public:
         ModifyButton->setSizePolicy(sizePolicy1);
         ModifyButton->setCheckable(false);
         ModifyButton->setAutoRepeat(false);
-        ModifyButton->setDefault(false);
         ModifyButton->setFlat(false);
 
         verticalLayout->addWidget(ModifyButton);
@@ -113,6 +112,9 @@ public:
 
         retranslateUi(ModifySectorUi);
         QObject::connect(okButton, SIGNAL(clicked()), ModifySectorUi, SLOT(accept()));
+
+        ModifyButton->setDefault(false);
+
 
         QMetaObject::connectSlotsByName(ModifySectorUi);
     } // setupUi

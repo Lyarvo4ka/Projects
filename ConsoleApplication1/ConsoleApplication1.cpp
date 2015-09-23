@@ -63,18 +63,25 @@ void show_error_invalid_params()
 //#include "IOLibrary/dbf.h"
 //#include "IOLibrary/XorAnalyzer.h"
 #include "IOLibrary/MovRaw.h"
+#include "IOLibrary/RemoveInserts.h"
+
 
 int main(int argc, char *argv[])
 {
-	CanonMovRaw mov_raw("d:\\PaboTa\\38208\\image.bin" , "e:\\38208\\");
-	mov_raw.setClusterSize(131072);
-	mov_raw.execute();
+	//CanonMovRaw mov_raw("d:\\PaboTa\\38208\\image.bin" , "e:\\38208\\");
+	//mov_raw.setClusterSize(131072);
+	//mov_raw.execute();
 
 	////9347072
-	//if (argc == 4)
-	//{
-	//	std::string dump_file = argv[1];
-	//	std::string xor_file = argv[2];
+	if (argc == 3)
+	{
+		std::string dump_file = argv[1];
+		std::string target_file = argv[2];
+		change_tetrada_dump(dump_file, target_file);
+	}
+	else
+		std::cout << "You entered invalid params." << std::endl;
+
 	//	std::string block_str = argv[3];
 	//	DWORD block_size = strtol(block_str.c_str(), NULL, 10);
 

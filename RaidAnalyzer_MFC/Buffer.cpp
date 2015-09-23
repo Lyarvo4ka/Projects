@@ -294,12 +294,15 @@ void CMapAddress::deleteBuffer()
 	for (;mapPos = m_mapBuffer.GetStartPosition(); mapPos != NULL) 
 	{
 		m_mapBuffer.GetNextAssoc(mapPos,RemoveLBA,(CDisksBuffers*&)pRemoveBuffers);
-		for ( int iPos = 0; iPos < m_iDiskCount; ++iPos)
+		if (pRemoveBuffers)
 		{
-			if (pRemoveBuffers->m_pArrayPointers[iPos] != NULL)
-				pAllocBuffer->RemoveBuffer(pRemoveBuffers->m_pArrayPointers[iPos]);
+			for (int iPos = 0; iPos < m_iDiskCount; ++iPos)
+			{
+				if (pRemoveBuffers->m_pArrayPointers[iPos] != NULL)
+					pAllocBuffer->RemoveBuffer(pRemoveBuffers->m_pArrayPointers[iPos]);
+			}
+			delete pRemoveBuffers;
 		}
-		delete pRemoveBuffers;
 		m_mapBuffer.RemoveKey(RemoveLBA);
 	}
 

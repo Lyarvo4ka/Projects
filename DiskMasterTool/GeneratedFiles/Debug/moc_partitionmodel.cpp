@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'partitionmodel.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'partitionmodel.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,16 +20,17 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_PartitionTreeModel_t {
     QByteArrayData data[1];
-    char stringdata[19];
+    char stringdata0[19];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_PartitionTreeModel_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_PartitionTreeModel_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_PartitionTreeModel_t qt_meta_stringdata_PartitionTreeModel = {
     {
-QT_MOC_LITERAL(0, 0, 18)
+QT_MOC_LITERAL(0, 0, 18) // "PartitionTreeModel"
+
     },
     "PartitionTreeModel"
 };
@@ -61,7 +62,7 @@ void PartitionTreeModel::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
 
 const QMetaObject PartitionTreeModel::staticMetaObject = {
     { &QAbstractItemModel::staticMetaObject, qt_meta_stringdata_PartitionTreeModel.data,
-      qt_meta_data_PartitionTreeModel,  qt_static_metacall, 0, 0}
+      qt_meta_data_PartitionTreeModel,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -72,8 +73,8 @@ const QMetaObject *PartitionTreeModel::metaObject() const
 
 void *PartitionTreeModel::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_PartitionTreeModel.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_PartitionTreeModel.stringdata0))
         return static_cast<void*>(const_cast< PartitionTreeModel*>(this));
     return QAbstractItemModel::qt_metacast(_clname);
 }

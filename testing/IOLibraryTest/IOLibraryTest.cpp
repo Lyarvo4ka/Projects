@@ -159,3 +159,18 @@ BOOST_AUTO_TEST_CASE(getChunckBufferSizeTest)
 	BOOST_CHECK_EQUAL(actual, expected);
 
 }
+
+
+#include "IOLibrary/RemoveInserts.h"
+BOOST_AUTO_TEST_CASE(change_tetrada_Test)
+{
+
+	BYTE actual = change_tetrada(0xE2);
+	BYTE expected = 0xD2;
+
+	BOOST_CHECK_EQUAL(actual, expected);
+
+	actual = change_tetrada(0xB5);
+	expected = 0xD5;
+	BOOST_CHECK_EQUAL(actual, expected);
+}

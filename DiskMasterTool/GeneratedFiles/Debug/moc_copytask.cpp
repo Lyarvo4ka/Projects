@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'copytask.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'copytask.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,16 +20,17 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_QuickCopyTask_t {
     QByteArrayData data[1];
-    char stringdata[14];
+    char stringdata0[14];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_QuickCopyTask_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_QuickCopyTask_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_QuickCopyTask_t qt_meta_stringdata_QuickCopyTask = {
     {
-QT_MOC_LITERAL(0, 0, 13)
+QT_MOC_LITERAL(0, 0, 13) // "QuickCopyTask"
+
     },
     "QuickCopyTask"
 };
@@ -61,7 +62,7 @@ void QuickCopyTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 
 const QMetaObject QuickCopyTask::staticMetaObject = {
     { &AbstractTask::staticMetaObject, qt_meta_stringdata_QuickCopyTask.data,
-      qt_meta_data_QuickCopyTask,  qt_static_metacall, 0, 0}
+      qt_meta_data_QuickCopyTask,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -72,8 +73,8 @@ const QMetaObject *QuickCopyTask::metaObject() const
 
 void *QuickCopyTask::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_QuickCopyTask.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_QuickCopyTask.stringdata0))
         return static_cast<void*>(const_cast< QuickCopyTask*>(this));
     if (!strcmp(_clname, "AbstractTaskObserver"))
         return static_cast< AbstractTaskObserver*>(const_cast< QuickCopyTask*>(this));
@@ -89,16 +90,17 @@ int QuickCopyTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_SmartCopyTask_t {
     QByteArrayData data[1];
-    char stringdata[14];
+    char stringdata0[14];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_SmartCopyTask_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_SmartCopyTask_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_SmartCopyTask_t qt_meta_stringdata_SmartCopyTask = {
     {
-QT_MOC_LITERAL(0, 0, 13)
+QT_MOC_LITERAL(0, 0, 13) // "SmartCopyTask"
+
     },
     "SmartCopyTask"
 };
@@ -130,7 +132,7 @@ void SmartCopyTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 
 const QMetaObject SmartCopyTask::staticMetaObject = {
     { &QuickCopyTask::staticMetaObject, qt_meta_stringdata_SmartCopyTask.data,
-      qt_meta_data_SmartCopyTask,  qt_static_metacall, 0, 0}
+      qt_meta_data_SmartCopyTask,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -141,8 +143,8 @@ const QMetaObject *SmartCopyTask::metaObject() const
 
 void *SmartCopyTask::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_SmartCopyTask.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_SmartCopyTask.stringdata0))
         return static_cast<void*>(const_cast< SmartCopyTask*>(this));
     return QuickCopyTask::qt_metacast(_clname);
 }
@@ -156,37 +158,38 @@ int SmartCopyTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_CopyTabWidget_t {
     QByteArrayData data[22];
-    char stringdata[288];
+    char stringdata0[288];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_CopyTabWidget_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyTabWidget_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyTabWidget_t qt_meta_stringdata_CopyTabWidget = {
     {
-QT_MOC_LITERAL(0, 0, 13),
-QT_MOC_LITERAL(1, 14, 14),
-QT_MOC_LITERAL(2, 29, 0),
-QT_MOC_LITERAL(3, 30, 14),
-QT_MOC_LITERAL(4, 45, 13),
-QT_MOC_LITERAL(5, 59, 17),
-QT_MOC_LITERAL(6, 77, 18),
-QT_MOC_LITERAL(7, 96, 15),
-QT_MOC_LITERAL(8, 112, 11),
-QT_MOC_LITERAL(9, 124, 11),
-QT_MOC_LITERAL(10, 136, 15),
-QT_MOC_LITERAL(11, 152, 6),
-QT_MOC_LITERAL(12, 159, 17),
-QT_MOC_LITERAL(13, 177, 11),
-QT_MOC_LITERAL(14, 189, 13),
-QT_MOC_LITERAL(15, 203, 15),
-QT_MOC_LITERAL(16, 219, 12),
-QT_MOC_LITERAL(17, 232, 15),
-QT_MOC_LITERAL(18, 248, 10),
-QT_MOC_LITERAL(19, 259, 9),
-QT_MOC_LITERAL(20, 269, 6),
-QT_MOC_LITERAL(21, 276, 11)
+QT_MOC_LITERAL(0, 0, 13), // "CopyTabWidget"
+QT_MOC_LITERAL(1, 14, 14), // "source_changed"
+QT_MOC_LITERAL(2, 29, 0), // ""
+QT_MOC_LITERAL(3, 30, 14), // "target_changed"
+QT_MOC_LITERAL(4, 45, 13), // "pause_clicked"
+QT_MOC_LITERAL(5, 59, 17), // "StartDetectDevice"
+QT_MOC_LITERAL(6, 77, 18), // "StartDetectDevices"
+QT_MOC_LITERAL(7, 96, 15), // "const DM::PORT*"
+QT_MOC_LITERAL(8, 112, 11), // "source_port"
+QT_MOC_LITERAL(9, 124, 11), // "target_port"
+QT_MOC_LITERAL(10, 136, 15), // "cancelDetection"
+QT_MOC_LITERAL(11, 152, 6), // "result"
+QT_MOC_LITERAL(12, 159, 17), // "DeviceNotDetected"
+QT_MOC_LITERAL(13, 177, 11), // "current_lba"
+QT_MOC_LITERAL(14, 189, 13), // "task_finished"
+QT_MOC_LITERAL(15, 203, 15), // "thread_finished"
+QT_MOC_LITERAL(16, 219, 12), // "task_breaked"
+QT_MOC_LITERAL(17, 232, 15), // "detect_finished"
+QT_MOC_LITERAL(18, 248, 10), // "task_error"
+QT_MOC_LITERAL(19, 259, 9), // "BadSector"
+QT_MOC_LITERAL(20, 269, 6), // "sector"
+QT_MOC_LITERAL(21, 276, 11) // "onTimeTimer"
+
     },
     "CopyTabWidget\0source_changed\0\0"
     "target_changed\0pause_clicked\0"
@@ -253,6 +256,7 @@ void CopyTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         CopyTabWidget *_t = static_cast<CopyTabWidget *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->source_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->target_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
@@ -276,7 +280,7 @@ void CopyTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 
 const QMetaObject CopyTabWidget::staticMetaObject = {
     { &BaseTabWidget::staticMetaObject, qt_meta_stringdata_CopyTabWidget.data,
-      qt_meta_data_CopyTabWidget,  qt_static_metacall, 0, 0}
+      qt_meta_data_CopyTabWidget,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -287,8 +291,8 @@ const QMetaObject *CopyTabWidget::metaObject() const
 
 void *CopyTabWidget::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_CopyTabWidget.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_CopyTabWidget.stringdata0))
         return static_cast<void*>(const_cast< CopyTabWidget*>(this));
     return BaseTabWidget::qt_metacast(_clname);
 }

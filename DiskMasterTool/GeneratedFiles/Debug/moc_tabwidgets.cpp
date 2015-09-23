@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'tabwidgets.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'tabwidgets.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,34 +20,35 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_BaseTabWidget_t {
     QByteArrayData data[19];
-    char stringdata[236];
+    char stringdata0[236];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_BaseTabWidget_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_BaseTabWidget_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_BaseTabWidget_t qt_meta_stringdata_BaseTabWidget = {
     {
-QT_MOC_LITERAL(0, 0, 13),
-QT_MOC_LITERAL(1, 14, 15),
-QT_MOC_LITERAL(2, 30, 0),
-QT_MOC_LITERAL(3, 31, 10),
-QT_MOC_LITERAL(4, 42, 8),
-QT_MOC_LITERAL(5, 51, 8),
-QT_MOC_LITERAL(6, 60, 10),
-QT_MOC_LITERAL(7, 71, 5),
-QT_MOC_LITERAL(8, 77, 15),
-QT_MOC_LITERAL(9, 93, 13),
-QT_MOC_LITERAL(10, 107, 14),
-QT_MOC_LITERAL(11, 122, 12),
-QT_MOC_LITERAL(12, 135, 14),
-QT_MOC_LITERAL(13, 150, 15),
-QT_MOC_LITERAL(14, 166, 4),
-QT_MOC_LITERAL(15, 171, 18),
-QT_MOC_LITERAL(16, 190, 14),
-QT_MOC_LITERAL(17, 205, 17),
-QT_MOC_LITERAL(18, 223, 12)
+QT_MOC_LITERAL(0, 0, 13), // "BaseTabWidget"
+QT_MOC_LITERAL(1, 14, 15), // "progressUpdated"
+QT_MOC_LITERAL(2, 30, 0), // ""
+QT_MOC_LITERAL(3, 31, 10), // "closedTask"
+QT_MOC_LITERAL(4, 42, 8), // "removeMe"
+QT_MOC_LITERAL(5, 51, 8), // "QWidget*"
+QT_MOC_LITERAL(6, 60, 10), // "changeItem"
+QT_MOC_LITERAL(7, 71, 5), // "DWORD"
+QT_MOC_LITERAL(8, 77, 15), // "change_progress"
+QT_MOC_LITERAL(9, 93, 13), // "start_clicked"
+QT_MOC_LITERAL(10, 107, 14), // "cancel_clicked"
+QT_MOC_LITERAL(11, 122, 12), // "exit_clicked"
+QT_MOC_LITERAL(12, 135, 14), // "DeviceDetected"
+QT_MOC_LITERAL(13, 150, 15), // "const DM::PORT*"
+QT_MOC_LITERAL(14, 166, 4), // "port"
+QT_MOC_LITERAL(15, 171, 18), // "DeviceDisconencted"
+QT_MOC_LITERAL(16, 190, 14), // "FinishDetected"
+QT_MOC_LITERAL(17, 205, 17), // "DeviceNotDetected"
+QT_MOC_LITERAL(18, 223, 12) // "error_number"
+
     },
     "BaseTabWidget\0progressUpdated\0\0"
     "closedTask\0removeMe\0QWidget*\0changeItem\0"
@@ -113,6 +114,7 @@ void BaseTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         BaseTabWidget *_t = static_cast<BaseTabWidget *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->progressUpdated(); break;
         case 1: _t->closedTask(); break;
@@ -178,7 +180,7 @@ void BaseTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 
 const QMetaObject BaseTabWidget::staticMetaObject = {
     { &QWidget::staticMetaObject, qt_meta_stringdata_BaseTabWidget.data,
-      qt_meta_data_BaseTabWidget,  qt_static_metacall, 0, 0}
+      qt_meta_data_BaseTabWidget,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -189,8 +191,8 @@ const QMetaObject *BaseTabWidget::metaObject() const
 
 void *BaseTabWidget::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_BaseTabWidget.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_BaseTabWidget.stringdata0))
         return static_cast<void*>(const_cast< BaseTabWidget*>(this));
     if (!strcmp(_clname, "AbstractTaskCreator"))
         return static_cast< AbstractTaskCreator*>(const_cast< BaseTabWidget*>(this));
@@ -217,33 +219,33 @@ int BaseTabWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 // SIGNAL 0
 void BaseTabWidget::progressUpdated()
 {
-    QMetaObject::activate(this, &staticMetaObject, 0, 0);
+    QMetaObject::activate(this, &staticMetaObject, 0, Q_NULLPTR);
 }
 
 // SIGNAL 1
 void BaseTabWidget::closedTask()
 {
-    QMetaObject::activate(this, &staticMetaObject, 1, 0);
+    QMetaObject::activate(this, &staticMetaObject, 1, Q_NULLPTR);
 }
 
 // SIGNAL 2
 void BaseTabWidget::removeMe(QWidget * _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
 // SIGNAL 3
 void BaseTabWidget::changeItem(DWORD _t1, DWORD _t2, DWORD _t3)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)), const_cast<void*>(reinterpret_cast<const void*>(&_t3)) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
 // SIGNAL 4
 void BaseTabWidget::change_progress(DWORD _t1, int _t2)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 QT_END_MOC_NAMESPACE

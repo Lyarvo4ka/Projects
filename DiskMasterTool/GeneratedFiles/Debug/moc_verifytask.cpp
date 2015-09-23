@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'verifytask.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'verifytask.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,16 +20,17 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_QuickVerifyTask_t {
     QByteArrayData data[1];
-    char stringdata[16];
+    char stringdata0[16];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_QuickVerifyTask_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_QuickVerifyTask_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_QuickVerifyTask_t qt_meta_stringdata_QuickVerifyTask = {
     {
-QT_MOC_LITERAL(0, 0, 15)
+QT_MOC_LITERAL(0, 0, 15) // "QuickVerifyTask"
+
     },
     "QuickVerifyTask"
 };
@@ -61,7 +62,7 @@ void QuickVerifyTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
 
 const QMetaObject QuickVerifyTask::staticMetaObject = {
     { &AbstractTask::staticMetaObject, qt_meta_stringdata_QuickVerifyTask.data,
-      qt_meta_data_QuickVerifyTask,  qt_static_metacall, 0, 0}
+      qt_meta_data_QuickVerifyTask,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -72,8 +73,8 @@ const QMetaObject *QuickVerifyTask::metaObject() const
 
 void *QuickVerifyTask::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_QuickVerifyTask.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_QuickVerifyTask.stringdata0))
         return static_cast<void*>(const_cast< QuickVerifyTask*>(this));
     if (!strcmp(_clname, "AbstractTaskObserver"))
         return static_cast< AbstractTaskObserver*>(const_cast< QuickVerifyTask*>(this));
@@ -89,32 +90,33 @@ int QuickVerifyTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_VerifyTabWidget_t {
     QByteArrayData data[17];
-    char stringdata[203];
+    char stringdata0[203];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_VerifyTabWidget_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_VerifyTabWidget_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_VerifyTabWidget_t qt_meta_stringdata_VerifyTabWidget = {
     {
-QT_MOC_LITERAL(0, 0, 15),
-QT_MOC_LITERAL(1, 16, 14),
-QT_MOC_LITERAL(2, 31, 0),
-QT_MOC_LITERAL(3, 32, 6),
-QT_MOC_LITERAL(4, 39, 17),
-QT_MOC_LITERAL(5, 57, 15),
-QT_MOC_LITERAL(6, 73, 4),
-QT_MOC_LITERAL(7, 78, 11),
-QT_MOC_LITERAL(8, 90, 14),
-QT_MOC_LITERAL(9, 105, 13),
-QT_MOC_LITERAL(10, 119, 10),
-QT_MOC_LITERAL(11, 130, 15),
-QT_MOC_LITERAL(12, 146, 12),
-QT_MOC_LITERAL(13, 159, 15),
-QT_MOC_LITERAL(14, 175, 10),
-QT_MOC_LITERAL(15, 186, 9),
-QT_MOC_LITERAL(16, 196, 6)
+QT_MOC_LITERAL(0, 0, 15), // "VerifyTabWidget"
+QT_MOC_LITERAL(1, 16, 14), // "device_changed"
+QT_MOC_LITERAL(2, 31, 0), // ""
+QT_MOC_LITERAL(3, 32, 6), // "nIndex"
+QT_MOC_LITERAL(4, 39, 17), // "StartDetectDevice"
+QT_MOC_LITERAL(5, 57, 15), // "const DM::PORT*"
+QT_MOC_LITERAL(6, 73, 4), // "port"
+QT_MOC_LITERAL(7, 78, 11), // "current_lba"
+QT_MOC_LITERAL(8, 90, 14), // "current_sector"
+QT_MOC_LITERAL(9, 105, 13), // "task_finished"
+QT_MOC_LITERAL(10, 119, 10), // "lastSector"
+QT_MOC_LITERAL(11, 130, 15), // "thread_finished"
+QT_MOC_LITERAL(12, 146, 12), // "task_breaked"
+QT_MOC_LITERAL(13, 159, 15), // "detect_finished"
+QT_MOC_LITERAL(14, 175, 10), // "task_error"
+QT_MOC_LITERAL(15, 186, 9), // "BadSector"
+QT_MOC_LITERAL(16, 196, 6) // "sector"
+
     },
     "VerifyTabWidget\0device_changed\0\0nIndex\0"
     "StartDetectDevice\0const DM::PORT*\0"
@@ -169,6 +171,7 @@ void VerifyTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         VerifyTabWidget *_t = static_cast<VerifyTabWidget *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->device_changed((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 1: _t->StartDetectDevice((*reinterpret_cast< const DM::PORT*(*)>(_a[1]))); break;
@@ -187,7 +190,7 @@ void VerifyTabWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int 
 
 const QMetaObject VerifyTabWidget::staticMetaObject = {
     { &BaseTabWidget::staticMetaObject, qt_meta_stringdata_VerifyTabWidget.data,
-      qt_meta_data_VerifyTabWidget,  qt_static_metacall, 0, 0}
+      qt_meta_data_VerifyTabWidget,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -198,8 +201,8 @@ const QMetaObject *VerifyTabWidget::metaObject() const
 
 void *VerifyTabWidget::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_VerifyTabWidget.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_VerifyTabWidget.stringdata0))
         return static_cast<void*>(const_cast< VerifyTabWidget*>(this));
     return BaseTabWidget::qt_metacast(_clname);
 }

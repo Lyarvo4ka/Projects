@@ -1,4 +1,6 @@
 <RCC>
-    <qresource prefix="MainWindow">
-    </qresource>
+  <qresource prefix="MainWindow">
+    <file>icons/jpg_analyze.png</file>
+    <file>icons/jpg_analyze2.png</file>
+  </qresource>
 </RCC>

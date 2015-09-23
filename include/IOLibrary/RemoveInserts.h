@@ -303,4 +303,62 @@ void RemoveBytesByBitMap(const std::string & source_file , const std::string tar
 
 }
 
+BYTE change_tetrada(const BYTE tetrada)
+{
+	BYTE new_tetrada = tetrada;
+	new_tetrada &= 0x0F;
+	new_tetrada |= 0xD0;
+	return new_tetrada;
+}
+
+void change_tetrada_dump(const std::string &source_file, const std::string &target_file)
+{
+	HANDLE hSource = INVALID_HANDLE_VALUE;
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
+	if (!IO::open_read(hSource, source_file))
+	{
+		printf("error to open file.\r\n");
+		return;
+	}
+	if (!IO::create_file(hTarget, target_file))
+	{
+		printf("error to open file.\r\n");
+		return;
+	}
+
+	LONGLONG offset = 0;
+	LONGLONG file_size = IO::getFileSize(hSource);
+
+	const int page_size = 9216;
+	const int block_size = page_size * 258;
+	const int tetrada_pos = 9040;
+	BYTE buffer[block_size];
+	DWORD bytesRead = 0;
+	DWORD bytesWritten = 0;
+
+	BYTE tmp = 0;
+	while (offset < file_size )
+	{
+		IO::set_position(hSource , offset);
+		if ( !IO::read_block(hSource, buffer, block_size, bytesRead) )
+			break;
+		if ( bytesRead == 0 )
+			break;
+
+		BYTE * pByte = buffer + 9040;
+
+		tmp = change_tetrada(*pByte);
+		*pByte = tmp;
+
+		IO::set_position(hTarget, offset);
+		if (!IO::write_block(hTarget, buffer, block_size, bytesWritten))
+			break;
+		if (bytesWritten == 0)
+			break;
+
+		offset += block_size;
+	}
+
+}
+
 #endif 

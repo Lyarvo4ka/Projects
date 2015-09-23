@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'abstract_task.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'abstract_task.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,28 +20,29 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_AbstractTask_t {
     QByteArrayData data[13];
-    char stringdata[148];
+    char stringdata0[148];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_AbstractTask_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_AbstractTask_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_AbstractTask_t qt_meta_stringdata_AbstractTask = {
     {
-QT_MOC_LITERAL(0, 0, 12),
-QT_MOC_LITERAL(1, 13, 10),
-QT_MOC_LITERAL(2, 24, 0),
-QT_MOC_LITERAL(3, 25, 15),
-QT_MOC_LITERAL(4, 41, 12),
-QT_MOC_LITERAL(5, 54, 12),
-QT_MOC_LITERAL(6, 67, 10),
-QT_MOC_LITERAL(7, 78, 10),
-QT_MOC_LITERAL(8, 89, 11),
-QT_MOC_LITERAL(9, 101, 10),
-QT_MOC_LITERAL(10, 112, 13),
-QT_MOC_LITERAL(11, 126, 10),
-QT_MOC_LITERAL(12, 137, 10)
+QT_MOC_LITERAL(0, 0, 12), // "AbstractTask"
+QT_MOC_LITERAL(1, 13, 10), // "new_device"
+QT_MOC_LITERAL(2, 24, 0), // ""
+QT_MOC_LITERAL(3, 25, 15), // "const DM::PORT*"
+QT_MOC_LITERAL(4, 41, 12), // "disk_removed"
+QT_MOC_LITERAL(5, 54, 12), // "not_detected"
+QT_MOC_LITERAL(6, 67, 10), // "error_code"
+QT_MOC_LITERAL(7, 78, 10), // "update_lba"
+QT_MOC_LITERAL(8, 89, 11), // "finish_task"
+QT_MOC_LITERAL(9, 101, 10), // "break_task"
+QT_MOC_LITERAL(10, 112, 13), // "finish_detect"
+QT_MOC_LITERAL(11, 126, 10), // "error_task"
+QT_MOC_LITERAL(12, 137, 10) // "bad_sector"
+
     },
     "AbstractTask\0new_device\0\0const DM::PORT*\0"
     "disk_removed\0not_detected\0error_code\0"
@@ -92,6 +93,7 @@ void AbstractTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         AbstractTask *_t = static_cast<AbstractTask *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->new_device((*reinterpret_cast< const DM::PORT*(*)>(_a[1]))); break;
         case 1: _t->disk_removed((*reinterpret_cast< const DM::PORT*(*)>(_a[1]))); break;
@@ -166,7 +168,7 @@ void AbstractTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
 
 const QMetaObject AbstractTask::staticMetaObject = {
     { &QThread::staticMetaObject, qt_meta_stringdata_AbstractTask.data,
-      qt_meta_data_AbstractTask,  qt_static_metacall, 0, 0}
+      qt_meta_data_AbstractTask,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -177,8 +179,8 @@ const QMetaObject *AbstractTask::metaObject() const
 
 void *AbstractTask::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_AbstractTask.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_AbstractTask.stringdata0))
         return static_cast<void*>(const_cast< AbstractTask*>(this));
     return QThread::qt_metacast(_clname);
 }
@@ -203,62 +205,62 @@ int AbstractTask::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 // SIGNAL 0
 void AbstractTask::new_device(const DM::PORT * _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
 void AbstractTask::disk_removed(const DM::PORT * _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
 void AbstractTask::not_detected(const DM::PORT * _t1, int _t2)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)), const_cast<void*>(reinterpret_cast<const void*>(&_t2)) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
 // SIGNAL 3
 void AbstractTask::update_lba(const qlonglong _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
 // SIGNAL 4
 void AbstractTask::finish_task(const qlonglong _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 
 // SIGNAL 5
 void AbstractTask::break_task(const qlonglong _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 5, _a);
 }
 
 // SIGNAL 6
 void AbstractTask::finish_detect()
 {
-    QMetaObject::activate(this, &staticMetaObject, 6, 0);
+    QMetaObject::activate(this, &staticMetaObject, 6, Q_NULLPTR);
 }
 
 // SIGNAL 7
 void AbstractTask::error_task(int _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 7, _a);
 }
 
 // SIGNAL 8
 void AbstractTask::bad_sector(const qlonglong _t1)
 {
-    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 8, _a);
 }
 QT_END_MOC_NAMESPACE

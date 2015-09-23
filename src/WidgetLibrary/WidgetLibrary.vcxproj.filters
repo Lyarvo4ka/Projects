@@ -76,40 +76,16 @@
     <ClCompile Include="sectormapwidget.cpp">
       <Filter>Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_sectorview.cpp">
+    <ClCompile Include="optionwidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_copyrangewidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_sectorview.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_copyrangewidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_sectorview.cpp">
-      <Filter>Generated Files\ReleaseNew</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_sectormodel.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_sectormodel.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_sectormodel.cpp">
-      <Filter>Generated Files\ReleaseNew</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_sectormapwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_sectormapwidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_sectormapwidget.cpp">
-      <Filter>Generated Files\ReleaseNew</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_devicewidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_devicewidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_devicewidget.cpp">
+    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_copyrangewidget.cpp">
       <Filter>Generated Files\ReleaseNew</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_copywidget.cpp">
@@ -121,26 +97,50 @@
     <ClCompile Include="GeneratedFiles\ReleaseNew\moc_copywidget.cpp">
       <Filter>Generated Files\ReleaseNew</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_copyrangewidget.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_devicewidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_copyrangewidget.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_devicewidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_copyrangewidget.cpp">
+    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_devicewidget.cpp">
       <Filter>Generated Files\ReleaseNew</Filter>
-    </ClCompile>
-    <ClCompile Include="optionwidget.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_optionwidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_optionwidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
     <ClCompile Include="GeneratedFiles\ReleaseNew\moc_optionwidget.cpp">
       <Filter>Generated Files\ReleaseNew</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_optionwidget.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_sectormapwidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_sectormapwidget.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_sectormapwidget.cpp">
+      <Filter>Generated Files\ReleaseNew</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_sectormodel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_sectormodel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_sectormodel.cpp">
+      <Filter>Generated Files\ReleaseNew</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_sectorview.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_sectorview.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\ReleaseNew\moc_sectorview.cpp">
+      <Filter>Generated Files\ReleaseNew</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,41 +156,11 @@
     <CustomBuild Include="DeviceWidgetUi.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\copyrangewidget.h">
-      <Filter>Widgets\Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\copywidget.h">
-      <Filter>Widgets\Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\devicewidget.h">
-      <Filter>Widgets\Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\sectorview.h">
-      <Filter>View</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\sectormodel.h">
-      <Filter>Model</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\sectormapwidget.h">
-      <Filter>Widgets</Filter>
-    </CustomBuild>
     <CustomBuild Include="ErasePatternUi.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="OptionsWidget.ui">
       <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\optionwidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\IOptionsView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\widgetlibrary.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\include\WidgetLibrary\widgetlibrary_global.h">
-      <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="GeneratedFiles\ui_ErasePatternUi.h">
       <Filter>Generated Files</Filter>
@@ -207,5 +177,37 @@
     <CustomBuild Include="GeneratedFiles\ui_DeviceWidgetUi.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="copyrangewidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="copywidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="devicewidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="optionwidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sectormapwidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sectormodel.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="sectorview.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IOptionsView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="widgetlibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="widgetlibrary_global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

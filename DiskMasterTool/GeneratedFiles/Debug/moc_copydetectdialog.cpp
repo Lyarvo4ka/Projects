@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'copydetectdialog.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.3.2)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'copydetectdialog.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.3.2. It"
+#error "This file was generated using the moc from 5.5.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,20 +20,21 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_CopyProperiesUiDialog_t {
     QByteArrayData data[5];
-    char stringdata[76];
+    char stringdata0[76];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_CopyProperiesUiDialog_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyProperiesUiDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyProperiesUiDialog_t qt_meta_stringdata_CopyProperiesUiDialog = {
     {
-QT_MOC_LITERAL(0, 0, 21),
-QT_MOC_LITERAL(1, 22, 15),
-QT_MOC_LITERAL(2, 38, 0),
-QT_MOC_LITERAL(3, 39, 20),
-QT_MOC_LITERAL(4, 60, 15)
+QT_MOC_LITERAL(0, 0, 21), // "CopyProperiesUiDialog"
+QT_MOC_LITERAL(1, 22, 15), // "FullCopyClicked"
+QT_MOC_LITERAL(2, 38, 0), // ""
+QT_MOC_LITERAL(3, 39, 20), // "PartitionCopyClicked"
+QT_MOC_LITERAL(4, 60, 15) // "UserCopyClicked"
+
     },
     "CopyProperiesUiDialog\0FullCopyClicked\0"
     "\0PartitionCopyClicked\0UserCopyClicked"
@@ -70,6 +71,7 @@ void CopyProperiesUiDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         CopyProperiesUiDialog *_t = static_cast<CopyProperiesUiDialog *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->FullCopyClicked(); break;
         case 1: _t->PartitionCopyClicked(); break;
@@ -82,7 +84,7 @@ void CopyProperiesUiDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c
 
 const QMetaObject CopyProperiesUiDialog::staticMetaObject = {
     { &QDialog::staticMetaObject, qt_meta_stringdata_CopyProperiesUiDialog.data,
-      qt_meta_data_CopyProperiesUiDialog,  qt_static_metacall, 0, 0}
+      qt_meta_data_CopyProperiesUiDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -93,8 +95,8 @@ const QMetaObject *CopyProperiesUiDialog::metaObject() const
 
 void *CopyProperiesUiDialog::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_CopyProperiesUiDialog.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_CopyProperiesUiDialog.stringdata0))
         return static_cast<void*>(const_cast< CopyProperiesUiDialog*>(this));
     return QDialog::qt_metacast(_clname);
 }
@@ -117,18 +119,19 @@ int CopyProperiesUiDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_AbstractDetectDialog_t {
     QByteArrayData data[3];
-    char stringdata[29];
+    char stringdata0[29];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_AbstractDetectDialog_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_AbstractDetectDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_AbstractDetectDialog_t qt_meta_stringdata_AbstractDetectDialog = {
     {
-QT_MOC_LITERAL(0, 0, 20),
-QT_MOC_LITERAL(1, 21, 6),
-QT_MOC_LITERAL(2, 28, 0)
+QT_MOC_LITERAL(0, 0, 20), // "AbstractDetectDialog"
+QT_MOC_LITERAL(1, 21, 6), // "accept"
+QT_MOC_LITERAL(2, 28, 0) // ""
+
     },
     "AbstractDetectDialog\0accept\0"
 };
@@ -160,6 +163,7 @@ void AbstractDetectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         AbstractDetectDialog *_t = static_cast<AbstractDetectDialog *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->accept(); break;
         default: ;
@@ -170,7 +174,7 @@ void AbstractDetectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
 
 const QMetaObject AbstractDetectDialog::staticMetaObject = {
     { &QDialog::staticMetaObject, qt_meta_stringdata_AbstractDetectDialog.data,
-      qt_meta_data_AbstractDetectDialog,  qt_static_metacall, 0, 0}
+      qt_meta_data_AbstractDetectDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -181,8 +185,8 @@ const QMetaObject *AbstractDetectDialog::metaObject() const
 
 void *AbstractDetectDialog::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_AbstractDetectDialog.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_AbstractDetectDialog.stringdata0))
         return static_cast<void*>(const_cast< AbstractDetectDialog*>(this));
     return QDialog::qt_metacast(_clname);
 }
@@ -205,21 +209,22 @@ int AbstractDetectDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_CopyDetectDialog_t {
     QByteArrayData data[6];
-    char stringdata[90];
+    char stringdata0[90];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_CopyDetectDialog_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_CopyDetectDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_CopyDetectDialog_t qt_meta_stringdata_CopyDetectDialog = {
     {
-QT_MOC_LITERAL(0, 0, 16),
-QT_MOC_LITERAL(1, 17, 18),
-QT_MOC_LITERAL(2, 36, 0),
-QT_MOC_LITERAL(3, 37, 15),
-QT_MOC_LITERAL(4, 53, 20),
-QT_MOC_LITERAL(5, 74, 15)
+QT_MOC_LITERAL(0, 0, 16), // "CopyDetectDialog"
+QT_MOC_LITERAL(1, 17, 18), // "copySettingClicked"
+QT_MOC_LITERAL(2, 36, 0), // ""
+QT_MOC_LITERAL(3, 37, 15), // "fullCopyClicked"
+QT_MOC_LITERAL(4, 53, 20), // "partitionCopyClicked"
+QT_MOC_LITERAL(5, 74, 15) // "userCopyClicked"
+
     },
     "CopyDetectDialog\0copySettingClicked\0"
     "\0fullCopyClicked\0partitionCopyClicked\0"
@@ -259,6 +264,7 @@ void CopyDetectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
         CopyDetectDialog *_t = static_cast<CopyDetectDialog *>(_o);
+        Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->copySettingClicked(); break;
         case 1: _t->fullCopyClicked(); break;
@@ -272,7 +278,7 @@ void CopyDetectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int
 
 const QMetaObject CopyDetectDialog::staticMetaObject = {
     { &AbstractDetectDialog::staticMetaObject, qt_meta_stringdata_CopyDetectDialog.data,
-      qt_meta_data_CopyDetectDialog,  qt_static_metacall, 0, 0}
+      qt_meta_data_CopyDetectDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -283,8 +289,8 @@ const QMetaObject *CopyDetectDialog::metaObject() const
 
 void *CopyDetectDialog::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_CopyDetectDialog.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_CopyDetectDialog.stringdata0))
         return static_cast<void*>(const_cast< CopyDetectDialog*>(this));
     return AbstractDetectDialog::qt_metacast(_clname);
 }
@@ -307,16 +313,17 @@ int CopyDetectDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_VerifyDetectDialog_t {
     QByteArrayData data[1];
-    char stringdata[19];
+    char stringdata0[19];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_VerifyDetectDialog_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_VerifyDetectDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_VerifyDetectDialog_t qt_meta_stringdata_VerifyDetectDialog = {
     {
-QT_MOC_LITERAL(0, 0, 18)
+QT_MOC_LITERAL(0, 0, 18) // "VerifyDetectDialog"
+
     },
     "VerifyDetectDialog"
 };
@@ -348,7 +355,7 @@ void VerifyDetectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, i
 
 const QMetaObject VerifyDetectDialog::staticMetaObject = {
     { &AbstractDetectDialog::staticMetaObject, qt_meta_stringdata_VerifyDetectDialog.data,
-      qt_meta_data_VerifyDetectDialog,  qt_static_metacall, 0, 0}
+      qt_meta_data_VerifyDetectDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -359,8 +366,8 @@ const QMetaObject *VerifyDetectDialog::metaObject() const
 
 void *VerifyDetectDialog::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_VerifyDetectDialog.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_VerifyDetectDialog.stringdata0))
         return static_cast<void*>(const_cast< VerifyDetectDialog*>(this));
     return AbstractDetectDialog::qt_metacast(_clname);
 }
@@ -374,16 +381,17 @@ int VerifyDetectDialog::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 struct qt_meta_stringdata_EraseDetectDialog_t {
     QByteArrayData data[1];
-    char stringdata[18];
+    char stringdata0[18];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_EraseDetectDialog_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_EraseDetectDialog_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_EraseDetectDialog_t qt_meta_stringdata_EraseDetectDialog = {
     {
-QT_MOC_LITERAL(0, 0, 17)
+QT_MOC_LITERAL(0, 0, 17) // "EraseDetectDialog"
+
     },
     "EraseDetectDialog"
 };
@@ -415,7 +423,7 @@ void EraseDetectDialog::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
 
 const QMetaObject EraseDetectDialog::staticMetaObject = {
     { &AbstractDetectDialog::staticMetaObject, qt_meta_stringdata_EraseDetectDialog.data,
-      qt_meta_data_EraseDetectDialog,  qt_static_metacall, 0, 0}
+      qt_meta_data_EraseDetectDialog,  qt_static_metacall, Q_NULLPTR, Q_NULLPTR}
 };
 
 
@@ -426,8 +434,8 @@ const QMetaObject *EraseDetectDialog::metaObject() const
 
 void *EraseDetectDialog::qt_metacast(const char *_clname)
 {
-    if (!_clname) return 0;
-    if (!strcmp(_clname, qt_meta_stringdata_EraseDetectDialog.stringdata))
+    if (!_clname) return Q_NULLPTR;
+    if (!strcmp(_clname, qt_meta_stringdata_EraseDetectDialog.stringdata0))
         return static_cast<void*>(const_cast< EraseDetectDialog*>(this));
     return AbstractDetectDialog::qt_metacast(_clname);
 }

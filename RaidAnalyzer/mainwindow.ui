@@ -14,13 +14,13 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QTableView" name="tableView">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>711</width>
-      <height>321</height>
+      <y>0</y>
+      <width>691</width>
+      <height>331</height>
      </rect>
     </property>
    </widget>
@@ -34,6 +34,13 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionJpg_analyze"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -42,8 +49,18 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionJpg_analyze"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionJpg_analyze">
+   <property name="icon">
+    <iconset resource="mainwindow.qrc">
+     <normaloff>:/MainWindow/icons/jpg_analyze2.png</normaloff>:/MainWindow/icons/jpg_analyze2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Jpg analyze</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

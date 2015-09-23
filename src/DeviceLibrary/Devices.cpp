@@ -11,7 +11,7 @@ using std::remove_if;
 using std::sort;
 
 #include <boost/algorithm/string.hpp>
-using boost::trim;
+
 
 
 //////////////////////////////////////////
@@ -685,10 +685,10 @@ BOOL CPhysicalDevice::GetDiskGeometry(IDevice *_pDevice)
 }
 BOOL CPhysicalDevice::GetSerialNumber(IDevice *_pDevice)
 {
-/*	HANDLE hDevice = INVALID_HANDLE_VALUE;
-	if (_pDevice->GetPath() == NULL)
+	HANDLE hDevice = INVALID_HANDLE_VALUE;
+	if (_pDevice->GetPath().empty())
 		return FALSE;
-	hDevice = CreateFile(_pDevice->GetPath(),
+	hDevice = CreateFile(_pDevice->GetPath().c_str(),
 					   GENERIC_READ | GENERIC_WRITE,
 					   FILE_SHARE_READ | FILE_SHARE_WRITE  ,
 					   NULL,
@@ -732,28 +732,22 @@ BOOL CPhysicalDevice::GetSerialNumber(IDevice *_pDevice)
 	else
 	if (pDeviceDesc->SerialNumberOffset)
 	{
-		strBuff = (LPSTR)outBuff + pDeviceDesc->SerialNumberOffset;
-
-		if (strBuff.GetLength() > 4)
+		std::string serial_number = (LPSTR)outBuff + pDeviceDesc->SerialNumberOffset;
+		if (serial_number.size() > 0)
 		{
-			for (INT i = 0; i < strBuff.GetLength(); i += 4)
-			{
-				strSerialNumber += ASCI2HEX(strBuff.Mid(i+2, 2));
-				strSerialNumber += ASCI2HEX(strBuff.Mid(i, 2));
-			}
-			strSerialNumber.Trim();
-			strBuff.Empty();
-			m_DiskDrive.setSerialNumber(strSerialNumber);
+			boost::trim(serial_number);
+			_pDevice->SetSerialNumber((unsigned char*)serial_number.c_str());
+			return TRUE;
 
 		}
 		else
 		{
-			GetSerialFromSmart(hDisk);
+			return GetSerialFromSmart(_pDevice);
 		}
 
 	}	
 
-*/
+
 	return FALSE;
 }
 BOOL CPhysicalDevice::GetSystemDevice(CDiviceList & _deviceList)
@@ -879,7 +873,7 @@ BOOL CPhysicalDevice::GetSerialFromSmart(IDevice *_pDevice)
 		}
 		string sSerial((const char *)pSerial);
 		//remove_if(sSerial.begin(), sSerial.end(),isspace);
-		trim(sSerial);
+		boost::trim(sSerial);
 		
 		_pDevice->SetSerialNumber((BYTE *)sSerial.c_str());
 		delete pSerial;
@@ -895,7 +889,7 @@ BOOL CPhysicalDevice::GetSerialFromSmart(IDevice *_pDevice)
 			buffer[ModelSize - 1] = ' ';
 			_pDevice->SetBusType(WRITE_PROTECTOR);
 			string sModelName((const char *)buffer,ModelSize-2);
-			trim(sModelName);
+			boost::trim(sModelName);
 			_pDevice->SetName((BYTE *)sModelName.c_str());
 		}
 
@@ -1019,6 +1013,9 @@ BOOL CPhysicalDevice::GetDevice(IDevice *_pDevice, DWORD _iMemberIndex)
 		return FALSE;
 
 	if ( !(bResult = this->GetMaxTransferSize(_pDevice)) )
+		return FALSE;
+
+	if (!(bResult = this->GetSerialNumber(_pDevice)))
 		return FALSE;
 
 	CloseDevInfo(m_hDevInfo);
