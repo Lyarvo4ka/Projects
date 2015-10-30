@@ -113,7 +113,6 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 
 		boost::filesystem::path file_path(source_name);
 		std::string ext = file_path.extension().generic_string();
-		3
 
 		bool bResult = false;
 		std::string target_name;

@@ -6,6 +6,9 @@
 
 #define SIZEOF_ARRAY( a ) (sizeof( a ) / sizeof( a[ 0 ] ))
 
+typedef unsigned char uint8_t;
+typedef unsigned int uint32_t;
+
 namespace QTKeyword
 {
 	const char ftyp_name[] = "ftyp";
@@ -17,6 +20,20 @@ namespace QTKeyword
 	const char pnot_name[] = "pnot";
 
 
+
+};
+
+#include <array>
+#include <vector>
+
+namespace MLVKeywords
+{
+
+	static const char *mlv_array[] =	{ "MLVI", "VIDF", "AUDF", "RAWI", "WAVI", "EXPO", "LENS", "RTCI", 
+										  "IDNT", "XREF", "INFO", "DISO", "NULL", "ELVL", "WBAL", "STYL", 
+										  "MARK", "SUBC", "SUBI", "COLP", "DARK", "VIGN", "VERS" };
+	const int mlv_array_size = SIZEOF_ARRAY(mlv_array);
+	//const char mlv_header[] = ;
 
 };
 

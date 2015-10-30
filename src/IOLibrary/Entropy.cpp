@@ -1,4 +1,5 @@
 #include "Entropy.h"
+#include "FileFinder.h"
 
 
 
@@ -69,7 +70,21 @@ bool IO::calcEntropyForFile(const std::string & file_name, DWORD block_size)
 }
 
 
-void IO::removeLRV(const std::string & input_file, const std::string & output_file , DWORD cluster_size)
+void IOLIBRARY_EXPORT IO::calcEntropyForFolder(const std::string & folder, DWORD block_size)
+{
+	FileFinder finder;
+	stringlist all_files;
+	finder.FindFiles(folder, all_files);
+	stringlist files = finder.getFileNames();
+	auto iter = files.begin();
+	while (iter != files.end())
+	{
+		calcEntropyForFile(*iter, block_size);
+		++iter;
+	}
+}
+
+void IO::removeLRV(const std::string & input_file, const std::string & output_file, DWORD cluster_size)
 {
 	HANDLE hRead = INVALID_HANDLE_VALUE;
 	if (!IO::open_read(hRead, input_file))

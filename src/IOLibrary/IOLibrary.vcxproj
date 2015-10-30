@@ -123,14 +123,17 @@
     <ClInclude Include="..\..\include\IOLibrary\Entropy.h" />
     <ClInclude Include="..\..\include\IOLibrary\FileFinder.h" />
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h" />
+    <ClInclude Include="..\..\include\IOLibrary\GoPro_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\HexTexRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\iofs.h" />
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h" />
     <ClInclude Include="..\..\include\IOLibrary\iolibrary_global.h" />
+    <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />
     <ClInclude Include="..\..\include\IOLibrary\MTS_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
+    <ClInclude Include="..\..\include\IOLibrary\PanasonicRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\r3d_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\RemoveInserts.h" />
     <ClInclude Include="..\..\include\IOLibrary\SignatureTest.h" />

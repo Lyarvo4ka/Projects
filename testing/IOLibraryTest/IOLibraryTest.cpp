@@ -174,3 +174,30 @@ BOOST_AUTO_TEST_CASE(change_tetrada_Test)
 	expected = 0xD5;
 	BOOST_CHECK_EQUAL(actual, expected);
 }
+
+#include <IOLibrary/PanasonicRaw.h>
+BOOST_AUTO_TEST_CASE(make_audio_name_Test)
+{
+	//std::string actual = make_audio_name("file", 0);
+	//std::string expected = "file00";
+	//BOOST_CHECK_EQUAL(actual, expected);
+
+	//actual = make_audio_name("file", 1);
+	//expected = "file01";
+	//BOOST_CHECK_EQUAL(actual, expected);
+}
+
+#include <IOLibrary/MLV_raw.h>
+BOOST_AUTO_TEST_CASE(isMlvBlock_Test)
+{
+	mlv_block_t mlv_block;
+	const char wavi[] = "WAVI";
+	const char no_keyword[] = "AAAA";
+	//MLVI
+	memcpy(mlv_block.block_type, wavi, mlv_keyword_size);
+	BOOST_CHECK_EQUAL(isMlvBlock(&mlv_block), true);
+
+	memcpy(mlv_block.block_type, no_keyword, mlv_keyword_size);
+	BOOST_CHECK_EQUAL(isMlvBlock(&mlv_block), false);
+
+}

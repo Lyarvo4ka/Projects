@@ -64,6 +64,11 @@ void show_error_invalid_params()
 //#include "IOLibrary/XorAnalyzer.h"
 #include "IOLibrary/MovRaw.h"
 #include "IOLibrary/RemoveInserts.h"
+#include "IOLibrary/Entropy.h"
+#include "IOLibrary/PanasonicRaw.h"
+
+#include "IOLibrary/XorAnalyzer.h"
+#include "IOLibrary/GoPro_raw.h"
 
 
 int main(int argc, char *argv[])
@@ -72,18 +77,35 @@ int main(int argc, char *argv[])
 	//mov_raw.setClusterSize(131072);
 	//mov_raw.execute();
 
+	//DWORD target_number = 4;
+	//std::string target_file = drivePathFromNumber(target_number);
+	////std::string target_file = "d:\\PaboTa\\38569\\target.bin";
+	//
+	//std::string xor_file = "d:\\PaboTa\\38569\\encrypted_1.bin";
+	//DWORD drive_number = 3;
+	//XorHardDrive(drive_number, target_file, xor_file);
+
+
+
 	////9347072
-	if (argc == 3)
+	if (argc == 4)
 	{
-		std::string dump_file = argv[1];
-		std::string target_file = argv[2];
-		change_tetrada_dump(dump_file, target_file);
+
+
+		int i = 1;
+		i = 1;
+		//std::string source_folder = argv[1];
+		//std::string target_folder = argv[2];
+		//DWORD block_size = strtol(argv[3], NULL, 10);
+		//GoProgRaw gopro_raw(source_folder, target_folder);
+		//gopro_raw.execute(block_size);
+
+
+
+
 	}
 	else
 		std::cout << "You entered invalid params." << std::endl;
-
-	//	std::string block_str = argv[3];
-	//	DWORD block_size = strtol(block_str.c_str(), NULL, 10);
 
 
 	//	XorAnalyzer xorFinder(dump_file);

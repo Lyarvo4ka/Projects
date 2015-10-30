@@ -11,7 +11,9 @@
 #include "iofs.h"
 
 
-bool isDirectoryAttribute(const WIN32_FIND_DATAA & attributes)
+
+
+inline bool isDirectoryAttribute(const WIN32_FIND_DATAA & attributes)
 {
 	return attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
 }
@@ -33,7 +35,7 @@ public:
 
 	void FindFiles(const std::string & folder, const stringlist & ext)
 	{
-
+		FindFileRecursive(folder, ext);
 	}
 
 
@@ -71,12 +73,12 @@ private:
 				}
 
 				// Than it's must be file
-				if (!isDirectoryAttribute)
+				if (!isDirectoryAttribute(findData) )
 				{
 					std::string file_name(findData.cFileName);
 
 					auto file_ext = boost::filesystem::extension(file_name);
-					if (IO::isPresentInList(ext, file_ext))
+					//if (IO::isPresentInList(ext, file_ext))
 					{
 						file_list_.push_back(IO::make_file_path(folder, file_name));
 					}
@@ -94,5 +96,14 @@ private:
 
 
 };
+
+
+inline stringlist readAllFiles(const std::string & folder)
+{
+	FileFinder finder;
+	stringlist freelist;
+	finder.FindFiles(folder, freelist);
+	return finder.getFileNames();
+}
 
 #endif
