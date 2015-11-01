@@ -20,5 +20,28 @@ inline bool isMlvBlock(const mlv_block_t * pMlvBlock)
 	return false;
 }
 
+uint32_t read_block_drive(HANDLE & hDrive, uint64_t offset, uint8_t * data_buffer, uint32_t read_size)
+{
+	if (hDrive == INVALID_HANDLE_VALUE)
+		return 0;
+
+	DWORD bytesRead = 0;
+
+	uint32_t sector_offset = offset % SECTOR_SIZE;
+	uint32_t sector_to_read = (sector_offset + read_size) / SECTOR_SIZE;
+	uint32_t bytes_to_read = sector_to_read * SECTOR_SIZE;
+
+	uint8_t * sector_buffer = new uint8_t[bytes_to_read];
+
+	if (::ReadFile(hDrive, sector_buffer, bytes_to_read, &bytesRead, NULL))
+		if (bytesRead > 0)	
+			memcpy(data_buffer, sector_buffer + sector_offset, bytesRead);
+
+	delete[] sector_buffer;
+
+	return bytesRead;
+
+}
+
 
 #endif

@@ -6,8 +6,9 @@
 
 #define SIZEOF_ARRAY( a ) (sizeof( a ) / sizeof( a[ 0 ] ))
 
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
+typedef unsigned char		uint8_t;
+typedef unsigned long		uint32_t;
+typedef unsigned long long  uint64_t;
 
 namespace QTKeyword
 {
