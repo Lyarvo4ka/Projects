@@ -69,6 +69,7 @@ void show_error_invalid_params()
 
 #include "IOLibrary/XorAnalyzer.h"
 #include "IOLibrary/GoPro_raw.h"
+#include "IOLibrary/MLV_raw.h"
 
 
 int main(int argc, char *argv[])
@@ -88,17 +89,19 @@ int main(int argc, char *argv[])
 
 
 	////9347072
-	if (argc == 4)
+	if (argc == 3)
 	{
 
 
-		int i = 1;
+		int i = 513/512;
 		i = 1;
 		//std::string source_folder = argv[1];
-		//std::string target_folder = argv[2];
-		//DWORD block_size = strtol(argv[3], NULL, 10);
+		DWORD drive_number = strtol(argv[1], NULL, 10);
+		std::string target_folder = argv[2];
 		//GoProgRaw gopro_raw(source_folder, target_folder);
 		//gopro_raw.execute(block_size);
+		MLV_raw mlv_raw(drive_number, target_folder);
+		mlv_raw.execute();
 
 
 

@@ -6,23 +6,12 @@
 
 #define SIZEOF_ARRAY( a ) (sizeof( a ) / sizeof( a[ 0 ] ))
 
-typedef unsigned char		uint8_t;
-typedef unsigned long		uint32_t;
+//typedef unsigned char		uint8_t;
+//typedef unsigned long		uint32_t;
 typedef unsigned long long  uint64_t;
 
-namespace QTKeyword
-{
-	const char ftyp_name[] = "ftyp";
-	const char moov_name[] = "moov";
-	const char mdat_name[] = "mdat";
-	const char free_name[] = "free";
-	const char skip_name[] = "skip";
-	const char wide_name[] = "wide";
-	const char pnot_name[] = "pnot";
+const uint64_t ERROR_RESULT = _UI64_MAX;
 
-
-
-};
 
 #include <array>
 #include <vector>
@@ -34,9 +23,14 @@ namespace MLVKeywords
 										  "IDNT", "XREF", "INFO", "DISO", "NULL", "ELVL", "WBAL", "STYL", 
 										  "MARK", "SUBC", "SUBI", "COLP", "DARK", "VIGN", "VERS" };
 	const int mlv_array_size = SIZEOF_ARRAY(mlv_array);
-	//const char mlv_header[] = ;
-
 };
+
+namespace QTKeyword
+{
+	static const char * qt_array[] = { "ftyp", "moov", "mdat", "free", "skip", "wide", "pnot", "prfl", 
+									   "mvhd", "clip", "trak", "udta", "ctab", "cmov", "rmra" };
+	//const int 
+}
 
 namespace Signatures
 {
