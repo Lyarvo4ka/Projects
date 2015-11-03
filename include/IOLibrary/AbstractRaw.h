@@ -7,15 +7,6 @@
 #include "iofunctions.h"
 
 
-inline std::string drivePathFromNumber( const DWORD number )
-{
-		std::string sDrivePath = "\\\\.\\PhysicalDrive";
-		CHAR buff[10];
-		memset(buff,0,10);
-		sprintf_s(buff,10,"%d", number );
-		sDrivePath.append(buff);
-		return sDrivePath;
-}
 
 class AbstractRaw
 {

@@ -12,6 +12,16 @@ typedef std::list< std::string > stringlist;
 typedef std::vector< unsigned short > tablelist;
 
 
+inline std::string drivePathFromNumber(const DWORD number)
+{
+	std::string sDrivePath = "\\\\.\\PhysicalDrive";
+	CHAR buff[10];
+	memset(buff, 0, 10);
+	sprintf_s(buff, 10, "%d", number);
+	sDrivePath.append(buff);
+	return sDrivePath;
+}
+
 namespace IO
 {
 	bool IOLIBRARY_EXPORT open_read( HANDLE & handle , const std::string & path );

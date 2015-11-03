@@ -8,7 +8,7 @@
 
 //typedef unsigned char		uint8_t;
 //typedef unsigned long		uint32_t;
-typedef unsigned long long  uint64_t;
+//typedef unsigned long long  uint64_t;
 
 const uint64_t ERROR_RESULT = _UI64_MAX;
 
@@ -77,6 +77,8 @@ namespace Signatures
 };
 
 const int SECTOR_SIZE = 512;
+const int default_sector_size = 512;
+const int defalut_number_sectors = 128;
 const int SECTOR_COUNT = 64;
 const int BLOCK_SIZE = SECTOR_SIZE * SECTOR_COUNT;
 

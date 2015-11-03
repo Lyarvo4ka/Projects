@@ -2,6 +2,7 @@
 #define MLV_RAW_H
 
 #include "constants.h"
+#include <stdint.h>
 
 const uint32_t mlv_keyword_size = 4;
 
@@ -60,6 +61,99 @@ uint32_t read_block_drive(HANDLE & hDrive, uint64_t offset, uint8_t * data_buffe
 #include "AbstractRaw.h"
 
 const uint64_t sectros_3Tb = 5860533168;
+
+class AbstractReader
+{
+public:
+	AbstractReader(){};
+	virtual ~AbstractReader(){};
+
+	virtual bool open() = 0;
+	virtual void close() = 0;
+	virtual int read_data(uint8_t * data, int read_size, uint64_t offset) = 0;
+
+};
+
+class PhysicalReader
+	: public AbstractReader
+{
+private:
+	HANDLE hDrive_;
+	bool bOpened_;
+	int sector_size_;
+	int number_sectors_;
+	uint8_t *buffer_;
+	std::string path_;
+public:
+	PhysicalReader(const int drive_number )
+		: hDrive_(INVALID_HANDLE_VALUE)
+		, bOpened_(false)
+		, sector_size_(default_sector_size)
+		, number_sectors_(defalut_number_sectors)
+		, buffer_(nullptr)
+	{
+		path_ = drivePathFromNumber(drive_number);
+		int buffer_size = number_sectors_*sector_size_;
+		buffer_ = new uint8_t[buffer_size];
+		ZeroMemory(buffer_, buffer_size);
+	}
+	~PhysicalReader()
+	{
+		close();
+		remove_buffer();
+	}
+	bool open() override
+	{
+		bOpened_ = IO::open_read(hDrive_, path_);
+		return bOpened_;
+	}
+	void close()
+	{
+		CloseHandle(hDrive_);
+	}
+	int read_data(uint8_t * data, int read_size, uint64_t offset)
+	{
+		if (!bOpened_)
+			return -1;
+
+
+		uint32_t sector_offset = offset % sector_size_;
+		uint32_t sector_to_read = (sector_offset + read_size) / sector_size_ + 1;
+		uint32_t bytes_to_read = sector_to_read * sector_size_;
+		if (bytes_to_read == 0)
+			bytes_to_read = sector_size_;
+
+		int bytesWereRead = 0;
+
+		uint8_t * sector_buffer = new uint8_t[bytes_to_read];
+
+		LARGE_INTEGER liPos = { 0 };
+		liPos.QuadPart = offset;	// ?????
+		::SetFilePointerEx(hDrive, liPos, NULL, FILE_BEGIN);
+
+		if (::ReadFile(hDrive, sector_buffer, bytes_to_read, &bytesWereRead, NULL))
+		if (bytesRead > 0)
+		{
+			memcpy(data_buffer, sector_buffer + sector_offset, read_size);
+			bytesRead = read_size;
+		}
+
+		delete[] sector_buffer;
+
+		return bytesRead;
+	}
+private:
+	void remove_buffer()
+	{
+		if (buffer_)
+		{
+			delete[] buffer_;
+			buffer_ = nullptr;
+		}
+	}
+
+};
+
 class MLV_raw
 	: public AbstractRaw
 {
@@ -95,7 +189,7 @@ public:
 
 		
 
-		offset = 0xE100000000;
+		offset = 0;
 		//offset = 0xE4B06EAA00;
 		
 
