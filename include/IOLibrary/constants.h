@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <string>
+#include <stdint.h>
 
 #define SIZEOF_ARRAY( a ) (sizeof( a ) / sizeof( a[ 0 ] ))
 
@@ -29,6 +30,7 @@ namespace QTKeyword
 {
 	static const char * qt_array[] = { "ftyp", "moov", "mdat", "free", "skip", "wide", "pnot", "prfl", 
 									   "mvhd", "clip", "trak", "udta", "ctab", "cmov", "rmra" };
+	const int qt_array_size = SIZEOF_ARRAY(qt_array);
 	//const int 
 }
 
@@ -79,6 +81,7 @@ namespace Signatures
 const int SECTOR_SIZE = 512;
 const int default_sector_size = 512;
 const int defalut_number_sectors = 128;
+const int default_block_size = default_sector_size * default_sector_size;
 const int SECTOR_COUNT = 64;
 const int BLOCK_SIZE = SECTOR_SIZE * SECTOR_COUNT;
 

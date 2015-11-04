@@ -11,7 +11,252 @@
 #include "iolibrary_global.h"
 
 
+#include "AbstractRaw.h"
 
+
+
+class AbstractReader
+{
+public:
+	AbstractReader(){};
+	virtual ~AbstractReader(){};
+
+	virtual bool open() = 0;
+	virtual void close() = 0;
+	virtual int read_data(uint8_t * data, int read_size, uint64_t offset) = 0;
+
+};
+
+class PhysicalReader
+	: public AbstractReader
+{
+private:
+	HANDLE hDrive_;
+	bool bOpened_;
+	int sector_size_;
+	int number_sectors_;
+	uint8_t *buffer_;
+	std::string path_;
+public:
+	PhysicalReader(const int drive_number)
+		: hDrive_(INVALID_HANDLE_VALUE)
+		, bOpened_(false)
+		, sector_size_(default_sector_size)
+		, number_sectors_(defalut_number_sectors)
+		, buffer_(nullptr)
+	{
+		path_ = drivePathFromNumber(drive_number);
+		int buffer_size = number_sectors_*sector_size_;
+		buffer_ = new uint8_t[buffer_size];
+		ZeroMemory(buffer_, buffer_size);
+	}
+	~PhysicalReader()
+	{
+		close();
+		remove_buffer();
+	}
+	bool open() override
+	{
+		bOpened_ = IO::open_read(hDrive_, path_);
+		return bOpened_;
+	}
+	void close()
+	{
+		CloseHandle(hDrive_);
+	}
+	int read_data(uint8_t * data, int read_size, uint64_t offset)
+	{
+		if (!bOpened_)
+			return 0;
+
+		int buffer_size = sector_size_ * number_sectors_;
+
+		DWORD numByteRead = 0;
+		int sector_offset = offset % sector_size_;
+
+		if (sector_offset == 0 && read_size == buffer_size)
+		{
+			IO::set_position(hDrive_, offset);
+			if (::ReadFile(hDrive_, data, buffer_size, &numByteRead, NULL) == TRUE)
+				if (numByteRead > 0)
+					return numByteRead;
+		}
+		else
+		{
+			int sector_to_read = (sector_offset + read_size) / sector_size_ + 1;
+			int bytes_to_read = sector_to_read * sector_size_;
+			if (bytes_to_read > 0)
+			{
+				uint8_t * temp_buffer = new uint8_t[bytes_to_read];
+
+				uint64_t aling_offset = offset / sector_size_;
+				aling_offset *= sector_size_;
+				IO::set_position(hDrive_, aling_offset);
+				if (::ReadFile(hDrive_, temp_buffer, bytes_to_read, &numByteRead, NULL) == TRUE)
+					if (numByteRead > 0)
+					{
+						memcpy(data, temp_buffer + offset, read_size);
+						numByteRead = read_size;
+					}
+				delete[] temp_buffer;
+			}
+		}
+
+		return numByteRead;
+	}
+private:
+	void remove_buffer()
+	{
+		if (buffer_)
+		{
+			delete[] buffer_;
+			buffer_ = nullptr;
+		}
+	}
+
+};
+
+
+bool copy_data_to_file(AbstractReader * pReader, HANDLE * target_file, uint64_t offset, uint64_t copy_size)
+{
+	if (!pReader)
+		return false;
+	if (target_file == INVALID_HANDLE_VALUE)
+		return false;
+
+	int block_size = default_block_size;
+	uint8_t buffer[default_block_size];
+	ZeroMemory(buffer, default_block_size);
+
+	uint64_t cur_pos = 0;
+	uint64_t read_pos = 0;
+	int bytes_to_copy = block_size;
+	DWORD bytesWritten = 0;
+	
+	while (cur_pos < copy_size)
+	{
+		if ((cur_pos + block_size) < copy_size)
+			bytes_to_copy = block_size;
+		else
+			bytes_to_copy = copy_size - cur_pos;
+
+		read_pos = offset;
+		read_pos += cur_pos;
+		pReader->read_data(buffer, bytes_to_copy, read_pos);
+
+		if (!IO::write_block(*target_file, buffer, bytes_to_copy, bytesWritten) )
+			return false;
+		if (bytesWritten == 0)
+			return false;
+				
+
+		cur_pos += bytesWritten;
+	}
+
+
+	//pReader->read_data()
+}
+
+const int qt_keyword_size = 4;
+#pragma pack(1)
+struct qt_block_t
+{
+	DWORD block_size;
+	char block_type[qt_keyword_size];
+};
+#pragma pack()
+
+class QuickTimeRaw
+{
+private:
+	PhysicalReader * physicalReaderPtr_;
+public:
+	QuickTimeRaw(const int drive_number)
+	{
+		physicalReaderPtr_ = new PhysicalReader(drive_number);
+	}
+	~QuickTimeRaw()
+	{
+		if (physicalReaderPtr_)
+		{
+			delete physicalReaderPtr_;
+			physicalReaderPtr_ = nullptr;
+		}
+	}
+
+	void execute(const std::string & target_folder)
+	{
+
+		int block_size = default_block_size;
+
+		uint64_t offset = 0;
+		uint64_t header_offset = 0;
+
+		while (true)
+		{
+			header_offset = search_header_offset(offset);
+			if (header_offset == ERROR_RESULT)
+				break;
+
+			
+
+
+		}
+	}
+
+	uint64_t save_to_file(uint64_t header_offset, const std::string & target_name)
+	{
+		HANDLE hTarget = INVALID_HANDLE_VALUE;
+		if (!IO::create_file(hTarget, target_name))
+		{
+			printf("Error create target file\r\n");
+			return header_offset;
+		}
+
+		uint64_t keyword_offset = header_offset;
+
+		while (true)
+		{
+			qt_block_t qt_block = { 0 };
+			int bytes_read = physicalReaderPtr_->read_data(&qt_block, sizeof(qt_block_t), keyword_offset);
+			if ( bytes_read == 0 )
+
+
+
+
+	}
+
+	uint64_t search_header_offset(uint64_t offset)
+	{
+		int bytes_read = 0;
+		int block_size = default_block_size;
+		uint8_t buffer[default_block_size];
+		uint64_t header_offset = 0;
+
+		while (true)
+		{
+			bytes_read = physicalReaderPtr_->read_data(buffer, block_size, offset);
+			if (bytes_read == 0)
+			{
+				printf("Error read drive\r\n");
+				break;
+			}
+
+			for (int iSector = 0; iSector < bytes_read; iSector += default_sector_size)
+			{
+				if (memcmp(buffer + iSector, QTKeyword::qt_array[0], QTKeyword::qt_array_size) == 0)
+				{
+					header_offset = offset;
+					header_offset += iSector;
+					return header_offset;
+				}
+			}
+			offset += bytes_read;
+		}
+		return ERROR_RESULT;
+	}
+
+};
 
 #pragma pack( 1 )
 struct QTAtom
