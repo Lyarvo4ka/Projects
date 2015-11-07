@@ -81,7 +81,7 @@ namespace Signatures
 const int SECTOR_SIZE = 512;
 const int default_sector_size = 512;
 const int defalut_number_sectors = 128;
-const int default_block_size = default_sector_size * default_sector_size;
+const int default_block_size = defalut_number_sectors * default_sector_size;
 const int SECTOR_COUNT = 64;
 const int BLOCK_SIZE = SECTOR_SIZE * SECTOR_COUNT;
 

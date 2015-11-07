@@ -91,21 +91,12 @@ int main(int argc, char *argv[])
 	////9347072
 	if (argc == 3)
 	{
-
-
-		int i = 513/512;
-		i = 1;
-		//std::string source_folder = argv[1];
 		DWORD drive_number = strtol(argv[1], NULL, 10);
 		std::string target_folder = argv[2];
 		//GoProgRaw gopro_raw(source_folder, target_folder);
 		//gopro_raw.execute(block_size);
-		MLV_raw mlv_raw(drive_number, target_folder);
-		mlv_raw.execute();
-
-
-
-
+		QuickTimeRaw qt_raw(drive_number);
+		qt_raw.execute(target_folder);
 	}
 	else
 		std::cout << "You entered invalid params." << std::endl;

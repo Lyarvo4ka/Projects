@@ -14,7 +14,7 @@
     <ProjectGuid>{14C2973D-DC7A-492A-9393-45E41F2B59D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ConsoleApplication1</RootNamespace>
-    <ProjectName>MLV_raw</ProjectName>
+    <ProjectName>QuickTimeRaw</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

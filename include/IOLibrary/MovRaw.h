@@ -13,7 +13,19 @@
 
 #include "AbstractRaw.h"
 
-
+//#define to_big_endian64(x) ((((uint64_t)htonl(x)) << 32) + htonl((x) >> 32))
+inline void to_big_endian64(uint64_t & val)
+{
+	const int type_size = sizeof(uint64_t);
+	uint8_t * byte_buffer = (uint8_t *)&val;
+	uint8_t temp = 0; 
+	for (int iByte = 0; iByte < type_size / 2; ++iByte)
+	{
+		temp = byte_buffer[iByte];
+		byte_buffer[iByte] = byte_buffer[type_size - iByte-1];
+		byte_buffer[type_size - iByte - 1] = temp;
+	}
+}
 
 class AbstractReader
 {
@@ -26,6 +38,9 @@ public:
 	virtual int read_data(uint8_t * data, int read_size, uint64_t offset) = 0;
 
 };
+
+
+
 
 class PhysicalReader
 	: public AbstractReader
@@ -95,7 +110,7 @@ public:
 				if (::ReadFile(hDrive_, temp_buffer, bytes_to_read, &numByteRead, NULL) == TRUE)
 					if (numByteRead > 0)
 					{
-						memcpy(data, temp_buffer + offset, read_size);
+						memcpy(data, temp_buffer + sector_offset, read_size);
 						numByteRead = read_size;
 					}
 				delete[] temp_buffer;
@@ -154,7 +169,7 @@ bool copy_data_to_file(AbstractReader * pReader, HANDLE * target_file, uint64_t 
 	}
 
 
-	//pReader->read_data()
+	return true;
 }
 
 const int qt_keyword_size = 4;
@@ -165,6 +180,19 @@ struct qt_block_t
 	char block_type[qt_keyword_size];
 };
 #pragma pack()
+
+
+inline bool isQuickTime(const qt_block_t * pQtBlock)
+{
+	for (auto iKeyword = 0; iKeyword < QTKeyword::qt_array_size; ++iKeyword)
+		if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
+			return true;
+
+	return false;
+}
+
+
+//#include <Winsock2.h>
 
 class QuickTimeRaw
 {
@@ -191,6 +219,13 @@ public:
 
 		uint64_t offset = 0;
 		uint64_t header_offset = 0;
+		DWORD counter = 0;
+
+		if (!this->physicalReaderPtr_->open())
+		{
+			printf("Error to open physical drive");
+			return;
+		}
 
 		while (true)
 		{
@@ -198,15 +233,16 @@ public:
 			if (header_offset == ERROR_RESULT)
 				break;
 
-			
-
+			std::string target_name = IO::file_path_number(target_folder, counter++, ".mov");
+			offset = save_to_file(header_offset, target_name);
+			offset += default_sector_size;
 
 		}
 	}
 
 	uint64_t save_to_file(uint64_t header_offset, const std::string & target_name)
 	{
-		HANDLE hTarget = INVALID_HANDLE_VALUE;
+		HANDLE hTarget = INVALID_HANDLE_VALUE;	
 		if (!IO::create_file(hTarget, target_name))
 		{
 			printf("Error create target file\r\n");
@@ -215,14 +251,48 @@ public:
 
 		uint64_t keyword_offset = header_offset;
 
+		bool isBeenMDAT = false;
+
 		while (true)
 		{
 			qt_block_t qt_block = { 0 };
-			int bytes_read = physicalReaderPtr_->read_data(&qt_block, sizeof(qt_block_t), keyword_offset);
-			if ( bytes_read == 0 )
+			int bytes_read = physicalReaderPtr_->read_data((uint8_t*)&qt_block, sizeof(qt_block_t), keyword_offset);
+			if (bytes_read == 0)
+				return keyword_offset;
+			if (qt_block.block_size == 0 )
+				break;
 
+			to_big_endian(qt_block.block_size);
 
+			if (!isQuickTime(&qt_block))
+				break;
 
+			if (memcmp(qt_block.block_type, QTKeyword::qt_array[2], qt_keyword_size) == 0)
+				isBeenMDAT = true;
+
+			uint64_t write_size = qt_block.block_size;
+
+			if (qt_block.block_size == 1)
+			{
+				uint64_t ext_size = 0;
+				uint64_t ext_size_offset = keyword_offset;
+				ext_size_offset += sizeof(qt_block_t);
+				physicalReaderPtr_->read_data((uint8_t*)&ext_size, sizeof(uint64_t), ext_size_offset);
+				to_big_endian64(ext_size);
+				write_size = ext_size;
+			}
+
+			copy_data_to_file(physicalReaderPtr_, &hTarget, keyword_offset, write_size);
+
+			keyword_offset += write_size;
+		}
+
+		CloseHandle(hTarget);
+		keyword_offset /= default_sector_size;
+		keyword_offset *= default_sector_size;
+		if (!isBeenMDAT)
+			keyword_offset = header_offset;
+		return keyword_offset;
 
 	}
 
@@ -244,7 +314,8 @@ public:
 
 			for (int iSector = 0; iSector < bytes_read; iSector += default_sector_size)
 			{
-				if (memcmp(buffer + iSector, QTKeyword::qt_array[0], QTKeyword::qt_array_size) == 0)
+				qt_block_t * pQt_block = (qt_block_t *) &buffer[iSector];
+				if (memcmp(pQt_block->block_type, QTKeyword::qt_array[0], qt_keyword_size) == 0)
 				{
 					header_offset = offset;
 					header_offset += iSector;

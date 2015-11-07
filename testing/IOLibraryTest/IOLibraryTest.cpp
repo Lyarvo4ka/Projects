@@ -81,39 +81,39 @@ BOOST_AUTO_TEST_CASE( TestMapToPage )
 	BOOST_CHECK_EQUAL ( page_data[ 25 ] , SKIP_NARKER );
 }
 
-
-
-BOOST_AUTO_TEST_CASE( TestNameToValue )
-{
-	const DWORD be_ftyp = 0x66747970;
-	const DWORD le_ftyp = 0x70797466;
-
-	const DWORD be_moov = 0x6d6f6f76;
-	const DWORD le_moov = 0x766f6f6d;
-
-	const DWORD be_mdat = 0x6d646174;
-	const DWORD le_mdat = 0x7461646d;
-
-	const DWORD be_free = 0x66726565;
-	const DWORD le_free = 0x65657266;
-
-	const DWORD be_skip = 0x736b6970;
-	const DWORD le_skip = 0x70696b73;
-
-	const DWORD be_wide = 0x77696465;
-	const DWORD le_wide = 0x65646977;
-
-	const DWORD be_pnot = 0x706e6f74;
-	const DWORD le_pnot = 0x746f6e70;
-
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::ftyp_name)  , le_ftyp );
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::moov_name)  , le_moov );
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::mdat_name)  , le_mdat );
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::free_name)  , le_free );
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::skip_name)  , le_skip );
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::wide_name)  , le_wide );
-	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::pnot_name)  , le_pnot );
-}
+//
+//
+//BOOST_AUTO_TEST_CASE( TestNameToValue )
+//{
+//	const DWORD be_ftyp = 0x66747970;
+//	const DWORD le_ftyp = 0x70797466;
+//
+//	const DWORD be_moov = 0x6d6f6f76;
+//	const DWORD le_moov = 0x766f6f6d;
+//
+//	const DWORD be_mdat = 0x6d646174;
+//	const DWORD le_mdat = 0x7461646d;
+//
+//	const DWORD be_free = 0x66726565;
+//	const DWORD le_free = 0x65657266;
+//
+//	const DWORD be_skip = 0x736b6970;
+//	const DWORD le_skip = 0x70696b73;
+//
+//	const DWORD be_wide = 0x77696465;
+//	const DWORD le_wide = 0x65646977;
+//
+//	const DWORD be_pnot = 0x706e6f74;
+//	const DWORD le_pnot = 0x746f6e70;
+//
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::ftyp_name)  , le_ftyp );
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::moov_name)  , le_moov );
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::mdat_name)  , le_mdat );
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::free_name)  , le_free );
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::skip_name)  , le_skip );
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::wide_name)  , le_wide );
+//	BOOST_CHECK_EQUAL( nameToValue( QTKeyword::pnot_name)  , le_pnot );
+//}
 
 BOOST_AUTO_TEST_CASE(BytesToCopyTest)
 {
@@ -199,5 +199,16 @@ BOOST_AUTO_TEST_CASE(isMlvBlock_Test)
 
 	memcpy(mlv_block.block_type, no_keyword, mlv_keyword_size);
 	BOOST_CHECK_EQUAL(isMlvBlock(&mlv_block), false);
+
+}
+
+#include <IOLibrary/MovRaw.h>
+BOOST_AUTO_TEST_CASE(to_big_endian64_Test)
+{
+	uint64_t expected = 0x0807060504030201;
+	uint64_t test_value = 0x0102030405060708;
+	to_big_endian64(test_value);
+
+	BOOST_CHECK_EQUAL(test_value, expected);
 
 }
