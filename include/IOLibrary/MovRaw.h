@@ -39,7 +39,50 @@ public:
 
 };
 
+class FileReader
+	: public AbstractReader 
+{
+private:
+	HANDLE hFile_;
+	bool bOpened_;
+	std::string file_name_;
+public:
+	FileReader(const std::string & file_name)
+		: hFile_(INVALID_HANDLE_VALUE)
+		, bOpened_(false)
+		, file_name_(file_name)
+	{
 
+	}
+	bool open() override
+	{
+		bOpened_ = IO::open_read(hFile_, file_name_);
+		return bOpened_;
+	}
+	void close()
+	{
+		CloseHandle(hFile_);
+		hFile_ = INVALID_HANDLE_VALUE;
+		bOpened_ = false;
+	}
+	int read_data(uint8_t * data, int read_size, uint64_t offset) override
+	{
+		if (!bOpened_)
+			return 0;
+
+		if (read_size == 0)
+			return 0;
+
+		int bytes_read = 0;
+
+		IO::set_position(hFile_, offset);
+		if (::ReadFile(hFile_, data, read_size, (LPDWORD)&bytes_read, NULL) == FALSE)
+			return 0;
+
+		return bytes_read;
+	}
+
+};
 
 
 class PhysicalReader
@@ -197,18 +240,22 @@ inline bool isQuickTime(const qt_block_t * pQtBlock)
 class QuickTimeRaw
 {
 private:
-	PhysicalReader * physicalReaderPtr_;
+	AbstractReader * readerPtr_;
 public:
 	QuickTimeRaw(const int drive_number)
 	{
-		physicalReaderPtr_ = new PhysicalReader(drive_number);
+		readerPtr_ = new PhysicalReader(drive_number);
+	}
+	QuickTimeRaw(const std::string & file_name)
+	{
+		readerPtr_ = new FileReader(file_name);
 	}
 	~QuickTimeRaw()
 	{
-		if (physicalReaderPtr_)
+		if (readerPtr_)
 		{
-			delete physicalReaderPtr_;
-			physicalReaderPtr_ = nullptr;
+			delete readerPtr_;
+			readerPtr_ = nullptr;
 		}
 	}
 
@@ -221,7 +268,7 @@ public:
 		uint64_t header_offset = 0;
 		DWORD counter = 0;
 
-		if (!this->physicalReaderPtr_->open())
+		if (!this->readerPtr_->open())
 		{
 			printf("Error to open physical drive");
 			return;
@@ -256,7 +303,7 @@ public:
 		while (true)
 		{
 			qt_block_t qt_block = { 0 };
-			int bytes_read = physicalReaderPtr_->read_data((uint8_t*)&qt_block, sizeof(qt_block_t), keyword_offset);
+			int bytes_read = readerPtr_->read_data((uint8_t*)&qt_block, sizeof(qt_block_t), keyword_offset);
 			if (bytes_read == 0)
 				return keyword_offset;
 			if (qt_block.block_size == 0 )
@@ -277,12 +324,12 @@ public:
 				uint64_t ext_size = 0;
 				uint64_t ext_size_offset = keyword_offset;
 				ext_size_offset += sizeof(qt_block_t);
-				physicalReaderPtr_->read_data((uint8_t*)&ext_size, sizeof(uint64_t), ext_size_offset);
+				readerPtr_->read_data((uint8_t*)&ext_size, sizeof(uint64_t), ext_size_offset);
 				to_big_endian64(ext_size);
 				write_size = ext_size;
 			}
 
-			copy_data_to_file(physicalReaderPtr_, &hTarget, keyword_offset, write_size);
+			copy_data_to_file(readerPtr_, &hTarget, keyword_offset, write_size);
 
 			keyword_offset += write_size;
 		}
@@ -305,7 +352,7 @@ public:
 
 		while (true)
 		{
-			bytes_read = physicalReaderPtr_->read_data(buffer, block_size, offset);
+			bytes_read = readerPtr_->read_data(buffer, block_size, offset);
 			if (bytes_read == 0)
 			{
 				printf("Error read drive\r\n");

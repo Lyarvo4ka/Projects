@@ -91,11 +91,12 @@ int main(int argc, char *argv[])
 	////9347072
 	if (argc == 3)
 	{
-		DWORD drive_number = strtol(argv[1], NULL, 10);
+		//DWORD drive_number = strtol(argv[1], NULL, 10);
+		std::string source_file = argv[1];
 		std::string target_folder = argv[2];
 		//GoProgRaw gopro_raw(source_folder, target_folder);
 		//gopro_raw.execute(block_size);
-		QuickTimeRaw qt_raw(drive_number);
+		QuickTimeRaw qt_raw(source_file);
 		qt_raw.execute(target_folder);
 	}
 	else
