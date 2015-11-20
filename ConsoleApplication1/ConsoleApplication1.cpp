@@ -70,6 +70,7 @@ void show_error_invalid_params()
 #include "IOLibrary/XorAnalyzer.h"
 #include "IOLibrary/GoPro_raw.h"
 #include "IOLibrary/MLV_raw.h"
+#include "IOLibrary/FireBird.h"
 
 
 int main(int argc, char *argv[])
@@ -91,13 +92,15 @@ int main(int argc, char *argv[])
 	////9347072
 	if (argc == 3)
 	{
-		//DWORD drive_number = strtol(argv[1], NULL, 10);
-		std::string source_file = argv[1];
+		DWORD drive_number = strtol(argv[1], NULL, 10);
+		//std::string source_file = argv[1];
 		std::string target_folder = argv[2];
+		FireBird_Raw firebird_raw(drive_number, target_folder);
+		firebird_raw.execute();
 		//GoProgRaw gopro_raw(source_folder, target_folder);
 		//gopro_raw.execute(block_size);
-		QuickTimeRaw qt_raw(source_file);
-		qt_raw.execute(target_folder);
+		//QuickTimeRaw qt_raw(source_file);
+		//qt_raw.execute(target_folder);
 	}
 	else
 		std::cout << "You entered invalid params." << std::endl;

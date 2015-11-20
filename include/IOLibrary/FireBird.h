@@ -17,16 +17,18 @@ struct firebird_page
 	ULONG reserved;
 	bool isFireBirdPage()
 	{
-		if (pag_type >= 0x01 && pag_type <= 0xA)
+		if (pag_type >= 0x01 && pag_type <= 0xF)
 			if (pag_checksum == 0x3039)
-				return true;
+				if ( pag_scn == 0 )
+					if ( reserved == 0)
+						return true;
 		return false;
 	}
 };
 #pragma pack()
 
 const int firebird_size = sizeof(firebird_page);
-const int FB_Size = 8 * 1024;
+const int FB_Size = 4 * 1024;
 
 
 class FileWriter
@@ -104,37 +106,103 @@ public:
 	{
 		delete fileWriter_;
 	}
-	void execute() override
+	LONGLONG find_firebird(LONGLONG start_offset)
 	{
+		DWORD bytes_read = 0;
+		
 		BYTE buffer[BLOCK_SIZE];
-		DWORD bytesRead = 0;
-		HANDLE *hSource = this->getHandle();
-
-		bool bResult = false;
 		firebird_page * pFireBird = nullptr;
 
-		LONGLONG offset = 0;
+		while (true)
+		{
+			IO::set_position(*this->getHandle(), start_offset);
+			if (!IO::read_block(*this->getHandle(), buffer, BLOCK_SIZE, bytes_read))
+				return ERROR_RESULT;
+			if (bytes_read == 0)
+				return ERROR_RESULT ;
+
+			for (DWORD iPage = 0; iPage < BLOCK_SIZE; iPage += SECTOR_SIZE)
+			{
+				pFireBird = (firebird_page *)&(buffer[iPage]);
+				if (pFireBird->isFireBirdPage())
+				{
+					LONGLONG file_offset = start_offset;
+					file_offset += iPage;
+					return file_offset;
+				}
+			}
+
+			start_offset += bytes_read;
+		}
+
+	}
+	LONGLONG save_firebird_data(LONGLONG start_offset)
+	{
+		this->fileWriter_->setNewFile();
+		DWORD bytes_read = 0;
+
+		BYTE buffer[BLOCK_SIZE];
+		firebird_page * pFireBird = nullptr;
+
+		LONGLONG cluster_offset = 0;
+		LONGLONG offset = start_offset;
 
 		while (true)
 		{
 			IO::set_position(*this->getHandle(), offset);
-			bResult = IO::read_block(*hSource, buffer, BLOCK_SIZE, bytesRead);
-			if ( bytesRead == 0 || !bResult )
-				break;
+			if (!IO::read_block(*this->getHandle(), buffer, BLOCK_SIZE, bytes_read))
+				return ERROR_RESULT;
+			if (bytes_read == 0)
+				return ERROR_RESULT;
 
 			for (DWORD iPage = 0; iPage < BLOCK_SIZE; iPage += FB_Size)
 			{
 				pFireBird = (firebird_page *)&(buffer[iPage]);
 				if (pFireBird->isFireBirdPage())
 				{
-					LONGLONG file_offset = offset;
-					offset += iPage;
-					fileWriter_->AddPage(buffer, FB_Size, offset);
+					cluster_offset = offset;
+					cluster_offset += iPage;
+					fileWriter_->AddPage(buffer + iPage, FB_Size, cluster_offset);
+				}
+				else
+				{
+					cluster_offset = offset;
+					cluster_offset += iPage;
+					return cluster_offset;
 				}
 			}
 
-			offset += bytesRead;
+			offset += bytes_read;
+		}
+		return ERROR_RESULT;
+	}
+	void execute() override
+	{
+		
+		DWORD bytesRead = 0;
+		HANDLE *hSource = this->getHandle();
 
+		bool bResult = false;
+		
+
+		LONGLONG offset = 0;
+		LONGLONG header_offset = 0;
+		if (*hSource == INVALID_HANDLE_VALUE)
+		{
+			printf("Error open drive\r\n");
+			return ;
+		}
+
+		while (true)
+		{
+			header_offset = this->find_firebird(offset);
+			if ( header_offset == ERROR_RESULT )
+				break;
+
+			offset = this->save_firebird_data(header_offset);
+			if ( header_offset == ERROR_RESULT)
+				break;
+			offset += SECTOR_SIZE;
 		}
 
 
