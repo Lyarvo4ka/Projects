@@ -8,6 +8,77 @@
 #include <vector>
 
 
+void cut_dump_page(const std::string & source_dump, const std::string target_dump)
+{
+	HANDLE hSource = INVALID_HANDLE_VALUE;
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
+
+	const int src_page_size = 9696;
+	const int dst_page_size = 9216;
+
+	if (!IO::open_read(hSource, source_dump))
+	{
+		printf("Error open source dump %s\r\n", source_dump.c_str());
+		return;
+	}
+	if (!IO::create_file(hTarget, target_dump))
+	{
+		printf("Error create target dump %s\r\n", target_dump.c_str());
+		return;
+	}
+
+	BYTE source_buffer[src_page_size];
+	BYTE target_buffer[dst_page_size];
+
+	DWORD bytes_read = 0;
+	DWORD bytes_written = 0;
+	bool bResult = false;
+	LONGLONG offset = 0;
+
+	while (true)
+	{
+		bResult = IO::read_block(hSource, source_buffer, src_page_size, bytes_read);
+		if (!bResult || (bytes_read == 0))
+		{
+			printf("Error read block\r\n");
+			break;
+		}
+
+		int not_zero_pos = 0;
+		for (int iByte = src_page_size - 1; iByte > 0; --iByte)
+			if (source_buffer[iByte] != 0)
+			{
+				not_zero_pos = iByte;
+				break;
+			}
+
+		ZeroMemory(target_buffer, dst_page_size);
+		int copy_offset = not_zero_pos - dst_page_size + 1;
+		if (copy_offset > 0)
+		{
+			memcpy(target_buffer, source_buffer + copy_offset, dst_page_size);
+		}
+		else
+		{
+			printf("%lld (bytes). Copy is less 0. Will write only 0x00\r\n",offset);
+			memcpy(target_buffer, source_buffer, dst_page_size);
+		}
+
+		bResult = IO::write_block(hTarget, target_buffer, dst_page_size, bytes_written);
+		if (!bResult || (bytes_written == 0))
+		{
+			printf("Error write block\r\n");
+			break;
+		}
+
+
+		offset += bytes_read;
+	}
+	CloseHandle(hTarget);
+	CloseHandle(hSource);
+
+}
+
 namespace Translator
 {
 class FlyTranslator

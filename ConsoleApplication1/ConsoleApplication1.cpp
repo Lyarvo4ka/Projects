@@ -71,6 +71,7 @@ void show_error_invalid_params()
 #include "IOLibrary/GoPro_raw.h"
 #include "IOLibrary/MLV_raw.h"
 #include "IOLibrary/FireBird.h"
+#include "IOLibrary/Translator.h"
 
 
 int main(int argc, char *argv[])
@@ -92,11 +93,12 @@ int main(int argc, char *argv[])
 	////9347072
 	if (argc == 3)
 	{
-		DWORD drive_number = strtol(argv[1], NULL, 10);
-		//std::string source_file = argv[1];
-		std::string target_folder = argv[2];
-		FireBird_Raw firebird_raw(drive_number, target_folder);
-		firebird_raw.execute();
+		//DWORD drive_number = strtol(argv[1], NULL, 10);
+		std::string source_file = argv[1];
+		std::string target_file = argv[2];
+		cut_dump_page(source_file, target_file);
+		//FireBird_Raw firebird_raw(drive_number, target_folder);
+		//firebird_raw.execute();
 		//GoProgRaw gopro_raw(source_folder, target_folder);
 		//gopro_raw.execute(block_size);
 		//QuickTimeRaw qt_raw(source_file);
