@@ -91,12 +91,14 @@ int main(int argc, char *argv[])
 
 
 	////9347072
-	if (argc == 3)
+	if (argc == 5)
 	{
 		//DWORD drive_number = strtol(argv[1], NULL, 10);
 		std::string source_file = argv[1];
 		std::string target_file = argv[2];
-		cut_dump_page(source_file, target_file);
+		DWORD src_size = strtol(argv[3], NULL, 10);
+		DWORD dst_size = strtol(argv[4], NULL, 10);
+		cut_dump_page(source_file, target_file, src_size, dst_size);
 		//FireBird_Raw firebird_raw(drive_number, target_folder);
 		//firebird_raw.execute();
 		//GoProgRaw gopro_raw(source_folder, target_folder);

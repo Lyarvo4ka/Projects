@@ -8,13 +8,23 @@
 #include <vector>
 
 
-void cut_dump_page(const std::string & source_dump, const std::string target_dump)
+void cut_dump_page(const std::string & source_dump, const std::string target_dump, int src_page_size , int dst_page_size)
 {
 	HANDLE hSource = INVALID_HANDLE_VALUE;
 	HANDLE hTarget = INVALID_HANDLE_VALUE;
 
-	const int src_page_size = 9696;
-	const int dst_page_size = 9216;
+	//const int src_page_size = 9696;
+	//const int dst_page_size = 9216;
+	if (src_page_size <= 0)
+	{
+		printf("Error. source page size is 0");
+		return;
+	}
+	if (dst_page_size <= 0)
+	{
+		printf("Error. target page size is 0");
+		return;
+	}
 
 	if (!IO::open_read(hSource, source_dump))
 	{
@@ -27,8 +37,8 @@ void cut_dump_page(const std::string & source_dump, const std::string target_dum
 		return;
 	}
 
-	BYTE source_buffer[src_page_size];
-	BYTE target_buffer[dst_page_size];
+	BYTE * source_buffer = new BYTE[src_page_size];
+	BYTE *target_buffer = new BYTE[dst_page_size];
 
 	DWORD bytes_read = 0;
 	DWORD bytes_written = 0;
@@ -74,6 +84,8 @@ void cut_dump_page(const std::string & source_dump, const std::string target_dum
 
 		offset += bytes_read;
 	}
+	delete[] source_buffer;
+	delete[] target_buffer;
 	CloseHandle(hTarget);
 	CloseHandle(hSource);
 
