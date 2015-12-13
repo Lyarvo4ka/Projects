@@ -1,18 +1,20 @@
 #include "StdAfx.h"
 #include "Buffer.h"
 
-
-///////////////////////////////////////////////////////////////////////////////
-// --------------- CBuffer -------------------
-///////////////////////////////////////////////////////////////////////////////
 CBuffer::CBuffer()
-	:m_pAddess(NULL), m_iDiskNumber(0), m_LBA(0),m_iSize(0)
+	: m_pAddess(NULL)
+	, m_iDiskNumber(0)
+	, m_LBA(0)
+	, m_iSize(0)
 {
 
 }
 
 CBuffer::CBuffer(const DWORD & _TBufferSize)
-	:m_pAddess(NULL), m_iDiskNumber(UCHAR_MAX), m_LBA(0),m_iSize(_TBufferSize)
+	: m_pAddess(NULL)
+	, m_iDiskNumber(UCHAR_MAX)
+	, m_LBA(0)
+	, m_iSize(_TBufferSize)
 {
 	m_pAddess = new BYTE[_TBufferSize];
 
@@ -39,9 +41,6 @@ void CBuffer::setSize(const DWORD _iSize)
 	m_iSize = _iSize;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// --------------- CDisksBuffers -------------------
-///////////////////////////////////////////////////////////////////////////////
 CDisksBuffers::CDisksBuffers(BYTE _iDiskCount)
 	:m_iCounter(0)
 {
@@ -55,21 +54,10 @@ CDisksBuffers::~CDisksBuffers()
 	m_pArrayPointers.RemoveAll();
 
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// --------------- CAllocator -------------------
-///////////////////////////////////////////////////////////////////////////////
-//CAllocator::CAllocator()
-//	:m_TBlockSize(0),m_iSize(0),m_iSizeFree(0)
-//{
-//	csFreeAccess = new CRITICAL_SECTION;
-//	::InitializeCriticalSection(csFreeAccess);
-//	m_hLockSize = CreateEvent(NULL,TRUE,TRUE,_T("Event if More Size"));
-//	m_hUsedLock = CreateMutex(NULL,FALSE,_T("MAX used Buffers"));
-//}
-
 CAllocator::CAllocator(DWORD _iBufferSize, UINT _iSizeFree)
-	:m_TBlockSize(_iBufferSize),m_iSize(0),m_iSizeFree(_iSizeFree)
+	: m_TBlockSize(_iBufferSize)
+	, m_iSize(0)
+	, m_iSizeFree(_iSizeFree)
 {
 	m_hLockSize = CreateEvent(NULL,TRUE,TRUE,_T("Event if More Size"));
 	m_hUsedLock = CreateMutex(NULL,FALSE,_T("MAX used Buffers"));
@@ -160,22 +148,12 @@ void CAllocator::IncBufferCount()
 	::InterlockedIncrement(&m_iSize);
 }
 
-//void CAllocator::setToDefault(CBuffer*  _pBuffer)
-//{
-//	//_pBuffer->m_iDiskNumber = UCHAR_MAX;
-//}
-
-
-///////////////////////////////////////////////////////////////////////////////
-// --------------- !!!!! -------------------
-///////////////////////////////////////////////////////////////////////////////
 CMapAddress::CMapAddress()
-	:m_bResult(FALSE),m_iDiskCount(UCHAR_MAX),m_bFirstMismatch(FALSE)/*,m_Command(NULL)*/,m_bFirstFind(FALSE)/*,pAllocBuffer(NULL)*/
+	: m_bResult(FALSE)
+	, m_iDiskCount(UCHAR_MAX)
+	, m_bFirstMismatch(FALSE)
+	, m_bFirstFind(FALSE)
 {
-	//if (!fileReportTxt.Open(_T("Report.txt"),CFile::modeWrite | CFile::modeCreate))
-	//		AfxMessageBox(_T("Unable to open file"),MB_OK);
-
-	//fileReportTxt.SeekToEnd();
 	m_CheckedSectors = new NotEqualSectors();
 	m_CheckedSectors->lCurrent = 0;
 	m_CheckedSectors->lFirst = 0;
@@ -193,9 +171,6 @@ CMapAddress::CMapAddress()
 
 CMapAddress::~CMapAddress()
 {
-	// Wait for Exit Thread
-	//if (hThread != INVALID_HANDLE_VALUE)
-		//::WaitForSingleObject(hThread,INFINITE);
 	CloseHandle(m_hEventFree);
 	CloseHandle(hListAccess);
 
@@ -286,7 +261,6 @@ DWORD WINAPI CMapAddress::ThreadReadFunc(LPVOID lParam)
 void CMapAddress::deleteBuffer()
 {
 	BOOL bFALSE = FALSE;
-	//sendCommand(bFALSE);
 
 	CDisksBuffers *pRemoveBuffers = NULL;
 	ULONGLONG RemoveLBA = 0;
@@ -318,50 +292,29 @@ UINT CMapAddress::run()
 	CDisksBuffers *pDataBuffers = NULL;
 	CBuffer *pBuffer = NULL;
 
-	//const CString strDirPath = _T("E:\\RAID\\DiskNumber");
-	//
-	//DWORD dwError = 0;
-	//CString strPath = _T("");
-	//HANDLE *hDisk = new HANDLE[m_iDiskCount];
-	//for ( BYTE i = 0 ; i < m_iDiskCount ; ++i)
-	//{
-	//	strPath.Format(_T("%s%i"),strDirPath,i);
-	//	hDisk[i] = CreateFile(strPath,GENERIC_WRITE,
-	//	  					  FILE_SHARE_WRITE,NULL,CREATE_ALWAYS,
-	//						  FILE_ATTRIBUTE_NORMAL,NULL);
-	//	if (hDisk[i] == INVALID_HANDLE_VALUE )
-	//	{
-	//				dwError = GetLastError();
-	//				::AfxMessageBox(_T("Error Create File"),MB_OK);
-	//		
-	//	}
-	//}
-
-	//DWORD dwBytesWrite = 0;
-
 	LONGLONG lCounter = 0;
 	m_bStop = FALSE;
 	BYTE iDiskFinish = 0;
 	DWORD dwWaitResult = 0;
 	while (true)
 	{
-		if ( m_bStop == TRUE)
+		if (m_bStop == TRUE)
 		{
 			deleteBuffer();
 			break;
-		}	
-		dwWaitResult = ::WaitForMultipleObjects(2,m_pThreadLock,FALSE,INFINITE);
-		if ( dwWaitResult == (WAIT_OBJECT_0  + 1) )		// Abort Thread
+		}
+		dwWaitResult = ::WaitForMultipleObjects(2, m_pThreadLock, FALSE, INFINITE);
+		if (dwWaitResult == (WAIT_OBJECT_0 + 1))		// Abort Thread
 			break;
 
 
-		while (	(pBuffer = GetFromQueueList()) == NULL)
+		while ((pBuffer = GetFromQueueList()) == NULL)
 		{
-		::WaitForSingleObject(m_hEventFree,INFINITE);
+			::WaitForSingleObject(m_hEventFree, INFINITE);
 		}
 
 
-	if (pBuffer->m_iSize == NULL)
+		if (pBuffer->m_iSize == NULL)
 		if (++iDiskFinish == m_iDiskCount)
 		{
 			deleteBuffer();
@@ -370,51 +323,31 @@ UINT CMapAddress::run()
 		else
 			continue;
 
-	pDataBuffers = NULL;
-	m_bResult = m_mapBuffer.Lookup(pBuffer->m_LBA,pDataBuffers);
-	if (m_bResult)
-	{
-		pDataBuffers->m_pArrayPointers.SetAt(pBuffer->m_iDiskNumber,pBuffer) ;
-		pDataBuffers->m_iCounter++;
-		if (pDataBuffers->m_iCounter == m_iDiskCount)
+		pDataBuffers = NULL;
+		m_bResult = m_mapBuffer.Lookup(pBuffer->m_LBA, pDataBuffers);
+		if (m_bResult)
 		{
-			pDataBuffers->m_pArrayPointers.GetAt(pBuffer->m_iDiskNumber);
-			m_mapBuffer.RemoveKey(pBuffer->m_LBA);
-			m_bStop = ProcessingBuffer( pDataBuffers );
+			pDataBuffers->m_pArrayPointers.SetAt(pBuffer->m_iDiskNumber, pBuffer);
+			pDataBuffers->m_iCounter++;
+			if (pDataBuffers->m_iCounter == m_iDiskCount)
+			{
+				pDataBuffers->m_pArrayPointers.GetAt(pBuffer->m_iDiskNumber);
+				m_mapBuffer.RemoveKey(pBuffer->m_LBA);
+				m_bStop = ProcessingBuffer(pDataBuffers);
+			}
+		}
+		else
+		{
+			pDataBuffers = new CDisksBuffers(m_iDiskCount);
+			pDataBuffers->m_pArrayPointers.SetAt(pBuffer->m_iDiskNumber, pBuffer);
+			pDataBuffers->m_iCounter++;
+			m_mapBuffer.SetAt(pBuffer->m_LBA, pDataBuffers);
 		}
 	}
-	else
-	{
-		pDataBuffers = new CDisksBuffers(m_iDiskCount);
-		pDataBuffers->m_pArrayPointers.SetAt(pBuffer->m_iDiskNumber,pBuffer) ;
-		pDataBuffers->m_iCounter++;
-		m_mapBuffer.SetAt(pBuffer->m_LBA,pDataBuffers);
-	}
-
-	//////////////////////////////////////////
-		//++lCounter;
-	}
-
-	//fileReportTxt.Close();
-	//::AfxMessageBox(_T("FINISH CHECK"),MB_OK);
-
-//		???????????????????
-	//
-	//::SendMessageA(hParityWindow,WM_FINISH_PARITY_CHECK,0,0);
-	//::SendMessageA(hMainWindow,WM_FINISH_PARITY_CHECK,0,0);
-	//::SendMessageA(hMainWindow,WM_FINISH_GATHER_BY_JPG,0,0);
-		//delete hDisk;
 	TRACE("Finish MAP ...\r\n");
 	return 0;
 }
 
-void CMapAddress::setSelectedDrives(vector<CDiskDrive> & _vecDrives)
-{
-	//m_SelectedDrives = _vecDrives;
-}
-
-
-//#define SSIZE 512*256
 void CMapAddress::setTest(BOOL _bQuickFullTest)
 {
 	m_bQuickFullTest = _bQuickFullTest;
@@ -432,8 +365,6 @@ void CMapAddress::setTestData(LONGLONG _lTestData)
 	m_lCounter = 0;
 }
 
-//const WORD cwJPGSignature = 0xFFD8;
-
 BOOL CMapAddress::ProcessingBuffer(CDisksBuffers* _pDiskBuffers)
 {
 	CString strFormat = _T("");
@@ -443,63 +374,6 @@ BOOL CMapAddress::ProcessingBuffer(CDisksBuffers* _pDiskBuffers)
 
 	DWORD *l32BitBuffer = NULL;
 	DWORD *l32BitBufferNext = NULL;
-
-// DEBUG
-	//DWORD dwChekArr[256*128];
-	//LONGLONG curLBA = _pDiskBuffers->m_pArrayPointers[0]->m_LBA;
-	//HANDLE hFiles[3];
-
-	//if (curLBA == 8388607)
-	//{
-
-	//hFiles[0] = CreateFile(_T("E:\\WORK\\TestXor\\Disk2.par"),
-	//						GENERIC_WRITE, FILE_SHARE_WRITE,
-	//						NULL,
-	//						CREATE_ALWAYS,
-	//						NULL,0);
-	//if ( hFiles[0] == INVALID_HANDLE_VALUE )
-	//{
-	//	DWORD dwError = GetLastError();
-	//	TRACE(_T("Error Open File Disk3.par"));
-	//}
-
-	//hFiles[1] = CreateFile(_T("E:\\WORK\\TestXor\\Disk3.par"),
-	//					GENERIC_WRITE,FILE_SHARE_WRITE,
-	//					NULL,
-	//					CREATE_ALWAYS,
-	//					NULL,0);
-	//if ( hFiles[1] == INVALID_HANDLE_VALUE )
-	//{
-	//	DWORD dwError = GetLastError();
-	//	TRACE(_T("Error Open File Disk3.par"));
-	//}
-
-	//hFiles[2] = CreateFile(_T("E:\\WORK\\TestXor\\Disk4.par"),
-	//					GENERIC_WRITE, FILE_SHARE_WRITE,
-	//					NULL,
-	//					CREATE_ALWAYS,
-	//					NULL,0);
-	//if ( hFiles[2] == INVALID_HANDLE_VALUE )
-	//{
-	//	DWORD dwError = GetLastError();
-	//	TRACE(_T("Error Open File Disk3.par"));
-	//}
-
-	//DWORD dwBytesWrite = 0;
-
-
-	//WriteFile(hFiles[0],_pDiskBuffers->m_pArrayPointers[0]->m_pAddess,_pDiskBuffers->m_pArrayPointers[0]->m_iSize,&dwBytesWrite,NULL);
-	//WriteFile(hFiles[1],_pDiskBuffers->m_pArrayPointers[1]->m_pAddess,_pDiskBuffers->m_pArrayPointers[1]->m_iSize,&dwBytesWrite,NULL);
-	//WriteFile(hFiles[2],_pDiskBuffers->m_pArrayPointers[2]->m_pAddess,_pDiskBuffers->m_pArrayPointers[2]->m_iSize,&dwBytesWrite,NULL);
-
-	//for (BYTE b = 0; b < m_iDiskCount; ++b)
-	//	CloseHandle(hFiles[b]);
-
-	//	memcpy(dwChekArr,pdwParity,256*128);
-	//	int k = 90;
-	//}
-
-// END DEBUG
 
 	if (_pDiskBuffers != NULL)
 	{
@@ -529,12 +403,6 @@ BOOL CMapAddress::ProcessingBuffer(CDisksBuffers* _pDiskBuffers)
 
 		LONGLONG lFirstPos = 0;
 		BOOL bSend = FALSE;
-
-		//m_lStartLBA = 0;
-		//m_lCurrentLBA = 0;
-		//m_CheckedSectors->lCurrent = 0;
-		//m_CheckedSectors->lFirst = 0;
-		//m_CheckedSectors->lInterval = 0;
 
 		lFirstPos = _pDiskBuffers->m_pArrayPointers[0]->m_LBA;
 		if ( lFirstPos > 0 )

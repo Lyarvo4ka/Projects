@@ -39,14 +39,11 @@ public:
 	void AbortThreads();
 
 private:
-	//CCuttingSectorsDlg *pCuttingDialog;
 	CStdioFile pFileWrite;
 	CReadDisk *pReadDisk;
 	CAllocator *m_Data;
 	CMapAddress *pMAP;
 	CDialogTabCtrl *m_TabDialogs;
-	//CCommand *m_ParityCheckCommand;
-	//CReceiver *m_pReciver;
 	CSingletonJPGs *m_pSingleton;
 
 	void ClearData();

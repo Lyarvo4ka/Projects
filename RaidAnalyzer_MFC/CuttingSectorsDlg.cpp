@@ -160,23 +160,6 @@ void CCuttingSectorsDlg::setMinMax(UINT _iMin, UINT _iMax)
 
 void CCuttingSectorsDlg::OnBnClickedOk()
 {
-	//CString strCheck;
-	//m_pEditNumberSectors->GetWindowTextW(strCheck);
-	//UINT iNumberSectors = _ttoi(strCheck);
-	//if (iNumberSectors < 0 || iNumberSectors > 10000)
-	//{
-	//	AfxMessageBox(_T("Number of Sectors is must be from (0 - 10000"),MB_OK);
-	//	m_pEditNumberSectors->SetWindowTextW(_T("1000"));
-	//}
-	//else
-	//{
-		//m_iNumberSectors = iNumberSectors;
-		//BYTE m_iDiskNumber = 0;
-		//CDetermineBlock determineBlock(m_SelectedDrives.at(m_pFindData->m_iDiskNumber));
-		//determineBlock.setLBA(m_pFindData->m_LBAPosition);
-		//determineBlock.setStartSector(m_pFindData->m_dwStartSector);
-		//determineBlock.toCutFiles(m_iNumberSectors);
-		//system("explorer C:\\JPG\\");
 	if (m_strData == _T(""))
 	{
 		AfxMessageBox(_T("Number is not Entered"),MB_OK);

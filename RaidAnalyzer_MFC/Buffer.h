@@ -1,8 +1,6 @@
 #pragma once
 #include "GatherByJPG.h"
-///////////////////////////////////////////////////////////////////////////////
-// --------------- CBuffer -------------------
-///////////////////////////////////////////////////////////////////////////////
+
 class CBuffer
 {
 public:
@@ -19,10 +17,6 @@ public:
 	BYTE m_iDiskNumber;
 	BYTE * m_pAddess;
 };
-
-///////////////////////////////////////////////////////////////////////////////
-// --------------- CDisksBuffers -------------------
-///////////////////////////////////////////////////////////////////////////////
 
 class CDisksBuffers
 {
@@ -48,8 +42,6 @@ public:
 	CBuffer *GetBuffer();
 	void RemoveBuffer(CBuffer*);
 
-	//void setToDefault(CBuffer* );
-
 protected:
 
 	CList<CBuffer*,CBuffer*> m_FreeList;
@@ -62,9 +54,6 @@ private:
 	HANDLE m_hUsedLock;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-// --------------- !!!!! -------------------
-///////////////////////////////////////////////////////////////////////////////
 typedef CMap<ULONGLONG,ULONGLONG,CDisksBuffers*,CDisksBuffers*> MapAddress;
 
 class CMapAddress 
@@ -79,8 +68,6 @@ public:
 	void setDiskCount(const BYTE _iDiskCount);
 	void SetAllocator(CAllocator *_pAllocator);
 
-	void setCommand( CCommand * _command);
-//	void ExecuteCommand();
 
 
 	void setComunicateHandle(HANDLE *_hHandles);
@@ -89,7 +76,7 @@ public:
 
 	void StartThreads();
 	void ExitThreads();
-	void sendCommand(BOOL & _XorResult/*, LONGLONG & _lLBA*/);
+	void sendCommand(BOOL & _XorResult);
 	void deleteBuffer();
 
 	void setTest(BOOL  _bQuickFullTest);
@@ -97,7 +84,6 @@ public:
 	void setStop();
 	void setToFirstMissmatch(BOOL _bMissmatch);
 	void setWaitThread(HANDLE _hWaitThread);
-	void setSelectedDrives(vector<CDiskDrive> & _vecDrives);
 
 	// Threads Operations
 	void SuspendREADThreads();
@@ -138,7 +124,6 @@ private:
 	
 	CList<CBuffer*,CBuffer*> m_QueueList;
 	MapAddress m_mapBuffer;
-	//CCommand *m_Command;
 
 };
 
