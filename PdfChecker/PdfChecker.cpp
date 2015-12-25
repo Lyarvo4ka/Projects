@@ -28,11 +28,24 @@ using namespace std;
 
 
 #include "libpdf\Pdfdocument.h"
+//#include "..\ZipLib\ZipFile.h"
+
 
 
 int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
 	int nRetCode = 0;
+
+	//ZipFile zip_file;
+	//auto zipPtr = ZipFile::Open("d:\\test_folder\\Анкета посетителя фабрики.zip");
+	//zipPtr->GetEntriesCount() > 
+
+
+
+
+	
+
+
 
 	HMODULE hModule = ::GetModuleHandle(NULL);
 

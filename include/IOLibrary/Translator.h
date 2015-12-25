@@ -91,6 +91,82 @@ void cut_dump_page(const std::string & source_dump, const std::string target_dum
 
 }
 
+
+void insertInEachPage(
+			const std::string & source_file, 
+			const std::string & target_file, 
+			const int src_page_size, 
+			const int dst_page_size, 
+			const int page_count,
+			const int block_size)
+{
+	const int service_size = 32;
+	HANDLE hSource = INVALID_HANDLE_VALUE;
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
+
+	if (src_page_size <= 0)
+	{
+		printf("Error. source page size is 0");
+		return;
+	}
+	if (dst_page_size <= 0)
+	{
+		printf("Error. target page size is 0");
+		return;
+	}
+
+	if (!IO::open_read(hSource, source_file))
+	{
+		printf("Error open source dump %s\r\n", source_file.c_str());
+		return;
+	}
+	if (!IO::create_file(hTarget, target_file))
+	{
+		printf("Error create target dump %s\r\n", target_file.c_str());
+		return;
+	}
+
+	BYTE * source_buffer = new BYTE[block_size];
+	BYTE *target_buffer = new BYTE[block_size];
+
+
+	auto max_size = IO::getFileSize(hSource);
+
+	LONGLONG offset = 0;
+	DWORD bytesRead = 0;
+	DWORD bytesWritten = 0;
+	bool bResult = false;
+
+	while (offset < max_size)
+	{
+		bResult = IO::read_block(hSource, source_buffer, block_size, bytesRead);
+		if (!bResult || bytesRead == 0)
+		{
+			printf("Error. Read source file.");
+			break;
+		}
+
+		ZeroMemory(target_buffer, block_size);
+		for (auto iPage = 0; iPage < page_count; ++iPage)
+			memcpy(target_buffer + (iPage*dst_page_size), source_buffer + (iPage* src_page_size), src_page_size);
+		memcpy(target_buffer + (page_count* dst_page_size), source_buffer + (page_count* src_page_size), service_size);
+
+		bResult = IO::write_block(hTarget, target_buffer, block_size, bytesWritten);
+		if (!bResult || bytesRead == 0)
+		{
+			printf("Error. Write to target file.");
+			break;
+		}
+		offset += bytesRead;
+	}
+
+
+
+	delete[] source_buffer;
+	delete[] target_buffer;
+
+
+}
 namespace Translator
 {
 class FlyTranslator

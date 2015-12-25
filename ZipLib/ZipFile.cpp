@@ -5,7 +5,7 @@
 #include <fstream>
 #include <cassert>
 #include <stdexcept>
-
+ 
 namespace
 {
   std::string GetFilenameFromPath(const std::string& fullPath)
