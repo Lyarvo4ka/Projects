@@ -26,9 +26,9 @@ using namespace std;
 //
 //}
 
-
+//
 #include "libpdf\Pdfdocument.h"
-//#include "..\ZipLib\ZipFile.h"
+////#include "..\ZipLib\ZipFile.h"
 
 
 
@@ -107,8 +107,11 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 	std::string bad_dir = "bad";
 	stringlist ext_list;
 	ext_list.push_back(".doc");
+	ext_list.push_back(".docx");
 	ext_list.push_back(".xls");
+	ext_list.push_back(".xlsx");
 	ext_list.push_back(".ppt");
+	ext_list.push_back(".pptx");
 	ext_list.push_back(".pdf");
 
 	FileFinder finder;
@@ -133,7 +136,10 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 		if (ext.compare(".pdf") == 0)
 			bResult = identify_pdf(source_name, target_name, counter);
 		else
-			bResult = identify_office2003(source_name, target_name, counter);
+			if (isOffice2007(ext))
+				bResult = identify_office2007(source_name, target_name, counter);
+			else
+				bResult = identify_office2003(source_name, target_name, counter);
 		++counter;
 
 		std::string target_file_path;
@@ -177,41 +183,78 @@ bool identify_office2003(const std::string & file_name, std::string & new_filena
 	return false;
 }
 
-bool identify_pdf(const std::string & file_name, std::string & new_filename, int counter)
+const std::string core_xml_str = "core.xml";
+#include "../ZipLib/ZipFile.h"
+#include "../libTinyXML2/tinyxml2.h"
+
+bool identify_office2007(const std::string & file_name, std::string & new_filename, int counter)
 {
-	COleException e;
-	PdfDocument pdfDoc;
-	std::string ext = IO::get_extension(file_name);
-	new_filename = IO::numberToString(counter) + ext;
-	if (pdfDoc.CreateDocument(e))
+	auto zip_file = ZipFile::Open(file_name.c_str());
+	for (auto i = 0; i < zip_file->GetEntriesCount(); ++i)
 	{
-		if (pdfDoc.Open(file_name))
+		auto zip_entry = zip_file->GetEntry(i);
+		if (zip_entry->GetName().compare(core_xml_str) == 0)
 		{
-			auto docInfo = pdfDoc.getInfo();
-			DateString data_string;
-			CString targe_name = IO::numberToString(counter).c_str();
+			printf("Found core.xml\r\n");
 
-			CString dataToParse = (!docInfo.ModDate.IsEmpty()) ? docInfo.ModDate : docInfo.CreationDate;
-			if (!dataToParse.IsEmpty())
-				if (ParseDateString(dataToParse, data_string))
-				{
-					targe_name = data_string.YEAR + "-" +
-						data_string.MONTH + "-" +
-						data_string.DAY + "-" +
-						data_string.HOUR + "-" +
-						data_string.MINUTES + "-" +
-						data_string.SECONDS + "-" +
-						IO::numberToString(counter).c_str();
-				}
-			new_filename = targe_name.GetString() + ext;
+			auto decompressStream = zip_entry->GetDecompressionStream();
 
-			pdfDoc.DestroyDocument();
+			std::ofstream output_file;
+			output_file.open(core_xml_str);
+			output_file << decompressStream->rdbuf();
+			output_file.close();
+
+			tinyxml2::XMLDocument xml_doc;
+			auto result = xml_doc.LoadFile(core_xml_str.c_str());
+			auto xml_last_node1 = xml_doc.LastChild();
+			auto xml_last_node2 = xml_last_node1->LastChild();
+			auto xml_first_node = xml_last_node2->FirstChild();
+			auto val_text = xml_first_node->ToText();
+			//2014-12-29T08:07:00Z
+			auto xml_text_date = val_text->Value();
+			std::string original_date = xml_text_date;
+			new_filename = parse_string_date(original_date);
 			return true;
 		}
-
 	}
-	else
-		printf("Error to create pdf document application\r\n");
+	return false;
+}
+
+bool identify_pdf(const std::string & file_name, std::string & new_filename, int counter)
+{
+	//COleException e;
+	//PdfDocument pdfDoc;
+	//std::string ext = IO::get_extension(file_name);
+	//new_filename = IO::numberToString(counter) + ext;
+	//if (pdfDoc.CreateDocument(e))
+	//{
+	//	if (pdfDoc.Open(file_name))
+	//	{
+	//		auto docInfo = pdfDoc.getInfo();
+	//		DateString data_string;
+	//		CStringA targe_name = IO::numberToString(counter).c_str();
+
+	//		CString dataToParse = (!docInfo.ModDate.IsEmpty()) ? docInfo.ModDate : docInfo.CreationDate;
+	//		if (!dataToParse.IsEmpty())
+	//			if (ParseDateString(dataToParse, data_string))
+	//			{
+	//				targe_name = data_string.YEAR + "-" +
+	//					data_string.MONTH + "-" +
+	//					data_string.DAY + "-" +
+	//					data_string.HOUR + "-" +
+	//					data_string.MINUTES + "-" +
+	//					data_string.SECONDS + "-" +
+	//					IO::numberToString(counter).c_str();
+	//			}
+	//		new_filename = targe_name.GetString() + ext;
+
+	//		pdfDoc.DestroyDocument();
+	//		return true;
+	//	}
+
+	//}
+	//else
+	//	printf("Error to create pdf document application\r\n");
 
 	return false;
 }

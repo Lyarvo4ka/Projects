@@ -2,6 +2,8 @@
 #define MLV_RAW_H
 
 #include "constants.h"
+#include "iofunctions.h"
+#include "AbstractRaw.h"
 
 
 const uint32_t mlv_keyword_size = 4;
@@ -57,7 +59,64 @@ uint32_t read_block_drive(HANDLE & hDrive, uint64_t offset, uint8_t * data_buffe
 
 }
 
-const uint64_t sectros_3Tb = 5860533168;
+uint32_t read_block_file(HANDLE & hFile, uint64_t offset, uint8_t * data_buffer, uint32_t read_size)
+{
+	if (hFile == INVALID_HANDLE_VALUE)
+		return 0;
+
+	IO::set_position(hFile, offset);
+	DWORD bytesRead = 0;
+	if (!IO::read_block(hFile, data_buffer, read_size, bytesRead))
+		return 0;
+
+	return bytesRead;
+
+}
+
+
+void save_only_1in10_mlv_clusters(const std::string & file_name, const std::string & new_file, const int cluster_size)
+{
+	HANDLE hFile = INVALID_HANDLE_VALUE;
+	HANDLE hWrite = INVALID_HANDLE_VALUE;
+	if (!IO::open_read(hFile, file_name))
+	{
+		printf("Error open file to read\r\n");
+		return;
+	}
+	if (!IO::create_file(hWrite, new_file))
+	{
+		printf("Error create file \r\n");
+		return;
+	}
+
+	BYTE * cluster_buffer = new BYTE[cluster_size];
+
+	uint32_t byte_read = 0;
+	uint64_t offset = 0;
+	uint64_t file_size = IO::getFileSize(hFile);
+	DWORD bytesWritten = 0;
+
+	while (offset < file_size)
+	{
+		byte_read = read_block_file(hFile, offset, cluster_buffer, cluster_size);
+		if ( byte_read == 0 )
+			break;
+
+		if (memcmp(cluster_buffer, MLVKeywords::mlv_array[0], mlv_keyword_size) == 0)
+			offset += cluster_size * 9;
+
+		if (!IO::write_block(hWrite, cluster_buffer, cluster_size, bytesWritten))
+			break;
+		if (bytesWritten == 0)
+			break;
+
+		offset += cluster_size;
+	}
+	
+	delete[] cluster_buffer;
+	CloseHandle(hFile);
+	CloseHandle(hWrite);
+}
 
 
 class MLV_raw
@@ -67,7 +126,13 @@ private:
 	std::string target_folder_;
 public:
 	MLV_raw(DWORD drive_number, const std::string target_folder)
-		:AbstractRaw(drive_number)
+		: AbstractRaw(drive_number)
+		, target_folder_(target_folder)
+	{
+
+	}
+	MLV_raw(const std::string file_name, const std::string target_folder)
+		: AbstractRaw(file_name)
 		, target_folder_(target_folder)
 	{
 
@@ -76,7 +141,7 @@ public:
 	void execute() override
 	{
 		HANDLE *hDrive = this->getHandle();
-		const uint64_t drive_max = sectros_3Tb * SECTOR_SIZE;
+		const uint64_t drive_max = IO::getFileSize(*hDrive);
 
 		if (!this->isReady())
 		{
@@ -89,7 +154,6 @@ public:
 		uint64_t offset = 0;
 		uint64_t header_offset = 0;
 
-		uint8_t read_buffer[BLOCK_SIZE];
 
 		DWORD bytesRead = 0;
 
@@ -132,7 +196,7 @@ public:
 		while (true)
 		{
 			mlv_block_t mlv_blocl_header = { 0 };
-			if (uint32_t bytes_read = read_block_drive(*hDrive, keyword_offset, (uint8_t*)&mlv_blocl_header, mlv_struct_size))
+			if (uint32_t bytes_read = read_block_file(*hDrive, keyword_offset, (uint8_t*)&mlv_blocl_header, mlv_struct_size))
 			{
 				if (isMlvBlock((const mlv_block_t*)&mlv_blocl_header))
 				{
@@ -143,7 +207,7 @@ public:
 						uint8_t * block_data = new uint8_t[mlv_blocl_header.block_size];
 						DWORD bytesWritten = 0;
 						bool bResult = false;
-						if (bytes_read = read_block_drive(*hDrive, keyword_offset, block_data, mlv_blocl_header.block_size))
+						if (bytes_read = read_block_file(*hDrive, keyword_offset, block_data, mlv_blocl_header.block_size))
 						{
 							bResult = IO::write_block(hTarget, block_data, bytes_read, bytesWritten);
 							if (!bResult || (bytesWritten == 0))

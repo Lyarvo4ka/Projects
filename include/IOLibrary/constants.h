@@ -22,7 +22,7 @@ namespace MLVKeywords
 
 	static const char *mlv_array[] =	{ "MLVI", "VIDF", "AUDF", "RAWI", "WAVI", "EXPO", "LENS", "RTCI", 
 										  "IDNT", "XREF", "INFO", "DISO", "NULL", "ELVL", "WBAL", "STYL", 
-										  "MARK", "SUBC", "SUBI", "COLP", "DARK", "VIGN", "VERS" };
+										  "MARK", "SUBC", "SUBI", "COLP", "DARK", "VIGN", "VERS", "DEBG" };
 	const int mlv_array_size = SIZEOF_ARRAY(mlv_array);
 };
 

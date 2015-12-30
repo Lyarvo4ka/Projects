@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterTool", "DiskMaste
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{F5AEE42D-9C64-40AF-95C9-C830A93F32C4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "insertInPages", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "office_2007_raw", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IOLibraryTest", "testing\IOLibraryTest\IOLibraryTest.vcxproj", "{DFA3196A-BBD0-4323-8F80-8E1A7CE9CF33}"
 EndProject
@@ -62,6 +62,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lzma", "ZipLib\extlibs\lzma\lzma.vcxproj", "{7EAD1358-3E72-4FB6-A212-25D462B5C1E9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "ZipLib\extlibs\zlib\zlib.vcxproj", "{BAEB16B3-DB4C-432F-9E6A-2ACADEA0691D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LdmParser", "..\..\src\LdmParser\LdmParser.vcxproj", "{A681ADAA-D2F4-4C88-A4AD-A961739573F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -322,6 +324,15 @@ Global
 		{BAEB16B3-DB4C-432F-9E6A-2ACADEA0691D}.ReleaseNew|Win32.Build.0 = Release|Win32
 		{BAEB16B3-DB4C-432F-9E6A-2ACADEA0691D}.ReleaseNew|x64.ActiveCfg = Release|x64
 		{BAEB16B3-DB4C-432F-9E6A-2ACADEA0691D}.ReleaseNew|x64.Build.0 = Release|x64
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.Debug|Win32.Build.0 = Debug|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.Debug|x64.ActiveCfg = Debug|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.Release|Win32.ActiveCfg = Release|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.Release|Win32.Build.0 = Release|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.Release|x64.ActiveCfg = Release|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.ReleaseNew|Win32.ActiveCfg = Release|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.ReleaseNew|Win32.Build.0 = Release|Win32
+		{A681ADAA-D2F4-4C88-A4AD-A961739573F7}.ReleaseNew|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

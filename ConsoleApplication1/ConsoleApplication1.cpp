@@ -24,57 +24,69 @@ void show_error_invalid_params()
 }
 
 #include "boost/filesystem.hpp"
-#include "../ZipLib/ZipFile.h"
-#include "../libTinyXML2/tinyxml2.h"
+//#include "../ZipLib/ZipFile.h"
+//#include "../libTinyXML2/tinyxml2.h"
 
-const std::string core_xml_str = "core.xml";
+//const std::string core_xml_str = "core.xml";
+//
+//const std::string open_tag = "<dcterms:modified";
+//const std::string close_tag = "</dcterms:modified>";
+//
+//
+//
+//
+//std::string getDateFromSystemtime(const SYSTEMTIME & system_time)
+//{
+//	char tmp_buffer[255];
+//	::GetDateFormatA(LOCALE_USER_DEFAULT, 0, &system_time, "yyyy-MM-dd", tmp_buffer, 255);
+//	std::string tmp_str = tmp_buffer;
+//
+//	return tmp_str;
+//}
+//
+//std::string getTimeFromSystemtime(const SYSTEMTIME & system_time)
+//{
+//	char tmp_buffer[255];
+//	::GetTimeFormatA(LOCALE_USER_DEFAULT, 0, &system_time, "HH-mm-ss", tmp_buffer, 255);
+//	std::string tmp_str = tmp_buffer;
+//
+//	return tmp_str;
+//}
+//
+//std::string getDateAndTimeFromSystemtime(const SYSTEMTIME & system_time)
+//{
+//	return getDateFromSystemtime(system_time) + '-' + getTimeFromSystemtime(system_time);
+//}
+//
+//std::string parse_string_date(const std::string & original_date)
+//{
+//	SYSTEMTIME sys_time = {0};
+//	std::string tmp_str;
+//	sys_time.wYear = std::stoi(original_date.substr(0, 4));
+//	sys_time.wMonth = std::stoi(original_date.substr(5, 2));
+//	sys_time.wDay = std::stoi(original_date.substr(8, 2));
+//	sys_time.wHour = std::stoi(original_date.substr(11, 2));
+//	sys_time.wMinute = std::stoi(original_date.substr(14, 2));
+//	sys_time.wSecond = std::stoi(original_date.substr(17, 2));
+//
+//	//""
+//	return getDateAndTimeFromSystemtime(sys_time);
+//}
 
-const std::string open_tag = "<dcterms:modified";
-const std::string close_tag = "</dcterms:modified>";
-
+#include "IOLibrary/MLV_raw.h"
 
 int main(int argc, char *argv[])
 {
-	auto zip_file = ZipFile::Open("d:\\test_folder\\Анкета посетителя фабрики.docx");
-	for (auto i = 0; i < zip_file->GetEntriesCount(); ++i)
+	//save_only_1in10_mlv_clusters("d:\\incoming\\38906\\freespace.bin", "d:\\incoming\\38906\\freespace_new.bin", 32768);
+	if (argc == 3)
 	{
-		auto zip_entry = zip_file->GetEntry(i);
-		if (zip_entry->GetName().compare(core_xml_str) == 0)
-		{
-			printf("Found core.xml\r\n");
-			
-			auto decompressStream = zip_entry->GetDecompressionStream();
-
-			std::ofstream output_file;
-			output_file.open(core_xml_str);
-			output_file << decompressStream->rdbuf();
-			output_file.close();
-
-			tinyxml2::XMLDocument xml_doc;
-			auto result = xml_doc.LoadFile(core_xml_str.c_str());
-			auto xml_last_node1 = xml_doc.LastChild();
-			auto xml_last_node2 = xml_last_node1->LastChild();
-			auto xml_first_node = xml_last_node2->FirstChild();
-			auto val_text = xml_first_node->ToText();
-			//2014-12-29T08:07:00Z
-			auto text = val_text->Value();
-
-		}
-
+		std::string source_file = argv[1];
+		std::string target_folder = argv[2];
+		MLV_raw mlv_raw(source_file, target_folder);
+		mlv_raw.execute();
 	}
-	//if (argc == 7)
-	//{
-		
-		//std::string source_file = argv[1];
-		//std::string target_file = argv[2];
-		//DWORD src_size = strtol(argv[3], NULL, 10);
-		//DWORD dst_size = strtol(argv[4], NULL, 10);
-		//DWORD page_count = strtol(argv[5], NULL, 10);
-		//DWORD block_size = strtol(argv[6], NULL, 10);
-		//insertInEachPage(source_file, target_file, src_size, dst_size, page_count, block_size);
-	//}
-	//else
-	//	std::cout << "You entered invalid params." << std::endl;
+	else
+		std::cout << "You entered invalid params." << std::endl;
 
 
 	printf("finished");
