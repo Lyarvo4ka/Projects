@@ -11,26 +11,23 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{25E7C402-13A6-4865-87A0-37675EABA997}</ProjectGuid>
+    <ProjectGuid>{E9CE2AEF-07B5-44E3-830C-2E42A1393DF5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>PdfChecker</RootNamespace>
-    <ProjectName>PdfCheckerConsole</ProjectName>
+    <RootNamespace>OfficeDateConsole</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,17 +49,17 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libstructstorage.lib;libboost_filesystem-vc120-mt-gd-1_57.lib</AdditionalDependencies>
+      <AdditionalDependencies>libboost_filesystem-vc120-mt-gd-1_57.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -73,7 +70,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -87,27 +84,27 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PdfChecker.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="identify.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PdfChecker.cpp" />
+    <ClCompile Include="identify.cpp" />
+    <ClCompile Include="OfficeDateConsole.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="PdfChecker.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="include\acrobat.tlb" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\libTinyXML2\libTinyXML2.vcxproj">
       <Project>{b7a2ec08-f29b-4922-bcae-011aa5054218}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\src\IOLibrary\IOLibrary.vcxproj">
+      <Project>{c0525921-31e3-4e1a-b7b6-4ea88d4de419}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\src\libstructstorage\libstructstorage.vcxproj">
+      <Project>{9b90f2fc-5f26-4390-8a8b-81f6fe875151}</Project>
     </ProjectReference>
     <ProjectReference Include="..\ZipLib\ZipLib.vcxproj">
       <Project>{5c9fd859-ddf9-4510-8397-b329b0ae8c48}</Project>
