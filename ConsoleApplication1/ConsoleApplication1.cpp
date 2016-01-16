@@ -24,66 +24,16 @@ void show_error_invalid_params()
 }
 
 #include "boost/filesystem.hpp"
-//#include "../ZipLib/ZipFile.h"
-//#include "../libTinyXML2/tinyxml2.h"
+#include "IOLibrary/SignatureTest.h"
 
-//const std::string core_xml_str = "core.xml";
-//
-//const std::string open_tag = "<dcterms:modified";
-//const std::string close_tag = "</dcterms:modified>";
-//
-//
-//
-//
-//std::string getDateFromSystemtime(const SYSTEMTIME & system_time)
-//{
-//	char tmp_buffer[255];
-//	::GetDateFormatA(LOCALE_USER_DEFAULT, 0, &system_time, "yyyy-MM-dd", tmp_buffer, 255);
-//	std::string tmp_str = tmp_buffer;
-//
-//	return tmp_str;
-//}
-//
-//std::string getTimeFromSystemtime(const SYSTEMTIME & system_time)
-//{
-//	char tmp_buffer[255];
-//	::GetTimeFormatA(LOCALE_USER_DEFAULT, 0, &system_time, "HH-mm-ss", tmp_buffer, 255);
-//	std::string tmp_str = tmp_buffer;
-//
-//	return tmp_str;
-//}
-//
-//std::string getDateAndTimeFromSystemtime(const SYSTEMTIME & system_time)
-//{
-//	return getDateFromSystemtime(system_time) + '-' + getTimeFromSystemtime(system_time);
-//}
-//
-//std::string parse_string_date(const std::string & original_date)
-//{
-//	SYSTEMTIME sys_time = {0};
-//	std::string tmp_str;
-//	sys_time.wYear = std::stoi(original_date.substr(0, 4));
-//	sys_time.wMonth = std::stoi(original_date.substr(5, 2));
-//	sys_time.wDay = std::stoi(original_date.substr(8, 2));
-//	sys_time.wHour = std::stoi(original_date.substr(11, 2));
-//	sys_time.wMinute = std::stoi(original_date.substr(14, 2));
-//	sys_time.wSecond = std::stoi(original_date.substr(17, 2));
-//
-//	//""
-//	return getDateAndTimeFromSystemtime(sys_time);
-//}
 
-#include "IOLibrary/MLV_raw.h"
 
 int main(int argc, char *argv[])
 {
-	//save_only_1in10_mlv_clusters("d:\\incoming\\38906\\freespace.bin", "d:\\incoming\\38906\\freespace_new.bin", 32768);
-	if (argc == 3)
+	if (argc == 2)
 	{
-		std::string source_file = argv[1];
-		std::string target_folder = argv[2];
-		MLV_raw mlv_raw(source_file, target_folder);
-		mlv_raw.execute();
+		std::string folder(argv[1]);
+		Signture_Testing(folder);
 	}
 	else
 		std::cout << "You entered invalid params." << std::endl;

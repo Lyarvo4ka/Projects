@@ -28,7 +28,56 @@ struct firebird_page
 #pragma pack()
 
 const int firebird_size = sizeof(firebird_page);
-const int FB_Size = 4 * 1024;
+const int FB_Size = 8 * 1024;
+
+
+void removeNotFireBirdPages(const std::string & src_file, const std::string & dst_file)
+{
+	HANDLE hSource = INVALID_HANDLE_VALUE;
+	if (!IO::open_read(hSource, src_file))
+	{
+		printf("Error open file\r\n");
+		return;
+	}
+	HANDLE hTarget = INVALID_HANDLE_VALUE;
+	if (!IO::create_file(hTarget, dst_file))
+	{
+		printf("Error create file\r\n");
+		return;
+	}
+
+	BYTE buffer[FB_Size];
+	DWORD bytesRead = 0;
+	DWORD bytesWritten = 0;
+	bool bResult = false;
+
+	while (true)
+	{
+		bResult = IO::read_block(hSource, buffer, FB_Size, bytesRead);
+		if (!bResult || bytesRead == 0)
+		{
+			printf("Error read block\r\n");
+			break;
+		}
+		firebird_page * pFireBird = (firebird_page *) buffer;
+		if (pFireBird->isFireBirdPage())
+		{
+			bResult = IO::write_block(hSource, buffer, FB_Size, bytesWritten);
+			if (!bResult || bytesWritten == 0)
+			{
+				printf("Error write block\r\n");
+				break;
+			}
+		}
+		
+	}
+
+	
+
+
+	CloseHandle(hSource);
+	CloseHandle(hTarget);
+}
 
 
 class FileWriter

@@ -131,6 +131,9 @@
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\calcRaid5Parity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

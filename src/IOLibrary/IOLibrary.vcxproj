@@ -115,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\AbstractRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\BlockNumber.h" />
+    <ClInclude Include="..\..\include\IOLibrary\calcRaid5Parity.h" />
     <ClInclude Include="..\..\include\IOLibrary\ChangeHeader.h" />
     <ClInclude Include="..\..\include\IOLibrary\constants.h" />
     <ClInclude Include="..\..\include\IOLibrary\dbf.h" />

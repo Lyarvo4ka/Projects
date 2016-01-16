@@ -38,7 +38,7 @@ void Signture_Testing(const std::string & folder)
 
 
 		bool isGoodHeader = false;
-		for ( auto iByte = 0 ; iByte < SECTOR_SIZE ; ++iByte)
+		for (auto iByte = 0; iByte < bytesRead; ++iByte)
 			if ( buff[iByte] != 0x00 )
 			{
 				isGoodHeader = true;
@@ -47,13 +47,26 @@ void Signture_Testing(const std::string & folder)
 
 		if (!isGoodHeader)
 		{
-			boost::filesystem::rename(file_name, file_name + ".bad_file");
+			try
+			{
+				boost::filesystem::remove(file_name);
+			}
+			catch (const boost::filesystem::filesystem_error& e)
+			{
+				printf("Error remove file %s\r\n", file_name.c_str());
+			}
 		}
-		else
-		{
-			if (memcmp(buff, Signatures::bad_sector_header, SIZEOF_ARRAY(Signatures::bad_sector_header)) == 0)
-				boost::filesystem::rename(file_name, file_name + ".bad_file");
-		}
+
+
+		//if (!isGoodHeader)
+		//{
+		//	boost::filesystem::rename(file_name, file_name + ".bad_file");
+		//}
+		//else
+		//{
+		//	if (memcmp(buff, Signatures::bad_sector_header, SIZEOF_ARRAY(Signatures::bad_sector_header)) == 0)
+		//		boost::filesystem::rename(file_name, file_name + ".bad_file");
+		//}
 		++fileIter;
 	}
 }
