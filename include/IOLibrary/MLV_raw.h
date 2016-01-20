@@ -282,6 +282,7 @@ const char VIDF_sign[] = { "VIDF" };
 class Mlv_repair
 {
 	HANDLE hFile_;
+	uint32_t file_size_;
 public:
 	void repair_files(const std::string & folder)
 	{
@@ -306,6 +307,7 @@ public:
 			printf("Error to open file.%s\r\n", mlv_file.c_str());
 			return;
 		}
+		file_size_ = IO::getFileSize(hFile_);
 
 		uint32_t offset = 0;
 		uint32_t marker0x27_offset = 0;
@@ -384,6 +386,9 @@ public:
 				new_position += default_block_size;
 			else
 			{
+				if ( new_position == 0)
+					break;
+
 				if (new_position < default_block_size)
 					new_position = 0;
 				else
