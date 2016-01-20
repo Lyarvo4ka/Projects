@@ -142,7 +142,6 @@ BOOST_AUTO_TEST_CASE(FileOffsetNameTest)
 	BOOST_CHECK_EQUAL(actual, expected);
 }
 
-//Class XorAnalyzer
 BOOST_AUTO_TEST_CASE(getChunckBufferSizeTest)
 {
 	XorAnalyzer xorAnalyzer;
