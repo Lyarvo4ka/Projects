@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "iofunctions.h"
 #include "AbstractRaw.h"
+#include "FileFinder.h"
 
 
 const uint32_t mlv_keyword_size = 4;
@@ -271,5 +272,139 @@ public:
 
 };
 
+
+enum class Direction { Up , Down };
+
+const uint64_t NOT_FOUND = _UI64_MAX - 1;
+const char NULL_sign[] = { "NULL" };
+const char VIDF_sign[] = { "VIDF" };
+
+class Mlv_repair
+{
+	HANDLE hFile_;
+public:
+	void repair_files(const std::string & folder)
+	{
+		stringlist mlv_ext = { ".mlv" };
+		FileFinder finder;
+		finder.FindFiles(folder, mlv_ext);
+
+		auto file_list = finder.getFileNames();
+		for (auto mlv_file : file_list)
+		{
+			repair_mlv_file(mlv_file);
+		}
+
+	}
+	void repair_mlv_file(const std::string & mlv_file)
+	{
+		printf("Start repair file %s\r\n", mlv_file.c_str());
+
+		hFile_ = INVALID_HANDLE_VALUE;
+		if (!IO::open_write(hFile_, mlv_file))
+		{
+			printf("Error to open file.%s\r\n", mlv_file.c_str());
+			return;
+		}
+
+		uint32_t offset = 0;
+		uint32_t marker0x27_offset = 0;
+		uint32_t null_offset = 0;
+		uint32_t vidf_offset = 0;
+
+		DWORD bytesWritten = 0;
+
+		
+
+		while (true)
+		{
+			if (marker0x27_offset = find_by_signature(offset, Signatures::marker_0x27, Signatures::marker_0x27_size) == NOT_FOUND )
+				break;
+
+			printf("Found 0x27 marker.\r\n");
+
+			// search UP to find 'NULL' keyword;
+			if (null_offset = find_by_signature(marker0x27_offset, NULL_sign, SIZEOF_ARRAY(NULL_sign), Direction::Up) == NOT_FOUND)
+				break;
+
+			// search DOWN to find 'VIDF' keyword;
+			if (vidf_offset = find_by_signature(marker0x27_offset, VIDF_sign, SIZEOF_ARRAY(VIDF_sign), Direction::Down) == NOT_FOUND)
+				break;
+
+			uint32_t new_null_size = vidf_offset - null_offset;
+			mlv_block_t mlv_block = {0};
+
+
+			if (read_block_file(hFile_, null_offset, static_cast<uint8_t*>(&mlv_block), mlv_struct_size) == 0)
+				break;
+
+			mlv_block.block_size = new_null_size;
+
+			if (!IO::write_block(hFile_, static_cast<uint8_t*>(&mlv_block), mlv_struct_size, bytesWritten))
+				break;
+			if (bytesWritten == 0)
+				break;
+
+			printf("File has been changed...\t\t\t");
+
+
+			offset = vidf_offset;
+		}
+
+
+
+		printf("Finished repair file %s\r\n", mlv_file.c_str());
+
+		CloseHandle(hFile_);
+	}
+	uint64_t find_by_signature(uint32_t offset, const uint8_t * signature, const int sign_size, Direction direction = Direction::Down)
+	{
+		IO::set_position(hFile_, offset);
+
+		uint32_t new_position = offset;
+
+		BYTE buffer[default_block_size];
+		
+
+		while (true)
+		{
+			if (read_block_file(hFile_, new_position, buffer, default_block_size) == 0)
+				break;
+
+			for (int iByte = 0; iByte < default_block_size - sign_size; ++iByte)
+			{
+				if (memcpm(buffer + iByte, signature, sign_size) == 0)
+				{
+					return new_position + iByte;
+				}
+			}
+
+
+			if (direction == Direction::Down)
+				new_position += default_block_size;
+			else
+			{
+				if (new_position < default_block_size)
+					new_position = 0;
+				else
+					new_position -= default_block_size;
+			}
+
+
+		}
+
+		return NOT_FOUND;
+	}
+};
+
+
+
+
+
+void repair_mlv(const std::string & folder)
+{
+
+
+}
 
 #endif
