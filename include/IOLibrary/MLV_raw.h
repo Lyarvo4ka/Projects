@@ -93,7 +93,7 @@ void save_only_1in10_mlv_clusters(const std::string & file_name, const std::stri
 	BYTE * cluster_buffer = new BYTE[cluster_size];
 
 	uint32_t byte_read = 0;
-	uint64_t offset = 0;
+	uint64_t offset = 15677952;
 	uint64_t file_size = IO::getFileSize(hFile);
 	DWORD bytesWritten = 0;
 
@@ -162,23 +162,57 @@ public:
 
 		offset = 0;
 		//offset = 0xE4B06EAA00;
-		
 
-		while (offset < drive_max)
+		uint64_t next_header_offset = 0;
+		uint64_t write_file_size = 0;
+		
+		header_offset = search_header(hDrive, offset);
+
+		while (true)
 		{
-			header_offset = search_header(hDrive, offset);
 			if ( header_offset == ERROR_RESULT )
 				break;
 
 			std::string target_name = IO::file_path_number(target_folder_, counter++, ".mlv");
-			offset = saveMLV(target_name, hDrive, header_offset);
-			offset += SECTOR_SIZE;
+
+			next_header_offset = search_header(hDrive, header_offset + (uint64_t)SECTOR_SIZE);
+			if (next_header_offset == ERROR_RESULT)
+			{
+				save_raw_mlv(header_offset, write_file_size, target_name);
+				break;
+			}
+
+			write_file_size = next_header_offset - header_offset;
+
+			save_raw_mlv(header_offset, write_file_size, target_name);
+			header_offset = next_header_offset;
+
+			//std::string target_name = IO::file_path_number(target_folder_, counter++, ".mlv");
+			//offset = saveMLV(target_name, hDrive, header_offset);
+			//offset += SECTOR_SIZE;
 
 		}
 
 
 
 
+	}
+
+	void save_raw_mlv(uint64_t start_offset, uint64_t size, const std::string & target_name)
+	{
+		HANDLE hTarget = INVALID_HANDLE_VALUE;
+		if (!IO::create_file(hTarget, target_name))
+		{
+			printf("Error create target file\r\n");
+			return ;
+		}
+
+		IO::copy_to_file(*this->getHandle(),
+					 start_offset,
+					 size,
+					 hTarget);
+
+		CloseHandle(hTarget);
 	}
 
 	uint64_t saveMLV(const std::string & target_name,  HANDLE * hDrive, uint64_t header_offset)
@@ -275,9 +309,9 @@ public:
 
 enum class Direction { Up , Down };
 
-const uint64_t NOT_FOUND = _UI64_MAX - 1;
-const char NULL_sign[] = { "NULL" };
-const char VIDF_sign[] = { "VIDF" };
+const uint32_t NOT_FOUND = UINT_MAX - 1;
+const char NULL_sign[] = { 'N','U','L','L' };
+const char VIDF_sign[] = { 'V','I','D','F' };
 
 class Mlv_repair
 {
@@ -294,8 +328,42 @@ public:
 		for (auto mlv_file : file_list)
 		{
 			repair_mlv_file(mlv_file);
+			//repair_file_size(mlv_file);
 		}
 
+	}
+	void repair_file_size(const std::string & mlv_file)
+	{
+		hFile_ = INVALID_HANDLE_VALUE;
+		if (!IO::open_write(hFile_, mlv_file))
+		{
+			printf("Error to open file.%s\r\n", mlv_file.c_str());
+			return;
+		}
+
+		uint32_t new_file_size = 0;
+
+		while (true)
+		{
+			mlv_block_t mlv_blocl_header = { 0 };
+			if (uint32_t bytes_read = read_block_file(hFile_, new_file_size, (uint8_t*)&mlv_blocl_header, mlv_struct_size))
+			{
+				if (isMlvBlock((const mlv_block_t*)&mlv_blocl_header))
+				{
+					new_file_size += mlv_blocl_header.block_size;
+				}
+				else
+					break;
+			}
+			else
+				break;
+
+		}
+
+		IO::set_position(hFile_, new_file_size);
+		::SetEndOfFile(hFile_);
+
+		CloseHandle(hFile_);
 	}
 	void repair_mlv_file(const std::string & mlv_file)
 	{
@@ -320,29 +388,33 @@ public:
 
 		while (true)
 		{
-			if (marker0x27_offset = find_by_signature(offset, Signatures::marker_0x27, Signatures::marker_0x27_size) == NOT_FOUND )
+			marker0x27_offset = find_by_signature(offset, Signatures::marker_0x27, Signatures::marker_0x27_size); 
+			if (marker0x27_offset == NOT_FOUND)
 				break;
 
 			printf("Found 0x27 marker.\r\n");
 
 			// search UP to find 'NULL' keyword;
-			if (null_offset = find_by_signature(marker0x27_offset, NULL_sign, SIZEOF_ARRAY(NULL_sign), Direction::Up) == NOT_FOUND)
+			null_offset = find_by_signature(marker0x27_offset, (const uint8_t *)NULL_sign, SIZEOF_ARRAY(NULL_sign), Direction::Up);
+			if ( null_offset == NOT_FOUND)
 				break;
 
 			// search DOWN to find 'VIDF' keyword;
-			if (vidf_offset = find_by_signature(marker0x27_offset, VIDF_sign, SIZEOF_ARRAY(VIDF_sign), Direction::Down) == NOT_FOUND)
+			vidf_offset = find_by_signature(marker0x27_offset, (const uint8_t *)VIDF_sign, SIZEOF_ARRAY(VIDF_sign), Direction::Down);
+			if ( vidf_offset == NOT_FOUND)
 				break;
 
 			uint32_t new_null_size = vidf_offset - null_offset;
 			mlv_block_t mlv_block = {0};
 
 
-			if (read_block_file(hFile_, null_offset, static_cast<uint8_t*>(&mlv_block), mlv_struct_size) == 0)
+			if (read_block_file(hFile_, null_offset, (uint8_t*)&mlv_block, mlv_struct_size) == 0)
 				break;
 
 			mlv_block.block_size = new_null_size;
 
-			if (!IO::write_block(hFile_, static_cast<uint8_t*>(&mlv_block), mlv_struct_size, bytesWritten))
+			IO::set_position(hFile_, null_offset);
+			if (!IO::write_block(hFile_, (uint8_t*)&mlv_block, mlv_struct_size, bytesWritten))
 				break;
 			if (bytesWritten == 0)
 				break;
@@ -359,7 +431,7 @@ public:
 
 		CloseHandle(hFile_);
 	}
-	uint64_t find_by_signature(uint32_t offset, const uint8_t * signature, const int sign_size, Direction direction = Direction::Down)
+	uint32_t find_by_signature(uint32_t offset, const uint8_t * signature, const int sign_size, Direction direction = Direction::Down)
 	{
 		IO::set_position(hFile_, offset);
 
@@ -375,7 +447,7 @@ public:
 
 			for (int iByte = 0; iByte < default_block_size - sign_size; ++iByte)
 			{
-				if (memcpm(buffer + iByte, signature, sign_size) == 0)
+				if (memcmp(buffer + iByte, signature, sign_size) == 0)
 				{
 					return new_position + iByte;
 				}
@@ -404,12 +476,5 @@ public:
 
 
 
-
-
-void repair_mlv(const std::string & folder)
-{
-
-
-}
 
 #endif

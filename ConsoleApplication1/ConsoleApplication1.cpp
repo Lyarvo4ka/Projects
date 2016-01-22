@@ -25,15 +25,22 @@ void show_error_invalid_params()
 
 #include "boost/filesystem.hpp"
 #include "IOLibrary/SignatureTest.h"
+#include "IOLibrary\MLV_raw.h"
 
 
 
 int main(int argc, char *argv[])
 {
+	//save_only_1in10_mlv_clusters("d:\\incoming\\38906\\Disk.image", "f:\\image.bin", 32768);
 	if (argc == 2)
 	{
-		std::string folder(argv[1]);
-		Signture_Testing(folder);
+
+		std::string folder = argv[1];
+		//std::string source_file = argv[2];
+		//MLV_raw mlv_raw(source_file, folder);
+		//mlv_raw.execute();
+		Mlv_repair mlv_repair;
+		mlv_repair.repair_files(folder);
 	}
 	else
 		std::cout << "You entered invalid params." << std::endl;

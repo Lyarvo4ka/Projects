@@ -14,7 +14,7 @@
     <ProjectGuid>{14C2973D-DC7A-492A-9393-45E41F2B59D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ConsoleApplication1</RootNamespace>
-    <ProjectName>remove_files_with_null</ProjectName>
+    <ProjectName>repair_mlv</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -63,7 +63,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Configuration);$(BOOST_ROOT)\stage\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>IOLibrary.lib;libboost_filesystem-vc120-mt-gd-1_57.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IOLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>20971520</StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
@@ -108,14 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="XorAnalyzer.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\libTinyXML2\libTinyXML2.vcxproj">
-      <Project>{b7a2ec08-f29b-4922-bcae-011aa5054218}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\ZipLib\ZipLib.vcxproj">
-      <Project>{5c9fd859-ddf9-4510-8397-b329b0ae8c48}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
