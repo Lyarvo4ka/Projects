@@ -237,6 +237,15 @@ inline bool isQuickTime(const qt_block_t * pQtBlock)
 
 //#include <Winsock2.h>
 
+bool isQuickTimeHeader(const qt_block_t * pQtBlock)
+{
+	for (auto iKeyword = 0; iKeyword < 3; ++iKeyword)
+		if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
+			return true;
+	return false;
+}
+
+
 class QuickTimeRaw
 {
 private:
@@ -270,7 +279,7 @@ public:
 
 		if (!this->readerPtr_->open())
 		{
-			printf("Error to open physical drive");
+			printf("Error to open physical drive\r\n");
 			return;
 		}
 
@@ -362,7 +371,7 @@ public:
 			for (int iSector = 0; iSector < bytes_read; iSector += default_sector_size)
 			{
 				qt_block_t * pQt_block = (qt_block_t *) &buffer[iSector];
-				if (memcmp(pQt_block->block_type, QTKeyword::qt_array[0], qt_keyword_size) == 0)
+				if ( isQuickTimeHeader(pQt_block) )
 				{
 					header_offset = offset;
 					header_offset += iSector;
