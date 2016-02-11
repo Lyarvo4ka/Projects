@@ -80,7 +80,8 @@ private:
 					auto file_ext = boost::filesystem::extension(file_name);
 					if (IO::isPresentInList(ext, file_ext))
 					{
-						file_list_.push_back(IO::make_file_path(folder, file_name));
+						auto full_path = IO::make_file_path(folder, file_name);
+						file_list_.push_back(full_path);
 					}
 				}
 

@@ -216,13 +216,20 @@ IStorage * SSReader::open_storage(const std::wstring & file)
 		else if (hr == STG_E_FILEALREADYEXISTS)
 			printf("Not a compound file.");
 		else
-			printf("StgOpenStorage() failed w/error %08lx", hr);
+		{
+
+		}
+			//printf("StgOpenStorage() failed w/error %08lx", hr);
 		return NULL;
 	}
 	return pStorage;
 }
 
 SSReader::SSReader()
+{
+
+}
+SSReader::~SSReader()
 {
 
 }
@@ -243,7 +250,9 @@ bool SSReader::read_properties(const std::string & file_path, SummaryInformation
 
 	hr = pPropSetStg->Open(FMTID_SummaryInformation, STGM_READ | STGM_SHARE_EXCLUSIVE, &pPropStg);
 	if (FAILED(hr)) {
-		printf("No Summary-Information.\n");
+		//printf("No Summary-Information.\n");
+		pStorage->Release();
+		pPropSetStg->Release();
 		return false;
 	}
 
@@ -291,7 +300,7 @@ bool SSReader::read_properties(const std::string & file_path, SummaryInformation
 	hr = pPropStg->ReadMultiple(nPidsi, pPropSpec, pPropVar);
 
 	if (FAILED(hr)) {
-		printf("IPropertyStg::ReadMultiple() failed w/error %08lx\n", hr);
+		//printf("IPropertyStg::ReadMultiple() failed w/error %08lx\n", hr);
 	}
 	else {
 		setSummaryInformation(pPropSpec, pPropVar, nPidsi, summary_information);

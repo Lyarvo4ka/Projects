@@ -108,12 +108,6 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 {
 	std::string bad_dir = "bad";
 	stringlist ext_list;
-	ext_list.push_back(".doc");
-	ext_list.push_back(".docx");
-	ext_list.push_back(".xls");
-	ext_list.push_back(".xlsx");
-	ext_list.push_back(".ppt");
-	ext_list.push_back(".pptx");
 	ext_list.push_back(".pdf");
 
 	FileFinder finder;
@@ -152,7 +146,7 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 
 		try
 		{
-			boost::filesystem::copy_file(source_name, target_file_path);
+			boost::filesystem::rename(source_name, target_file_path);
 		}
 		catch (const boost::filesystem::filesystem_error& e)
 		{
@@ -172,7 +166,7 @@ bool identify_pdf(const std::string & file_name, std::string & new_filename, int
 	if (pdfDoc.CreateDocument(e))
 	{
 		if (pdfDoc.Open(file_name))
-		{
+		{ 
 			auto docInfo = pdfDoc.getInfo();
 			DateString data_string;
 			CStringA targe_name = IO::numberToString(counter).c_str();

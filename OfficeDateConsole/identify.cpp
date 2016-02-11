@@ -8,6 +8,7 @@ const std::string core_xml_str = "core.xml";
 #include "libstructstorage/libstructstorage.h"
 
 
+
 void identify_files(const std::string & source_dir, const std::string & target_dir)
 {
 	std::string bad_dir = "bad";
@@ -32,6 +33,7 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 	{
 		std::string source_name(*fileIter);
 
+		printf("%s -", source_name.c_str());
 
 		boost::filesystem::path file_path(source_name);
 		std::string ext = file_path.extension().generic_string();
@@ -51,19 +53,24 @@ void identify_files(const std::string & source_dir, const std::string & target_d
 		std::string target_folder = IO::add_folder(target_dir, new_folder);
 		target_file_path = IO::make_file_path(target_folder, target_name);
 
+		if ( bResult ) 
+			printf(" OK\r\n");
+		else
+			printf(" FAILED\r\n");
+
 		try
 		{
-			boost::filesystem::copy_file(source_name, target_file_path);
+			boost::filesystem::rename(source_name, target_file_path);
 		}
 		catch (const boost::filesystem::filesystem_error& e)
 		{
 			std::cout << "Error: " << e.what() << std::endl;
 		}
-
+ 
 		++fileIter;
 	}
 }
-
+ 
 bool identify_office2003(const std::string & file_name, std::string & new_filename, int counter)
 {
 	SSReader ssreader;
@@ -90,13 +97,16 @@ bool identify_office2003(const std::string & file_name, std::string & new_filena
 
 bool identify_office2007(const std::string & file_name, std::string & new_filename, int counter)
 {
+
+	std::string ext = IO::get_extension(file_name);
+	new_filename = IO::numberToString(counter) + ext;
+
 	auto zip_file = ZipFile::Open(file_name.c_str());
 	for (auto i = 0; i < zip_file->GetEntriesCount(); ++i)
 	{
 		auto zip_entry = zip_file->GetEntry(i);
 		if (zip_entry->GetName().compare(core_xml_str) == 0)
 		{
-			printf("Found core.xml\r\n");
 
 			auto decompressStream = zip_entry->GetDecompressionStream();
 
@@ -106,18 +116,32 @@ bool identify_office2007(const std::string & file_name, std::string & new_filena
 			output_file.close();
 
 			tinyxml2::XMLDocument xml_doc;
-			auto result = xml_doc.LoadFile(core_xml_str.c_str());
-			auto xml_last_node1 = xml_doc.LastChild();
-			auto xml_last_node2 = xml_last_node1->LastChild();
-			auto xml_first_node = xml_last_node2->FirstChild();
-			auto val_text = xml_first_node->ToText();
-			//2014-12-29T08:07:00Z
-			auto xml_text_date = val_text->Value();
-			std::string original_date = xml_text_date;
-			new_filename = parse_string_date(original_date);
-			return true;
+			auto xml_result = xml_doc.LoadFile(core_xml_str.c_str());
+			if ( xml_result == tinyxml2::XML_SUCCESS)
+				if (auto xml_coreProperties = xml_doc.RootElement())//("cp:coreProperties")
+					if (auto xml_dcterm_modified = xml_coreProperties->FirstChildElement("dcterms:modified"))
+						if (auto xml_date_element = xml_dcterm_modified->FirstChild())
+							if (auto val_text = xml_date_element->ToText() )
+							{
+								//2014-12-29T08:07:00Z
+								auto xml_text_date = val_text->Value();
+
+								std::string original_date = xml_text_date;
+								auto tmp_str = parse_string_date(original_date);
+
+								if (!tmp_str.empty())
+									new_filename = tmp_str + "-" + IO::numberToString(counter) + ext;
+								else
+									new_filename = IO::numberToString(counter) + ext;
+
+								
+								return true;
+							}
+
 		}
 	}
+
+
 	return false;
 }
 

@@ -20,6 +20,13 @@ namespace IO
 		virtual uint64_t size() const = 0;
 	};
 
+	class IBlockDevice
+	{
+	public:
+		virtual uint32_t read_block()  = 0;
+		//virtual 
+	};
+
 	class File
 		: public IODevice
 	{
@@ -82,8 +89,8 @@ namespace IO
 	{
 	private:
 		uint32_t drive_number_;
-		uint64_t number_sectors_;
 		uint32_t bytes_per_sector_;
+		uint64_t number_sectors_;
 //		std::wstring path_;
 	public:
 		//PysicalDrive(const std::string path)

@@ -62,7 +62,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>IOLibrary.lib;libpdf.lib;libstructstorage.lib;libboost_filesystem-vc120-mt-gd-1_57.lib</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -106,11 +107,11 @@
     <None Include="include\acrobat.tlb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\libTinyXML2\libTinyXML2.vcxproj">
-      <Project>{b7a2ec08-f29b-4922-bcae-011aa5054218}</Project>
+    <ProjectReference Include="..\src\IOLibrary\IOLibrary.vcxproj">
+      <Project>{c0525921-31e3-4e1a-b7b6-4ea88d4de419}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\ZipLib\ZipLib.vcxproj">
-      <Project>{5c9fd859-ddf9-4510-8397-b329b0ae8c48}</Project>
+    <ProjectReference Include="..\src\libpdf\libpdf.vcxproj">
+      <Project>{5e05a079-7111-4ccc-89e3-cd5cc0788963}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

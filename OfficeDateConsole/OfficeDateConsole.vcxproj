@@ -14,6 +14,7 @@
     <ProjectGuid>{E9CE2AEF-07B5-44E3-830C-2E42A1393DF5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>OfficeDateConsole</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -42,7 +43,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)_build\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)_obj\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)_obj\$(ProjectName)$\(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -55,12 +56,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)include\</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libboost_filesystem-vc120-mt-gd-1_57.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(BOOST_ROOT)\stage\lib\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,6 +107,15 @@
     </ProjectReference>
     <ProjectReference Include="..\src\libstructstorage\libstructstorage.vcxproj">
       <Project>{9b90f2fc-5f26-4390-8a8b-81f6fe875151}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ZipLib\extlibs\bzip2\bzip2.vcxproj">
+      <Project>{dbbf348d-c221-4f2e-8a0d-24efa0d98e71}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ZipLib\extlibs\lzma\lzma.vcxproj">
+      <Project>{7ead1358-3e72-4fb6-a212-25d462b5c1e9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ZipLib\extlibs\zlib\zlib.vcxproj">
+      <Project>{baeb16b3-db4c-432f-9e6a-2acadea0691d}</Project>
     </ProjectReference>
     <ProjectReference Include="..\ZipLib\ZipLib.vcxproj">
       <Project>{5c9fd859-ddf9-4510-8397-b329b0ae8c48}</Project>

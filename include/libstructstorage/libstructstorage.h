@@ -209,6 +209,7 @@ private:
 
 	public:
 		SSReader();
+		~SSReader();
 
 		// read properties of a property storage
 		bool read_properties(const std::string & file_path, SummaryInformation & summary_information);
