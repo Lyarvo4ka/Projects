@@ -32,14 +32,14 @@ namespace IO
 	{
 	private:
 		HANDLE hFile_;
-		uint64_t offset_;
+		uint64_t position_;
 		uint64_t size_;
 		std::wstring file_name_;
 		bool bOpen_;
 	public:
 		File(const std::wstring & file_name)
 			: hFile_(INVALID_HANDLE_VALUE)
-			, offset_( 0 )
+			, position_( 0 )
 			, size_(0)
 			, file_name_(file_name)
 			, bOpen_(false)
@@ -71,8 +71,8 @@ namespace IO
 
 		void set_position(uint64_t offset) override 
 		{
-			offset_ = offset;
-			LARGE_INTEGER liPos = { offset_ };
+			position_ = offset;
+			LARGE_INTEGER liPos = { position_ };
 			::SetFilePointerEx(hFile_, liPos, NULL, FILE_BEGIN);
 
 		};
@@ -84,6 +84,7 @@ namespace IO
 		};
 
 	};
+
 
 	class PysicalDrive
 	{
