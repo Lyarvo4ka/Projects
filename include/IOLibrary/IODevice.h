@@ -6,26 +6,22 @@
 
 namespace IO
 {
+	using path_string = std::wstring ;
 	enum class OpenMode : uint32_t {OpenRead, OpenWrite, Create} ;
 
 	class IODevice
 	{
 	public:
-		virtual bool open(OpenMode) = 0;
-		virtual void close() = 0;
-		virtual bool is_open() = 0;
-		virtual void set_position(uint64_t offset) = 0;
-		virtual uint32_t read_data(uint8_t * data, uint32_t read_size) = 0;
-		virtual uint32_t write_data(uint8_t * data, uint32_t read_size) = 0;
-		virtual uint64_t size() const = 0;
+		virtual ~IODevice() = 0 {};
+		virtual bool Open(OpenMode) = 0;
+		virtual void Close() = 0;
+		virtual bool isOpen() = 0;
+		virtual void setPosition(uint64_t offset) = 0;
+		virtual uint32_t ReadData(uint8_t * data, uint32_t read_size) = 0;
+		virtual uint32_t WriteData(uint8_t * data, uint32_t read_size) = 0;
+		virtual uint64_t Size() const = 0;
 	};
 
-	class IBlockDevice
-	{
-	public:
-		virtual uint32_t read_block()  = 0;
-		//virtual 
-	};
 
 	class File
 		: public IODevice
@@ -34,10 +30,10 @@ namespace IO
 		HANDLE hFile_;
 		uint64_t position_;
 		uint64_t size_;
-		std::wstring file_name_;
+		path_string file_name_;
 		bool bOpen_;
 	public:
-		File(const std::wstring & file_name)
+		File(const path_string & file_name)
 			: hFile_(INVALID_HANDLE_VALUE)
 			, position_( 0 )
 			, size_(0)
@@ -47,7 +43,7 @@ namespace IO
 
 		}
 
-		bool open( OpenMode openMode) override
+		bool Open( OpenMode openMode) override
 		{
 			uint32_t win_open_mode = 0;
 
@@ -69,7 +65,7 @@ namespace IO
 						  NULL);
 		}
 
-		void set_position(uint64_t offset) override 
+		void setPosition(uint64_t offset) override 
 		{
 			position_ = offset;
 			LARGE_INTEGER liPos = { position_ };
@@ -77,7 +73,7 @@ namespace IO
 
 		};
 
-		uint32_t read_data(uint8_t * data, uint32_t read_size) override
+		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
 		{
 			uint32_t bytes_read = 0;
 			//if ( !::ReadFile(hFile_ , buffer , read_size , &bytes_read) )
@@ -85,25 +81,34 @@ namespace IO
 
 	};
 
-
-	class PysicalDrive
+	class BlockDevice
+		: public IODevice
 	{
 	private:
 		uint32_t drive_number_;
 		uint32_t bytes_per_sector_;
 		uint64_t number_sectors_;
-//		std::wstring path_;
+		path_string path_;
 	public:
-		//PysicalDrive(const std::string path)
-		//	: drive_number_(0)
-		//	, number_sectors_(0)
-		//	, bytes_per_sector_(0)
-		//	, path_(path)
+		BlockDevice(const path_string & path)
+			: drive_number_(0)
+			, number_sectors_(0)
+			, bytes_per_sector_(0)
+			, path_(path)
+		{
+
+		}
+		virtual uint32_t ReadBlock(int8_t * data, uint32_t read_size) = 0;
+		virtual uint32_t WriteBlock(uint8_t * data, uint32_t read_size) = 0;
+
+		//void setPath(const path_string & new_path)
 		//{
-
+		//	path_ = new_path;
 		//}
-
-
+		path_string getPath() const
+		{
+			return path_;
+		}
 		void setDriveNumber(uint32_t drive_number)
 		{
 			drive_number_ = drive_number;
@@ -129,4 +134,29 @@ namespace IO
 			return bytes_per_sector_;
 		}
 	};
+
+	class DiskDevice
+		: public BlockDevice
+	{
+	public:
+		DiskDevice(const path_string & path)
+			: BlockDevice( path )
+		{
+
+		}
+
+	};
+
+	class FileDevice
+		: public BlockDevice
+	{
+	public:
+		FileDevice(const path_string & path)
+			: BlockDevice(path)
+		{
+
+		}
+
+	};
+
 }
