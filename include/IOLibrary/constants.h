@@ -14,6 +14,13 @@
 const uint64_t ERROR_RESULT = _UI64_MAX;
 
 
+namespace IO
+{
+	using path_string = std::wstring;
+	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };
+
+};
+
 #include <array>
 #include <vector>
 

@@ -1,13 +1,9 @@
 #pragma once
-
-#include <stdint.h>
-#include <windows.h>
+#include "physicaldrive.h"
 #include <string>
 
 namespace IO
 {
-	using path_string = std::wstring ;
-	enum class OpenMode : uint32_t {OpenRead, OpenWrite, Create} ;
 
 	class IODevice
 	{
@@ -84,79 +80,36 @@ namespace IO
 	class BlockDevice
 		: public IODevice
 	{
-	private:
-		uint32_t drive_number_;
-		uint32_t bytes_per_sector_;
-		uint64_t number_sectors_;
-		path_string path_;
 	public:
-		BlockDevice(const path_string & path)
-			: drive_number_(0)
-			, number_sectors_(0)
-			, bytes_per_sector_(0)
-			, path_(path)
-		{
-
-		}
 		virtual uint32_t ReadBlock(int8_t * data, uint32_t read_size) = 0;
 		virtual uint32_t WriteBlock(uint8_t * data, uint32_t read_size) = 0;
 
-		//void setPath(const path_string & new_path)
-		//{
-		//	path_ = new_path;
-		//}
-		path_string getPath() const
-		{
-			return path_;
-		}
-		void setDriveNumber(uint32_t drive_number)
-		{
-			drive_number_ = drive_number;
-		}
-		uint32_t getDriveNumber() const
-		{
-			return drive_number_;
-		}
-		void setNumberSectors(uint64_t number_sectors)
-		{
-			number_sectors_ = number_sectors;
-		}
-		uint64_t getNumberSectors() const
-		{
-			return number_sectors_;
-		}
-		void setBytesPerSector(uint32_t bytes_per_sector)
-		{
-			bytes_per_sector_ = bytes_per_sector;
-		}
-		uint32_t getBytesPerSector() const
-		{
-			return bytes_per_sector_;
-		}
 	};
 
 	class DiskDevice
 		: public BlockDevice
 	{
+	private:
+		PhysicalDrive *physical_drive_;
 	public:
-		DiskDevice(const path_string & path)
-			: BlockDevice( path )
-		{
+		DiskDevice(PhysicalDrive * physical_drive)
+			:physical_drive_(physical_drive)
+		{	
 
 		}
 
 	};
 
-	class FileDevice
-		: public BlockDevice
-	{
-	public:
-		FileDevice(const path_string & path)
-			: BlockDevice(path)
-		{
+	//class FileDevice
+	//	: public BlockDevice
+	//{
+	//public:
+	//	FileDevice(const path_string & path)
+	//		: BlockDevice(path)
+	//	{
 
-		}
+	//	}
 
-	};
+	//};
 
 }

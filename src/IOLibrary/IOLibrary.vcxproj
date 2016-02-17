@@ -108,6 +108,7 @@
     <ClCompile Include="IOLibrary.cpp" />
     <ClCompile Include="MovRaw.cpp" />
     <ClCompile Include="MTS_raw.cpp" />
+    <ClCompile Include="physicaldrive.cpp" />
     <ClCompile Include="SignatureTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -139,6 +140,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MTS_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\PanasonicRaw.h" />
+    <ClInclude Include="..\..\include\IOLibrary\physicaldrive.h" />
     <ClInclude Include="..\..\include\IOLibrary\r3d_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\RemoveInserts.h" />
     <ClInclude Include="..\..\include\IOLibrary\SignatureTest.h" />
