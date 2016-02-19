@@ -9,7 +9,7 @@
 
 namespace IO
 {
-	class PhysicalDrive_t
+	class PhysicalDrive
 	{
 	private:
 		uint32_t drive_number_;
@@ -18,7 +18,7 @@ namespace IO
 		path_string path_;
 		std::wstring drive_name_;
 	public:
-		PhysicalDrive_t()
+		PhysicalDrive()
 			: drive_number_(0)
 			, number_sectors_(0)
 			, bytes_per_sector_(0)
@@ -70,29 +70,35 @@ namespace IO
 
 	};
 
-	using PhysicalDrive = std::shared_ptr<PhysicalDrive_t>;
+	using PhysicalDrivePtr = std::shared_ptr<PhysicalDrive>;
 
 	class PhysicalDriveList
 	{
 	private:
-		std::vector<PhysicalDrive> drive_list_;
+		std::vector<PhysicalDrivePtr> drive_list_;
 	public:
-		void add(PhysicalDrive physical_drive)
+		void add(PhysicalDrivePtr physical_drive)
 		{
 			if (!this->find_by_number(physical_drive->getDriveNumber()))
 				drive_list_.push_back(physical_drive);
 		}
 		void remove(uint32_t drive_number)
 		{
-			//for (auto it = drive_list_.begin(); it != drive_list_.end(); ++it)
-			//{
-			//	if ((*it)->getDriveNumber() == drive_number)
-			//		it = drive_list_.erase(it);
+			for (auto it = drive_list_.begin(); it != drive_list_.end(); ++it)
+			{
+				if ((*it)->getDriveNumber() == drive_number)
+					it = drive_list_.erase(it);
 
-			//		
-			//}
+				if ( it == drive_list_.end())
+					break;
+
+			}
 		}
-		PhysicalDrive find_by_number(uint32_t drive_number)
+		void remove_all()
+		{
+			drive_list_.clear();
+		}
+		PhysicalDrivePtr find_by_number(uint32_t drive_number)
 		{
 			for (auto find_index : drive_list_)
 			{
@@ -101,7 +107,7 @@ namespace IO
 			}
 			return nullptr;
 		}
-		uint32_t getCount() const
+		uint32_t getSize() const
 		{
 			return drive_list_.size();
 		}

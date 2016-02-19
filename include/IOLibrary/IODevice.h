@@ -90,9 +90,9 @@ namespace IO
 		: public BlockDevice
 	{
 	private:
-		PhysicalDrive *physical_drive_;
+		PhysicalDrivePtr physical_drive_;
 	public:
-		DiskDevice(PhysicalDrive * physical_drive)
+		DiskDevice(PhysicalDrivePtr physical_drive)
 			:physical_drive_(physical_drive)
 		{	
 
