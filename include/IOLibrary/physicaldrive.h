@@ -2,8 +2,9 @@
 
 #include "constants.h"
 #include <windows.h>
-#include <setupapi.h>
 
+#include <setupapi.h>
+#pragma comment(lib, "setupapi.lib")
 
 #include <memory>
 
@@ -16,7 +17,7 @@ namespace IO
 		uint32_t bytes_per_sector_;
 		uint64_t number_sectors_;
 		path_string path_;
-		std::wstring drive_name_;
+		path_string drive_name_;
 	public:
 		PhysicalDrive()
 			: drive_number_(0)
@@ -35,7 +36,7 @@ namespace IO
 		{
 			return path_;
 		}
-		void setDriveName(const std::wstring drive_name)
+		void setDriveName(const path_string drive_name)
 		{
 			drive_name_ = drive_name;
 		}
@@ -112,9 +113,118 @@ namespace IO
 			return drive_list_.size();
 		}
 	};
+
+
+	class DriveAttributesReader
+	{
+	public:
+		BOOL InitHDevInfo(HDEVINFO & hDevInfo)
+		{
+			if ( hDevInfo != INVALID_HANDLE_VALUE)
+				CloseHDevInfo(hDevInfo);
+
+			hDevInfo = SetupDiGetClassDevs(&DiskClassGuid,
+				NULL,
+				0,
+				DIGCF_PROFILE | DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
+			if (hDevInfo == INVALID_HANDLE_VALUE)
+				return FALSE;
+
+			return TRUE;
+		}
+		BOOL CloseHDevInfo(HDEVINFO &hDevInfo)
+		{
+			if (hDevInfo != INVALID_HANDLE_VALUE)
+			{
+				SetupDiDestroyDeviceInfoList(hDevInfo);
+				hDevInfo = INVALID_HANDLE_VALUE;
+			}
+			return TRUE;
+		}
+
+		BOOL SetupNumberInSystem(HDEVINFO &hDevInfo , SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
+		{
+			ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
+			spDeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+			BOOL bResult = SetupDiEnumDeviceInterfaces(hDevInfo,
+				0,
+				&DiskClassGuid,
+				member_index,
+				&spDeviceInterfaceData);
+
+			return bResult;
+		}
+		BOOL GetDevicePath(uint32_t member_index)
+		{
+			HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
+			if (!InitHDevInfo(hDevInfo))
+				return FALSE;
+
+
+			SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData;
+			if (!SetupNumberInSystem(hDevInfo, spDeviceInterfaceData, member_index))
+				return FALSE;
+
+
+			DWORD iErrorCode = 0;
+			DWORD dwRequiredSize = 0;
+			BOOL bStatus = FALSE;
+
+			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo,
+				&spDeviceInterfaceData,
+				NULL,
+				0,
+				&dwRequiredSize,
+				NULL);
+
+			iErrorCode = GetLastError();
+
+			if ( iErrorCode != ERROR_INSUFFICIENT_BUFFER)
+				return FALSE;
+
+			DWORD dwInterfaceDetailDataSize = dwRequiredSize;
+
+
+			char * pTmpBuffer = new char[dwInterfaceDetailDataSize];
+			PSP_DEVICE_INTERFACE_DETAIL_DATA pspOUTDevIntDetailData;
+
+			pspOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA ) pTmpBuffer;
+			ZeroMemory(pspOUTDevIntDetailData, dwInterfaceDetailDataSize);
+
+			SP_DEVINFO_DATA spDeviceInfoData;
+			ZeroMemory(&spDeviceInfoData, sizeof(SP_DEVINFO_DATA));
+			spDeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+
+
+			pspOUTDevIntDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
+
+			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo,
+					&spDeviceInterfaceData,
+					pspOUTDevIntDetailData,
+					dwInterfaceDetailDataSize,
+					&dwRequiredSize,
+					&spDeviceInfoData);
+				if (bStatus)
+				{
+					//_pDevice->SetPath(spOUTDevIntDetailData->DevicePath);
+					wprintf(L"Device path = [ %s ]\r\n", pspOUTDevIntDetailData->DevicePath);
+				}
+
+			iErrorCode = GetLastError();
+
+			delete[] pTmpBuffer; // ???????????????????
+
+			return bStatus;
+		}
+
+	};
+
 /*
 	class CPhysicalDevice
 	{
+	HDEVINFO m_hDevInfo;
+	SP_DEVICE_INTERFACE_DATA m_spDeviceInterfaceData;
+	SP_DEVINFO_DATA m_spDevInfoData;
 	public:
 		CPhysicalDevice()
 			:m_hDevInfo(INVALID_HANDLE_VALUE)
@@ -365,77 +475,8 @@ namespace IO
 			return TRUE;
 		}
 	private:
-		BOOL GetHDEVINFO(HDEVINFO &_hDevInfo)
-		{
-			if (_hDevInfo != INVALID_HANDLE_VALUE)
-				CloseDevInfo(_hDevInfo);
 
-			_hDevInfo = SetupDiGetClassDevs(&DiskClassGuid,
-				NULL,
-				0,
-				DIGCF_PROFILE | DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
-			if (_hDevInfo == INVALID_HANDLE_VALUE)
-				return FALSE;
 
-			return TRUE;
-		}
-		BOOL GetNextDevice(DWORD _DevIndex)
-		{
-			SP_DEVINFO_DATA spDeviceInfoData;
-
-			ZeroMemory(&spDeviceInfoData, sizeof(SP_DEVINFO_DATA));
-			spDeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-			ZeroMemory(&m_spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
-			m_spDeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-			BOOL bResult = SetupDiEnumDeviceInterfaces(m_hDevInfo,
-				0,
-				&DiskClassGuid,
-				_DevIndex,
-				&m_spDeviceInterfaceData);
-
-			return bResult;
-		}
-		BOOL GetDevicePath(IDevice *_pDevice)
-		{
-			PSP_DEVICE_INTERFACE_DETAIL_DATA spOUTDevIntDetailData;
-			m_spDevInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
-
-			DWORD iErrorCode = 0;
-			DWORD dwRequiredSize = 1;
-			BOOL bStatus = FALSE;
-
-			bStatus = SetupDiGetDeviceInterfaceDetail(m_hDevInfo,
-				&m_spDeviceInterfaceData,
-				NULL,
-				0,
-				&dwRequiredSize,
-				NULL);
-
-			iErrorCode = GetLastError();
-
-			DWORD dwInterfaceDetailDataSize = dwRequiredSize;
-
-			spOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)malloc(dwInterfaceDetailDataSize);
-
-			if (spOUTDevIntDetailData != NULL)
-			{
-				spOUTDevIntDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-
-				bStatus = SetupDiGetDeviceInterfaceDetail(m_hDevInfo,
-					&m_spDeviceInterfaceData,
-					spOUTDevIntDetailData,
-					dwInterfaceDetailDataSize,
-					&dwRequiredSize,
-					&m_spDevInfoData);
-				if (bStatus)
-				{
-					_pDevice->SetPath(spOUTDevIntDetailData->DevicePath);
-					delete[](char*)spOUTDevIntDetailData; // ???????????????????
-				}
-
-			}
-			return bStatus;
-		}
 		BOOL GetDeviceName(IDevice *_pDevice)
 		{
 			if (_pDevice == NULL)
@@ -717,9 +758,7 @@ namespace IO
 			}
 		}
 
-		HDEVINFO m_hDevInfo;
-		SP_DEVICE_INTERFACE_DATA m_spDeviceInterfaceData;
-		SP_DEVINFO_DATA m_spDevInfoData;
+
 	};
 	*/
 }

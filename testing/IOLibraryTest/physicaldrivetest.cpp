@@ -69,3 +69,13 @@ BOOST_FIXTURE_TEST_CASE(TestRemoveFromDriveList, F_DriveList)
 	drivelist.remove_all();
 	BOOST_CHECK_EQUAL(drivelist.getSize(), 0);
 }
+
+BOOST_AUTO_TEST_CASE(TestGetDevicePath)
+{
+	IO::DriveAttributesReader drive_attributes;
+	drive_attributes.GetDevicePath(0);
+	drive_attributes.GetDevicePath(1);
+
+
+
+}
