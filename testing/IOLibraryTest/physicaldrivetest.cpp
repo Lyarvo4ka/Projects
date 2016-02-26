@@ -79,3 +79,11 @@ BOOST_AUTO_TEST_CASE(TestGetDevicePath)
 
 
 }
+
+//BOOST_AUTO_TEST_CASE(TestGetDeviceName)
+//{
+//	IO::DriveAttributesReader drive_attributes;
+//	drive_attributes.GetDeviceName(0);
+//	drive_attributes.GetDeviceName(1);
+//
+//}

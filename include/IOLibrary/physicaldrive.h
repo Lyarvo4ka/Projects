@@ -10,6 +10,20 @@
 
 namespace IO
 {
+	HANDLE OpenPhysicalDrive(const path_string & drive_path)
+	{
+		HANDLE hDevice = CreateFile(drive_path.c_str(),
+									GENERIC_READ | GENERIC_WRITE,
+									FILE_SHARE_READ | FILE_SHARE_WRITE,
+									NULL,
+									OPEN_EXISTING,
+									0,
+									NULL);
+
+		return hDevice;
+
+	}
+
 	class PhysicalDrive
 	{
 	private:
@@ -206,16 +220,147 @@ namespace IO
 					&spDeviceInfoData);
 				if (bStatus)
 				{
-					//_pDevice->SetPath(spOUTDevIntDetailData->DevicePath);
 					wprintf(L"Device path = [ %s ]\r\n", pspOUTDevIntDetailData->DevicePath);
+					GetDeviceName(hDevInfo, spDeviceInterfaceData, spDeviceInfoData);
 				}
 
 			iErrorCode = GetLastError();
 
-			delete[] pTmpBuffer; // ???????????????????
+			delete[] pTmpBuffer;
 
 			return bStatus;
 		}
+		BOOL GetDeviceName(HDEVINFO & hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData , SP_DEVINFO_DATA & spDevInfoData)
+		{
+			DWORD dwReturnedBytes = 0;
+			DWORD dwRegDataType = 0;
+			DWORD dwBufferSize = 0;
+			BYTE *buffer;
+
+			DWORD dwErrorCode = 0;
+			dwErrorCode = GetLastError();
+
+			SetupDiGetDeviceRegistryProperty(hDevInfo,
+				&spDevInfoData,
+				SPDRP_FRIENDLYNAME,
+				&dwRegDataType,
+				NULL,
+				NULL,
+				&dwReturnedBytes);
+
+			if (dwReturnedBytes == 0)
+				return FALSE;
+
+			dwErrorCode = GetLastError();
+
+			dwBufferSize = dwReturnedBytes;
+			buffer = new BYTE[dwBufferSize];
+
+			BOOL bResult = FALSE;
+			bResult = SetupDiGetDeviceRegistryProperty(hDevInfo,
+				&spDevInfoData,
+				SPDRP_FRIENDLYNAME,
+				&dwRegDataType,
+				buffer,
+				dwBufferSize,
+				&dwReturnedBytes);
+
+			dwErrorCode = GetLastError();
+
+			path_string drive_name((wchar_t*) buffer);
+			//_pDevice->SetName(buffer);
+
+			delete buffer;
+
+			return bResult;
+		}
+		BOOL ReadDiskGeometry(const path_string & drive_path)
+		{
+			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+
+			if (hDevice == INVALID_HANDLE_VALUE)
+			{
+				DWORD dwError = GetLastError();
+				return FALSE;
+			}
+
+			DISK_GEOMETRY_EX pdgEx;
+
+			DWORD dwBufferSize = 0;
+			BOOL bResult = FALSE;
+			bResult = DeviceIoControl(hDevice,  // device to be queried
+				IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,  // operation to perform
+				NULL, 0, // no input buffer
+				&pdgEx, sizeof(pdgEx),     // output buffer
+				&dwBufferSize,                 // # bytes returned
+				(LPOVERLAPPED)NULL);  // synchronous I/O
+
+			if (bResult)
+			{
+				//pdgEx.Geometry.
+				//_pDevice->SetBytesPerSector(pdgEx.Geometry.BytesPerSector);
+				//_pDevice->SetSize(pdgEx.DiskSize.QuadPart);
+				//if (_pDevice->GetBytesPerSector() != 0)
+				//{
+				//	_pDevice->SetSectorCount(pdgEx.DiskSize.QuadPart / _pDevice->GetBytesPerSector());
+				//}
+				//else
+				//	_pDevice->SetSectorCount(0);
+
+			}
+			else
+				return FALSE;
+
+			STORAGE_DEVICE_NUMBER ioDeviceNumber;
+			dwBufferSize = 0;
+			bResult = DeviceIoControl(hDevice,  // device to be queried
+				IOCTL_STORAGE_GET_DEVICE_NUMBER,  // operation to perform
+				NULL, 0, // no input buffer
+				&ioDeviceNumber, sizeof(ioDeviceNumber),     // output buffer
+				&dwBufferSize,                 // # bytes returned
+				(LPOVERLAPPED)NULL);  // synchronous I/O
+
+			//if (bResult)
+			//	_pDevice->SetNumber(ioDeviceNumber.DeviceNumber);
+			CloseHandle(hDevice);
+			return bResult;
+		}
+		BOOL ReadMaxTransferSize(const path_string & drive_path)
+		{
+			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+
+			if (hDevice == INVALID_HANDLE_VALUE)
+			{
+				DWORD dwError = GetLastError();
+				return FALSE;
+			}
+
+			STORAGE_ADAPTER_DESCRIPTOR  pStorageAdapterDescription;
+			pStorageAdapterDescription.Size = sizeof(STORAGE_ADAPTER_DESCRIPTOR);
+
+			STORAGE_PROPERTY_QUERY	pQueryProperty;
+			memset(&pQueryProperty, 0, sizeof(pQueryProperty));
+			pQueryProperty.PropertyId = StorageAdapterProperty;
+			pQueryProperty.QueryType = PropertyStandardQuery;
+
+			BOOL bResult = FALSE;
+			DWORD dwBufferSize = 0;
+			bResult = DeviceIoControl(hDevice,  // device to be queried
+				IOCTL_STORAGE_QUERY_PROPERTY,  // operation to perform
+				&pQueryProperty, sizeof(STORAGE_PROPERTY_QUERY), // no input buffer
+				&pStorageAdapterDescription, sizeof(STORAGE_ADAPTER_DESCRIPTOR),     // output buffer
+				&dwBufferSize,                 // # bytes returned
+				(LPOVERLAPPED)NULL);  // synchronous I/O
+
+			CloseHandle(hDevice);
+
+			//if (bResult)
+			//	_pDevice->SetMaxTransferSize(pStorageAdapterDescription.MaximumTransferLength);
+			//_pDevice->SetBusType(pStorageAdapterDescription.BusType);
+			//_pDevice->setMpStorageAdapterDescription.
+			return bResult;
+		}
+
 
 	};
 
@@ -477,154 +622,6 @@ namespace IO
 	private:
 
 
-		BOOL GetDeviceName(IDevice *_pDevice)
-		{
-			if (_pDevice == NULL)
-				return FALSE;
-
-			DWORD dwReturnedBytes = 0;
-			DWORD dwRegDataType = 0;
-			DWORD dwBufferSize = 0;
-			BYTE *buffer;
-
-			DWORD dwErrorCode = 0;
-			dwErrorCode = GetLastError();
-
-			SetupDiGetDeviceRegistryPropertyA(m_hDevInfo,
-				&m_spDevInfoData,
-				SPDRP_FRIENDLYNAME,
-				&dwRegDataType,
-				NULL,
-				NULL,
-				&dwReturnedBytes);
-
-			if (dwReturnedBytes == 0)
-				return FALSE;
-
-			dwErrorCode = GetLastError();
-
-			dwBufferSize = dwReturnedBytes;
-			buffer = new BYTE[dwBufferSize];
-
-			BOOL bResult = FALSE;
-			bResult = SetupDiGetDeviceRegistryPropertyA(m_hDevInfo,
-				&m_spDevInfoData,
-				SPDRP_FRIENDLYNAME,
-				&dwRegDataType,
-				buffer,
-				dwBufferSize,
-				&dwReturnedBytes);
-
-
-
-			_pDevice->SetName(buffer);
-
-			delete buffer;
-
-			return bResult;
-		}
-		BOOL GetMaxTransferSize(IDevice *_pDevice)
-		{
-			HANDLE hDevice;
-			if (_pDevice->GetPath().size() == 0)
-				return FALSE;
-			hDevice = CreateFile(_pDevice->GetPath().c_str(),
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				OPEN_EXISTING,
-				0,
-				NULL);
-
-			if (hDevice == INVALID_HANDLE_VALUE)
-			{
-				DWORD dwError = GetLastError();
-				return FALSE;
-			}
-
-			STORAGE_ADAPTER_DESCRIPTOR  pStorageAdapterDescription;
-			pStorageAdapterDescription.Size = sizeof(STORAGE_ADAPTER_DESCRIPTOR);
-
-			STORAGE_PROPERTY_QUERY	pQueryProperty;
-			memset(&pQueryProperty, 0, sizeof(pQueryProperty));
-			pQueryProperty.PropertyId = StorageAdapterProperty;
-			pQueryProperty.QueryType = PropertyStandardQuery;
-
-			BOOL bResult = FALSE;
-			DWORD dwBufferSize = 0;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
-				IOCTL_STORAGE_QUERY_PROPERTY,  // operation to perform
-				&pQueryProperty, sizeof(STORAGE_PROPERTY_QUERY), // no input buffer
-				&pStorageAdapterDescription, sizeof(STORAGE_ADAPTER_DESCRIPTOR),     // output buffer
-				&dwBufferSize,                 // # bytes returned
-				(LPOVERLAPPED)NULL);  // synchronous I/O
-
-			CloseHandle(hDevice);
-			if (bResult)
-				_pDevice->SetMaxTransferSize(pStorageAdapterDescription.MaximumTransferLength);
-			_pDevice->SetBusType(pStorageAdapterDescription.BusType);
-			//_pDevice->setMpStorageAdapterDescription.
-			return bResult;
-		}
-		BOOL GetDiskGeometry(IDevice *_pDevice)
-		{
-			HANDLE hDevice;
-			if (_pDevice->GetPath().size() == 0)
-				return FALSE;
-			hDevice = CreateFile(_pDevice->GetPath().c_str(),
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				OPEN_EXISTING,
-				0,
-				NULL);
-
-			if (hDevice == INVALID_HANDLE_VALUE)
-			{
-				DWORD dwError = GetLastError();
-				return FALSE;
-			}
-
-			DISK_GEOMETRY_EX pdgEx;
-
-			DWORD dwBufferSize = 0;
-			BOOL bResult = FALSE;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
-				IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,  // operation to perform
-				NULL, 0, // no input buffer
-				&pdgEx, sizeof(pdgEx),     // output buffer
-				&dwBufferSize,                 // # bytes returned
-				(LPOVERLAPPED)NULL);  // synchronous I/O
-
-			if (bResult)
-			{
-				_pDevice->SetBytesPerSector(pdgEx.Geometry.BytesPerSector);
-				_pDevice->SetSize(pdgEx.DiskSize.QuadPart);
-				if (_pDevice->GetBytesPerSector() != 0)
-				{
-					_pDevice->SetSectorCount(pdgEx.DiskSize.QuadPart / _pDevice->GetBytesPerSector());
-				}
-				else
-					_pDevice->SetSectorCount(0);
-				//_pDevice->SetSectorCount(pdgEx.)
-			}
-			else
-				return FALSE;
-
-			STORAGE_DEVICE_NUMBER ioDeviceNumber;
-			dwBufferSize = 0;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
-				IOCTL_STORAGE_GET_DEVICE_NUMBER,  // operation to perform
-				NULL, 0, // no input buffer
-				&ioDeviceNumber, sizeof(ioDeviceNumber),     // output buffer
-				&dwBufferSize,                 // # bytes returned
-				(LPOVERLAPPED)NULL);  // synchronous I/O
-
-			if (bResult)
-				_pDevice->SetNumber(ioDeviceNumber.DeviceNumber);
-			CloseHandle(hDevice);
-			return bResult;
-		}
 		BOOL GetSerialNumber(IDevice *_pDevice)
 		{
 			HANDLE hDevice = INVALID_HANDLE_VALUE;
