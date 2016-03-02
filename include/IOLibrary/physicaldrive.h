@@ -10,7 +10,7 @@
 
 namespace IO
 {
-	HANDLE OpenPhysicalDrive(const path_string & drive_path)
+	inline HANDLE OpenPhysicalDrive(const path_string & drive_path)
 	{
 		HANDLE hDevice = CreateFile(drive_path.c_str(),
 									GENERIC_READ | GENERIC_WRITE,
@@ -131,10 +131,22 @@ namespace IO
 
 	class DriveAttributesReader
 	{
+	private:
+		HDEVINFO hDevInfo_;
+		SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData_;
+
 	public:
+		DriveAttributesReader()
+		{
+			InitHDevInfo(hDevInfo_);
+		}
+		~DriveAttributesReader()
+		{
+			CloseHDevInfo(hDevInfo_);
+		}
 		BOOL InitHDevInfo(HDEVINFO & hDevInfo)
 		{
-			if ( hDevInfo != INVALID_HANDLE_VALUE)
+			if (hDevInfo != INVALID_HANDLE_VALUE)
 				CloseHDevInfo(hDevInfo);
 
 			hDevInfo = SetupDiGetClassDevs(&DiskClassGuid,
@@ -156,6 +168,49 @@ namespace IO
 			return TRUE;
 		}
 
+		BOOL readDriveAttributes(uint32_t member_index)
+		{
+			PhysicalDrive physical_drive;
+			path_string drive_path;
+			std::wstring drive_name;
+			if (!SetupNumberInSystem(hDevInfo_, spDeviceInterfaceData_, member_index))
+				return FALSE;
+
+			if (!ReadPathAndName(drive_path, drive_name))
+				return FALSE;
+
+			physical_drive.setDriveName(drive_name);
+			physical_drive.setPath(drive_path);
+
+			DISK_GEOMETRY_EX disk_geometry_ex = { 0 };
+			if (!ReadDeviceGeometryEx(physical_drive.getPath(), disk_geometry_ex) )
+				return FALSE;
+
+			physical_drive.setBytesPerSector(disk_geometry_ex.Geometry.BytesPerSector);
+			physical_drive.setNumberSectors(disk_geometry_ex.DiskSize.QuadPart);
+
+			STORAGE_ADAPTER_DESCRIPTOR storage_descriptor = { 0 };
+			if (!ReadDeviceDescriptor(drive_path, storage_descriptor))
+				return FALSE;
+
+			uint32_t drive_number = 0;
+			if (!ReadDeviceNumber(drive_path, drive_number))
+				return FALSE;
+
+			physical_drive.setDriveNumber(drive_number);
+
+
+			wprintf(L"Drive path = [ %s ].\r\n", physical_drive.getPath().c_str());
+			wprintf(L"Drive name = [ %s ].\r\n", physical_drive.getDriveName().c_str());
+			wprintf(L"Bytes per sector = [ %d ]\r\n", physical_drive.getBytesPerSector());
+			wprintf(L"Number sectors = [ %llu ]\r\n", physical_drive.getNumberSectors());
+			wprintf(L"Drive NUMBER = [ %d ]\r\n", physical_drive.getDriveNumber());
+			wprintf(L"\r\n");
+
+			return TRUE;
+
+		}
+
 		BOOL SetupNumberInSystem(HDEVINFO &hDevInfo , SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
 		{
 			ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
@@ -168,24 +223,15 @@ namespace IO
 
 			return bResult;
 		}
-		BOOL GetDevicePath(uint32_t member_index)
+		BOOL ReadPathAndName(path_string & drive_path, std::wstring & drive_name)
 		{
-			HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
-			if (!InitHDevInfo(hDevInfo))
-				return FALSE;
-
-
-			SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData;
-			if (!SetupNumberInSystem(hDevInfo, spDeviceInterfaceData, member_index))
-				return FALSE;
-
 
 			DWORD iErrorCode = 0;
 			DWORD dwRequiredSize = 0;
 			BOOL bStatus = FALSE;
 
-			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo,
-				&spDeviceInterfaceData,
+			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo_,
+				&spDeviceInterfaceData_,
 				NULL,
 				0,
 				&dwRequiredSize,
@@ -212,16 +258,20 @@ namespace IO
 
 			pspOUTDevIntDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo,
-					&spDeviceInterfaceData,
+			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo_,
+					&spDeviceInterfaceData_,
 					pspOUTDevIntDetailData,
 					dwInterfaceDetailDataSize,
 					&dwRequiredSize,
 					&spDeviceInfoData);
 				if (bStatus)
 				{
-					wprintf(L"Device path = [ %s ]\r\n", pspOUTDevIntDetailData->DevicePath);
-					GetDeviceName(hDevInfo, spDeviceInterfaceData, spDeviceInfoData);
+					drive_path = pspOUTDevIntDetailData->DevicePath;
+					std::wstring tmp_drive_name;
+					if (ReadDeviceName(spDeviceInfoData, tmp_drive_name))
+						drive_name = tmp_drive_name;
+					else
+						drive_name = L"NO NAME";
 				}
 
 			iErrorCode = GetLastError();
@@ -230,51 +280,54 @@ namespace IO
 
 			return bStatus;
 		}
-		BOOL GetDeviceName(HDEVINFO & hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData , SP_DEVINFO_DATA & spDevInfoData)
+		uint32_t getNameStringSize(HDEVINFO & hDevInfo, SP_DEVINFO_DATA & spDevInfoData, DWORD & dwRegDataType)
 		{
-			DWORD dwReturnedBytes = 0;
-			DWORD dwRegDataType = 0;
-			DWORD dwBufferSize = 0;
-			BYTE *buffer;
-
-			DWORD dwErrorCode = 0;
-			dwErrorCode = GetLastError();
-
-			SetupDiGetDeviceRegistryProperty(hDevInfo,
+			DWORD ReturnedBytes = 0;
+			SetupDiGetDeviceRegistryProperty(hDevInfo_,
 				&spDevInfoData,
 				SPDRP_FRIENDLYNAME,
 				&dwRegDataType,
 				NULL,
 				NULL,
-				&dwReturnedBytes);
+				&ReturnedBytes);
+			return ReturnedBytes;
+		}
 
-			if (dwReturnedBytes == 0)
+
+		BOOL ReadDeviceName(SP_DEVINFO_DATA & spDevInfoData , std::wstring & drive_name)
+		{
+			DWORD dwRegDataType = 0;
+			DWORD dwReturnedBytes = 0;
+			DWORD dwErrorCode = 0;
+
+			uint32_t nameBufferSize = getNameStringSize(hDevInfo_, spDevInfoData, dwRegDataType);
+
+
+			if (nameBufferSize == 0)
 				return FALSE;
 
 			dwErrorCode = GetLastError();
 
-			dwBufferSize = dwReturnedBytes;
-			buffer = new BYTE[dwBufferSize];
+			BYTE * buffer = new BYTE[nameBufferSize];
 
 			BOOL bResult = FALSE;
-			bResult = SetupDiGetDeviceRegistryProperty(hDevInfo,
+			bResult = SetupDiGetDeviceRegistryProperty(hDevInfo_,
 				&spDevInfoData,
 				SPDRP_FRIENDLYNAME,
 				&dwRegDataType,
 				buffer,
-				dwBufferSize,
+				nameBufferSize,
 				&dwReturnedBytes);
 
 			dwErrorCode = GetLastError();
 
-			path_string drive_name((wchar_t*) buffer);
-			//_pDevice->SetName(buffer);
-
-			delete buffer;
+			drive_name = (wchar_t*)buffer;
+			delete []  buffer;
 
 			return bResult;
 		}
-		BOOL ReadDiskGeometry(const path_string & drive_path)
+
+		BOOL ReadDeviceGeometryEx(const path_string & drive_path , DISK_GEOMETRY_EX & disk_geometry_ex)
 		{
 			HANDLE hDevice = OpenPhysicalDrive(drive_path);
 
@@ -284,48 +337,19 @@ namespace IO
 				return FALSE;
 			}
 
-			DISK_GEOMETRY_EX pdgEx;
-
-			DWORD dwBufferSize = 0;
+			DWORD returned_bytes = 0;
 			BOOL bResult = FALSE;
 			bResult = DeviceIoControl(hDevice,  // device to be queried
 				IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,  // operation to perform
 				NULL, 0, // no input buffer
-				&pdgEx, sizeof(pdgEx),     // output buffer
-				&dwBufferSize,                 // # bytes returned
+				&disk_geometry_ex, sizeof(DISK_GEOMETRY_EX),     // output buffer
+				&returned_bytes,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
-			if (bResult)
-			{
-				//pdgEx.Geometry.
-				//_pDevice->SetBytesPerSector(pdgEx.Geometry.BytesPerSector);
-				//_pDevice->SetSize(pdgEx.DiskSize.QuadPart);
-				//if (_pDevice->GetBytesPerSector() != 0)
-				//{
-				//	_pDevice->SetSectorCount(pdgEx.DiskSize.QuadPart / _pDevice->GetBytesPerSector());
-				//}
-				//else
-				//	_pDevice->SetSectorCount(0);
-
-			}
-			else
-				return FALSE;
-
-			STORAGE_DEVICE_NUMBER ioDeviceNumber;
-			dwBufferSize = 0;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
-				IOCTL_STORAGE_GET_DEVICE_NUMBER,  // operation to perform
-				NULL, 0, // no input buffer
-				&ioDeviceNumber, sizeof(ioDeviceNumber),     // output buffer
-				&dwBufferSize,                 // # bytes returned
-				(LPOVERLAPPED)NULL);  // synchronous I/O
-
-			//if (bResult)
-			//	_pDevice->SetNumber(ioDeviceNumber.DeviceNumber);
 			CloseHandle(hDevice);
 			return bResult;
 		}
-		BOOL ReadMaxTransferSize(const path_string & drive_path)
+		BOOL ReadDeviceNumber(const path_string & drive_path, uint32_t & drive_number)
 		{
 			HANDLE hDevice = OpenPhysicalDrive(drive_path);
 
@@ -335,8 +359,31 @@ namespace IO
 				return FALSE;
 			}
 
-			STORAGE_ADAPTER_DESCRIPTOR  pStorageAdapterDescription;
-			pStorageAdapterDescription.Size = sizeof(STORAGE_ADAPTER_DESCRIPTOR);
+			DWORD returned_bytes = 0;
+			STORAGE_DEVICE_NUMBER ioDeviceNumber;
+			BOOL bResult = FALSE;
+			bResult = DeviceIoControl(hDevice,  // device to be queried
+				IOCTL_STORAGE_GET_DEVICE_NUMBER,  // operation to perform
+				NULL, 0, // no input buffer
+				&ioDeviceNumber, sizeof(ioDeviceNumber),     // output buffer
+				&returned_bytes,                 // # bytes returned
+				(LPOVERLAPPED)NULL);  // synchronous I/O
+
+			CloseHandle(hDevice);
+			drive_number = ioDeviceNumber.DeviceNumber;
+			return bResult;
+		}
+		BOOL ReadDeviceDescriptor(const path_string & drive_path, STORAGE_ADAPTER_DESCRIPTOR & storage_descriptor)
+		{
+			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+
+			if (hDevice == INVALID_HANDLE_VALUE)
+			{
+				DWORD dwError = GetLastError();
+				return FALSE;
+			}
+
+			storage_descriptor.Size = sizeof(STORAGE_ADAPTER_DESCRIPTOR);
 
 			STORAGE_PROPERTY_QUERY	pQueryProperty;
 			memset(&pQueryProperty, 0, sizeof(pQueryProperty));
@@ -348,16 +395,12 @@ namespace IO
 			bResult = DeviceIoControl(hDevice,  // device to be queried
 				IOCTL_STORAGE_QUERY_PROPERTY,  // operation to perform
 				&pQueryProperty, sizeof(STORAGE_PROPERTY_QUERY), // no input buffer
-				&pStorageAdapterDescription, sizeof(STORAGE_ADAPTER_DESCRIPTOR),     // output buffer
+				&storage_descriptor, sizeof(STORAGE_ADAPTER_DESCRIPTOR),     // output buffer
 				&dwBufferSize,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
 			CloseHandle(hDevice);
 
-			//if (bResult)
-			//	_pDevice->SetMaxTransferSize(pStorageAdapterDescription.MaximumTransferLength);
-			//_pDevice->SetBusType(pStorageAdapterDescription.BusType);
-			//_pDevice->setMpStorageAdapterDescription.
 			return bResult;
 		}
 

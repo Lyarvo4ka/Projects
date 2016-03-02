@@ -73,8 +73,11 @@ BOOST_FIXTURE_TEST_CASE(TestRemoveFromDriveList, F_DriveList)
 BOOST_AUTO_TEST_CASE(TestGetDevicePath)
 {
 	IO::DriveAttributesReader drive_attributes;
-	drive_attributes.GetDevicePath(0);
-	drive_attributes.GetDevicePath(1);
+	drive_attributes.readDriveAttributes(0);
+	drive_attributes.readDriveAttributes(1);
+	drive_attributes.readDriveAttributes(2);
+	drive_attributes.readDriveAttributes(3);
+	drive_attributes.readDriveAttributes(4);
 
 
 
