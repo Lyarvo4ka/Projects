@@ -140,16 +140,18 @@ namespace IO
 		{
 			InitHDevInfo(hDevInfo_);
 		}
+
 		~DriveAttributesReader()
 		{
 			CloseHDevInfo(hDevInfo_);
 		}
+
 		BOOL InitHDevInfo(HDEVINFO & hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
 				CloseHDevInfo(hDevInfo);
 
-			hDevInfo = SetupDiGetClassDevs(&DiskClassGuid,
+			hDevInfo = ::SetupDiGetClassDevs(&DiskClassGuid,
 				NULL,
 				0,
 				DIGCF_PROFILE | DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
@@ -158,11 +160,12 @@ namespace IO
 
 			return TRUE;
 		}
+
 		BOOL CloseHDevInfo(HDEVINFO &hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
 			{
-				SetupDiDestroyDeviceInfoList(hDevInfo);
+				::SetupDiDestroyDeviceInfoList(hDevInfo);
 				hDevInfo = INVALID_HANDLE_VALUE;
 			}
 			return TRUE;
@@ -208,14 +211,13 @@ namespace IO
 			wprintf(L"\r\n");
 
 			return TRUE;
-
 		}
 
 		BOOL SetupNumberInSystem(HDEVINFO &hDevInfo , SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
 		{
-			ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
+			::ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
 			spDeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-			BOOL bResult = SetupDiEnumDeviceInterfaces(hDevInfo,
+			BOOL bResult = ::SetupDiEnumDeviceInterfaces(hDevInfo,
 				0,
 				&DiskClassGuid,
 				member_index,
@@ -230,14 +232,14 @@ namespace IO
 			DWORD dwRequiredSize = 0;
 			BOOL bStatus = FALSE;
 
-			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo_,
+			bStatus = ::SetupDiGetDeviceInterfaceDetail(hDevInfo_,
 				&spDeviceInterfaceData_,
 				NULL,
 				0,
 				&dwRequiredSize,
 				NULL);
 
-			iErrorCode = GetLastError();
+			iErrorCode = ::GetLastError();
 
 			if ( iErrorCode != ERROR_INSUFFICIENT_BUFFER)
 				return FALSE;
@@ -249,16 +251,16 @@ namespace IO
 			PSP_DEVICE_INTERFACE_DETAIL_DATA pspOUTDevIntDetailData;
 
 			pspOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA ) pTmpBuffer;
-			ZeroMemory(pspOUTDevIntDetailData, dwInterfaceDetailDataSize);
+			::ZeroMemory(pspOUTDevIntDetailData, dwInterfaceDetailDataSize);
 
 			SP_DEVINFO_DATA spDeviceInfoData;
-			ZeroMemory(&spDeviceInfoData, sizeof(SP_DEVINFO_DATA));
+			::ZeroMemory(&spDeviceInfoData, sizeof(SP_DEVINFO_DATA));
 			spDeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
 
 			pspOUTDevIntDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
-			bStatus = SetupDiGetDeviceInterfaceDetail(hDevInfo_,
+			bStatus = ::SetupDiGetDeviceInterfaceDetail(hDevInfo_,
 					&spDeviceInterfaceData_,
 					pspOUTDevIntDetailData,
 					dwInterfaceDetailDataSize,
@@ -274,7 +276,7 @@ namespace IO
 						drive_name = L"NO NAME";
 				}
 
-			iErrorCode = GetLastError();
+			iErrorCode = ::GetLastError();
 
 			delete[] pTmpBuffer;
 
@@ -283,7 +285,7 @@ namespace IO
 		uint32_t getNameStringSize(HDEVINFO & hDevInfo, SP_DEVINFO_DATA & spDevInfoData, DWORD & dwRegDataType)
 		{
 			DWORD ReturnedBytes = 0;
-			SetupDiGetDeviceRegistryProperty(hDevInfo_,
+			::SetupDiGetDeviceRegistryProperty(hDevInfo_,
 				&spDevInfoData,
 				SPDRP_FRIENDLYNAME,
 				&dwRegDataType,
@@ -306,12 +308,12 @@ namespace IO
 			if (nameBufferSize == 0)
 				return FALSE;
 
-			dwErrorCode = GetLastError();
+			dwErrorCode = ::GetLastError();
 
 			BYTE * buffer = new BYTE[nameBufferSize];
 
 			BOOL bResult = FALSE;
-			bResult = SetupDiGetDeviceRegistryProperty(hDevInfo_,
+			bResult = ::SetupDiGetDeviceRegistryProperty(hDevInfo_,
 				&spDevInfoData,
 				SPDRP_FRIENDLYNAME,
 				&dwRegDataType,
@@ -319,7 +321,7 @@ namespace IO
 				nameBufferSize,
 				&dwReturnedBytes);
 
-			dwErrorCode = GetLastError();
+			dwErrorCode = ::GetLastError();
 
 			drive_name = (wchar_t*)buffer;
 			delete []  buffer;
@@ -333,20 +335,20 @@ namespace IO
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
-				DWORD dwError = GetLastError();
+				DWORD dwError = ::GetLastError();
 				return FALSE;
 			}
 
 			DWORD returned_bytes = 0;
 			BOOL bResult = FALSE;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
+			bResult = ::DeviceIoControl(hDevice,  // device to be queried
 				IOCTL_DISK_GET_DRIVE_GEOMETRY_EX,  // operation to perform
 				NULL, 0, // no input buffer
 				&disk_geometry_ex, sizeof(DISK_GEOMETRY_EX),     // output buffer
 				&returned_bytes,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
-			CloseHandle(hDevice);
+			::CloseHandle(hDevice);
 			return bResult;
 		}
 		BOOL ReadDeviceNumber(const path_string & drive_path, uint32_t & drive_number)
@@ -355,21 +357,21 @@ namespace IO
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
-				DWORD dwError = GetLastError();
+				DWORD dwError = ::GetLastError();
 				return FALSE;
 			}
 
 			DWORD returned_bytes = 0;
 			STORAGE_DEVICE_NUMBER ioDeviceNumber;
 			BOOL bResult = FALSE;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
+			bResult = ::DeviceIoControl(hDevice,  // device to be queried
 				IOCTL_STORAGE_GET_DEVICE_NUMBER,  // operation to perform
 				NULL, 0, // no input buffer
 				&ioDeviceNumber, sizeof(ioDeviceNumber),     // output buffer
 				&returned_bytes,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
-			CloseHandle(hDevice);
+			::CloseHandle(hDevice);
 			drive_number = ioDeviceNumber.DeviceNumber;
 			return bResult;
 		}
@@ -379,7 +381,7 @@ namespace IO
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
-				DWORD dwError = GetLastError();
+				DWORD dwError = ::GetLastError();
 				return FALSE;
 			}
 
@@ -392,17 +394,170 @@ namespace IO
 
 			BOOL bResult = FALSE;
 			DWORD dwBufferSize = 0;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
+			bResult = ::DeviceIoControl(hDevice,  // device to be queried
 				IOCTL_STORAGE_QUERY_PROPERTY,  // operation to perform
 				&pQueryProperty, sizeof(STORAGE_PROPERTY_QUERY), // no input buffer
 				&storage_descriptor, sizeof(STORAGE_ADAPTER_DESCRIPTOR),     // output buffer
 				&dwBufferSize,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
-			CloseHandle(hDevice);
+			::CloseHandle(hDevice);
 
 			return bResult;
 		}
+		BOOL ReadSerialNumber(const path_string & device_path)
+		{
+/*			HANDLE hDevice = OpenPhysicalDrive(device_path);
+
+			if (hDevice == INVALID_HANDLE_VALUE)
+			{
+				DWORD dwError = ::GetLastError();
+				return FALSE;
+			}
+
+			BYTE outBuff[512] = { 0 };
+			STORAGE_DEVICE_DESCRIPTOR *pDeviceDesc = (STORAGE_DEVICE_DESCRIPTOR*)outBuff;
+
+			::ZeroMemory(outBuff, sizeof(outBuff));
+
+			STORAGE_PROPERTY_QUERY	pQueryProperty;
+			memset(&pQueryProperty, 0, sizeof(pQueryProperty));
+			pQueryProperty.PropertyId = StorageDeviceProperty;
+			pQueryProperty.QueryType = PropertyStandardQuery;
+
+			BOOL bResult = FALSE;
+			DWORD dwOutSize = 0;
+
+			bResult = ::DeviceIoControl(hDevice,  // device to be queried
+				IOCTL_STORAGE_QUERY_PROPERTY,  // operation to perform
+				&pQueryProperty, sizeof(STORAGE_PROPERTY_QUERY), // no input buffer
+				outBuff, sizeof(outBuff),     // output buffer
+				&dwOutSize,                 // # bytes returned
+				(LPOVERLAPPED)NULL);  // synchronous I/O
+
+			if (bResult == FALSE)
+			{
+				DWORD iErrorCode = GetLastError();
+
+				return ReadSerialFromSmart(_pDevice);
+			}
+			else
+				if (pDeviceDesc->SerialNumberOffset)
+				{
+					std::string serial_number = (LPSTR)outBuff + pDeviceDesc->SerialNumberOffset;
+					if (serial_number.size() > 0)
+					{
+						boost::trim(serial_number);
+						_pDevice->SetSerialNumber((unsigned char*)serial_number.c_str());
+						return TRUE;
+
+					}
+					else
+					{
+						return ReadSerialFromSmart(_pDevice);
+					}
+
+				}
+
+*/
+			return FALSE;
+		}
+		BOOL ReadSerialFromSmart(const path_string & drive_path )
+		{
+/*			HANDLE hDevice = INVALID_HANDLE_VALUE;
+			if (_pDevice->GetPath().size() == 0)
+				return FALSE;
+			hDevice = CreateFile(_pDevice->GetPath().c_str(),
+				GENERIC_READ | GENERIC_WRITE,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				NULL,
+				OPEN_EXISTING,
+				0,
+				NULL);
+
+			if (hDevice == INVALID_HANDLE_VALUE)
+			{
+				DWORD dwError = GetLastError();
+				return FALSE;
+			}
+
+			BYTE buff[1024] = { 0 };
+
+			PSENDCMDINPARAMS sendCommand = (PSENDCMDINPARAMS)&buff;
+			sendCommand->irDriveRegs.bCommandReg = IDE_ATA_IDENTIFY;
+
+			PSENDCMDOUTPARAMS outCommand = (PSENDCMDOUTPARAMS)&buff;
+
+			BOOL bResult = FALSE;
+			DWORD dwBufferSize = 0;
+			bResult = DeviceIoControl(hDevice,  // device to be queried
+				SMART_RCV_DRIVE_DATA,  // operation to perform
+				sendCommand, (sizeof(SENDCMDINPARAMS)), // no input buffer
+				outCommand, sizeof(buff),     // output buffer
+				&dwBufferSize,                 // # bytes returned
+				(LPOVERLAPPED)NULL);  // synchronous I/O
+
+
+			if (bResult == FALSE)
+			{
+				DWORD iErrorCode = GetLastError();
+				return FALSE;
+			}
+			else
+			{
+				IDENTIFY_DISK_ATA *PASPORT = NULL;
+				PASPORT = (PIDENTIFY_DISK_ATA)outCommand->bBuffer;
+				LONGLONG SectorCount = PASPORT->TotalNumberLBA48;
+				if (SectorCount != 0)
+					if (_pDevice->GetSectorCount() < SectorCount)
+					{
+						_pDevice->SetSectorCount(SectorCount);
+					}
+
+				BYTE *pBuffer = outCommand->bBuffer;
+				BYTE buffer[528] = { 0 };
+				for (int i = 0; i < 20; ++i)
+					buffer[i] = pBuffer[i + 20];
+
+				BYTE *pSerial = new BYTE[528]; /// DELETE !!!!!!!!!!!!!!!!!
+				memset(pSerial, 0, 528);
+				for (int i = 0; i < 20; i += 2)
+				{
+					pSerial[i] = buffer[i + 1];
+					pSerial[i + 1] = buffer[i];
+
+				}
+				string sSerial((const char *)pSerial);
+				//remove_if(sSerial.begin(), sSerial.end(),isspace);
+				boost::trim(sSerial);
+
+				_pDevice->SetSerialNumber((BYTE *)sSerial.c_str());
+				delete pSerial;
+
+				// Model Name
+				memset(buffer, 0, 528);
+				size_t ModelSize = sizeof(PASPORT->ModelNumber);
+				memcpy(buffer, PASPORT->ModelNumber, ModelSize);
+				ExchangeBytes(buffer, sizeof(PASPORT->ModelNumber));
+				if (buffer[ModelSize - 2] == 'W' && buffer[ModelSize - 1] == 'P')
+				{
+					buffer[ModelSize - 2] = ' ';
+					buffer[ModelSize - 1] = ' ';
+					_pDevice->SetBusType(WRITE_PROTECTOR);
+					string sModelName((const char *)buffer, ModelSize - 2);
+					boost::trim(sModelName);
+					_pDevice->SetName((BYTE *)sModelName.c_str());
+				}
+
+
+
+			}
+
+			return bResult;
+			CloseHandle(hDevice);*/
+			return FALSE;
+		}
+
 
 
 	};
