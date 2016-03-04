@@ -134,7 +134,16 @@ namespace IO
 	private:
 		HDEVINFO hDevInfo_;
 		SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData_;
-
+	//protected:
+	//	virtual HDEVINFO SetupDiGetClassDevs(
+	//		const GUID   *ClassGuid,
+	//		PCTSTR Enumerator,
+	//		HWND   hwndParent,
+	//		DWORD  Flags
+	//		) 
+	//	{
+	//		return ::SetupDiGetClassDevs(ClassGuid, Enumerator, hwndParent, Flags);
+	//	}
 	public:
 		DriveAttributesReader()
 		{
@@ -144,6 +153,12 @@ namespace IO
 		~DriveAttributesReader()
 		{
 			CloseHDevInfo(hDevInfo_);
+		}
+
+		BOOL Initialize(uint32_t member_index)
+		{
+			InitHDevInfo(this->hDevInfo_);
+			SetupDeviceInterfaceData(this->hDevInfo_, this->spDeviceInterfaceData_, member_index);
 		}
 
 		BOOL InitHDevInfo(HDEVINFO & hDevInfo)
@@ -161,6 +176,11 @@ namespace IO
 			return TRUE;
 		}
 
+		BOOL isHDevInfoValid() const
+		{
+			return (hDevInfo_ == INVALID_HANDLE_VALUE);
+		}
+
 		BOOL CloseHDevInfo(HDEVINFO &hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
@@ -171,12 +191,43 @@ namespace IO
 			return TRUE;
 		}
 
+		BOOL SetupDeviceInterfaceData(HDEVINFO &hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
+		{
+			::ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
+			spDeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
+
+			BOOL bResult = ::SetupDiEnumDeviceInterfaces(
+				hDevInfo,
+				0,
+				&DiskClassGuid,
+				member_index,
+				&spDeviceInterfaceData
+			);
+
+			return bResult;
+		}
+		
+		BOOL isValidGUID(GUID guid)
+		{
+			BOOL bValid = FALSE;
+			if (guid.Data1 != 0)
+				return TRUE;
+			if (guid.Data2 != 0)
+				return TRUE;
+			if (guid.Data3 != 0)
+				return TRUE;
+			if (guid.Data4 != 0)
+				return TRUE;
+
+			return bValid;
+		}
+
 		BOOL readDriveAttributes(uint32_t member_index)
 		{
 			PhysicalDrive physical_drive;
 			path_string drive_path;
 			std::wstring drive_name;
-			if (!SetupNumberInSystem(hDevInfo_, spDeviceInterfaceData_, member_index))
+			if (!SetupDeviceInterfaceData(hDevInfo_, spDeviceInterfaceData_, member_index))
 				return FALSE;
 
 			if (!ReadPathAndName(drive_path, drive_name))
@@ -202,29 +253,17 @@ namespace IO
 
 			physical_drive.setDriveNumber(drive_number);
 
-
+#ifdef _DEBUG
 			wprintf(L"Drive path = [ %s ].\r\n", physical_drive.getPath().c_str());
 			wprintf(L"Drive name = [ %s ].\r\n", physical_drive.getDriveName().c_str());
 			wprintf(L"Bytes per sector = [ %d ]\r\n", physical_drive.getBytesPerSector());
 			wprintf(L"Number sectors = [ %llu ]\r\n", physical_drive.getNumberSectors());
 			wprintf(L"Drive NUMBER = [ %d ]\r\n", physical_drive.getDriveNumber());
 			wprintf(L"\r\n");
-
+#endif
 			return TRUE;
 		}
 
-		BOOL SetupNumberInSystem(HDEVINFO &hDevInfo , SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
-		{
-			::ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
-			spDeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-			BOOL bResult = ::SetupDiEnumDeviceInterfaces(hDevInfo,
-				0,
-				&DiskClassGuid,
-				member_index,
-				&spDeviceInterfaceData);
-
-			return bResult;
-		}
 		BOOL ReadPathAndName(path_string & drive_path, std::wstring & drive_name)
 		{
 
@@ -320,6 +359,8 @@ namespace IO
 				buffer,
 				nameBufferSize,
 				&dwReturnedBytes);
+
+			spDevInfoData.ClassGuid.
 
 			dwErrorCode = ::GetLastError();
 
