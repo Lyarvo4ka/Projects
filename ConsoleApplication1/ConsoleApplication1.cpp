@@ -9,7 +9,7 @@
 
 void show_help()
 {
-	std::cout << "To run this programm use : -d|f (path) target folder" << std::endl;
+	std::cout << "To run this program use : -d|f (path) target folder" << std::endl;
 	std::cout << "\t d - to physical drives." << std::endl;
 	std::cout << "\t f - to file." << std::endl;
 
@@ -25,22 +25,20 @@ void show_error_invalid_params()
 
 #include "boost/filesystem.hpp"
 
-#include "IOLibrary\MovRaw.h"
+
+#include "IOLibrary/MXF_raw.h"
 
 
 int main(int argc, char *argv[])
 {
-	if (argc == 3)
-	{
-		auto diks_number = std::stoi(argv[1]);
-		std::string folder = argv[2];
+	MXFTrashRemove mxfTrashRemove;
+	mxfTrashRemove.execute("d:\\incoming\\39416\\");
 
-		QuickTimeRaw qt_raw(diks_number);
-		qt_raw.execute(folder);
-
-	}
-	else
-		std::cout << "You entered invalid params." << std::endl;
+	//if (argc == 3)
+	//{
+	//}
+	//else
+	//	std::cout << "You entered invalid params." << std::endl;
 
 
 	printf("finished");

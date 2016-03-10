@@ -38,5 +38,8 @@
     <ClCompile Include="physicaldrivetest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IODeviceTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntropyTest.cpp" />
+    <ClCompile Include="IODeviceTest.cpp" />
     <ClCompile Include="IOLibraryTest.cpp" />
     <ClCompile Include="physicaldrivetest.cpp" />
     <ClCompile Include="stdafx.cpp">

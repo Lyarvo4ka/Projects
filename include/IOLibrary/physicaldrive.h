@@ -50,7 +50,7 @@ namespace IO
 		{
 			return path_;
 		}
-		void setDriveName(const path_string drive_name)
+		void setDriveName(const std::wstring & drive_name)
 		{
 			drive_name_ = drive_name;
 		}
@@ -87,46 +87,6 @@ namespace IO
 
 	using PhysicalDrivePtr = std::shared_ptr<PhysicalDrive>;
 
-	class PhysicalDriveList
-	{
-	private:
-		std::vector<PhysicalDrivePtr> drive_list_;
-	public:
-		void add(PhysicalDrivePtr physical_drive)
-		{
-			if (!this->find_by_number(physical_drive->getDriveNumber()))
-				drive_list_.push_back(physical_drive);
-		}
-		void remove(uint32_t drive_number)
-		{
-			for (auto it = drive_list_.begin(); it != drive_list_.end(); ++it)
-			{
-				if ((*it)->getDriveNumber() == drive_number)
-					it = drive_list_.erase(it);
-
-				if ( it == drive_list_.end())
-					break;
-
-			}
-		}
-		void remove_all()
-		{
-			drive_list_.clear();
-		}
-		PhysicalDrivePtr find_by_number(uint32_t drive_number)
-		{
-			for (auto find_index : drive_list_)
-			{
-				if (find_index->getDriveNumber() == drive_number)
-					return find_index;
-			}
-			return nullptr;
-		}
-		uint32_t getSize() const
-		{
-			return drive_list_.size();
-		}
-	};
 
 
 	class DriveAttributesReader
@@ -155,11 +115,11 @@ namespace IO
 			CloseHDevInfo(hDevInfo_);
 		}
 
-		BOOL Initialize(uint32_t member_index)
-		{
-			InitHDevInfo(this->hDevInfo_);
-			SetupDeviceInterfaceData(this->hDevInfo_, this->spDeviceInterfaceData_, member_index);
-		}
+		//BOOL Initialize(uint32_t member_index)
+		//{
+		//	InitHDevInfo(this->hDevInfo_);
+		//	SetupDeviceInterfaceData(this->hDevInfo_, this->spDeviceInterfaceData_, member_index);
+		//}
 
 		BOOL InitHDevInfo(HDEVINFO & hDevInfo)
 		{
@@ -176,11 +136,6 @@ namespace IO
 			return TRUE;
 		}
 
-		BOOL isHDevInfoValid() const
-		{
-			return (hDevInfo_ == INVALID_HANDLE_VALUE);
-		}
-
 		BOOL CloseHDevInfo(HDEVINFO &hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
@@ -189,6 +144,11 @@ namespace IO
 				hDevInfo = INVALID_HANDLE_VALUE;
 			}
 			return TRUE;
+		}
+
+		BOOL isHDevInfoValid() const
+		{
+			return (hDevInfo_ == INVALID_HANDLE_VALUE);
 		}
 
 		BOOL SetupDeviceInterfaceData(HDEVINFO &hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
@@ -222,26 +182,29 @@ namespace IO
 			return bValid;
 		}
 
-		BOOL readDriveAttributes(uint32_t member_index)
+		BOOL readDriveAttributes(uint32_t member_index, PhysicalDrivePtr physical_drive)
 		{
-			PhysicalDrive physical_drive;
 			path_string drive_path;
-			std::wstring drive_name;
 			if (!SetupDeviceInterfaceData(hDevInfo_, spDeviceInterfaceData_, member_index))
 				return FALSE;
 
-			if (!ReadPathAndName(drive_path, drive_name))
-				return FALSE;
+			SP_DEVINFO_DATA spDevInfoData;
 
-			physical_drive.setDriveName(drive_name);
-			physical_drive.setPath(drive_path);
+			if (!readDevicePath(spDevInfoData, drive_path))
+				return FALSE;
+			physical_drive->setPath(drive_path);
+
+			std::wstring drive_name;
+			if (!readDeviceName(spDevInfoData, drive_name))
+				return FALSE;
+			physical_drive->setDriveName(drive_name);
 
 			DISK_GEOMETRY_EX disk_geometry_ex = { 0 };
-			if (!ReadDeviceGeometryEx(physical_drive.getPath(), disk_geometry_ex) )
+			if (!ReadDeviceGeometryEx(physical_drive->getPath(), disk_geometry_ex) )
 				return FALSE;
 
-			physical_drive.setBytesPerSector(disk_geometry_ex.Geometry.BytesPerSector);
-			physical_drive.setNumberSectors(disk_geometry_ex.DiskSize.QuadPart);
+			physical_drive->setBytesPerSector(disk_geometry_ex.Geometry.BytesPerSector);
+			physical_drive->setNumberSectors(disk_geometry_ex.DiskSize.QuadPart);
 
 			STORAGE_ADAPTER_DESCRIPTOR storage_descriptor = { 0 };
 			if (!ReadDeviceDescriptor(drive_path, storage_descriptor))
@@ -251,39 +214,37 @@ namespace IO
 			if (!ReadDeviceNumber(drive_path, drive_number))
 				return FALSE;
 
-			physical_drive.setDriveNumber(drive_number);
+			physical_drive->setDriveNumber(drive_number);
 
-#ifdef _DEBUG
-			wprintf(L"Drive path = [ %s ].\r\n", physical_drive.getPath().c_str());
-			wprintf(L"Drive name = [ %s ].\r\n", physical_drive.getDriveName().c_str());
-			wprintf(L"Bytes per sector = [ %d ]\r\n", physical_drive.getBytesPerSector());
-			wprintf(L"Number sectors = [ %llu ]\r\n", physical_drive.getNumberSectors());
-			wprintf(L"Drive NUMBER = [ %d ]\r\n", physical_drive.getDriveNumber());
-			wprintf(L"\r\n");
-#endif
+
 			return TRUE;
 		}
 
-		BOOL ReadPathAndName(path_string & drive_path, std::wstring & drive_name)
+		uint32_t getPathStringSize(HDEVINFO & hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData)
 		{
-
-			DWORD iErrorCode = 0;
-			DWORD dwRequiredSize = 0;
-			BOOL bStatus = FALSE;
-
-			bStatus = ::SetupDiGetDeviceInterfaceDetail(hDevInfo_,
+			DWORD path_size = 0;
+			 ::SetupDiGetDeviceInterfaceDetail(hDevInfo_,
 				&spDeviceInterfaceData_,
 				NULL,
 				0,
-				&dwRequiredSize,
+				&path_size,
 				NULL);
+			 return path_size;
+		}
+		BOOL readDevicePath(SP_DEVINFO_DATA & spDevInfoData,  path_string & drive_path)
+		{
+
+			DWORD iErrorCode = 0;
+			BOOL bStatus = FALSE;
+
+			uint32_t path_size = getPathStringSize(hDevInfo_, spDeviceInterfaceData_);
 
 			iErrorCode = ::GetLastError();
 
 			if ( iErrorCode != ERROR_INSUFFICIENT_BUFFER)
 				return FALSE;
 
-			DWORD dwInterfaceDetailDataSize = dwRequiredSize;
+			DWORD dwInterfaceDetailDataSize = path_size;
 
 
 			char * pTmpBuffer = new char[dwInterfaceDetailDataSize];
@@ -292,9 +253,8 @@ namespace IO
 			pspOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA ) pTmpBuffer;
 			::ZeroMemory(pspOUTDevIntDetailData, dwInterfaceDetailDataSize);
 
-			SP_DEVINFO_DATA spDeviceInfoData;
-			::ZeroMemory(&spDeviceInfoData, sizeof(SP_DEVINFO_DATA));
-			spDeviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
+			::ZeroMemory(&spDevInfoData, sizeof(SP_DEVINFO_DATA));
+			spDevInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
 
 			pspOUTDevIntDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
@@ -303,16 +263,11 @@ namespace IO
 					&spDeviceInterfaceData_,
 					pspOUTDevIntDetailData,
 					dwInterfaceDetailDataSize,
-					&dwRequiredSize,
-					&spDeviceInfoData);
+					NULL,
+					&spDevInfoData);
 				if (bStatus)
 				{
 					drive_path = pspOUTDevIntDetailData->DevicePath;
-					std::wstring tmp_drive_name;
-					if (ReadDeviceName(spDeviceInfoData, tmp_drive_name))
-						drive_name = tmp_drive_name;
-					else
-						drive_name = L"NO NAME";
 				}
 
 			iErrorCode = ::GetLastError();
@@ -335,7 +290,7 @@ namespace IO
 		}
 
 
-		BOOL ReadDeviceName(SP_DEVINFO_DATA & spDevInfoData , std::wstring & drive_name)
+		BOOL readDeviceName(SP_DEVINFO_DATA & spDevInfoData , std::wstring & drive_name)
 		{
 			DWORD dwRegDataType = 0;
 			DWORD dwReturnedBytes = 0;
@@ -359,8 +314,6 @@ namespace IO
 				buffer,
 				nameBufferSize,
 				&dwReturnedBytes);
-
-			spDevInfoData.ClassGuid.
 
 			dwErrorCode = ::GetLastError();
 
@@ -601,6 +554,65 @@ namespace IO
 
 
 
+	};
+
+
+
+
+	class PhysicalDriveList
+	{
+	private:
+		std::vector<PhysicalDrivePtr> drive_list_;
+	public:
+		void add(PhysicalDrivePtr physical_drive)
+		{
+			if (!this->find_by_number(physical_drive->getDriveNumber()))
+				drive_list_.push_back(physical_drive);
+		}
+		void remove(uint32_t drive_number)
+		{
+			for (auto it = drive_list_.begin(); it != drive_list_.end(); ++it)
+			{
+				if ((*it)->getDriveNumber() == drive_number)
+					it = drive_list_.erase(it);
+
+				if (it == drive_list_.end())
+					break;
+
+			}
+		}
+		void remove_all()
+		{
+			drive_list_.clear();
+		}
+		PhysicalDrivePtr find_by_number(uint32_t drive_number)
+		{
+			for (auto find_index : drive_list_)
+			{
+				if (find_index->getDriveNumber() == drive_number)
+					return find_index;
+			}
+			return nullptr;
+		}
+		uint32_t getSize() const
+		{
+			return drive_list_.size();
+		}
+
+		void ReadAllDrives()
+		{
+			DriveAttributesReader attribute_reader;
+			uint32_t member_index = 0;
+			while (true)
+			{
+				auto physical_drive = std::make_shared<PhysicalDrive>();
+				if (!attribute_reader.readDriveAttributes(member_index, physical_drive))
+					break;
+
+				this->add(physical_drive);
+				++member_index;
+			}
+		}
 	};
 
 /*

@@ -67,32 +67,32 @@ namespace IO
 		}
 	};
 
-	class File
-		: public Node
-	{
-	private:
-		std::string name_;
-		Directory* parent_;
-	public:
-		File(const std::string & file_name)
-			: name_(file_name)
-			, parent_(nullptr)
-		{
+	//class File
+	//	: public Node
+	//{
+	//private:
+	//	std::string name_;
+	//	Directory* parent_;
+	//public:
+	//	File(const std::string & file_name)
+	//		: name_(file_name)
+	//		, parent_(nullptr)
+	//	{
 
-		}
-		std::string name() const override
-		{
-			return name_;
-		}
-		void set_parent(Directory * parent)
-		{
-			parent_ = parent;
-		}
-		Directory * parent() const
-		{
-			return parent_;
-		}
-	};
+	//	}
+	//	std::string name() const override
+	//	{
+	//		return name_;
+	//	}
+	//	void set_parent(Directory * parent)
+	//	{
+	//		parent_ = parent;
+	//	}
+	//	Directory * parent() const
+	//	{
+	//		return parent_;
+	//	}
+	//};
 
 }
 #endif

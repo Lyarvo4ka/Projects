@@ -48,17 +48,46 @@ namespace IO
 			case OpenMode::OpenRead:
 			case OpenMode::OpenWrite:
 				win_open_mode = OPEN_EXISTING;
+				break;
 			case OpenMode::Create:
 				win_open_mode = CREATE_ALWAYS;
+				break;
 			}
 
-			::CreateFile( file_name_.c_str(), 
-						  GENERIC_READ | GENERIC_WRITE,
-						  FILE_SHARE_READ | FILE_SHARE_WRITE,
-						  NULL,
-						  win_open_mode,
-						  0,
-						  NULL);
+			hFile_ = ::CreateFile(file_name_.c_str(),
+				GENERIC_READ | GENERIC_WRITE,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				NULL,
+				win_open_mode,
+				0,
+				NULL);
+
+			if (hFile_ != INVALID_HANDLE_VALUE)
+			{
+				bOpen_ = true;
+				LARGE_INTEGER liSize = { 0 };
+				::GetFileSizeEx(hFile_, &liSize);
+				size_ = liSize.QuadPart;
+			}
+			else
+				bOpen_ = false;
+
+			return bOpen_;
+		}
+		
+		void Close() override
+		{
+			if (hFile_ != INVALID_HANDLE_VALUE)
+			{
+				::CloseHandle(hFile_);
+				hFile_ = INVALID_HANDLE_VALUE;
+			}
+			bOpen_ = false;
+
+		}
+		bool isOpen()
+		{
+			return bOpen_;
 		}
 
 		void setPosition(uint64_t offset) override 
@@ -71,10 +100,47 @@ namespace IO
 
 		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
 		{
-			uint32_t bytes_read = 0;
-			//if ( !::ReadFile(hFile_ , buffer , read_size , &bytes_read) )
+			if (data == nullptr)
+				return 0;
+			if (read_size == 0)
+				return 0;
+
+			DWORD bytes_read = 0;
+
+
+			if (!::ReadFile(hFile_, data, read_size, &bytes_read, NULL))
+				return 0;
+			return bytes_read;
 		};
 
+		uint32_t WriteData(uint8_t * data, uint32_t write_size) override
+		{
+			if (data == nullptr)
+				return 0;
+			if (write_size == 0)
+				return 0;
+
+			DWORD bytes_written = 0;
+
+
+			if (!::WriteFile(hFile_, data, write_size, &bytes_written, NULL))
+				return 0;
+			return bytes_written;
+		};
+
+		uint64_t Size() const override
+		{
+			return size_;
+		}
+		void setSize(uint64_t new_size)
+		{
+			if (size_ != new_size)
+			{
+				size_ = new_size;
+				LARGE_INTEGER li = { size_ };
+				::SetFilePointerEx(hFile_, li, NULL, FILE_BEGIN);
+			}
+		}
 	};
 
 	class BlockDevice

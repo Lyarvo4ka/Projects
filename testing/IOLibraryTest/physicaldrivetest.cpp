@@ -1,6 +1,7 @@
+//#define BOOST_TEST_MODULE physical_drive_test
 #include <boost/test/unit_test.hpp>
-
 #include "IOLibrary/physicaldrive.h"
+
 
 IO::PhysicalDrivePtr create_physical_drive(uint32_t drive_number)
 {
@@ -31,10 +32,11 @@ struct F_DriveList
 	}
 
 	IO::PhysicalDriveList drivelist;
-};
+}; 
 
+BOOST_FIXTURE_TEST_SUITE(TestPhysicalDrive , F_DriveList)
 
-BOOST_FIXTURE_TEST_CASE(TestAddInDriveList, F_DriveList)
+BOOST_AUTO_TEST_CASE(TestAddInDriveList)
 {
 	auto physical_drive1 = create_physical_drive(1);
 
@@ -47,7 +49,7 @@ BOOST_FIXTURE_TEST_CASE(TestAddInDriveList, F_DriveList)
 	BOOST_CHECK_EQUAL(drivelist.getSize(), 4);
 }
 
-BOOST_FIXTURE_TEST_CASE(TestFindByNumberFromDriveList, F_DriveList)
+BOOST_AUTO_TEST_CASE(TestFindByNumberFromDriveList )
 {
 	uint32_t drive_number = 0;
 	BOOST_CHECK_EQUAL(drivelist.find_by_number(drive_number)->getDriveNumber(), drive_number);
@@ -58,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE(TestFindByNumberFromDriveList, F_DriveList)
 	BOOST_TEST_CHECK(!find_drive);
 }
 
-BOOST_FIXTURE_TEST_CASE(TestRemoveFromDriveList, F_DriveList)
+BOOST_AUTO_TEST_CASE(TestRemoveFromDriveList)
 {
 	drivelist.remove(1);
 	auto find_drive = drivelist.find_by_number(1);
@@ -70,16 +72,32 @@ BOOST_FIXTURE_TEST_CASE(TestRemoveFromDriveList, F_DriveList)
 	BOOST_CHECK_EQUAL(drivelist.getSize(), 0);
 }
 
-BOOST_AUTO_TEST_CASE(TestGetDevicePath)
+BOOST_AUTO_TEST_SUITE_END()
+
+void ShowPhysicalDriveInfo(IO::PhysicalDrivePtr physical_drive)
 {
-	IO::DriveAttributesReader drive_attributes;
-	drive_attributes.readDriveAttributes(0);
-	drive_attributes.readDriveAttributes(1);
-	drive_attributes.readDriveAttributes(2);
-	drive_attributes.readDriveAttributes(3);
-	drive_attributes.readDriveAttributes(4);
+	wprintf(L"Drive path = [ %s ].\r\n", physical_drive->getPath().c_str());
+	wprintf(L"Drive name = [ %s ].\r\n", physical_drive->getDriveName().c_str());
+	wprintf(L"Bytes per sector = [ %d ]\r\n", physical_drive->getBytesPerSector());
+	wprintf(L"Number sectors = [ %llu ]\r\n", physical_drive->getNumberSectors());
+	wprintf(L"Drive NUMBER = [ %d ]\r\n", physical_drive->getDriveNumber());
+	wprintf(L"\r\n");
+}
 
-
+BOOST_AUTO_TEST_CASE(TestReadAllDrives)
+{
+	IO::PhysicalDriveList driveList;
+	driveList.ReadAllDrives();
+	
+	uint32_t drive_number = 0;
+	while (true)
+	{
+		auto physical_drive = driveList.find_by_number(drive_number);
+		if (!physical_drive)
+			break;
+		ShowPhysicalDriveInfo(physical_drive);
+		++drive_number;
+	}
 
 }
 
@@ -90,3 +108,6 @@ BOOST_AUTO_TEST_CASE(TestGetDevicePath)
 //	drive_attributes.GetDeviceName(1);
 //
 //}
+
+
+//

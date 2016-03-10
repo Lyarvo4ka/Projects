@@ -1,5 +1,7 @@
 #include "AbstractRaw.h"
 #include "constants.h"
+#include "FileFinder.h"
+#include "IODevice.h"
 
 //
 //#pragma comment(lib, "wsock32.lib")
@@ -12,6 +14,86 @@ inline bool isHeader( BYTE * data ,  const BYTE * header , const int header_size
 	return (memcmp( data, header, header_size ) == 0 ) ;
 	
 }
+
+
+class MXFTrashRemove
+{
+private:
+	stringlist list_files_;
+public:
+	void FindFiles(const std::string & folder)
+	{
+		stringlist mxf_ext;
+		mxf_ext.push_back(".mxf");
+		FileFinder finder;
+		finder.FindFiles(folder, mxf_ext);
+		list_files_ = finder.getFileNames();
+	}
+
+	void RemoveTrashInFile(const IO::path_string & file_path)
+	{
+		IO::File ioFile(file_path);
+		if (!ioFile.Open(IO::OpenMode::OpenRead))
+		{
+			wprintf(L"Error open file");
+			return;
+		}
+
+		auto size = ioFile.Size();
+		if (size == 0)
+		{
+			wprintf(L"File size is 0");
+			return;
+		}
+
+		IO::path_string write_path(file_path + L".new");
+		IO::File ioWrite(write_path);
+		if (!ioWrite.Open(IO::OpenMode::Create))
+		{
+			wprintf(L"Error create file");
+			return;
+		}
+
+		const uint32_t cluster_size = 32768;
+		const uint32_t data_clusters = 1920;
+		const uint32_t trash_clusters = 56;
+
+
+		uint8_t buffer[cluster_size];
+
+		uint32_t pos = 0;
+		uint32_t write_pos = 0;
+		while (pos <= size)
+		{
+			for (auto i = 0; i < data_clusters; ++i)
+			{
+				if ( pos >= size)
+					return;
+
+				ioFile.setPosition(pos);
+				ioFile.ReadData(buffer, cluster_size);
+				ioWrite.setPosition(write_pos);
+				ioWrite.WriteData(buffer, cluster_size);
+				write_pos += cluster_size;
+				pos += cluster_size;
+			}
+			// skip 56;
+			pos += cluster_size*trash_clusters;
+		}
+
+
+	}
+	void execute(const std::string folder )
+	{
+		FindFiles(folder);
+		for (auto fileName : list_files_)
+		{
+			IO::path_string file_path(fileName.begin(), fileName.end());
+			RemoveTrashInFile(file_path);
+		}
+	}
+
+};
 
 class MXFVideoRaw
 	: public AbstractRaw
