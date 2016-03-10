@@ -2,10 +2,11 @@
 #include <boost/test/unit_test.hpp>
 #include "IOLibrary/physicaldrive.h"
 
+using namespace IO;
 
-IO::PhysicalDrivePtr create_physical_drive(uint32_t drive_number)
+PhysicalDrivePtr create_physical_drive(uint32_t drive_number)
 {
-	auto physical_drive = std::make_shared<IO::PhysicalDrive>();
+	auto physical_drive = std::make_shared<PhysicalDrive>();
 	physical_drive->setDriveNumber(drive_number);
 	physical_drive->setDriveName(L"Physical drive " + std::to_wstring(drive_number));
 	physical_drive->setNumberSectors(1000);
@@ -31,7 +32,7 @@ struct F_DriveList
 		drivelist.remove_all();
 	}
 
-	IO::PhysicalDriveList drivelist;
+	PhysicalDriveList drivelist;
 }; 
 
 BOOST_FIXTURE_TEST_SUITE(TestPhysicalDrive , F_DriveList)
@@ -86,7 +87,7 @@ void ShowPhysicalDriveInfo(IO::PhysicalDrivePtr physical_drive)
 
 BOOST_AUTO_TEST_CASE(TestReadAllDrives)
 {
-	IO::PhysicalDriveList driveList;
+	PhysicalDriveList driveList;
 	driveList.ReadAllDrives();
 	
 	uint32_t drive_number = 0;
@@ -96,6 +97,7 @@ BOOST_AUTO_TEST_CASE(TestReadAllDrives)
 		if (!physical_drive)
 			break;
 		ShowPhysicalDriveInfo(physical_drive);
+
 		++drive_number;
 	}
 

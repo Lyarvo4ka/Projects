@@ -7,6 +7,7 @@
 #pragma comment(lib, "setupapi.lib")
 
 #include <memory>
+#include <algorithm>
 
 namespace IO
 {
@@ -612,6 +613,15 @@ namespace IO
 				this->add(physical_drive);
 				++member_index;
 			}
+			sort();
+		}
+
+		void sort()
+		{
+			//std::sort(drive_list_.begin(), drive_list_.end(), [](PhysicalDrivePtr &drive1, PhysicalDrivePtr &drive2)
+			//{
+			//	drive1->getDriveNumber() > drive2->getDriveNumber();
+			//});
 		}
 	};
 
