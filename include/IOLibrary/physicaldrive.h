@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 
 namespace IO
 {
@@ -22,7 +23,18 @@ namespace IO
 									NULL);
 
 		return hDevice;
+	}
 
+	inline void exchange_uint8(uint8_t * data, uint32_t size)
+	{
+		uint16_t *pBuffer = (uint16_t *)data;
+		const uint8_t bits_8 = 8;
+		const uint8_t bytes = sizeof(uint16_t);
+
+		for (int i = 0; i < size / bytes; ++i)
+		{
+			pBuffer[i] = pBuffer[i] << bits_8 | pBuffer[i] >> bits_8;
+		}
 	}
 
 	class PhysicalDrive
@@ -33,6 +45,7 @@ namespace IO
 		uint64_t number_sectors_;
 		path_string path_;
 		path_string drive_name_;
+		std::string serial_number_;
 	public:
 		PhysicalDrive()
 			: drive_number_(0)
@@ -40,6 +53,7 @@ namespace IO
 			, bytes_per_sector_(0)
 			, path_(L"")
 			, drive_name_(L"")
+			, serial_number_("")
 		{
 
 		}
@@ -83,6 +97,14 @@ namespace IO
 		{
 			return bytes_per_sector_;
 		}
+		void setSerialNumber(const std::string & serial_number)
+		{
+			serial_number_ = serial_number;
+		}
+		std::string getSerialNumber() const
+		{
+			return serial_number_;
+		}
 
 	};
 
@@ -108,12 +130,12 @@ namespace IO
 	public:
 		DriveAttributesReader()
 		{
-			InitHDevInfo(hDevInfo_);
+			initHDevInfo(hDevInfo_);
 		}
 
 		~DriveAttributesReader()
 		{
-			CloseHDevInfo(hDevInfo_);
+			closeHDevInfo(hDevInfo_);
 		}
 
 		//BOOL Initialize(uint32_t member_index)
@@ -122,10 +144,10 @@ namespace IO
 		//	SetupDeviceInterfaceData(this->hDevInfo_, this->spDeviceInterfaceData_, member_index);
 		//}
 
-		BOOL InitHDevInfo(HDEVINFO & hDevInfo)
+		BOOL initHDevInfo(HDEVINFO & hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
-				CloseHDevInfo(hDevInfo);
+				closeHDevInfo(hDevInfo);
 
 			hDevInfo = ::SetupDiGetClassDevs(&DiskClassGuid,
 				NULL,
@@ -137,7 +159,7 @@ namespace IO
 			return TRUE;
 		}
 
-		BOOL CloseHDevInfo(HDEVINFO &hDevInfo)
+		BOOL closeHDevInfo(HDEVINFO &hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
 			{
@@ -152,7 +174,7 @@ namespace IO
 			return (hDevInfo_ == INVALID_HANDLE_VALUE);
 		}
 
-		BOOL SetupDeviceInterfaceData(HDEVINFO &hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
+		BOOL setupDeviceInterfaceData(HDEVINFO &hDevInfo, SP_DEVICE_INTERFACE_DATA & spDeviceInterfaceData, uint32_t member_index)
 		{
 			::ZeroMemory(&spDeviceInterfaceData, sizeof(SP_DEVICE_INTERFACE_DATA));
 			spDeviceInterfaceData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
@@ -183,10 +205,10 @@ namespace IO
 			return bValid;
 		}
 
-		BOOL readDriveAttributes(uint32_t member_index, PhysicalDrivePtr physical_drive)
+		BOOL readDriveAttribute(uint32_t member_index, PhysicalDrivePtr physical_drive)
 		{
 			path_string drive_path;
-			if (!SetupDeviceInterfaceData(hDevInfo_, spDeviceInterfaceData_, member_index))
+			if (!setupDeviceInterfaceData(hDevInfo_, spDeviceInterfaceData_, member_index))
 				return FALSE;
 
 			SP_DEVINFO_DATA spDevInfoData;
@@ -201,21 +223,28 @@ namespace IO
 			physical_drive->setDriveName(drive_name);
 
 			DISK_GEOMETRY_EX disk_geometry_ex = { 0 };
-			if (!ReadDeviceGeometryEx(physical_drive->getPath(), disk_geometry_ex) )
+			if (!readDeviceGeometryEx(physical_drive->getPath(), disk_geometry_ex) )
 				return FALSE;
 
 			physical_drive->setBytesPerSector(disk_geometry_ex.Geometry.BytesPerSector);
 			physical_drive->setNumberSectors(disk_geometry_ex.DiskSize.QuadPart);
 
 			STORAGE_ADAPTER_DESCRIPTOR storage_descriptor = { 0 };
-			if (!ReadDeviceDescriptor(drive_path, storage_descriptor))
+			if (!readDeviceDescriptor(drive_path, storage_descriptor))
 				return FALSE;
 
+
 			uint32_t drive_number = 0;
-			if (!ReadDeviceNumber(drive_path, drive_number))
+			if (!readDeviceNumber(drive_path, drive_number))
 				return FALSE;
 
 			physical_drive->setDriveNumber(drive_number);
+
+			std::string serial_number;
+			if (!readSerialNumber(drive_path, serial_number))
+				return FALSE;
+
+			physical_drive->setSerialNumber(serial_number);
 
 
 			return TRUE;
@@ -306,6 +335,7 @@ namespace IO
 			dwErrorCode = ::GetLastError();
 
 			BYTE * buffer = new BYTE[nameBufferSize];
+			ZeroMemory(buffer, nameBufferSize);
 
 			BOOL bResult = FALSE;
 			bResult = ::SetupDiGetDeviceRegistryProperty(hDevInfo_,
@@ -324,7 +354,7 @@ namespace IO
 			return bResult;
 		}
 
-		BOOL ReadDeviceGeometryEx(const path_string & drive_path , DISK_GEOMETRY_EX & disk_geometry_ex)
+		BOOL readDeviceGeometryEx(const path_string & drive_path , DISK_GEOMETRY_EX & disk_geometry_ex)
 		{
 			HANDLE hDevice = OpenPhysicalDrive(drive_path);
 
@@ -346,7 +376,7 @@ namespace IO
 			::CloseHandle(hDevice);
 			return bResult;
 		}
-		BOOL ReadDeviceNumber(const path_string & drive_path, uint32_t & drive_number)
+		BOOL readDeviceNumber(const path_string & drive_path, uint32_t & drive_number)
 		{
 			HANDLE hDevice = OpenPhysicalDrive(drive_path);
 
@@ -370,7 +400,7 @@ namespace IO
 			drive_number = ioDeviceNumber.DeviceNumber;
 			return bResult;
 		}
-		BOOL ReadDeviceDescriptor(const path_string & drive_path, STORAGE_ADAPTER_DESCRIPTOR & storage_descriptor)
+		BOOL readDeviceDescriptor(const path_string & drive_path, STORAGE_ADAPTER_DESCRIPTOR & storage_descriptor)
 		{
 			HANDLE hDevice = OpenPhysicalDrive(drive_path);
 
@@ -400,20 +430,20 @@ namespace IO
 
 			return bResult;
 		}
-		BOOL ReadSerialNumber(const path_string & device_path)
+		BOOL readSerialNumber(const path_string & device_path , std::string & serial_number)
 		{
-/*			HANDLE hDevice = OpenPhysicalDrive(device_path);
+			HANDLE hDevice = OpenPhysicalDrive(device_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
 				DWORD dwError = ::GetLastError();
 				return FALSE;
 			}
-
-			BYTE outBuff[512] = { 0 };
+			const uint32_t size_buff = 512;
+			BYTE outBuff[size_buff] = { 0 };
 			STORAGE_DEVICE_DESCRIPTOR *pDeviceDesc = (STORAGE_DEVICE_DESCRIPTOR*)outBuff;
 
-			::ZeroMemory(outBuff, sizeof(outBuff));
+			::ZeroMemory(outBuff, size_buff);
 
 			STORAGE_PROPERTY_QUERY	pQueryProperty;
 			memset(&pQueryProperty, 0, sizeof(pQueryProperty));
@@ -430,53 +460,47 @@ namespace IO
 				&dwOutSize,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
+			CloseHandle(hDevice);
+
 			if (bResult == FALSE)
 			{
 				DWORD iErrorCode = GetLastError();
 
-				return ReadSerialFromSmart(_pDevice);
+				return readSerialFromSmart(device_path , serial_number);
 			}
 			else
 				if (pDeviceDesc->SerialNumberOffset)
 				{
-					std::string serial_number = (LPSTR)outBuff + pDeviceDesc->SerialNumberOffset;
-					if (serial_number.size() > 0)
+					std::string serial_number_tmp = (LPSTR)outBuff + pDeviceDesc->SerialNumberOffset;
+					if (serial_number_tmp.size() > 0)
 					{
-						boost::trim(serial_number);
-						_pDevice->SetSerialNumber((unsigned char*)serial_number.c_str());
+						boost::trim(serial_number_tmp);
+						serial_number = serial_number_tmp;
 						return TRUE;
 
 					}
 					else
 					{
-						return ReadSerialFromSmart(_pDevice);
+						return readSerialFromSmart(device_path, serial_number);
 					}
 
 				}
 
-*/
+
 			return FALSE;
 		}
-		BOOL ReadSerialFromSmart(const path_string & drive_path )
+		BOOL readSerialFromSmart(const path_string & drive_path , std::string & serial_number)
 		{
-/*			HANDLE hDevice = INVALID_HANDLE_VALUE;
-			if (_pDevice->GetPath().size() == 0)
-				return FALSE;
-			hDevice = CreateFile(_pDevice->GetPath().c_str(),
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				OPEN_EXISTING,
-				0,
-				NULL);
+			HANDLE hDevice = OpenPhysicalDrive(drive_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
 				DWORD dwError = GetLastError();
 				return FALSE;
 			}
-
-			BYTE buff[1024] = { 0 };
+			const uint32_t smart_size = 1024;
+			BYTE buff[smart_size] = { 0 };
+			ZeroMemory(buff, smart_size);
 
 			PSENDCMDINPARAMS sendCommand = (PSENDCMDINPARAMS)&buff;
 			sendCommand->irDriveRegs.bCommandReg = IDE_ATA_IDENTIFY;
@@ -492,66 +516,32 @@ namespace IO
 				&dwBufferSize,                 // # bytes returned
 				(LPOVERLAPPED)NULL);  // synchronous I/O
 
+			CloseHandle(hDevice);
 
 			if (bResult == FALSE)
 			{
 				DWORD iErrorCode = GetLastError();
 				return FALSE;
 			}
-			else
-			{
-				IDENTIFY_DISK_ATA *PASPORT = NULL;
-				PASPORT = (PIDENTIFY_DISK_ATA)outCommand->bBuffer;
-				LONGLONG SectorCount = PASPORT->TotalNumberLBA48;
-				if (SectorCount != 0)
-					if (_pDevice->GetSectorCount() < SectorCount)
-					{
-						_pDevice->SetSectorCount(SectorCount);
-					}
 
-				BYTE *pBuffer = outCommand->bBuffer;
-				BYTE buffer[528] = { 0 };
-				for (int i = 0; i < 20; ++i)
-					buffer[i] = pBuffer[i + 20];
+			IDENTIFY_DISK_ATA *PASPORT = NULL;
+			PASPORT = (PIDENTIFY_DISK_ATA)outCommand->bBuffer;
 
-				BYTE *pSerial = new BYTE[528]; /// DELETE !!!!!!!!!!!!!!!!!
-				memset(pSerial, 0, 528);
-				for (int i = 0; i < 20; i += 2)
-				{
-					pSerial[i] = buffer[i + 1];
-					pSerial[i + 1] = buffer[i];
+			const uint32_t sn_size = sizeof(PASPORT->SerialNumber);
+			uint8_t serial_buffer[sn_size + 1];
+			ZeroMemory(serial_buffer, sn_size + 1);
 
-				}
-				string sSerial((const char *)pSerial);
-				//remove_if(sSerial.begin(), sSerial.end(),isspace);
-				boost::trim(sSerial);
+			memcpy(serial_buffer, PASPORT->SerialNumber, sn_size);
+			exchange_uint8(serial_buffer, sn_size);
 
-				_pDevice->SetSerialNumber((BYTE *)sSerial.c_str());
-				delete pSerial;
+			std::string sSerial((const char *)serial_buffer);
 
-				// Model Name
-				memset(buffer, 0, 528);
-				size_t ModelSize = sizeof(PASPORT->ModelNumber);
-				memcpy(buffer, PASPORT->ModelNumber, ModelSize);
-				ExchangeBytes(buffer, sizeof(PASPORT->ModelNumber));
-				if (buffer[ModelSize - 2] == 'W' && buffer[ModelSize - 1] == 'P')
-				{
-					buffer[ModelSize - 2] = ' ';
-					buffer[ModelSize - 1] = ' ';
-					_pDevice->SetBusType(WRITE_PROTECTOR);
-					string sModelName((const char *)buffer, ModelSize - 2);
-					boost::trim(sModelName);
-					_pDevice->SetName((BYTE *)sModelName.c_str());
-				}
+			boost::trim(sSerial);
+			serial_number = sSerial;
 
-
-
-			}
-
-			return bResult;
-			CloseHandle(hDevice);*/
-			return FALSE;
+			return TRUE;
 		}
+
 
 
 
@@ -607,7 +597,7 @@ namespace IO
 			while (true)
 			{
 				auto physical_drive = std::make_shared<PhysicalDrive>();
-				if (!attribute_reader.readDriveAttributes(member_index, physical_drive))
+				if (!attribute_reader.readDriveAttribute(member_index, physical_drive))
 					break;
 
 				this->add(physical_drive);
@@ -618,10 +608,10 @@ namespace IO
 
 		void sort()
 		{
-			//std::sort(drive_list_.begin(), drive_list_.end(), [](PhysicalDrivePtr &drive1, PhysicalDrivePtr &drive2)
-			//{
-			//	drive1->getDriveNumber() > drive2->getDriveNumber();
-			//});
+			std::sort(drive_list_.begin(), drive_list_.end(), [](PhysicalDrivePtr drive1, PhysicalDrivePtr drive2)
+			{
+				return drive1->getDriveNumber() > drive2->getDriveNumber();
+			});
 		}
 	};
 

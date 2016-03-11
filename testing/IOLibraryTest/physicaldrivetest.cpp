@@ -77,11 +77,13 @@ BOOST_AUTO_TEST_SUITE_END()
 
 void ShowPhysicalDriveInfo(IO::PhysicalDrivePtr physical_drive)
 {
-	wprintf(L"Drive path = [ %s ].\r\n", physical_drive->getPath().c_str());
-	wprintf(L"Drive name = [ %s ].\r\n", physical_drive->getDriveName().c_str());
-	wprintf(L"Bytes per sector = [ %d ]\r\n", physical_drive->getBytesPerSector());
-	wprintf(L"Number sectors = [ %llu ]\r\n", physical_drive->getNumberSectors());
-	wprintf(L"Drive NUMBER = [ %d ]\r\n", physical_drive->getDriveNumber());
+	wprintf(L"Drive path = [ %s ].\n", physical_drive->getPath().c_str());
+	wprintf(L"Drive name = [ %s ].\n", physical_drive->getDriveName().c_str());
+	wprintf(L"Bytes per sector = [ %d ].\n", physical_drive->getBytesPerSector());
+	wprintf(L"Number sectors = [ %llu ].\n", physical_drive->getNumberSectors());
+	wprintf(L"Drive NUMBER = [ %d ].\n", physical_drive->getDriveNumber());
+	printf("Serial number [%s].\n", physical_drive->getSerialNumber().c_str());
+
 	wprintf(L"\r\n");
 }
 
@@ -100,6 +102,21 @@ BOOST_AUTO_TEST_CASE(TestReadAllDrives)
 
 		++drive_number;
 	}
+
+}
+BOOST_AUTO_TEST_CASE(TestReadSerialFromSmart)
+{
+	//PhysicalDriveList driveList;
+	//driveList.ReadAllDrives();
+
+	//uint32_t drive_number = 0;
+	//while (auto physical_drive = driveList.find_by_number(drive_number))
+	//{
+	//	std::string serial_number;
+	//	DriveAttributesReader attr_reader;
+	//	attr_reader.readSerialFromSmart(physical_drive->getPath(), serial_number);
+	//	++drive_number;
+	//}
 
 }
 
