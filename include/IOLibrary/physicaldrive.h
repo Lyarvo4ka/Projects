@@ -43,6 +43,7 @@ namespace IO
 		uint32_t drive_number_;
 		uint32_t bytes_per_sector_;
 		uint64_t number_sectors_;
+		uint32_t transfer_length_;
 		path_string path_;
 		path_string drive_name_;
 		std::string serial_number_;
@@ -88,6 +89,14 @@ namespace IO
 		uint64_t getNumberSectors() const
 		{
 			return number_sectors_;
+		}
+		void setTransferLength(uint32_t transfer_length)
+		{
+			transfer_length_ = transfer_length;
+		}
+		uint32_t getTransferLength() const
+		{
+			return transfer_length_;
 		}
 		void setBytesPerSector(uint32_t bytes_per_sector)
 		{
@@ -233,6 +242,7 @@ namespace IO
 			if (!readDeviceDescriptor(drive_path, storage_descriptor))
 				return FALSE;
 
+			physical_drive->setTransferLength(storage_descriptor.MaximumTransferLength);
 
 			uint32_t drive_number = 0;
 			if (!readDeviceNumber(drive_path, drive_number))
@@ -268,6 +278,8 @@ namespace IO
 			BOOL bStatus = FALSE;
 
 			uint32_t path_size = getPathStringSize(hDevInfo_, spDeviceInterfaceData_);
+			if (path_size == 0)
+				return FALSE;
 
 			iErrorCode = ::GetLastError();
 
@@ -278,7 +290,7 @@ namespace IO
 
 
 			char * pTmpBuffer = new char[dwInterfaceDetailDataSize];
-			PSP_DEVICE_INTERFACE_DETAIL_DATA pspOUTDevIntDetailData;
+			PSP_DEVICE_INTERFACE_DETAIL_DATA pspOUTDevIntDetailData = nullptr;
 
 			pspOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA ) pTmpBuffer;
 			::ZeroMemory(pspOUTDevIntDetailData, dwInterfaceDetailDataSize);
@@ -550,7 +562,7 @@ namespace IO
 
 
 
-	class PhysicalDriveList
+	class ListDrives
 	{
 	private:
 		std::vector<PhysicalDrivePtr> drive_list_;
@@ -575,6 +587,12 @@ namespace IO
 		void remove_all()
 		{
 			drive_list_.clear();
+		}
+		PhysicalDrivePtr index(uint32_t index_number)
+		{
+			if (index_number < getSize())
+				return drive_list_.at(index_number);
+			return nullptr;
 		}
 		PhysicalDrivePtr find_by_number(uint32_t drive_number)
 		{
@@ -610,7 +628,9 @@ namespace IO
 		{
 			std::sort(drive_list_.begin(), drive_list_.end(), [](PhysicalDrivePtr drive1, PhysicalDrivePtr drive2)
 			{
-				return drive1->getDriveNumber() > drive2->getDriveNumber();
+				// '<' is from min to max
+				// '>' is max to min
+				return drive1->getDriveNumber() < drive2->getDriveNumber();
 			});
 		}
 	};

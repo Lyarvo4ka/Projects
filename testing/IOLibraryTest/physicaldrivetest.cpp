@@ -4,13 +4,27 @@
 
 using namespace IO;
 
+void ShowPhysicalDriveInfo(IO::PhysicalDrivePtr physical_drive)
+{
+	wprintf(L"Drive path = [ %s ].\n", physical_drive->getPath().c_str());
+	wprintf(L"Drive name = [ %s ].\n", physical_drive->getDriveName().c_str());
+	wprintf(L"Bytes per sector = [ %d ].\n", physical_drive->getBytesPerSector());
+	wprintf(L"Number sectors = [ %llu ].\n", physical_drive->getNumberSectors());
+	wprintf(L"Drive NUMBER = [ %d ].\n", physical_drive->getDriveNumber());
+	printf("Serial number [%s].\n", physical_drive->getSerialNumber().c_str());
+
+	wprintf(L"\r\n");
+}
+
 PhysicalDrivePtr create_physical_drive(uint32_t drive_number)
 {
 	auto physical_drive = std::make_shared<PhysicalDrive>();
 	physical_drive->setDriveNumber(drive_number);
 	physical_drive->setDriveName(L"Physical drive " + std::to_wstring(drive_number));
+	physical_drive->setPath(L"drive path " + std::to_wstring(drive_number));
 	physical_drive->setNumberSectors(1000);
 	physical_drive->setBytesPerSector(512);
+	physical_drive->setSerialNumber("serial number " + std::to_string(drive_number));
 	return physical_drive;
 
 }
@@ -23,8 +37,8 @@ struct F_DriveList
 
 		auto physical_drive2 = create_physical_drive(2);
 
-		drivelist.add(physical_drive0);
 		drivelist.add(physical_drive1);
+		drivelist.add(physical_drive0);
 		drivelist.add(physical_drive2);
 	}
 	~F_DriveList()
@@ -32,7 +46,7 @@ struct F_DriveList
 		drivelist.remove_all();
 	}
 
-	PhysicalDriveList drivelist;
+	ListDrives drivelist;
 }; 
 
 BOOST_FIXTURE_TEST_SUITE(TestPhysicalDrive , F_DriveList)
@@ -72,40 +86,33 @@ BOOST_AUTO_TEST_CASE(TestRemoveFromDriveList)
 	drivelist.remove_all();
 	BOOST_CHECK_EQUAL(drivelist.getSize(), 0);
 }
+BOOST_AUTO_TEST_CASE(TestSortDriveList)
+{
+	drivelist.sort();
+	BOOST_CHECK_EQUAL(drivelist.index(0)->getDriveNumber(), 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
-void ShowPhysicalDriveInfo(IO::PhysicalDrivePtr physical_drive)
-{
-	wprintf(L"Drive path = [ %s ].\n", physical_drive->getPath().c_str());
-	wprintf(L"Drive name = [ %s ].\n", physical_drive->getDriveName().c_str());
-	wprintf(L"Bytes per sector = [ %d ].\n", physical_drive->getBytesPerSector());
-	wprintf(L"Number sectors = [ %llu ].\n", physical_drive->getNumberSectors());
-	wprintf(L"Drive NUMBER = [ %d ].\n", physical_drive->getDriveNumber());
-	printf("Serial number [%s].\n", physical_drive->getSerialNumber().c_str());
-
-	wprintf(L"\r\n");
-}
-
-BOOST_AUTO_TEST_CASE(TestReadAllDrives)
-{
-	PhysicalDriveList driveList;
-	driveList.ReadAllDrives();
-	
-	uint32_t drive_number = 0;
-	while (true)
-	{
-		auto physical_drive = driveList.find_by_number(drive_number);
-		if (!physical_drive)
-			break;
-		ShowPhysicalDriveInfo(physical_drive);
-
-		++drive_number;
-	}
-
-}
-BOOST_AUTO_TEST_CASE(TestReadSerialFromSmart)
-{
+//BOOST_AUTO_TEST_CASE(TestReadAllDrives)
+//{
+//	PhysicalDriveList driveList;
+//	driveList.ReadAllDrives();
+//	
+//	uint32_t drive_number = 0;
+//	while (true)
+//	{
+//		auto physical_drive = driveList.find_by_number(drive_number);
+//		if (!physical_drive)
+//			break;
+//		ShowPhysicalDriveInfo(physical_drive);
+//
+//		++drive_number;
+//	}
+//
+//}
+//BOOST_AUTO_TEST_CASE(TestReadSerialFromSmart)
+//{
 	//PhysicalDriveList driveList;
 	//driveList.ReadAllDrives();
 
@@ -118,7 +125,7 @@ BOOST_AUTO_TEST_CASE(TestReadSerialFromSmart)
 	//	++drive_number;
 	//}
 
-}
+//}
 
 //BOOST_AUTO_TEST_CASE(TestGetDeviceName)
 //{

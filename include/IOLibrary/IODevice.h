@@ -156,13 +156,94 @@ namespace IO
 		: public BlockDevice
 	{
 	private:
+		HANDLE hDrive_;
+		bool bOpen_;
+		uint64_t position_;
 		PhysicalDrivePtr physical_drive_;
 	public:
 		DiskDevice(PhysicalDrivePtr physical_drive)
-			:physical_drive_(physical_drive)
-		{	
+			:hDrive_(INVALID_HANDLE_VALUE)
+			, bOpen_(false)
+			, position_(0)
+			, physical_drive_(physical_drive)
+		{
 
 		}
+
+		bool Open(OpenMode open_mode) override
+		{
+			if (physical_drive_)
+			{
+				hDrive_ = OpenPhysicalDrive(physical_drive_->getPath());
+				if (hDrive_ != INVALID_HANDLE_VALUE)
+				{
+					bOpen_ = true;
+					return true;
+				}
+
+			}
+			bOpen_ = false;
+			return bOpen_;
+		}
+		void Close() override
+		{
+			if (hDrive_ != INVALID_HANDLE_VALUE)
+				CloseHandle(hDrive_);
+			bOpen_ = false;
+
+		}
+		bool isOpen() override
+		{
+			return bOpen_;
+		}
+		void setPosition(uint64_t offset) override
+		{
+
+		}
+		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
+		{
+			return 0;
+		}
+		uint32_t WriteData(uint8_t * data, uint32_t read_size) override
+		{
+			return 0;
+		}
+
+		uint64_t Size() const override
+		{
+			return 0;
+		}
+
+		uint32_t ReadBlock(int8_t * data, uint32_t read_size) override
+		{
+			if (!isOpen())
+				return 0;
+			if (data == nullptr)
+				return 0;
+			if (read_size == 0 || (read_size % this->physical_drive_->getBytesPerSector() != 0 ))
+				return 0;
+
+			DWORD bytes_read = 0;
+
+			uint32_t data_pos = 0;
+		
+			while (data_pos < read_size)
+			{
+
+				if (!::ReadFile(hDrive_, data, read_size, &bytes_read, NULL))
+					return 0;
+			}
+			
+			return bytes_read;
+		}
+		uint32_t WriteBlock(uint8_t * data, uint32_t read_size) override
+		{
+			return 0;
+		}
+
+		
+
+
 
 	};
 
