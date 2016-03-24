@@ -5,6 +5,16 @@
 namespace IO
 {
 
+	inline uint32_t getBytesForBlock(uint32_t data_pos, uint32_t data_size , uint32_t block_size)
+	{
+		uint32_t bytes = 0;
+		if (data_pos + block_size <= data_size)
+			bytes = block_size;
+		else
+			bytes = data_size - data_pos;
+		return bytes;
+	}
+
 	class IODevice
 	{
 	public:
@@ -152,6 +162,7 @@ namespace IO
 
 	};
 
+
 	class DiskDevice
 		: public BlockDevice
 	{
@@ -198,7 +209,12 @@ namespace IO
 		}
 		void setPosition(uint64_t offset) override
 		{
-
+			if (offset != position_)
+			{
+				position_ = offset;
+				LARGE_INTEGER li{ position_ };
+				::SetFilePointerEx(hDrive_, li, nullptr, FILE_BEGIN);
+			}
 		}
 		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
 		{
@@ -226,14 +242,23 @@ namespace IO
 			DWORD bytes_read = 0;
 
 			uint32_t data_pos = 0;
+			uint32_t bytes_to_read = 0;
+			auto transfer_size = this->physical_drive_->getTransferLength();
 		
 			while (data_pos < read_size)
 			{
-
-				if (!::ReadFile(hDrive_, data, read_size, &bytes_read, NULL))
+				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
+				setPosition(position_);
+				if (!::ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
 					return 0;
+				if (bytes_read == 0)
+					return 0;
+
+				data_pos += bytes_read;
+				position_ += data_pos;
 			}
-			
+		
+			setPosition(position_);
 			return bytes_read;
 		}
 		uint32_t WriteBlock(uint8_t * data, uint32_t read_size) override

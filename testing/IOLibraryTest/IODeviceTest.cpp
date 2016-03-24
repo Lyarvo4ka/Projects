@@ -8,8 +8,8 @@ struct F_DiskDevice
 {
 	F_DiskDevice()
 	{
-		ListDrives drive_list;
-		drive_list.ReadAllDrives();
+		ListDrives drive_list = ReadPhysicalDrives();
+
 		if (auto disk0 = drive_list.find_by_number(0))
 			disk_device0 = new DiskDevice(disk0);
 		else
@@ -44,6 +44,14 @@ BOOST_AUTO_TEST_CASE(TestOpenDiskDevice)
 
 
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_CASE(TestgetBytesForBlock)
+{
+	BOOST_CHECK_EQUAL(getBytesForBlock(0, 0, 0), 0);
+	BOOST_CHECK_EQUAL(getBytesForBlock(1023, 1024, 256), 1);
+	BOOST_CHECK_EQUAL(getBytesForBlock(0, 512, 1024), 512);
+
+}
 
 //BOOST_AUTO_TEST_CASE(test_name1)
 //{

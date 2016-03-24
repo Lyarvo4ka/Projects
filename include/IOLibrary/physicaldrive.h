@@ -608,232 +608,36 @@ namespace IO
 			return drive_list_.size();
 		}
 
-		void ReadAllDrives()
-		{
-			DriveAttributesReader attribute_reader;
-			uint32_t member_index = 0;
-			while (true)
-			{
-				auto physical_drive = std::make_shared<PhysicalDrive>();
-				if (!attribute_reader.readDriveAttribute(member_index, physical_drive))
-					break;
-
-				this->add(physical_drive);
-				++member_index;
-			}
-			sort();
-		}
-
 		void sort()
 		{
 			std::sort(drive_list_.begin(), drive_list_.end(), [](PhysicalDrivePtr drive1, PhysicalDrivePtr drive2)
 			{
-				// '<' is from min to max
-				// '>' is max to min
+				// '<' is increasing order
+				// '>' is descending order
 				return drive1->getDriveNumber() < drive2->getDriveNumber();
 			});
 		}
 	};
 
-/*
-	class CPhysicalDevice
+	inline ListDrives ReadPhysicalDrives()
 	{
-	HDEVINFO m_hDevInfo;
-	SP_DEVICE_INTERFACE_DATA m_spDeviceInterfaceData;
-	SP_DEVINFO_DATA m_spDevInfoData;
-	public:
-		CPhysicalDevice()
-			:m_hDevInfo(INVALID_HANDLE_VALUE)
-			, m_spDeviceInterfaceData{ 0 }
-			, m_spDevInfoData{ 0 }
+		ListDrives list_drives;
+		DriveAttributesReader attribute_reader;
+		uint32_t member_index = 0;
+		while (true)
 		{
+			auto physical_drive = std::make_shared<PhysicalDrive>();
+			if (!attribute_reader.readDriveAttribute(member_index, physical_drive))
+				break;
 
+			list_drives.add(physical_drive);
+			++member_index;
 		}
-		~CPhysicalDevice()
-		{
-			CloseDevInfo(m_hDevInfo);
-		}
+		list_drives.sort();
+		return list_drives;
+	}
 
-	//	bool readDriveInfo(PhysicalDrive * physical_drive)
-
-		DWORD GetDevicesCount()
-		{
-			HDEVINFO hDevInfo = INVALID_HANDLE_VALUE;
-			if (!this->GetHDEVINFO(hDevInfo))
-				return 0;
-			DWORD dwCount = 0;
-			DWORD iErrorCode = 0;
-			BOOL bNoDevices = FALSE;
-			while (true)
-			{
-				bNoDevices = this->GetNextDevice(dwCount);
-				if (!bNoDevices)
-					break;
-				++dwCount;
-			}
-
-			if (hDevInfo != INVALID_HANDLE_VALUE)
-				SetupDiDestroyDeviceInfoList(hDevInfo);
-
-			return dwCount;
-		}
-		BOOL GetDevices(CDiviceList & _deviceList)
-		{
-			DWORD dwDeviceNumber = 0;
-			DWORD iErrorCode = 0;
-			BOOL bResult = FALSE;
-			BOOL bNoDevices = FALSE;
-			CDiskFactory  pDeviceFactory;
-			IDevice *pDevice = NULL;
-
-			while (true)
-				//for (int i = 0; i < 2 ; ++i)
-			{
-				pDevice = pDeviceFactory.CreateDevice();
-				bResult = GetDevice(pDevice, dwDeviceNumber);
-				if (!bResult)
-				{
-					GetSystemDevice(_deviceList);
-					//DevicePtr ptrDev = _deviceList.FindDevice(0);
-					//ptrDev->SetSystemDisk(true);
-					return FALSE;
-				}
-				_deviceList.AddDevice(pDevice);
-				++dwDeviceNumber;
-			}
-
-			return bResult;
-		}
-		BOOL GetDevice(IDevice *_pDevice, DWORD _iMemberIndex)
-		{
-			if (_pDevice == NULL)
-				return FALSE;
-
-			if (!this->GetHDEVINFO(m_hDevInfo))
-				return FALSE;
-
-			BOOL bResult = this->GetNextDevice(_iMemberIndex);
-
-			if (!bResult)
-			{
-				CloseDevInfo(m_hDevInfo);
-				return FALSE;
-			}
-
-
-			if (!(bResult = this->GetDevicePath(_pDevice)))
-				return FALSE;
-
-			if (!(bResult = this->GetDeviceName(_pDevice)))
-				return FALSE;
-
-			if (!(bResult = this->GetDiskGeometry(_pDevice)))
-				return FALSE;
-
-			if (!(bResult = this->GetMaxTransferSize(_pDevice)))
-				return FALSE;
-
-			if (!(bResult = this->GetSerialNumber(_pDevice)))
-				return FALSE;
-
-			CloseDevInfo(m_hDevInfo);
-			return TRUE;
-		}
-
-		BOOL GetSerialFromSmart(IDevice *_pDevice)
-		{
-			HANDLE hDevice = INVALID_HANDLE_VALUE;
-			if (_pDevice->GetPath().size() == 0)
-				return FALSE;
-			hDevice = CreateFile(_pDevice->GetPath().c_str(),
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				OPEN_EXISTING,
-				0,
-				NULL);
-
-			if (hDevice == INVALID_HANDLE_VALUE)
-			{
-				DWORD dwError = GetLastError();
-				return FALSE;
-			}
-
-			BYTE buff[1024] = { 0 };
-
-			PSENDCMDINPARAMS sendCommand = (PSENDCMDINPARAMS)&buff;
-			sendCommand->irDriveRegs.bCommandReg = IDE_ATA_IDENTIFY;
-
-			PSENDCMDOUTPARAMS outCommand = (PSENDCMDOUTPARAMS)&buff;
-
-			BOOL bResult = FALSE;
-			DWORD dwBufferSize = 0;
-			bResult = DeviceIoControl(hDevice,  // device to be queried
-				SMART_RCV_DRIVE_DATA,  // operation to perform
-				sendCommand, (sizeof(SENDCMDINPARAMS)), // no input buffer
-				outCommand, sizeof(buff),     // output buffer
-				&dwBufferSize,                 // # bytes returned
-				(LPOVERLAPPED)NULL);  // synchronous I/O
-
-
-			if (bResult == FALSE)
-			{
-				DWORD iErrorCode = GetLastError();
-				return FALSE;
-			}
-			else
-			{
-				IDENTIFY_DISK_ATA *PASPORT = NULL;
-				PASPORT = (PIDENTIFY_DISK_ATA)outCommand->bBuffer;
-				LONGLONG SectorCount = PASPORT->TotalNumberLBA48;
-				if (SectorCount != 0)
-					if (_pDevice->GetSectorCount() < SectorCount)
-					{
-						_pDevice->SetSectorCount(SectorCount);
-					}
-
-				BYTE *pBuffer = outCommand->bBuffer;
-				BYTE buffer[528] = { 0 };
-				for (int i = 0; i < 20; ++i)
-					buffer[i] = pBuffer[i + 20];
-
-				BYTE *pSerial = new BYTE[528]; /// DELETE !!!!!!!!!!!!!!!!!
-				memset(pSerial, 0, 528);
-				for (int i = 0; i < 20; i += 2)
-				{
-					pSerial[i] = buffer[i + 1];
-					pSerial[i + 1] = buffer[i];
-
-				}
-				string sSerial((const char *)pSerial);
-				//remove_if(sSerial.begin(), sSerial.end(),isspace);
-				boost::trim(sSerial);
-
-				_pDevice->SetSerialNumber((BYTE *)sSerial.c_str());
-				delete pSerial;
-
-				// Model Name
-				memset(buffer, 0, 528);
-				size_t ModelSize = sizeof(PASPORT->ModelNumber);
-				memcpy(buffer, PASPORT->ModelNumber, ModelSize);
-				ExchangeBytes(buffer, sizeof(PASPORT->ModelNumber));
-				if (buffer[ModelSize - 2] == 'W' && buffer[ModelSize - 1] == 'P')
-				{
-					buffer[ModelSize - 2] = ' ';
-					buffer[ModelSize - 1] = ' ';
-					_pDevice->SetBusType(WRITE_PROTECTOR);
-					string sModelName((const char *)buffer, ModelSize - 2);
-					boost::trim(sModelName);
-					_pDevice->SetName((BYTE *)sModelName.c_str());
-				}
-
-
-
-			}
-
-			return bResult;
-			CloseHandle(hDevice);
-		}
+/*
 		BOOL GetUsbSerial(IDevice * pDevice)
 		{
 			//HANDLE hDevice = INVALID_HANDLE_VALUE;
@@ -880,85 +684,6 @@ namespace IO
 			//k = 1;
 
 
-		}
-		BOOL CloseDevInfo(HDEVINFO &_hDevInfo)
-		{
-			if (_hDevInfo != INVALID_HANDLE_VALUE)
-			{
-				SetupDiDestroyDeviceInfoList(_hDevInfo);
-				_hDevInfo = INVALID_HANDLE_VALUE;
-			}
-			return TRUE;
-		}
-	private:
-
-
-		BOOL GetSerialNumber(IDevice *_pDevice)
-		{
-			HANDLE hDevice = INVALID_HANDLE_VALUE;
-			if (_pDevice->GetPath().empty())
-				return FALSE;
-			hDevice = CreateFile(_pDevice->GetPath().c_str(),
-				GENERIC_READ | GENERIC_WRITE,
-				FILE_SHARE_READ | FILE_SHARE_WRITE,
-				NULL,
-				OPEN_EXISTING,
-				0,
-				NULL);
-
-			if (hDevice == INVALID_HANDLE_VALUE)
-			{
-				DWORD dwError = GetLastError();
-				return FALSE;
-			}
-
-			BYTE outBuff[512] = { 0 };
-			STORAGE_DEVICE_DESCRIPTOR *pDeviceDesc = (STORAGE_DEVICE_DESCRIPTOR*)outBuff;  // -- Need DELETE
-
-			ZeroMemory(outBuff, sizeof(outBuff));
-
-			STORAGE_PROPERTY_QUERY	pQueryProperty;
-			memset(&pQueryProperty, 0, sizeof(pQueryProperty));
-			pQueryProperty.PropertyId = StorageDeviceProperty;
-			pQueryProperty.QueryType = PropertyStandardQuery;
-
-			BOOL bResult = FALSE;
-			DWORD dwOutSize = 0;
-
-			bResult = DeviceIoControl(hDevice,  // device to be queried
-				IOCTL_STORAGE_QUERY_PROPERTY,  // operation to perform
-				&pQueryProperty, sizeof(STORAGE_PROPERTY_QUERY), // no input buffer
-				outBuff, sizeof(outBuff),     // output buffer
-				&dwOutSize,                 // # bytes returned
-				(LPOVERLAPPED)NULL);  // synchronous I/O
-
-			if (bResult == FALSE)
-			{
-				DWORD iErrorCode = GetLastError();
-				//TRACE(_T("Error (Get Serial Number) [Get SERIAL] %d"),iErrorCode);
-
-				return GetSerialFromSmart(_pDevice);
-			}
-			else
-				if (pDeviceDesc->SerialNumberOffset)
-				{
-					std::string serial_number = (LPSTR)outBuff + pDeviceDesc->SerialNumberOffset;
-					if (serial_number.size() > 0)
-					{
-						boost::trim(serial_number);
-						_pDevice->SetSerialNumber((unsigned char*)serial_number.c_str());
-						return TRUE;
-
-					}
-					else
-					{
-						return GetSerialFromSmart(_pDevice);
-					}
-
-				}
-
-
-			return FALSE;
 		}
 		BOOL GetSystemDevice(CDiviceList & _deviceList)
 		{
@@ -1015,18 +740,5 @@ namespace IO
 
 			return FALSE;
 		}
-		void ExchangeBytes(BYTE * _Data, size_t _Size)
-		{
-			BYTE  temp = 0;
-			for (size_t i = 0; i < _Size; i += 2)
-			{
-				temp = _Data[i];
-				_Data[i] = _Data[i + 1];
-				_Data[i + 1] = temp;
-			}
-		}
-
-
-	};
 	*/
 }

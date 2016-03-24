@@ -37,9 +37,9 @@ struct F_DriveList
 
 		auto physical_drive2 = create_physical_drive(2);
 
-		drivelist.add(physical_drive1);
-		drivelist.add(physical_drive0);
 		drivelist.add(physical_drive2);
+		drivelist.add(physical_drive0);
+		drivelist.add(physical_drive1);
 	}
 	~F_DriveList()
 	{
