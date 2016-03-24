@@ -147,12 +147,6 @@ namespace IO
 			closeHDevInfo(hDevInfo_);
 		}
 
-		//BOOL Initialize(uint32_t member_index)
-		//{
-		//	InitHDevInfo(this->hDevInfo_);
-		//	SetupDeviceInterfaceData(this->hDevInfo_, this->spDeviceInterfaceData_, member_index);
-		//}
-
 		BOOL initHDevInfo(HDEVINFO & hDevInfo)
 		{
 			if (hDevInfo != INVALID_HANDLE_VALUE)
