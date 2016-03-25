@@ -157,7 +157,7 @@ namespace IO
 		: public IODevice
 	{
 	public:
-		virtual uint32_t ReadBlock(int8_t * data, uint32_t read_size) = 0;
+		virtual uint32_t ReadBlock(uint8_t * data, uint32_t read_size) = 0;
 		virtual uint32_t WriteBlock(uint8_t * data, uint32_t read_size) = 0;
 
 	};
@@ -218,25 +218,11 @@ namespace IO
 		}
 		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
 		{
-			return 0;
-		}
-		uint32_t WriteData(uint8_t * data, uint32_t read_size) override
-		{
-			return 0;
-		}
-
-		uint64_t Size() const override
-		{
-			return 0;
-		}
-
-		uint32_t ReadBlock(int8_t * data, uint32_t read_size) override
-		{
 			if (!isOpen())
 				return 0;
 			if (data == nullptr)
 				return 0;
-			if (read_size == 0 || (read_size % this->physical_drive_->getBytesPerSector() != 0 ))
+			if (read_size == 0 || (read_size % this->physical_drive_->getBytesPerSector() != 0))
 				return 0;
 
 			DWORD bytes_read = 0;
@@ -244,7 +230,7 @@ namespace IO
 			uint32_t data_pos = 0;
 			uint32_t bytes_to_read = 0;
 			auto transfer_size = this->physical_drive_->getTransferLength();
-		
+
 			while (data_pos < read_size)
 			{
 				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
@@ -257,9 +243,34 @@ namespace IO
 				data_pos += bytes_read;
 				position_ += data_pos;
 			}
-		
+
 			setPosition(position_);
 			return bytes_read;
+		}
+		uint32_t WriteData(uint8_t * data, uint32_t read_size) override
+		{
+			return 0;
+		}
+
+		uint64_t Size() const override
+		{
+			return 0;
+		}
+
+		uint32_t ReadBlock(uint8_t * data, uint32_t read_size) override
+		{
+			if (!isOpen())
+				return 0;
+			if (data == nullptr)
+				return 0;
+			if (read_size == 0)
+				return 0;
+
+			DWORD bytes_read = 0;
+			if (!this->ReadFile(hDrive_, data, read_size, &bytes_read, nullptr))
+				return 0;
+			return bytes_read;
+
 		}
 		uint32_t WriteBlock(uint8_t * data, uint32_t read_size) override
 		{
@@ -268,6 +279,20 @@ namespace IO
 
 		
 
+		private:
+			virtual BOOL ReadFile(
+				HANDLE       hFile,
+				LPVOID       lpBuffer,
+				DWORD        nNumberOfBytesToRead,
+				LPDWORD      lpNumberOfBytesRead,
+				LPOVERLAPPED lpOverlapped)
+			{
+				return ::ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
+			}
+			virtual HANDLE OpenPhysicalDrive(const path_string & drive_path)
+			{
+				return IO::OpenPhysicalDrive(drive_path);
+			}
 
 
 	};

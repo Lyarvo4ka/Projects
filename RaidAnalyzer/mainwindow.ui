@@ -104,7 +104,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionJpg_analyze">
    <property name="icon">
-    <iconset resource="mainwindow.qrc">
+    <iconset>
      <normaloff>:/MainWindow/icons/jpg_analyze2.png</normaloff>:/MainWindow/icons/jpg_analyze2.png</iconset>
    </property>
    <property name="text">

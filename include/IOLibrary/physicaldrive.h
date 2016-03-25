@@ -126,16 +126,7 @@ namespace IO
 	private:
 		HDEVINFO hDevInfo_;
 		SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData_;
-	//protected:
-	//	virtual HDEVINFO SetupDiGetClassDevs(
-	//		const GUID   *ClassGuid,
-	//		PCTSTR Enumerator,
-	//		HWND   hwndParent,
-	//		DWORD  Flags
-	//		) 
-	//	{
-	//		return ::SetupDiGetClassDevs(ClassGuid, Enumerator, hwndParent, Flags);
-	//	}
+
 	public:
 		DriveAttributesReader()
 		{

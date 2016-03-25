@@ -17,7 +17,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterTool", "DiskMaste
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{F5AEE42D-9C64-40AF-95C9-C830A93F32C4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickTime_raw", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MXF_raw", "ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IOLibraryTest", "testing\IOLibraryTest\IOLibraryTest.vcxproj", "{DFA3196A-BBD0-4323-8F80-8E1A7CE9CF33}"
 EndProject

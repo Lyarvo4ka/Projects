@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "IOLibrary/IODevice.h"
+#include "MockDevice.h"
 
 using namespace IO;
 
@@ -53,6 +54,19 @@ BOOST_AUTO_TEST_CASE(TestgetBytesForBlock)
 
 }
 
+BOOST_FIXTURE_TEST_SUITE(TestDiskDeviceMock, F_MockDiskDevice)
+BOOST_AUTO_TEST_CASE(TestOpen)
+{
+	BOOST_CHECK_EQUAL(mock_diskdevice_->Open(OpenMode::OpenRead), true);
+
+	MockDiskDevice null_devie(nullptr);
+	BOOST_CHECK_EQUAL(null_devie.Open(OpenMode::OpenRead), false);
+}
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockNoOpened)
+{
+	BOOST_CHECK_EQUAL(mock_diskdevice_->ReadBlock(nullptr, 0), 0);
+}
+BOOST_AUTO_TEST_SUITE_END()
 //BOOST_AUTO_TEST_CASE(test_name1)
 //{
 //	IO::File ioFile(L"d:\\test_folder\\1.docx");

@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="MainWindow">
-    <file>icons/jpg_analyze.png</file>
-    <file>icons/jpg_analyze2.png</file>
+    <file>icons/RaidAnalyzer.png</file>
   </qresource>
 </RCC>
