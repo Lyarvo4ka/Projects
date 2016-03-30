@@ -5,6 +5,8 @@
 namespace IO
 {
 
+
+
 	inline uint32_t getBytesForBlock(uint32_t data_pos, uint32_t data_size , uint32_t block_size)
 	{
 		uint32_t bytes = 0;
@@ -178,14 +180,21 @@ namespace IO
 			, position_(0)
 			, physical_drive_(physical_drive)
 		{
-
+			system_oi_ = std::make_unique<SystemIO>();
 		}
-
+		DiskDevice(PhysicalDrivePtr physical_drive , std::unique_ptr<SystemIO> system_io)
+			:hDrive_(INVALID_HANDLE_VALUE)
+			, bOpen_(false)
+			, position_(0)
+			, physical_drive_(physical_drive)
+			, system_oi_(std::move(system_io))
+		{
+		}
 		bool Open(OpenMode open_mode) override
 		{
 			if (physical_drive_)
 			{
-				hDrive_ = OpenPhysicalDrive(physical_drive_->getPath());
+				hDrive_ = system_oi_->OpenPhysicalDrive(physical_drive_->getPath());
 				if (hDrive_ != INVALID_HANDLE_VALUE)
 				{
 					bOpen_ = true;
@@ -267,7 +276,7 @@ namespace IO
 				return 0;
 
 			DWORD bytes_read = 0;
-			if (!this->ReadFile(hDrive_, data, read_size, &bytes_read, nullptr))
+			if (!system_oi_->ReadFile(hDrive_, data, read_size, &bytes_read, nullptr))
 				return 0;
 			return bytes_read;
 
@@ -280,19 +289,8 @@ namespace IO
 		
 
 		private:
-			virtual BOOL ReadFile(
-				HANDLE       hFile,
-				LPVOID       lpBuffer,
-				DWORD        nNumberOfBytesToRead,
-				LPDWORD      lpNumberOfBytesRead,
-				LPOVERLAPPED lpOverlapped)
-			{
-				return ::ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
-			}
-			virtual HANDLE OpenPhysicalDrive(const path_string & drive_path)
-			{
-				return IO::OpenPhysicalDrive(drive_path);
-			}
+			std::unique_ptr<SystemIO> system_oi_;
+
 
 
 	};

@@ -57,20 +57,16 @@ BOOST_AUTO_TEST_CASE(TestgetBytesForBlock)
 BOOST_FIXTURE_TEST_SUITE(TestDiskDeviceMock, F_MockDiskDevice)
 BOOST_AUTO_TEST_CASE(TestOpen)
 {
-	BOOST_CHECK_EQUAL(mock_diskdevice_->Open(OpenMode::OpenRead), true);
+	BOOST_CHECK_EQUAL(disk_device_->Open(OpenMode::OpenRead), true);
+}
+BOOST_AUTO_TEST_CASE(TestOpenWithNullDevice)
+{
+	DiskDevice null_device(nullptr);
+	BOOST_CHECK_EQUAL(null_device.Open(OpenMode::OpenRead), false);
 
-	MockDiskDevice null_devie(nullptr);
-	BOOST_CHECK_EQUAL(null_devie.Open(OpenMode::OpenRead), false);
 }
 BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockNoOpened)
 {
-	BOOST_CHECK_EQUAL(mock_diskdevice_->ReadBlock(nullptr, 0), 0);
+	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(nullptr, 0), 0);
 }
 BOOST_AUTO_TEST_SUITE_END()
-//BOOST_AUTO_TEST_CASE(test_name1)
-//{
-//	IO::File ioFile(L"d:\\test_folder\\1.docx");
-//
-//}
-//
-//BOOST_AUTO_TEST_SUITE_END()

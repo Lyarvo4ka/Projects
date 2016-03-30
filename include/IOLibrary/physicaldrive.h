@@ -12,18 +12,44 @@
 
 namespace IO
 {
-	inline HANDLE OpenPhysicalDrive(const path_string & drive_path)
+	class SystemIO
 	{
-		HANDLE hDevice = CreateFile(drive_path.c_str(),
-									GENERIC_READ | GENERIC_WRITE,
-									FILE_SHARE_READ | FILE_SHARE_WRITE,
-									NULL,
-									OPEN_EXISTING,
-									0,
-									NULL);
+	public:
+		virtual HANDLE  CreateFile(
+			LPCTSTR               lpFileName,
+			DWORD                 dwDesiredAccess,
+			DWORD                 dwShareMode,
+			LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+			DWORD                 dwCreationDisposition,
+			DWORD                 dwFlagsAndAttributes,
+			HANDLE                hTemplateFile
+			)
+		{
+			return ::CreateFile(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+		}
+		virtual BOOL ReadFile(
+			HANDLE       hFile,
+			LPVOID       lpBuffer,
+			DWORD        nNumberOfBytesToRead,
+			LPDWORD      lpNumberOfBytesRead,
+			LPOVERLAPPED lpOverlapped)
+		{
+			return ::ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
+		}
+		virtual HANDLE OpenPhysicalDrive(const path_string & drive_path)
+		{
+			HANDLE hDevice = this->CreateFile(drive_path.c_str(),
+				GENERIC_READ | GENERIC_WRITE,
+				FILE_SHARE_READ | FILE_SHARE_WRITE,
+				NULL,
+				OPEN_EXISTING,
+				0,
+				NULL);
 
-		return hDevice;
-	}
+			return hDevice;
+		}
+
+	};
 
 	inline void exchange_uint8(uint8_t * data, uint32_t size)
 	{

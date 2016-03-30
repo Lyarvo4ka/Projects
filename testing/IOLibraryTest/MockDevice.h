@@ -4,14 +4,12 @@
 
 using namespace IO;
 
-class MockDiskDevice :
-	public DiskDevice
+
+const uint32_t fake_hadnle = 0x46414B45;
+class MockSystemIO :
+	public SystemIO
 {
 public:
-	MockDiskDevice(PhysicalDrivePtr physical_drive)
-		: DiskDevice(physical_drive)
-	{}
-private:
 	BOOL ReadFile(
 		HANDLE       hFile,
 		LPVOID       lpBuffer,
@@ -24,24 +22,25 @@ private:
 	}
 	HANDLE OpenPhysicalDrive(const path_string & drive_path) override
 	{
-		return (HANDLE)nullptr;
+		return (HANDLE)fake_hadnle;
 	}
 };
+
 
 struct  F_MockDiskDevice
 {
 	F_MockDiskDevice()
 	{
-		mock_diskdevice_ = new MockDiskDevice(create_physical_drive(0));
+		disk_device_ = new DiskDevice(create_physical_drive(0) , std::make_unique<MockSystemIO>());
 
 	
 	}
 	~F_MockDiskDevice()
 	{
-		delete mock_diskdevice_;
+		delete disk_device_;
 	}
 
-	MockDiskDevice *mock_diskdevice_;
+	DiskDevice *disk_device_;
 };
 
 inline void ShowPhysicalDriveInfo(IO::PhysicalDrivePtr physical_drive)
