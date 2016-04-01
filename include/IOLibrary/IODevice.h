@@ -16,6 +16,13 @@ namespace IO
 			bytes = data_size - data_pos;
 		return bytes;
 	}
+	inline bool isMultiple(uint64_t number, uint32_t multiple_by)
+	{
+		if (multiple_by == 0)
+			return false;
+		return (number % multiple_by == 0);
+	}
+
 
 	class IODevice
 	{
@@ -102,12 +109,11 @@ namespace IO
 			return bOpen_;
 		}
 
-		void setPosition(uint64_t offset) override 
+		void setPosition(uint64_t offset) override
 		{
 			position_ = offset;
 			LARGE_INTEGER liPos = { position_ };
 			::SetFilePointerEx(hFile_, liPos, NULL, FILE_BEGIN);
-
 		};
 
 		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
@@ -225,13 +231,19 @@ namespace IO
 				::SetFilePointerEx(hDrive_, li, nullptr, FILE_BEGIN);
 			}
 		}
+		uint64_t getPosition() const 
+		{
+			return position_;
+		}
 		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
 		{
 			if (!isOpen())
 				return 0;
 			if (data == nullptr)
 				return 0;
-			if (read_size == 0 || (read_size % this->physical_drive_->getBytesPerSector() != 0))
+			if (read_size == 0)
+				return 0;
+			if (!isMultiple(position_ , physical_drive_->getBytesPerSector()))
 				return 0;
 
 			DWORD bytes_read = 0;
@@ -244,15 +256,15 @@ namespace IO
 			{
 				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
 				setPosition(position_);
-				if (!::ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
+				if (!system_oi_->ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
 					return 0;
 				if (bytes_read == 0)
 					return 0;
 
 				data_pos += bytes_read;
-				position_ += data_pos;
+				position_ += bytes_read;
 			}
-
+			bytes_read = data_pos;
 			setPosition(position_);
 			return bytes_read;
 		}
@@ -274,10 +286,17 @@ namespace IO
 				return 0;
 			if (read_size == 0)
 				return 0;
+			if (!isMultiple(position_, physical_drive_->getBytesPerSector()))
+				return 0;
+			if (!isMultiple(read_size , physical_drive_->getBytesPerSector()))
+				return 0;
+				
 
 			DWORD bytes_read = 0;
 			if (!system_oi_->ReadFile(hDrive_, data, read_size, &bytes_read, nullptr))
 				return 0;
+
+			position_ += bytes_read;
 			return bytes_read;
 
 		}

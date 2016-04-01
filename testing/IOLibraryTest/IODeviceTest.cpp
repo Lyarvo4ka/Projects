@@ -28,6 +28,15 @@ struct F_DiskDevice
 	DiskDevice * null_device;
 };
 
+BOOST_AUTO_TEST_CASE(Test_isMultiple)
+{
+	BOOST_CHECK_EQUAL(isMultiple(1024, 0), false);
+	BOOST_CHECK_EQUAL(isMultiple(1024, 512), true);
+	BOOST_CHECK_EQUAL(isMultiple(1000, 512), false);
+	BOOST_CHECK_EQUAL(isMultiple(10, 512), false);
+}
+
+
 BOOST_FIXTURE_TEST_SUITE(TestDiskDevice , F_DiskDevice)
 
 BOOST_AUTO_TEST_CASE(TestOpenDiskDevice)
@@ -55,18 +64,67 @@ BOOST_AUTO_TEST_CASE(TestgetBytesForBlock)
 }
 
 BOOST_FIXTURE_TEST_SUITE(TestDiskDeviceMock, F_MockDiskDevice)
+
 BOOST_AUTO_TEST_CASE(TestOpen)
 {
 	BOOST_CHECK_EQUAL(disk_device_->Open(OpenMode::OpenRead), true);
 }
+
 BOOST_AUTO_TEST_CASE(TestOpenWithNullDevice)
 {
 	DiskDevice null_device(nullptr);
 	BOOST_CHECK_EQUAL(null_device.Open(OpenMode::OpenRead), false);
 
 }
+
 BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockNoOpened)
 {
-	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(nullptr, 0), 0);
+	uint8_t buff;
+	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(&buff, sizeof(uint8_t)), 0);
 }
+
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockWithNullData)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(nullptr, 1), 0);
+}
+
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockWithNullSize)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+	uint8_t buff;
+	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(&buff, 0), 0);
+}
+
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockNotMuliplyBPS)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+	const uint32_t buff_size = 10;
+	uint8_t buff[buff_size];
+	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(buff, buff_size), 0);
+}
+
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockFine)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+	const uint32_t buff_size = 1024;
+	uint8_t buff[buff_size];
+	uint32_t expected = buff_size;
+	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(buff, buff_size), expected);
+}
+
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadDataFine)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+	const uint32_t buff_size = 51200;
+	uint8_t buff[buff_size];
+	uint32_t expected = buff_size;
+	disk_device_->setPosition(0);
+	//disk_device_->ReadData(buff, buff_size);
+
+	BOOST_CHECK_EQUAL(disk_device_->ReadData(buff, buff_size), expected);
+	BOOST_CHECK_EQUAL(disk_device_->getPosition(), buff_size);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -6,10 +6,10 @@ struct F_DriveList
 {
 	F_DriveList()
 	{
-		auto physical_drive0 = create_physical_drive(0);
-		auto physical_drive1 = create_physical_drive(1);
+		auto physical_drive0 = create_fake_physical_drive(0);
+		auto physical_drive1 = create_fake_physical_drive(1);
 
-		auto physical_drive2 = create_physical_drive(2);
+		auto physical_drive2 = create_fake_physical_drive(2);
 
 		drivelist.add(physical_drive2);
 		drivelist.add(physical_drive0);
@@ -27,13 +27,13 @@ BOOST_FIXTURE_TEST_SUITE(TestPhysicalDrive , F_DriveList)
 
 BOOST_AUTO_TEST_CASE(TestAddInDriveList)
 {
-	auto physical_drive1 = create_physical_drive(1);
+	auto physical_drive1 = create_fake_physical_drive(1);
 
 
 	drivelist.add(physical_drive1);
 	BOOST_CHECK_EQUAL(drivelist.getSize(), 3);
 
-	auto physical_drive3 = create_physical_drive(3);
+	auto physical_drive3 = create_fake_physical_drive(3);
 	drivelist.add(physical_drive3);
 	BOOST_CHECK_EQUAL(drivelist.getSize(), 4);
 }

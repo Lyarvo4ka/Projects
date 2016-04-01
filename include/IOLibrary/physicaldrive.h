@@ -379,7 +379,8 @@ namespace IO
 
 		BOOL readDeviceGeometryEx(const path_string & drive_path , DISK_GEOMETRY_EX & disk_geometry_ex)
 		{
-			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+			SystemIO system_io;
+			HANDLE hDevice = system_io.OpenPhysicalDrive(drive_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
@@ -401,7 +402,8 @@ namespace IO
 		}
 		BOOL readDeviceNumber(const path_string & drive_path, uint32_t & drive_number)
 		{
-			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+			SystemIO system_io;
+			HANDLE hDevice = system_io.OpenPhysicalDrive(drive_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
@@ -425,7 +427,8 @@ namespace IO
 		}
 		BOOL readDeviceDescriptor(const path_string & drive_path, STORAGE_ADAPTER_DESCRIPTOR & storage_descriptor)
 		{
-			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+			SystemIO system_io;
+			HANDLE hDevice = system_io.OpenPhysicalDrive(drive_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
@@ -455,7 +458,8 @@ namespace IO
 		}
 		BOOL readSerialNumber(const path_string & device_path , std::string & serial_number)
 		{
-			HANDLE hDevice = OpenPhysicalDrive(device_path);
+			SystemIO system_io;
+			HANDLE hDevice = system_io.OpenPhysicalDrive(device_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
@@ -514,7 +518,8 @@ namespace IO
 		}
 		BOOL readSerialFromSmart(const path_string & drive_path , std::string & serial_number)
 		{
-			HANDLE hDevice = OpenPhysicalDrive(drive_path);
+			SystemIO system_io;
+			HANDLE hDevice = system_io.OpenPhysicalDrive(drive_path);
 
 			if (hDevice == INVALID_HANDLE_VALUE)
 			{
