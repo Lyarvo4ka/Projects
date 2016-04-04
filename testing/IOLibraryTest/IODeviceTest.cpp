@@ -113,18 +113,40 @@ BOOST_AUTO_TEST_CASE(TestDiskDeviceReadBlockFine)
 	BOOST_CHECK_EQUAL(disk_device_->ReadBlock(buff, buff_size), expected);
 }
 
-BOOST_AUTO_TEST_CASE(TestDiskDeviceReadDataFine)
+BOOST_AUTO_TEST_CASE(TestDiskDeviceReadDataNormally)
 {
 	disk_device_->Open(OpenMode::OpenRead);
 	const uint32_t buff_size = 51200;
 	uint8_t buff[buff_size];
 	uint32_t expected = buff_size;
 	disk_device_->setPosition(0);
-	//disk_device_->ReadData(buff, buff_size);
 
-	BOOST_CHECK_EQUAL(disk_device_->ReadData(buff, buff_size), expected);
-	BOOST_CHECK_EQUAL(disk_device_->getPosition(), buff_size);
+	BOOST_CHECK_EQUAL(disk_device_->ReadDataNormally(buff, buff_size), expected);
+	BOOST_CHECK_EQUAL(disk_device_->getPosition(), expected);
 }
 
+BOOST_AUTO_TEST_CASE(Test_DiskDevice_ReadDataNotAlignedLessSectorSize)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+
+	const uint32_t buff_size = 2;
+	uint8_t buff[buff_size];
+	uint32_t expected = buff_size;
+	BOOST_CHECK_EQUAL(disk_device_->ReadDataNotAligned(buff, buff_size), expected);
+	BOOST_CHECK_EQUAL(disk_device_->getPosition(), expected);
+}
+
+BOOST_AUTO_TEST_CASE(Test_DiskDevice_ReadDataNotAlignedMoreSectorSize)
+{
+	disk_device_->Open(OpenMode::OpenRead);
+
+	const uint32_t buff_size = 514;
+	uint8_t buff[buff_size];
+	uint32_t expected = buff_size;
+	uint32_t pos = 2;
+	disk_device_->setPosition(pos);
+	BOOST_CHECK_EQUAL(disk_device_->ReadDataNotAligned(buff, buff_size), expected);
+	BOOST_CHECK_EQUAL(disk_device_->getPosition(), pos+ buff_size);
+}
 
 BOOST_AUTO_TEST_SUITE_END()

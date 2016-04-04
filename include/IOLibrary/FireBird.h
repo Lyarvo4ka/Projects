@@ -28,7 +28,7 @@ struct firebird_page
 #pragma pack()
 
 const int firebird_size = sizeof(firebird_page);
-const int FB_Size = 8 * 1024;
+const int FB_Size = 4 * 1024;
 
 
 void removeNotFireBirdPages(const std::string & src_file, const std::string & dst_file)
@@ -71,10 +71,6 @@ void removeNotFireBirdPages(const std::string & src_file, const std::string & ds
 		}
 		
 	}
-
-	
-
-
 	CloseHandle(hSource);
 	CloseHandle(hTarget);
 }
@@ -145,6 +141,14 @@ class FireBird_Raw
 public:
 	FireBird_Raw(const DWORD drive_number , const std::string & target_folder)
 		: AbstractRaw(drive_number)
+		, folder_(target_folder)
+		, fileWriter_(nullptr)
+
+	{
+		fileWriter_ = new FileWriter(target_folder);
+	}
+	FireBird_Raw(const std::string & file_path, const std::string & target_folder)
+		: AbstractRaw(file_path)
 		, folder_(target_folder)
 		, fileWriter_(nullptr)
 

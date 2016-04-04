@@ -235,19 +235,9 @@ namespace IO
 		{
 			return position_;
 		}
-		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
+		uint32_t ReadDataNormally(uint8_t * data, uint32_t read_size)
 		{
-			if (!isOpen())
-				return 0;
-			if (data == nullptr)
-				return 0;
-			if (read_size == 0)
-				return 0;
-			if (!isMultiple(position_ , physical_drive_->getBytesPerSector()))
-				return 0;
-
 			DWORD bytes_read = 0;
-
 			uint32_t data_pos = 0;
 			uint32_t bytes_to_read = 0;
 			auto transfer_size = this->physical_drive_->getTransferLength();
@@ -265,8 +255,56 @@ namespace IO
 				position_ += bytes_read;
 			}
 			bytes_read = data_pos;
-			setPosition(position_);
 			return bytes_read;
+		}
+		uint32_t ReadDataNotAligned(uint8_t * data, uint32_t read_size)
+		{
+			DWORD numByteRead = 0;
+			auto sector_size = physical_drive_->getBytesPerSector();
+			uint32_t data_start = position_ % sector_size;
+			int sector_to_read = (data_start + read_size) / sector_size + 1;
+			int bytes_to_read = sector_to_read * sector_size;
+
+			if (bytes_to_read > 0)
+			{
+				uint8_t * temp_buffer = new uint8_t[bytes_to_read];
+
+				uint64_t aling_offset = position_ / sector_size;
+				aling_offset *= sector_size;
+				setPosition(aling_offset);
+				if (system_oi_->ReadFile(hDrive_, temp_buffer, bytes_to_read, &numByteRead, NULL))
+					if (numByteRead > 0)
+					{
+						memcpy(data, temp_buffer + data_start, read_size);
+						numByteRead = read_size;
+					}
+				delete[] temp_buffer;
+			}
+
+			position_ += (numByteRead + data_start);
+			return numByteRead;
+
+		}
+		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
+		{
+			if (!isOpen())
+				return 0;
+			if (data == nullptr)
+				return 0;
+			if (read_size == 0)
+				return 0;
+
+			auto sector_size = physical_drive_->getBytesPerSector();
+
+
+			if (isMultiple(position_, sector_size) && isMultiple(read_size, sector_size))
+			{
+				return ReadDataNormally(data, read_size);
+			}
+			else
+			{
+				return ReadDataNotAligned(data, read_size);
+			}
 		}
 		uint32_t WriteData(uint8_t * data, uint32_t read_size) override
 		{

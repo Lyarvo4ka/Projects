@@ -26,13 +26,13 @@ void show_error_invalid_params()
 #include "boost/filesystem.hpp"
 
 
-#include "IOLibrary/MXF_raw.h"
+#include "IOLibrary/FireBird.h"
 
 
 int main(int argc, char *argv[])
 {
-	MXFTrashRemove mxfTrashRemove;
-	mxfTrashRemove.execute("d:\\incoming\\39416\\");
+	FireBird_Raw firebird_raw("e:\\39462\\free_space.bin", "e:\\gdb\\");
+	firebird_raw.execute();
 
 	//if (argc == 3)
 	//{
