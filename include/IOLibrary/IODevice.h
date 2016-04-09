@@ -16,6 +16,16 @@ namespace IO
 			bytes = data_size - data_pos;
 		return bytes;
 	}
+
+	inline uint32_t getBytesForBlock(uint64_t data_pos, uint64_t data_size, uint32_t block_size)
+	{
+		uint32_t bytes = 0;
+		if (data_pos + block_size <= data_size)
+			bytes = block_size;
+		else
+			bytes = (uint32_t)(data_size - data_pos);
+		return bytes;
+	}
 	inline bool isMultiple(uint64_t number, uint32_t multiple_by)
 	{
 		if (multiple_by == 0)
@@ -235,28 +245,7 @@ namespace IO
 		{
 			return position_;
 		}
-		uint32_t ReadDataNormally(uint8_t * data, uint32_t read_size)
-		{
-			DWORD bytes_read = 0;
-			uint32_t data_pos = 0;
-			uint32_t bytes_to_read = 0;
-			auto transfer_size = this->physical_drive_->getTransferLength();
 
-			while (data_pos < read_size)
-			{
-				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
-				setPosition(position_);
-				if (!system_oi_->ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
-					return 0;
-				if (bytes_read == 0)
-					return 0;
-
-				data_pos += bytes_read;
-				position_ += bytes_read;
-			}
-			bytes_read = data_pos;
-			return bytes_read;
-		}
 		uint32_t ReadDataNotAligned(uint8_t * data, uint32_t read_size)
 		{
 			DWORD numByteRead = 0;
@@ -299,7 +288,7 @@ namespace IO
 
 			if (isMultiple(position_, sector_size) && isMultiple(read_size, sector_size))
 			{
-				return ReadDataNormally(data, read_size);
+				return ReadBlock(data, read_size);
 			}
 			else
 			{
@@ -329,13 +318,26 @@ namespace IO
 			if (!isMultiple(read_size , physical_drive_->getBytesPerSector()))
 				return 0;
 				
-
 			DWORD bytes_read = 0;
-			if (!system_oi_->ReadFile(hDrive_, data, read_size, &bytes_read, nullptr))
-				return 0;
+			uint32_t data_pos = 0;
+			uint32_t bytes_to_read = 0;
+			auto transfer_size = this->physical_drive_->getTransferLength();
 
-			position_ += bytes_read;
+			while (data_pos < read_size)
+			{
+				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
+				setPosition(position_);
+				if (!system_oi_->ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
+					return 0;
+				if (bytes_read == 0)
+					return 0;
+
+				data_pos += bytes_read;
+				position_ += bytes_read;
+			}
+			bytes_read = data_pos;
 			return bytes_read;
+
 
 		}
 		uint32_t WriteBlock(uint8_t * data, uint32_t read_size) override

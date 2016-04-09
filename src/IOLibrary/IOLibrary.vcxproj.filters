@@ -146,6 +146,9 @@
     <ClInclude Include="..\..\include\IOLibrary\physicaldrive.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\QuickTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

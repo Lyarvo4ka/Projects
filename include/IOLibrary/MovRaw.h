@@ -234,9 +234,6 @@ inline bool isQuickTime(const qt_block_t * pQtBlock)
 	return false;
 }
 
-
-//#include <Winsock2.h>
-
 bool isQuickTimeHeader(const qt_block_t * pQtBlock)
 {
 	for (auto iKeyword = 0; iKeyword < 3; ++iKeyword)
@@ -385,6 +382,12 @@ public:
 
 };
 
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> parent of c22499a... valid PhysicalDrive. Start QuickTimeRaw
 #pragma pack( 1 )
 struct QTAtom
 {

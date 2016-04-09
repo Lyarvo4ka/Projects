@@ -141,6 +141,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\PanasonicRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\physicaldrive.h" />
+    <ClInclude Include="..\..\include\IOLibrary\QuickTime.h" />
     <ClInclude Include="..\..\include\IOLibrary\r3d_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\RemoveInserts.h" />
     <ClInclude Include="..\..\include\IOLibrary\SignatureTest.h" />
