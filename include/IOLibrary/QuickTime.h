@@ -71,9 +71,13 @@ namespace IO
 	{
 	private:
 		IODevice* device_;
+		uint32_t block_size_;
+		uint32_t sector_size_;
 	public:
 		QuickTimeRaw(IODevice * device)
 			: device_(device)
+			, block_size_(default_block_size)
+			, sector_size_(default_sector_size)
 		{
 		}
 		~QuickTimeRaw()
@@ -83,6 +87,14 @@ namespace IO
 				delete device_;
 				device_ = nullptr;
 			}
+		}
+		void setBlockSize(const uint32_t block_size)
+		{
+			this->block_size_ = block_size
+		}
+		void setSectorSize(const uint32_t sector_size)
+		{
+			this->sector_size_ = sector_size;
 		}
 
 		void execute(const path_string & target_folder)
@@ -115,22 +127,21 @@ namespace IO
 		bool findHeaderOffset(uint64_t offset, uint64_t & header_offset)
 		{
 			uint32_t bytes_read = 0;
-			uint32_t block_size = default_block_size;
-			uint8_t buffer[default_block_size];
+			Buffer buffer(block_size_);
 
 			while (true)
 			{
 				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer, block_size);
+				bytes_read = device_->ReadData(buffer.data, block_size_);
 				if (bytes_read == 0)
 				{
 					printf("Error read drive\r\n");
 					break;
 				}
 
-				for (int iSector = 0; iSector < bytes_read; iSector += default_sector_size)
+				for (int iSector = 0; iSector < bytes_read; iSector += sector_size_)
 				{
-					qt_block_t * pQt_block = (qt_block_t *)&buffer[iSector];
+					qt_block_t * pQt_block = (qt_block_t *)&buffer.data[iSector];
 					if (isQuickTimeHeader(pQt_block))
 					{
 						header_offset = offset + iSector;
@@ -198,13 +209,12 @@ namespace IO
 			if (!target_file->isOpen())
 				return false;
 
-			int block_size = default_block_size;
-			uint8_t buffer[default_block_size];
-			ZeroMemory(buffer, default_block_size);
+			Buffer buffer(block_size_);
+			ZeroMemory(buffer.data, default_block_size);
 
 			uint64_t cur_pos = 0;
 			uint64_t read_pos = 0;
-			uint32_t bytes_to_copy = block_size;
+			uint32_t bytes_to_copy = block_size_;
 
 			uint32_t bytesRead = 0;
 			uint32_t bytesWritten = 0;
@@ -213,17 +223,17 @@ namespace IO
 
 			while (cur_pos < copy_size)
 			{
-				bytes_to_copy = getBytesForBlock(cur_pos, copy_size, block_size);
+				bytes_to_copy = getBytesForBlock(cur_pos, copy_size, block_size_);
 
 				read_pos = offset + cur_pos;
 
 				device_->setPosition(read_pos);
-				bytesRead = device_->ReadData(buffer, bytes_to_copy);
+				bytesRead = device_->ReadData(buffer.data, bytes_to_copy);
 				if (bytesRead == 0)
 					break;
 
 				target_file->setPosition(write_offset);
-				bytesWritten = target_file->WriteData(buffer, bytes_to_copy);
+				bytesWritten = target_file->WriteData(buffer.data, bytes_to_copy);
 				if (bytesWritten == 0)
 					break;
 
@@ -251,10 +261,6 @@ namespace IO
 			}
 			return write_size;
 		}
-
-
-
-
 	};
 
 }

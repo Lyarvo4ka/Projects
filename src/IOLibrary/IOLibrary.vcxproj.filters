@@ -131,9 +131,6 @@
     <ClInclude Include="..\..\include\IOLibrary\PanasonicRaw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\IOLibrary\GoPro_raw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h">
       <Filter>Header Files</Filter>
     </ClInclude>

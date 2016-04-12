@@ -4,7 +4,26 @@
 
 namespace IO
 {
+	struct Buffer
+	{
+		uint32_t data_size;
+		uint8_t * data;
 
+		Buffer(const uint32_t buffer_size)
+			:data_size(buffer_size)
+			,data( new uint32_t[buffer_size])
+		{
+
+		}
+		~Buffer()
+		{
+			if (data)
+			{
+				delete [] data;
+				data = nullptr;
+			}
+		}
+	};
 
 
 	inline uint32_t getBytesForBlock(uint32_t data_pos, uint32_t data_size , uint32_t block_size)
@@ -345,7 +364,6 @@ namespace IO
 			return 0;
 		}
 
-		
 
 		private:
 			std::unique_ptr<SystemIO> system_oi_;
