@@ -382,12 +382,6 @@ public:
 
 };
 
-<<<<<<< HEAD
-
-
-
-=======
->>>>>>> parent of c22499a... valid PhysicalDrive. Start QuickTimeRaw
 #pragma pack( 1 )
 struct QTAtom
 {
@@ -404,17 +398,6 @@ class QTRaw
 
 
 };
-
-
-
-
-
-
-
-
-
-
-
 
 #pragma pack( 1 )
 struct QtHeader

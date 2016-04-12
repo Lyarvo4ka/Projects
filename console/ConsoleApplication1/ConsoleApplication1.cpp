@@ -26,20 +26,28 @@ void show_error_invalid_params()
 #include "boost/filesystem.hpp"
 
 
-#include "IOLibrary/FireBird.h"
+#include "IOLibrary/QuickTime.h"
 
 
-int main(int argc, char *argv[])
+int _tmain(int argc, TCHAR **argv)
 {
-	FireBird_Raw firebird_raw("e:\\39462\\free_space.bin", "e:\\gdb\\");
-	firebird_raw.execute();
+	if (argc == 4)
+	{
+		IO::path_string option = argv[1];
+		IO::IODevice *device = nullptr;
 
-	//if (argc == 3)
-	//{
-	//}
-	//else
-	//	std::cout << "You entered invalid params." << std::endl;
-
+		if (option.compare(L"-d") == 0)
+		{
+			auto drive_list = IO::ReadPhysicalDrives();
+			//drive_list.find_by_number()
+		}
+		else
+			if (option.compare(L"-f") == 0)
+			{
+				//device = new IO::File()
+			}
+	}
+	show_help();
 
 	printf("finished");
 	_getch();
