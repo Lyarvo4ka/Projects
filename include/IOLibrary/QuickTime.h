@@ -90,7 +90,7 @@ namespace IO
 		}
 		void setBlockSize(const uint32_t block_size)
 		{
-			this->block_size_ = block_size
+			this->block_size_ = block_size;
 		}
 		void setSectorSize(const uint32_t sector_size)
 		{

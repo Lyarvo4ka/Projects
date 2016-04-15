@@ -63,9 +63,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeDateConsole", "consol
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfCheckerConsole", "console\PdfChecker\PdfChecker.vcxproj", "{25E7C402-13A6-4865-87A0-37675EABA997}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickTimeRaw", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoPro", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterTestQt", "testing\DiskMasterTestQt\DiskMasterTestQt.vcxproj", "{D3F22268-53BD-447E-940B-AC0F5BD7DABA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharp", "CSharp", "{6B911329-42D5-4B98-B0C2-A8B04585DC65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeChecker", "OfficeTestFiles_2003\OfficeChecker\OfficeChecker.csproj", "{CABB2787-3747-4EAE-B9EB-EB620041566F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -340,6 +344,16 @@ Global
 		{D3F22268-53BD-447E-940B-AC0F5BD7DABA}.ReleaseNew|Win32.Build.0 = Release|Win32
 		{D3F22268-53BD-447E-940B-AC0F5BD7DABA}.ReleaseNew|x64.ActiveCfg = Release|Win32
 		{D3F22268-53BD-447E-940B-AC0F5BD7DABA}.ReleaseNew|x64.Build.0 = Release|Win32
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.Debug|Win32.ActiveCfg = Debug|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.Debug|Win32.Build.0 = Debug|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.Debug|x64.ActiveCfg = Debug|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.Release|Win32.ActiveCfg = Release|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.Release|Win32.Build.0 = Release|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.Release|x64.ActiveCfg = Release|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.ReleaseNew|Win32.ActiveCfg = Release|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.ReleaseNew|Win32.Build.0 = Release|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.ReleaseNew|x64.ActiveCfg = Release|x86
+		{CABB2787-3747-4EAE-B9EB-EB620041566F}.ReleaseNew|x64.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -373,6 +387,7 @@ Global
 		{25E7C402-13A6-4865-87A0-37675EABA997} = {48A54E45-2C44-4E20-B776-BE5DFB693A34}
 		{14C2973D-DC7A-492A-9393-45E41F2B59D3} = {48A54E45-2C44-4E20-B776-BE5DFB693A34}
 		{D3F22268-53BD-447E-940B-AC0F5BD7DABA} = {F5AEE42D-9C64-40AF-95C9-C830A93F32C4}
+		{CABB2787-3747-4EAE-B9EB-EB620041566F} = {6B911329-42D5-4B98-B0C2-A8B04585DC65}
 	EndGlobalSection
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True

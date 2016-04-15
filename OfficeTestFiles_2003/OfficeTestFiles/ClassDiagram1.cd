@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="OfficeTestFiles.AbstractOffice" Collapsed="true">
+    <Position X="2.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAhAQAAAgAAAIIAACAAAAAAAoCgAAAQgACABAAACA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.MicrosoftWord" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAQAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAABAAACA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.MicrosoftExcel" Collapsed="true">
+    <Position X="2.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EIAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAABABAAACA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.PowerPoint" Collapsed="true">
+    <Position X="5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAACAAAAAAAAAAAEABAAABAAACA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.OfficeFactory" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.WordFactory" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.ExcelFactory" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeTestFiles.PowerPointFactory" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="OfficeTestFiles.MsOfficeType" Collapsed="true">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAABAAAAAIAAAAAAAAAAAAAAAAABAAAgACAAA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="OfficeTestFiles.enFileStatus" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAAQACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IOffice.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

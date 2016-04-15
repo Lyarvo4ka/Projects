@@ -128,6 +128,7 @@
     <ClInclude Include="..\..\include\IOLibrary\Entropy.h" />
     <ClInclude Include="..\..\include\IOLibrary\FileFinder.h" />
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h" />
+    <ClInclude Include="..\..\include\IOLibrary\GoPro.h" />
     <ClInclude Include="..\..\include\IOLibrary\HexTexRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\IODevice.h" />
     <ClInclude Include="..\..\include\IOLibrary\iofs.h" />

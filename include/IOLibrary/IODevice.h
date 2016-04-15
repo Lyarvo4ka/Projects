@@ -11,7 +11,7 @@ namespace IO
 
 		Buffer(const uint32_t buffer_size)
 			:data_size(buffer_size)
-			,data( new uint32_t[buffer_size])
+			,data( new uint8_t[buffer_size])
 		{
 
 		}
@@ -85,6 +85,10 @@ namespace IO
 			, bOpen_(false)
 		{
 
+		}
+		~File()
+		{
+			Close();
 		}
 
 		bool Open( OpenMode openMode) override
