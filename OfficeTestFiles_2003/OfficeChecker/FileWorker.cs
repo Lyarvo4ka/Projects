@@ -4,9 +4,151 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using Microsoft.Win32.SafeHandles;
 
 namespace OfficeChecker
 {
+    public class FileFilder
+    {
+        private List<string> listFiles_;
+        private List<string> listExtensions_;
+
+        public FileFilder()
+        {
+            listFiles_ = new List<string>();
+            listExtensions_ = new List<string>();
+        }
+        public void addExtension(string extension)
+        {
+            if (!isPresentInExtensionsList(extension, listExtensions_))
+                listExtensions_.Add(extension);
+        }
+
+        public bool isDirectoryAttribute(Kernel32.WIN32_FIND_DATA attributes)
+        {
+            return (attributes.dwFileAttributes & FileAttributes.Directory) != 0;
+        }
+
+        public bool isPresentInExtensionsList(string file, List<string> extension)
+        {
+            var file_ext = System.IO.Path.GetExtension(file);
+            foreach (string ext in extension)
+            {
+                if (file_ext == ext)
+                    return true;
+            }
+            return false;
+        }
+        public string addBackSlashIfNotPresent(string path)
+        {
+            return (path.EndsWith(@"\")) ? "" : @"\";
+        }
+        public void FindFileRecurcive(string folder)
+        {
+            if (folder.Equals(String.Empty))
+                return;
+
+            string mask_folder = @"\\?\" + folder + addBackSlashIfNotPresent(folder) + "*.*";
+            Kernel32.WIN32_FIND_DATA findData;
+            var findHandle = Kernel32.FindFirstFile(mask_folder, out findData);
+            if (!findHandle.IsInvalid)
+            {
+                do
+                {
+                    if (findData.cFileName == "." || findData.cFileName == "..")
+                        continue;
+                    if (isDirectoryAttribute(findData))
+                    {
+                        string temp_folder = findData.cFileName;
+                        string new_folder = folder + addBackSlashIfNotPresent(folder) + temp_folder;
+                        FindFileRecurcive(new_folder);
+                    }
+                    else
+                    {
+                        string fileName = findData.cFileName;
+                        if (isPresentInExtensionsList(fileName, listExtensions_))
+                        {
+                            string fullFileName = folder + addBackSlashIfNotPresent(folder) + fileName;
+                            System.Console.WriteLine(fullFileName);
+                            listFiles_.Add(fullFileName);
+                        }
+                    }
+
+
+
+                } while (Kernel32.FindNextFile(findHandle, out findData));
+                Kernel32.FindClose(findHandle);
+            }
+        }
+    }
+
+    public class Kernel32
+    {
+        public const int MAX_PATH = 260;
+        public const int MAX_ALTERNATE = 14;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WIN32_FIND_DATA
+        {
+            public FileAttributes dwFileAttributes;
+            public FILETIME ftCreationTime;
+            public FILETIME ftLastAccessTime;
+            public FILETIME ftLastWriteTime;
+            public uint nFileSizeHigh; //changed all to uint from int, otherwise you run into unexpected overflow
+            public uint nFileSizeLow;  //| http://www.pinvoke.net/default.aspx/Structures/WIN32_FIND_DATA.html
+            public uint dwReserved0;   //|
+            public uint dwReserved1;   //v
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
+            public string cFileName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_ALTERNATE)]
+            public string cAlternate;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern SafeFindHandle FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool FindClose(SafeHandle hFindFile);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool FindNextFile(SafeHandle hFindFile, out WIN32_FIND_DATA lpFindFileData);
+    }
+
+    public sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
+    {
+        // Methods
+        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
+        private SafeFindHandle() : base(true)
+        {
+        }
+
+        private SafeFindHandle(IntPtr preExistingHandle, bool ownsHandle) : base(ownsHandle)
+        {
+            base.SetHandle(preExistingHandle);
+        }
+
+        protected override bool ReleaseHandle()
+        {
+            if (!(IsInvalid || IsClosed))
+            {
+                return Kernel32.FindClose(this);
+            }
+            return (IsInvalid || IsClosed);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!(IsInvalid || IsClosed))
+            {
+                Kernel32.FindClose(this);
+            }
+            base.Dispose(disposing);
+        }
+
+    }
+
     enum OfficeType : byte
     {
         msWord = 1,
@@ -175,6 +317,7 @@ namespace OfficeChecker
             byte[] fileSignFile = new byte[iSignatureSize];
             try
             {
+                //Delimon.Win32.IO
                 FileStream fileStream = new FileStream(_FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
                 fileStream.Read(fileSignFile, 0, iSignatureSize);
                 fileStream.Close();

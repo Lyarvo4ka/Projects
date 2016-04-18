@@ -114,6 +114,9 @@ namespace OfficeChecker
         }
         public override int FindFiles(string _Directory, List<OfficeVersion> _ListOfficeVersion)
         {
+            FileFilder finder = new FileFilder;
+            //finder.addExtension()
+
             List<string> listFiles = new List<string>();
             foreach (OfficeVersion officeVersion in _ListOfficeVersion)
             {
