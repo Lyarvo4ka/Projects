@@ -72,15 +72,72 @@ show_help();
 
 
 */
+
+#include "libstructstorage/libstructstorage.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	path_string source_file = argv[1];
-	path_string target_folder = argv[2];
+	//std::wstring file = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\1412412412414124124\\141241241241412412414124124124141241241412412412414124124\\14124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124\\test1.doc";
+	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\200412412412414124124\\300141241241241412412414124124124141241241412412412414124123004\\4001412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412404\\";
 
-	GoPro goProRaw(new File(source_file));
-	goProRaw.setClusterSize(32768);
+	std::wstring file2 = L"test1.doc";
+	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\";
+	//BOOL bResult = FALSE;
+	//bResult = SetCurrentDirectory(root_folder.c_str());
+	//bResult = SetCurrentDirectory(L"12314124");
+	//bResult = SetCurrentDirectory(L"143141241214");
+	//bResult = SetCurrentDirectory(L"200412412412414124124");
+	//bResult = SetCurrentDirectory(L"300141241241241412412414124124124141241241412412412414124123004");
+	//bResult = SetCurrentDirectory(L"4001412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412404");
+	//auto dwError = ::GetLastError();
 
-	goProRaw.execute(target_folder);
+
+	std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\aaaaaaaaaaaaa\\bbbbbbbbbbb\\cccccccccccccccccccccccccccccccccc\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+	std::wstring symlink = L"symlink.lnk";
+	auto bSymLink = CreateSymbolicLink(symlink.c_str(), root_folder.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);
+	DWORD dwError = ::GetLastError();
+	std::wstring ss_file = symlink + L"\\" + file2;
+
+	SSReader ssReader;
+	auto iStorage = ssReader.open_storage(ss_file);
+	if (!iStorage)
+		return -1;
+	IEnumSTATSTG *iEnumStg = nullptr;
+	if ( FAILED(iStorage->EnumElements(0, nullptr, 0, &iEnumStg)) )
+		return -1;
+
+ 	STATSTG statstg = { 0 };
+	wprintf(L"\n\nSTART ENUM\n");
+	auto hr = iEnumStg->Next(1, &statstg, nullptr);
+	while (SUCCEEDED(hr) )
+	{
+		if (statstg.type == STGTY_STREAM)
+		{
+			IStream *pStream = nullptr;
+			auto stream_hr = iStorage->OpenStream(statstg.pwcsName, nullptr, STGM_READ | STGM_SHARE_EXCLUSIVE, 0, &pStream);
+			if (SUCCEEDED(stream_hr))
+			{
+				auto buff_size = statstg.cbSize.QuadPart;
+				BYTE *pBuffer = new BYTE[buff_size];
+				DWORD bytes_read = 0;
+				auto read_hr = pStream->Read(pBuffer, buff_size, &bytes_read);
+
+				int k = 1;
+				k = 2;
+				delete[] pBuffer;
+			}
+		}
+
+		wprintf(L"%s\n", statstg.pwcsName);
+		hr = iEnumStg->Next(1, &statstg, nullptr);
+	}
+
+	//path_string source_file = argv[1];
+	//path_string target_folder = argv[2];
+
+	//GoPro goProRaw(new File(source_file));
+	//goProRaw.setClusterSize(32768);
+
+	//goProRaw.execute(target_folder);
 
 
 

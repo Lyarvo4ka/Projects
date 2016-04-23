@@ -205,11 +205,11 @@ private:
 		IPropertySetStorage * toPropertySetStorage(IStorage * pStorage);
 
 		// Open the document as an OLE compound document.
-		IStorage * open_storage(const std::wstring & file);
 
 	public:
 		SSReader();
 		~SSReader();
+		IStorage * open_storage(const std::wstring & file);
 
 		// read properties of a property storage
 		bool read_properties(const std::string & file_path, SummaryInformation & summary_information);

@@ -12,6 +12,12 @@ namespace OfficeChecker
 {
     public class FileFilder
     {
+        public List<string> ListFiles
+        {
+            set { listFiles_ = value; } 
+            get { return listFiles_; }
+
+        }
         private List<string> listFiles_;
         private List<string> listExtensions_;
 

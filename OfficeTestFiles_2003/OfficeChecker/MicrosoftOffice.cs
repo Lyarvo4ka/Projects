@@ -114,20 +114,23 @@ namespace OfficeChecker
         }
         public override int FindFiles(string _Directory, List<OfficeVersion> _ListOfficeVersion)
         {
-            FileFilder finder = new FileFilder;
-            //finder.addExtension()
+            FileFilder finder = new FileFilder();
+            finder.addExtension(".doc");
+            finder.addExtension(".docx");
 
-            List<string> listFiles = new List<string>();
-            foreach (OfficeVersion officeVersion in _ListOfficeVersion)
-            {
-                if (officeVersion == OfficeVersion.OfficeRTF)
-                    m_fileWorker.SearchFiles(_Directory, OfficeVersion.OfficeRTF, OfficeType.msRTF);
-                else
-                    m_fileWorker.SearchFiles(_Directory, officeVersion, this.GetOfficeType());
 
-                listFiles.AddRange(m_fileWorker.GetFiles());
-            }
-            m_TestingFiles = listFiles.ToArray();
+            //List<string> listFiles = new List<string>();
+            //foreach (OfficeVersion officeVersion in _ListOfficeVersion)
+            //{
+            //    if (officeVersion == OfficeVersion.OfficeRTF)
+            //        m_fileWorker.SearchFiles(_Directory, OfficeVersion.OfficeRTF, OfficeType.msRTF);
+            //    else
+            //        m_fileWorker.SearchFiles(_Directory, officeVersion, this.GetOfficeType());
+
+            //    listFiles.AddRange(m_fileWorker.GetFiles());
+            //}
+            finder.FindFileRecurcive(_Directory);
+            m_TestingFiles = finder.ListFiles.ToArray();
             return m_TestingFiles.Length;
 
         }
@@ -219,12 +222,13 @@ namespace OfficeChecker
             {
                 m_OpenStatus = OpenStatus.OpenBAD;
                 //Console.WriteLine("{0}", TestingFile);
-                m_OfficeVersion = m_fileWorker.TestSignature(TestingFile);
-                if (m_OfficeVersion != OfficeVersion.NoOffice)
+                //m_OfficeVersion = m_fileWorker.TestSignature(TestingFile);
+                //if (m_OfficeVersion != OfficeVersion.NoOffice)
                 {
                     if (!this.isCreated())
                         this.CreateApplication();
-                    m_OpenStatus = TestDocumnet(TestingFile, m_OfficeVersion);
+                    string unc_path = @"\\?\" + TestingFile;
+                    m_OpenStatus = TestDocumnet(unc_path, m_OfficeVersion);
                     // Send Event to "Change"
                     // 1 - Update progress...
                     // 2 - File Name, Opened Status, OfficeType...
@@ -250,6 +254,8 @@ namespace OfficeChecker
                 OpenFormat = WdOpenFormat.wdOpenFormatRTF;
             try
             {
+                string root_path = System.IO.Path.GetPathRoot(fileName.ToString());
+                //System.IO.Directory.SetCurrentDirectory();
                 m_DocWord = m_AppWord.Documents.Open(FileName: ref fileName,
                                                       ReadOnly: true,
                                                       Visible: false,

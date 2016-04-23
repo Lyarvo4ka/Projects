@@ -4,6 +4,7 @@
 #include "stdafx.h"
 
 #include "libstructstorage.h"
+#include <boost/filesystem.hpp>
 
 
 std::string getTimeFromFileTime(const FILETIME & file_time)
@@ -205,10 +206,34 @@ IPropertySetStorage * SSReader::toPropertySetStorage(IStorage * pStorage)
 
 IStorage * SSReader::open_storage(const std::wstring & file)
 {
+	wprintf(L"%s",file.c_str());
+
+	//boost::filesystem::path file_path(file);
+	//file_path.
+
+
 	HRESULT hr = S_OK;
 	IStorage *pStorage = NULL;
 	hr = ::StgOpenStorage(file.c_str(), NULL,
 		STGM_READ | STGM_SHARE_EXCLUSIVE, NULL, 0, &pStorage);
+	IPropertySetStorage *pPropSetStg;
+
+	//HRESULT hr = ::QueryInterface(IID_IStorage , )
+
+	//HRESULT hr = OpenStorage(file.c_str(),
+	//	NULL,
+	//	STGM_READ | STGM_SHARE_EXCLUSIVE,
+	//	NULL,
+	//	0,
+	//	pStorage);
+
+	//hr = ::StgOpenStorageEx(file.c_str(),
+	//	STGM_READ | STGM_SHARE_EXCLUSIVE,
+	//	STGFMT_STORAGE,
+	//	0, NULL, NULL,
+	//	IID_IPropertySetStorage,
+	//	reinterpret_cast<void**>(&pPropSetStg)
+	//	);
 
 	if (FAILED(hr)) {
 		if (hr == STG_E_FILENOTFOUND)
