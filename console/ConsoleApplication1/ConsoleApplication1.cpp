@@ -79,7 +79,7 @@ int _tmain(int argc, TCHAR **argv)
 	//std::wstring file = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\1412412412414124124\\141241241241412412414124124124141241241412412412414124124\\14124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124\\test1.doc";
 	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\200412412412414124124\\300141241241241412412414124124124141241241412412412414124123004\\4001412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412404\\";
 
-	std::wstring file2 = L"test1.doc";
+	std::wstring file2 = L"test4.doc";
 	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\";
 	//BOOL bResult = FALSE;
 	//bResult = SetCurrentDirectory(root_folder.c_str());
@@ -97,39 +97,13 @@ int _tmain(int argc, TCHAR **argv)
 	DWORD dwError = ::GetLastError();
 	std::wstring ss_file = symlink + L"\\" + file2;
 
+	bool bResult = false;
 	SSReader ssReader;
 	auto iStorage = ssReader.open_storage(ss_file);
-	if (!iStorage)
-		return -1;
-	IEnumSTATSTG *iEnumStg = nullptr;
-	if ( FAILED(iStorage->EnumElements(0, nullptr, 0, &iEnumStg)) )
-		return -1;
+	if (iStorage)
+		bResult = ssReader.read_storage(iStorage);
 
- 	STATSTG statstg = { 0 };
-	wprintf(L"\n\nSTART ENUM\n");
-	auto hr = iEnumStg->Next(1, &statstg, nullptr);
-	while (SUCCEEDED(hr) )
-	{
-		if (statstg.type == STGTY_STREAM)
-		{
-			IStream *pStream = nullptr;
-			auto stream_hr = iStorage->OpenStream(statstg.pwcsName, nullptr, STGM_READ | STGM_SHARE_EXCLUSIVE, 0, &pStream);
-			if (SUCCEEDED(stream_hr))
-			{
-				auto buff_size = statstg.cbSize.QuadPart;
-				BYTE *pBuffer = new BYTE[buff_size];
-				DWORD bytes_read = 0;
-				auto read_hr = pStream->Read(pBuffer, buff_size, &bytes_read);
 
-				int k = 1;
-				k = 2;
-				delete[] pBuffer;
-			}
-		}
-
-		wprintf(L"%s\n", statstg.pwcsName);
-		hr = iEnumStg->Next(1, &statstg, nullptr);
-	}
 
 	//path_string source_file = argv[1];
 	//path_string target_folder = argv[2];

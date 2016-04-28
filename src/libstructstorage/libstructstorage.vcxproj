@@ -63,7 +63,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>$(SolutionDir)_lib\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>%BOOST_ROOT%stage\lib\;$(SolutionDir)_lib\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>IOLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -107,6 +107,11 @@
     <ClInclude Include="..\..\include\libstructstorage\stdafx.h" />
     <ClInclude Include="..\..\include\libstructstorage\targetver.h" />
     <ClInclude Include="..\..\include\libstructstorage\version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IOLibrary\IOLibrary.vcxproj">
+      <Project>{c0525921-31e3-4e1a-b7b6-4ea88d4de419}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

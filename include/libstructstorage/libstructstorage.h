@@ -1,12 +1,16 @@
 #ifndef LIBSTRUCTSTORAGE_H
 #define LIBSTRUCTSTORAGE_H
 
+#pragma warning (disable : 4251)
+
 #include <Windows.h>
 #include <string>
 #include "libstructstorage_global.h"
 
 #include "Objbase.h"
 #include "Objidl.h"
+
+//#include "IOLibrary/IODevice.h"
 
 std::string LIBSTRUCTSTORAGE_API getTimeFromFileTime(const FILETIME & file_time);
 std::string LIBSTRUCTSTORAGE_API getDateFromFileTime(const FILETIME & file_time);
@@ -210,6 +214,62 @@ private:
 		SSReader();
 		~SSReader();
 		IStorage * open_storage(const std::wstring & file);
+		bool read_storage(IStorage * pStorage)
+		{
+			IEnumSTATSTG *iEnumStg = NULL;
+			if (FAILED(pStorage->EnumElements(0, nullptr, 0, &iEnumStg)))
+				return false;
+
+			STATSTG statstg = { 0 };
+			wprintf(L"\n\nSTART ENUM\n");
+			auto hr = iEnumStg->Next(1, &statstg, NULL);
+			bool bOpenResult = false;
+			IStream *pStream = NULL;
+			while (hr == S_OK)
+			{
+				switch (statstg.type)
+				{
+				case STGTY_STREAM:
+					
+					if (SUCCEEDED(pStorage->OpenStream(statstg.pwcsName, NULL, STGM_READ | STGM_SHARE_EXCLUSIVE, 0, &pStream) ) )
+					{
+						auto strream_size = statstg.cbSize.QuadPart;
+						if (SUCCEEDED(ReadStream(pStream, strream_size)) )
+							bOpenResult = true;
+						else
+						{
+							wprintf(L"Error read stream.\n");
+							return false;
+						}
+
+					}
+					else
+						return false;
+
+					break;
+				//case STGTY_STORAGE:
+				//	// read storage inside
+				//	break;
+
+				default:
+					break;
+				}
+
+				wprintf(L"%s\n", statstg.pwcsName);
+				hr = iEnumStg->Next(1, &statstg, nullptr);
+			}
+			return bOpenResult;
+		}
+
+		HRESULT ReadStream( IStream * pStream, uint64_t size )
+		{
+			//IO::Buffer buffer(size);
+			uint8_t * data = new uint8_t[size];
+			DWORD bytes_read = 0;
+			auto hr = pStream->Read(data, size, &bytes_read);
+			delete[] data;
+			return hr;
+		}
 
 		// read properties of a property storage
 		bool read_properties(const std::string & file_path, SummaryInformation & summary_information);

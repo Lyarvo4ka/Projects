@@ -13,9 +13,36 @@
 
 
 
-inline bool isDirectoryAttribute(const WIN32_FIND_DATAA & attributes)
+inline bool isDirectoryAttribute(const WIN32_FIND_DATA & attributes)
 {
 	return attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
+}
+
+using path_list = std::list<IO::path_string>;
+
+const wchar_t back_slash = L'\\';
+const IO::path_string UNC_prefix = L"\\\\?\\";
+const IO::path_string OneDot = L".";
+const IO::path_string TwoDot = L"..";
+const IO::path_string mask_all = L"*.*";
+
+
+IO::path_string AddBackSlash(const IO::path_string & path_str)
+{
+	IO::path_string new_string(path_str);
+	if (*path_str.rbegin() != back_slash)
+		new_string.push_back(back_slash);
+
+	return new_string;
+}
+
+bool isOneDotOrTwoDots(const IO::path_string & name_string)
+{
+	if (name_string.compare(OneDot))
+		return true;
+	if (name_string.compare(TwoDot))
+		return true;
+	return false;
 }
 
 class FileFinder
@@ -35,7 +62,12 @@ public:
 
 	void FindFiles(const std::string & folder, const stringlist & ext)
 	{
-		FindFileRecursive(folder, ext);
+		//FindFileRecursive(folder, ext);
+	}
+	void FindFiles(const IO::path_string & folder, const path_list & list_extensions)
+	{
+		IO::path_string new_folder = UNC_prefix + folder;
+		FindFileRecursive(new_folder, list_extensions);
 	}
 
 
@@ -46,30 +78,32 @@ public:
 	}
 private:
 	// recursive function
-	void FindFileRecursive(const std::string & folder, const stringlist & ext)
+	void FindFileRecursive(const IO::path_string & folder, const path_list & list_extensions)
 	{
 		if (folder.empty())
 			return;
 
-
-		std::string mask_folder(folder + "*.*");
+		IO::path_string current_folder = AddBackSlash(folder);
+		IO::path_string mask_folder(current_folder + mask_all);
 
 		HANDLE hFindFile = INVALID_HANDLE_VALUE;
-		WIN32_FIND_DATAA findData = { 0 };
+		WIN32_FIND_DATA findData = { 0 };
 
-		hFindFile = FindFirstFileA(mask_folder.c_str(), &findData);
+		hFindFile = FindFirstFile(mask_folder.c_str(), &findData);
 		if (hFindFile != INVALID_HANDLE_VALUE)
 		{
 			do
 			{
-				if (!strncmp(findData.cFileName, ".", 1) || !strncmp(findData.cFileName, "..", 2))
+				IO::path_string current_file(findData.cFileName);
+
+				if ( isOneDotOrTwoDots(current_file) )
 					continue;
 
 				if (isDirectoryAttribute(findData))
 				{
 					std::string sub_folder(IO::addFolderName(folder, findData.cFileName));
 					IO::addBackspace(sub_folder);
-					FindFiles(sub_folder, ext);
+					//FindFiles(sub_folder, ext);
 				}
 
 				// Than it's must be file
