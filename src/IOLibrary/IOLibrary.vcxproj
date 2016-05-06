@@ -104,6 +104,7 @@
     </ClCompile>
     <ClCompile Include="Entropy.cpp" />
     <ClCompile Include="IODevice.cpp" />
+    <ClCompile Include="iofs.cpp" />
     <ClCompile Include="iofunctions.cpp" />
     <ClCompile Include="IOLibrary.cpp" />
     <ClCompile Include="MovRaw.cpp" />

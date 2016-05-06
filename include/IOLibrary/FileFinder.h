@@ -4,7 +4,7 @@
 #include "iofunctions.h"
 
 #include <boost/filesystem.hpp>
-
+#include <boost/algorithm/string.hpp>
 
 //class AbstractFolder
 
@@ -20,27 +20,35 @@ inline bool isDirectoryAttribute(const WIN32_FIND_DATA & attributes)
 
 using path_list = std::list<IO::path_string>;
 
-const wchar_t back_slash = L'\\';
+inline bool isPresentInList(const IO::path_string & text_value, const path_list & listToFind)
+{
+	auto str = text_value;
+	boost::algorithm::to_lower(str);
+	auto findIter = std::find(listToFind.begin(), listToFind.end(), str);
+	return (findIter != listToFind.end()) ? true : false;
+}
+
+static const wchar_t back_slash = L'\\';
 const IO::path_string UNC_prefix = L"\\\\?\\";
 const IO::path_string OneDot = L".";
 const IO::path_string TwoDot = L"..";
 const IO::path_string mask_all = L"*.*";
 
 
-IO::path_string AddBackSlash(const IO::path_string & path_str)
+inline IO::path_string AddBackSlash(const IO::path_string & path_str)
 {
 	IO::path_string new_string(path_str);
-	if (*path_str.rbegin() != back_slash)
-		new_string.push_back(back_slash);
+	if (*path_str.rbegin() != L'\\')
+		new_string.push_back(L'\\');
 
 	return new_string;
 }
 
-bool isOneDotOrTwoDots(const IO::path_string & name_string)
+inline bool isOneDotOrTwoDots(const IO::path_string & name_string)
 {
-	if (name_string.compare(OneDot))
+	if (name_string.compare(OneDot) == 0)
 		return true;
-	if (name_string.compare(TwoDot))
+	if (name_string.compare(TwoDot) == 0 )
 		return true;
 	return false;
 }
@@ -48,44 +56,31 @@ bool isOneDotOrTwoDots(const IO::path_string & name_string)
 class FileFinder
 {
 private:
-	stringlist file_list_;
-	IO::DirectoryNode root_folder_;
-	IO::Directory * current_;
+	IO::DirectoryNode::Ptr rootFolder_;
+
 
 public:
 	FileFinder()
-		: root_folder_(IO::DirectoryNode(new IO::Directory("root")))
-		, current_(nullptr)
 	{
 
 	}
-
-	void FindFiles(const std::string & folder, const stringlist & ext)
-	{
-		//FindFileRecursive(folder, ext);
-	}
+	void FindFiles(const std::string , stringlist ext_list)
+	{}
 	void FindFiles(const IO::path_string & folder, const path_list & list_extensions)
 	{
-		IO::path_string new_folder = UNC_prefix + folder;
-		FindFileRecursive(new_folder, list_extensions);
+		rootFolder_ = IO::DirectoryNode::CreateDirectoryNode(folder);
+		Find(rootFolder_, list_extensions);
 	}
-
-
-
-	stringlist getFileNames() const
-	{
-		return file_list_;
+	stringlist getFileNames() const {
+		stringlist list;
+		return list;
 	}
 private:
-	// recursive function
-	void FindFileRecursive(const IO::path_string & folder, const path_list & list_extensions)
+
+	void Find(IO::DirectoryNode::Ptr folder_node, const path_list & list_extensions)
 	{
-		if (folder.empty())
-			return;
-
-		IO::path_string current_folder = AddBackSlash(folder);
+		IO::path_string current_folder = folder_node->getFullPath();
 		IO::path_string mask_folder(current_folder + mask_all);
-
 		HANDLE hFindFile = INVALID_HANDLE_VALUE;
 		WIN32_FIND_DATA findData = { 0 };
 
@@ -96,37 +91,89 @@ private:
 			{
 				IO::path_string current_file(findData.cFileName);
 
-				if ( isOneDotOrTwoDots(current_file) )
+				if (isOneDotOrTwoDots(current_file))
 					continue;
 
 				if (isDirectoryAttribute(findData))
 				{
-					std::string sub_folder(IO::addFolderName(folder, findData.cFileName));
-					IO::addBackspace(sub_folder);
-					//FindFiles(sub_folder, ext);
+					IO::path_string new_folder = findData.cFileName;
+					folder_node->AddDirectory(new_folder);
+					Find(new_folder, list_extensions);
 				}
 
 				// Than it's must be file
-				if (!isDirectoryAttribute(findData) )
+				if (!isDirectoryAttribute(findData))
 				{
-					std::string file_name(findData.cFileName);
-
-					auto file_ext = boost::filesystem::extension(file_name);
-					if (IO::isPresentInList(ext, file_ext))
+					IO::path_string file_name = findData.cFileName;
+					boost::filesystem::path tmp_path(file_name);
+					IO::path_string file_ext = tmp_path.extension().wstring();
+					if (isPresentInList(file_ext, list_extensions))
 					{
-						auto full_path = IO::make_file_path(folder, file_name);
-						file_list_.push_back(full_path);
+						folder_node->AddFile(file_name);
 					}
 				}
 
 				//SearchFiles(
-			} while (FindNextFileA(hFindFile, &findData));
+			} while (FindNextFile(hFindFile, &findData));
 
 			FindClose(hFindFile);
 
 		}
 
+
 	}
+
+
+	// recursive function
+	//void FindFileRecursive(const IO::path_string & folder, const path_list & list_extensions)
+	//{
+	//	if (folder.empty())
+	//		return;
+
+	//	IO::path_string current_folder = AddBackSlash(folder);
+	//	IO::path_string mask_folder(current_folder + mask_all);
+
+	//	HANDLE hFindFile = INVALID_HANDLE_VALUE;
+	//	WIN32_FIND_DATA findData = { 0 };
+
+	//	hFindFile = FindFirstFile(mask_folder.c_str(), &findData);
+	//	if (hFindFile != INVALID_HANDLE_VALUE)
+	//	{
+	//		do
+	//		{
+	//			IO::path_string current_file(findData.cFileName);
+
+	//			if ( isOneDotOrTwoDots(current_file) )
+	//				continue;
+
+	//			if (isDirectoryAttribute(findData))
+	//			{
+	//				std::string sub_folder(IO::addFolderName(folder, findData.cFileName));
+	//				IO::addBackspace(sub_folder);
+	//				//FindFiles(sub_folder, ext);
+	//			}
+
+	//			// Than it's must be file
+	//			if (!isDirectoryAttribute(findData) )
+	//			{
+	//				std::string file_name(findData.cFileName);
+
+	//				auto file_ext = boost::filesystem::extension(file_name);
+	//				if (IO::isPresentInList(ext, file_ext))
+	//				{
+	//					auto full_path = IO::make_file_path(folder, file_name);
+	//					file_list_.push_back(full_path);
+	//				}
+	//			}
+
+	//			//SearchFiles(
+	//		} while (FindNextFileA(hFindFile, &findData));
+
+	//		FindClose(hFindFile);
+
+	//	}
+
+	//}
 
 
 
@@ -137,8 +184,9 @@ inline stringlist readAllFiles(const std::string & folder)
 {
 	FileFinder finder;
 	stringlist freelist;
-	finder.FindFiles(folder, freelist);
-	return finder.getFileNames();
+	//finder.FindFiles(folder, freelist);
+	//return finder.getFileNames();
+	return freelist;
 }
 
 #endif

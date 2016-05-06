@@ -18,7 +18,7 @@ namespace IO
 {
 	using path_string = std::wstring;
 	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };
-
+	const wchar_t back_slash = L'\\';
 };
 
 #include <array>

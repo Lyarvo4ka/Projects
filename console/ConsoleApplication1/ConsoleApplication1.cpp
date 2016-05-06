@@ -74,12 +74,19 @@ show_help();
 */
 
 #include "libstructstorage/libstructstorage.h"
+#include "IOLibrary/FileFinder.h"
+
 int _tmain(int argc, TCHAR **argv)
 {
+	std::wstring root_path = L"d:\\LongPathFolder\\";
+	path_list list_exensions = { L".doc", L".docx" };
+	FileFinder finder;
+	finder.FindFiles(root_path, list_exensions);
+
 	//std::wstring file = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\1412412412414124124\\141241241241412412414124124124141241241412412412414124124\\14124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124\\test1.doc";
 	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\200412412412414124124\\300141241241241412412414124124124141241241412412412414124123004\\4001412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412404\\";
 
-	std::wstring file2 = L"test4.doc";
+	//std::wstring file2 = L"test4.doc";
 	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\";
 	//BOOL bResult = FALSE;
 	//bResult = SetCurrentDirectory(root_folder.c_str());
@@ -91,19 +98,19 @@ int _tmain(int argc, TCHAR **argv)
 	//auto dwError = ::GetLastError();
 
 
-	std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\aaaaaaaaaaaaa\\bbbbbbbbbbb\\cccccccccccccccccccccccccccccccccc\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-	std::wstring symlink = L"symlink.lnk";
-	auto bSymLink = CreateSymbolicLink(symlink.c_str(), root_folder.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);
-	DWORD dwError = ::GetLastError();
-	std::wstring ss_file = symlink + L"\\" + file2;
+	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\aaaaaaaaaaaaa\\bbbbbbbbbbb\\cccccccccccccccccccccccccccccccccc\\dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\\eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+	//std::wstring symlink = L"symlink.lnk";
+	//auto bSymLink = CreateSymbolicLink(symlink.c_str(), root_folder.c_str(), SYMBOLIC_LINK_FLAG_DIRECTORY);
+	//DWORD dwError = ::GetLastError();
+	//std::wstring ss_file = symlink + L"\\" + file2;
 
-	bool bResult = false;
-	SSReader ssReader;
-	auto iStorage = ssReader.open_storage(ss_file);
-	if (iStorage)
-		bResult = ssReader.read_storage(iStorage);
+	//bool bResult = false;
+	//SSReader ssReader;
+	//auto iStorage = ssReader.open_storage(ss_file);
+	//if (iStorage)
+	//	bResult = ssReader.read_storage(iStorage);
 
-
+	
 
 	//path_string source_file = argv[1];
 	//path_string target_folder = argv[2];

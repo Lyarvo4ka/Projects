@@ -2,97 +2,115 @@
 #define IOFS_H
 
 #include "iolibrary_global.h"
-#include <string>
+#include "constants.h"
 #include <memory>
-#include <map>
+#include <list>
+
+#include <boost/filesystem.hpp>
 
 
 namespace IO
 {
+	class DirectoryNode;
+	//using ListDirectories = std::list<DirectoryNode::Ptr>;
+	//using ListFiles = std::list<DirectoryNode::Ptr>;
 
-	class Node;
-	typedef std::shared_ptr<Node> AbstractNode;
-
-	class Directory;
-	typedef std::shared_ptr<Directory> DirectoryNode;
-
-	class File;
-	typedef std::shared_ptr<File> FileNode;
-
-
-	typedef std::map<std::string, AbstractNode> Nodes;
-
-	class Node
-	{
-	public:
-		virtual std::string name() const = 0;
-		virtual Directory * parent() const = 0;
-
-
-	};
-
-	class Directory
-		: public Node
+	class IOLIBRARY_EXPORT Node
 	{
 	private:
-		std::string name_;
-		Directory * parent_;
-		Nodes nodes_;
+		DirectoryNode * parent_;
+		path_string name_;
 	public:
-		Directory(const std::string & folder_name)
-			: name_(folder_name)
-			, parent_(nullptr)
+		Node(const path_string &name, DirectoryNode * parent = nullptr)
+			:parent_(parent)
+			,name_(name)
 		{
-
 		}
-		std::string name() const override
+		~Node()
+		{
+			parent_ = nullptr;
+		}
+
+		void setName(const path_string &name)
+		{
+			this->name_ = name;
+		}
+		path_string getName() const
 		{
 			return name_;
 		}
-		Directory * parent() const override
+
+		void setParent(DirectoryNode * parent)
 		{
-			return parent_;
+			this->parent_ = parent;
 		}
-		void set_parent(Directory * parent)
+
+		DirectoryNode * getParent() const;
+		path_string getFullPath();
+	};
+
+	class FileNode
+		: public Node
+	{
+	public:
+		typedef std::shared_ptr<FileNode> Ptr;
+		static FileNode::Ptr CreateFileNode(const path_string & file_name)
 		{
-			parent_ = parent;
+			return std::make_shared<FileNode>(FileNode(file_name));
 		}
-		void add_folder(Nodes new_folder)
+	private:
+
+	public:
+		FileNode(const path_string & file_name)
+			: Node(file_name)
 		{
 
 		}
-		void add_file(const std::string & file_name)
-		{
 
+		path_string getExtension() const
+		{
+			boost::filesystem::path file_path(this->getName());
+			return file_path.extension().generic_wstring();
 		}
 	};
 
-	//class File
-	//	: public Node
-	//{
-	//private:
-	//	std::string name_;
-	//	Directory* parent_;
-	//public:
-	//	File(const std::string & file_name)
-	//		: name_(file_name)
-	//		, parent_(nullptr)
-	//	{
+	class DirectoryNode
+		: public Node
+	{
+	public:
+		typedef std::shared_ptr<DirectoryNode> Ptr;
+		static DirectoryNode::Ptr CreateDirectoryNode(const path_string & folder_name)
+		{
+			return std::make_shared<DirectoryNode>(DirectoryNode(folder_name));
+		}
+	private:
+		std::list<DirectoryNode::Ptr> directories_;
+		std::list<FileNode::Ptr> files_;
+	public:
+		DirectoryNode(const path_string & directory_name)
+			: Node(directory_name)
+		{
 
-	//	}
-	//	std::string name() const override
-	//	{
-	//		return name_;
-	//	}
-	//	void set_parent(Directory * parent)
-	//	{
-	//		parent_ = parent;
-	//	}
-	//	Directory * parent() const
-	//	{
-	//		return parent_;
-	//	}
-	//};
+		}
+
+		void AddDirectory(const path_string & directory_name)
+		{
+			auto new_folder = CreateDirectoryNode(directory_name);
+			new_folder->setParent(this);
+			directories_.push_back(new_folder);
+		}
+
+		void AddFile(const path_string & file_name)
+		{
+			auto new_file = FileNode::CreateFileNode(file_name);
+			new_file->setParent(this);
+			files_.push_back(new_file);
+		}
+	};
+
+
+
+
 
 }
 #endif
