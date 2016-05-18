@@ -73,15 +73,54 @@ show_help();
 
 */
 
-#include "libstructstorage/libstructstorage.h"
-#include "IOLibrary/FileFinder.h"
+//#include "libstructstorage/libstructstorage.h"
+#include "IOLibrary/MTS_raw.h"
 
 int _tmain(int argc, TCHAR **argv)
 {
-	std::wstring root_path = L"d:\\LongPathFolder\\";
-	path_list list_exensions = { L".doc", L".docx" };
-	FileFinder finder;
-	finder.FindFiles(root_path, list_exensions);
+
+	
+	if (argc == 4)
+	{
+	const int opt = 1;
+	const int source = 2;
+	const int target = 3;
+
+	std::wstring option = argv[opt];
+	IO::RawMTS *pMTS_raw = nullptr;
+
+	if (option.compare(L"-d") == 0)
+	{
+		auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+
+		auto drive_list = IO::ReadPhysicalDrives();
+		auto physical_drive = drive_list.find_by_number(drive_number);
+		pMTS_raw = new IO::RawMTS(new IO::DiskDevice(physical_drive));
+		//pMTS_raw->setBlockSize(physical_drive->getTransferLength());
+		pMTS_raw->setSectorSize(physical_drive->getBytesPerSector());
+	}
+	else
+		if (option.compare(L"-f") == 0)
+		{
+			auto file_name = argv[source];
+			pMTS_raw = new IO::RawMTS(new IO::File(file_name));
+		}
+
+	std::wstring target_folder = argv[target];
+
+	pMTS_raw->execute(target_folder);
+	delete pMTS_raw;
+
+	}
+	show_help();
+
+
+	//////////////////////////////////////////////////////////////////////////
+
+	//std::wstring root_path = L"d:\\LongPathFolder\\";
+	//path_list list_exensions = { L".doc", L".docx" };
+	//FileFinder finder;
+	//finder.FindFiles(root_path, list_exensions);
 
 	//std::wstring file = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\1412412412414124124\\141241241241412412414124124124141241241412412412414124124\\14124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124\\test1.doc";
 	//std::wstring root_folder = L"\\\\?\\d:\\LongPathFolder\\12314124\\143141241214\\200412412412414124124\\300141241241241412412414124124124141241241412412412414124123004\\4001412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412414124124124141241241412412412414124124141241241241412412404\\";

@@ -145,7 +145,8 @@ namespace IO
 		void setPosition(uint64_t offset) override
 		{
 			position_ = offset;
-			LARGE_INTEGER liPos = { position_ };
+			LARGE_INTEGER liPos = { 0};
+			liPos.QuadPart = position_;
 			::SetFilePointerEx(hFile_, liPos, NULL, FILE_BEGIN);
 		};
 
@@ -176,6 +177,7 @@ namespace IO
 
 			if (!::WriteFile(hFile_, data, write_size, &bytes_written, NULL))
 				return 0;
+			size_ += bytes_written;
 			return bytes_written;
 		};
 
@@ -257,10 +259,11 @@ namespace IO
 		}
 		void setPosition(uint64_t offset) override
 		{
-			if (offset != position_)
+			//if (offset != position_)
 			{
 				position_ = offset;
-				LARGE_INTEGER li{ position_ };
+				LARGE_INTEGER li{ 0};
+				li.QuadPart = position_;
 				::SetFilePointerEx(hDrive_, li, nullptr, FILE_BEGIN);
 			}
 		}
@@ -325,7 +328,7 @@ namespace IO
 
 		uint64_t Size() const override
 		{
-			return 0;
+			return physical_drive_->getNumberSectors();
 		}
 
 		uint32_t ReadBlock(uint8_t * data, uint32_t read_size) override
@@ -363,9 +366,16 @@ namespace IO
 
 
 		}
-		uint32_t WriteBlock(uint8_t * data, uint32_t read_size) override
+		uint32_t WriteBlock(uint8_t * data, uint32_t write_size) override
 		{
+			if ( !isOpen())
 			return 0;
+			DWORD bytesWritten = 0;
+
+			BOOL bResult = ::WriteFile(hDrive_, data, write_size, &bytesWritten, NULL);
+			if (!bResult)
+				return 0;
+			return bytesWritten;
 		}
 
 

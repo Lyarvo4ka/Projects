@@ -98,7 +98,7 @@ private:
 				{
 					IO::path_string new_folder = findData.cFileName;
 					folder_node->AddDirectory(new_folder);
-					Find(new_folder, list_extensions);
+					//Find(new_folder, list_extensions);
 				}
 
 				// Than it's must be file
