@@ -46,6 +46,7 @@ namespace IO
 		}
 	}
 
+	// not work
 	inline path_string NumberToString(const uint32_t number)
 	{
 		const int numValues = 10;
@@ -53,7 +54,8 @@ namespace IO
 		ZeroMemory(buff, sizeof(wchar_t) * numValues);
 
 		swprintf_s(buff, numValues, L"%.9d", number);
-		return buff;
+		path_string number_str(buff);
+		return number_str;
 	}
 
 	inline path_string MakeFileName(const uint32_t number, const path_string & extension)

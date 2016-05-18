@@ -107,7 +107,6 @@ int _tmain(int argc, TCHAR **argv)
 		}
 
 	std::wstring target_folder = argv[target];
-
 	pMTS_raw->execute(target_folder);
 	delete pMTS_raw;
 

@@ -26,23 +26,13 @@ namespace IO
 	};
 
 
-	inline uint32_t getBytesForBlock(uint32_t data_pos, uint32_t data_size , uint32_t block_size)
+	inline uint32_t calcBlockSize(uint64_t current, uint64_t size, uint32_t block_size)
 	{
 		uint32_t bytes = 0;
-		if (data_pos + block_size <= data_size)
+		if (current + (uint64_t)block_size <= size)
 			bytes = block_size;
 		else
-			bytes = data_size - data_pos;
-		return bytes;
-	}
-
-	inline uint32_t getBytesForBlock(uint64_t data_pos, uint64_t data_size, uint32_t block_size)
-	{
-		uint32_t bytes = 0;
-		if (data_pos + block_size <= data_size)
-			bytes = block_size;
-		else
-			bytes = (uint32_t)(data_size - data_pos);
+			bytes = (uint32_t)(size - current);
 		return bytes;
 	}
 	inline bool isMultiple(uint64_t number, uint32_t multiple_by)
@@ -190,7 +180,8 @@ namespace IO
 			if (size_ != new_size)
 			{
 				size_ = new_size;
-				LARGE_INTEGER li = { size_ };
+				LARGE_INTEGER li = { 0 };
+				li.QuadPart = size_;
 				::SetFilePointerEx(hFile_, li, NULL, FILE_BEGIN);
 			}
 		}
@@ -328,7 +319,7 @@ namespace IO
 
 		uint64_t Size() const override
 		{
-			return physical_drive_->getNumberSectors();
+			return physical_drive_->getNumberSectors();	// return byte, not sectors
 		}
 
 		uint32_t ReadBlock(uint8_t * data, uint32_t read_size) override
@@ -352,7 +343,7 @@ namespace IO
 			while (data_pos < read_size)
 			{
 				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
-				setPosition(position_);
+				setPosition(position_);// ??? not work
 				if (!system_oi_->ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
 					return 0;
 				if (bytes_read == 0)

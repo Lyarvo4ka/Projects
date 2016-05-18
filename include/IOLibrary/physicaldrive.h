@@ -57,7 +57,7 @@ namespace IO
 		const uint8_t bits_8 = 8;
 		const uint8_t bytes = sizeof(uint16_t);
 
-		for (int i = 0; i < size / bytes; ++i)
+		for (uint32_t i = 0; i < size / bytes; ++i)
 		{
 			pBuffer[i] = pBuffer[i] << bits_8 | pBuffer[i] >> bits_8;
 		}
@@ -68,7 +68,7 @@ namespace IO
 	private:
 		uint32_t drive_number_;
 		uint32_t bytes_per_sector_;
-		uint64_t number_sectors_;
+		uint64_t size_;
 		uint32_t transfer_length_;
 		path_string path_;
 		path_string drive_name_;
@@ -76,7 +76,7 @@ namespace IO
 	public:
 		PhysicalDrive()
 			: drive_number_(0)
-			, number_sectors_(0)
+			, size_(0)
 			, bytes_per_sector_(0)
 			, path_(L"")
 			, drive_name_(L"")
@@ -108,13 +108,17 @@ namespace IO
 		{
 			return drive_number_;
 		}
-		void setNumberSectors(uint64_t number_sectors)
+		void setSize(uint64_t size)
 		{
-			number_sectors_ = number_sectors;
+			this->size_ = size;
+		}
+		uint64_t getSize() const
+		{
+			return size_;
 		}
 		uint64_t getNumberSectors() const
 		{
-			return number_sectors_;
+			return (getBytesPerSector() != 0 ) ? getSize()/ getBytesPerSector() : 0;
 		}
 		void setTransferLength(uint32_t transfer_length)
 		{
@@ -247,7 +251,7 @@ namespace IO
 				return FALSE;
 
 			physical_drive->setBytesPerSector(disk_geometry_ex.Geometry.BytesPerSector);
-			physical_drive->setNumberSectors(disk_geometry_ex.DiskSize.QuadPart);
+			physical_drive->setSize(disk_geometry_ex.DiskSize.QuadPart);
 
 			STORAGE_ADAPTER_DESCRIPTOR storage_descriptor = { 0 };
 			if (!readDeviceDescriptor(drive_path, storage_descriptor))

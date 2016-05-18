@@ -26,7 +26,7 @@ inline PhysicalDrivePtr create_fake_physical_drive(uint32_t drive_number)
 	physical_drive->setDriveName(L"Physical drive " + std::to_wstring(drive_number));
 	physical_drive->setPath(L"drive path " + std::to_wstring(drive_number));
 	physical_drive->setTransferLength(1024);
-	physical_drive->setNumberSectors(1000);
+	physical_drive->setSize(1000*512);
 	physical_drive->setBytesPerSector(512);
 	physical_drive->setSerialNumber("serial number " + std::to_string(drive_number));
 	return physical_drive;
