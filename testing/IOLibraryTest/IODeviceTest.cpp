@@ -55,11 +55,15 @@ BOOST_AUTO_TEST_CASE(TestOpenDiskDevice)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_AUTO_TEST_CASE(TestgetBytesForBlock)
+BOOST_AUTO_TEST_CASE(TestcalcBlockSize)
 {
-	BOOST_CHECK_EQUAL(getBytesForBlock(0, 0, 0), 0);
-	BOOST_CHECK_EQUAL(getBytesForBlock(1023, 1024, 256), 1);
-	BOOST_CHECK_EQUAL(getBytesForBlock(0, 512, 1024), 512);
+	BOOST_CHECK_EQUAL(IO::calcBlockSize(0, 0, 0), 0);
+	BOOST_CHECK_EQUAL(IO::calcBlockSize(1023, 1024, 256), 1);
+	BOOST_CHECK_EQUAL(IO::calcBlockSize(0, 512, 1024), 512);
+	uint64_t current = 5368709120;
+	uint64_t size = 5368709140;
+	BOOST_CHECK_EQUAL(IO::calcBlockSize(current, size, 256), size - current);
+
 
 }
 
@@ -121,7 +125,7 @@ BOOST_AUTO_TEST_CASE(TestDiskDeviceReadDataNormally)
 	uint32_t expected = buff_size;
 	disk_device_->setPosition(0);
 
-	BOOST_CHECK_EQUAL(disk_device_->ReadDataNormally(buff, buff_size), expected);
+	BOOST_CHECK_EQUAL(disk_device_->ReadData(buff, buff_size), expected);
 	BOOST_CHECK_EQUAL(disk_device_->getPosition(), expected);
 }
 

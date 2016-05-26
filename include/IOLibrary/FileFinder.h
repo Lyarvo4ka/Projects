@@ -35,14 +35,7 @@ const IO::path_string TwoDot = L"..";
 const IO::path_string mask_all = L"*.*";
 
 
-inline IO::path_string AddBackSlash(const IO::path_string & path_str)
-{
-	IO::path_string new_string(path_str);
-	if (*path_str.rbegin() != L'\\')
-		new_string.push_back(L'\\');
 
-	return new_string;
-}
 
 inline bool isOneDotOrTwoDots(const IO::path_string & name_string)
 {

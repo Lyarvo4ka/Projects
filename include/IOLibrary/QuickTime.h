@@ -3,6 +3,7 @@
 #include "IODevice.h"
 
 #include "constants.h"
+#include "iofs.h"
 
 
 namespace IO
@@ -46,26 +47,25 @@ namespace IO
 		}
 	}
 
-	// not work
-	inline path_string NumberToString(const uint32_t number)
+	inline path_string toNumberString(const uint32_t number)
 	{
-		const int numValues = 10;
+		const int numValues = 11;
 		wchar_t buff[numValues];
 		ZeroMemory(buff, sizeof(wchar_t) * numValues);
 
-		swprintf_s(buff, numValues, L"%.9d", number);
+		swprintf_s(buff, numValues, L"%.10u", number);
 		path_string number_str(buff);
 		return number_str;
 	}
 
-	inline path_string MakeFileName(const uint32_t number, const path_string & extension)
+	inline path_string toNumberExtension(const uint32_t number, const path_string & extension)
 	{
-		return NumberToString(number) + extension;
+		return toNumberString(number) + extension;
 	}
-
-	inline path_string MakeFilePath(const path_string & folder, const uint32_t number, const path_string & extension)
+	//inline path_string add
+	inline path_string toFullPath(const path_string & folder, const uint32_t number, const path_string & extension)
 	{
-		return folder + NumberToString(number) + extension;
+		return addBackSlash(folder) + toNumberString(number) + extension;
 	}
 
 
@@ -225,7 +225,7 @@ namespace IO
 
 			while (cur_pos < copy_size)
 			{
-				bytes_to_copy = getBytesForBlock(cur_pos, copy_size, block_size_);
+				bytes_to_copy = calcBlockSize(cur_pos, copy_size, block_size_);
 
 				read_pos = offset + cur_pos;
 

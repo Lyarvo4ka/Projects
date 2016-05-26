@@ -11,6 +11,21 @@
 
 namespace IO
 {
+	inline path_string addBackSlash(const path_string & path_str)
+	{
+		IO::path_string new_string(path_str);
+		if (*path_str.rbegin() != L'\\')
+			new_string.push_back(L'\\');
+
+		return new_string;
+	}
+
+	inline bool createFoldersFromPath(const path_string & path)
+	{
+
+		return false;
+	}
+
 	class DirectoryNode;
 	//using ListDirectories = std::list<DirectoryNode::Ptr>;
 	//using ListFiles = std::list<DirectoryNode::Ptr>;

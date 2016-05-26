@@ -342,7 +342,7 @@ namespace IO
 
 			while (data_pos < read_size)
 			{
-				bytes_to_read = getBytesForBlock(data_pos, read_size, transfer_size);
+				bytes_to_read = calcBlockSize(data_pos, read_size, transfer_size);
 				setPosition(position_);// ??? not work
 				if (!system_oi_->ReadFile(hDrive_, data + data_pos, bytes_to_read, &bytes_read, NULL))
 					return 0;
