@@ -319,7 +319,7 @@ namespace IO
 
 		uint64_t Size() const override
 		{
-			return physical_drive_->getNumberSectors();	// return byte, not sectors
+			return physical_drive_->getSize();	// return byte, not sectors
 		}
 
 		uint32_t ReadBlock(uint8_t * data, uint32_t read_size) override

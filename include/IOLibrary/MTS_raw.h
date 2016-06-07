@@ -29,7 +29,7 @@ namespace IO
 
 	class RawMTS
 	{
-		static const uint32_t FRANE_SIZE = 192;
+		static const uint32_t FRAME_SIZE = 192;
 		static const uint32_t BLOCK_SIZE = 192 * 512;
 	private:
 		uint32_t block_size_;
@@ -65,9 +65,9 @@ namespace IO
 				return;
 			}
 
-			uint64_t offset = (uint64_t)0x17769380200;
+			uint64_t offset = (uint64_t)0x0;
 			uint64_t header_offset = 0;
-			uint32_t counter = 94;
+			uint32_t counter = 0;
 			while (true)
 			{
 				if (!findMTSOffset(offset, header_offset))
@@ -136,7 +136,6 @@ namespace IO
 			uint64_t offset = header_offset;
 
 			bool bCountinue = true;
-			bool bFoundHeader = false;
 			while (offset < device_->Size())
 			{
 				device_->setPosition(offset);
@@ -146,27 +145,8 @@ namespace IO
 
 				bCountinue = true;
 				uint32_t iFrame = 0;
-				for ( iFrame = 0; iFrame < bytes_read; iFrame += FRANE_SIZE)
+				for ( iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
 				{
-					if (isMTSFooter(buffer.data + iFrame))
-					{
-						uint64_t footer_offset = offset + (uint64_t)iFrame;
-						wprintf(L"Found MTS footer %lld (bytes)\n", footer_offset);
-						bCountinue = false;
-						iFrame += FRANE_SIZE;
-						break;
-					}
-
-					//if ((iFrame % sector_size_) == 0)
-					//	if (isMTSHeader(buffer.data + iFrame))
-					//	{
-					//		bFoundHeader = true;
-					//		bCountinue = false;
-
-					//		wprintf(L"Found MTS header in mts file. Start saving new file\n");
-					//		break;
-					//	}
-
 					if (buffer.data[iFrame + marker_0x47_offset] != marker_0x47)
 					{
 						wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
@@ -174,18 +154,12 @@ namespace IO
 						break;
 					}
 				}
-				if ( bCountinue)
-					AppendFile(write_file, buffer.data, bytes_read);
-				else
+				AppendFile(write_file, buffer.data, iFrame);
+
+				if ( !bCountinue )
 				{
-					AppendFile(write_file, buffer.data, iFrame);
 					uint64_t new_offset = offset;
-					if (bFoundHeader)
-					{
-						new_offset += alingToSector(iFrame, sector_size_) - 1;
-					}
-					else
-						new_offset += alingToSector(iFrame, sector_size_);
+					new_offset += alingToSector(iFrame, sector_size_);
 					return new_offset;
 				}
 
@@ -193,7 +167,7 @@ namespace IO
 				offset += bytes_read;
 			}
 
-
+			return header_offset;
 
 		}
 		bool AppendFile(File & file_to_write, uint8_t * data, uint32_t data_size)

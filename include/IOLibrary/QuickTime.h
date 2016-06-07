@@ -119,7 +119,7 @@ namespace IO
 					wprintf(L"Not Found Header\n");
 					break;
 				}
-				auto target_file = MakeFilePath(target_folder, counter++, L".mov");
+				auto target_file = toFullPath(target_folder, counter++, L".mov");
 				offset = SaveToFile(header_offset, target_file);
 				offset += default_sector_size;
 

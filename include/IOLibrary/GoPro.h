@@ -108,7 +108,7 @@ public:
 			qt_block_t * pQt_block = (qt_block_t *)buffer.data;
 			if (IO::isQuickTimeHeader(pQt_block))
 			{
-				path_string target_name = MakeFilePath(folder, counter++, L".mp4");
+				path_string target_name = toFullPath(folder, counter++, L".mp4");
 
 				cluster_number = SaveFile_WithoutLRV(cluster_number, target_name);
 
