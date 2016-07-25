@@ -8,6 +8,7 @@
 
 #include <boost/filesystem.hpp>
 
+#pragma warning(disable:4251)
 
 namespace IO
 {
@@ -113,6 +114,14 @@ namespace IO
 			auto new_folder = CreateDirectoryNode(directory_name);
 			new_folder->setParent(this);
 			directories_.push_back(new_folder);
+		}
+
+		// tmp function
+
+		void AddDirectory(DirectoryNode::Ptr directory_node)
+		{
+			directory_node->setParent(this);
+			directories_.push_back(directory_node);
 		}
 
 		void AddFile(const path_string & file_name)

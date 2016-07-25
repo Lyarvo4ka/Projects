@@ -38,7 +38,7 @@ void Signture_Testing(const std::string & folder)
 
 
 		bool isGoodHeader = false;
-		for (auto iByte = 0; iByte < bytesRead; ++iByte)
+		for (DWORD iByte = 0; iByte < bytesRead; ++iByte)
 			if ( buff[iByte] != 0x00 )
 			{
 				isGoodHeader = true;
@@ -53,7 +53,8 @@ void Signture_Testing(const std::string & folder)
 			}
 			catch (const boost::filesystem::filesystem_error& e)
 			{
-				printf("Error remove file %s\r\n", file_name.c_str());
+				auto error_str = e.what();
+				printf("Error remove file %s. \r\n", file_name.c_str() );
 			}
 		}
 

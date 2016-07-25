@@ -28,7 +28,7 @@ namespace IO
 
 	bool isQuickTimeHeader(const qt_block_t * pQtBlock)
 	{
-		for (auto iKeyword = 0; iKeyword < 3; ++iKeyword)
+		for (auto iKeyword = 0; iKeyword < 1; ++iKeyword)
 			if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
 				return true;
 		return false;
@@ -46,6 +46,8 @@ namespace IO
 			byte_buffer[type_size - iByte - 1] = temp;
 		}
 	}
+
+	void IOLIBRARY_EXPORT to_big_endian32(uint32_t & val);
 
 	inline path_string toNumberString(const uint32_t number)
 	{
@@ -67,8 +69,8 @@ namespace IO
 	{
 		return addBackSlash(folder) + toNumberString(number) + extension;
 	}
-
-
+	
+#include "iofunctions.h"
 	class QuickTimeRaw
 	{
 	private:
@@ -122,7 +124,6 @@ namespace IO
 				auto target_file = toFullPath(target_folder, counter++, L".mov");
 				offset = SaveToFile(header_offset, target_file);
 				offset += default_sector_size;
-
 			}
 		}
 
@@ -141,7 +142,7 @@ namespace IO
 					break;
 				}
 
-				for (int iSector = 0; iSector < bytes_read; iSector += sector_size_)
+				for (uint32_t iSector = 0; iSector < bytes_read; iSector += sector_size_)
 				{
 					qt_block_t * pQt_block = (qt_block_t *)&buffer.data[iSector];
 					if (isQuickTimeHeader(pQt_block))
@@ -157,7 +158,7 @@ namespace IO
 		uint64_t SaveToFile(const uint64_t header_offset, const path_string & target_name)
 		{
 			File write_file(target_name);
-			if (!write_file.Open(OpenMode::OpenWrite))
+			if (!write_file.Open(OpenMode::Create))
 				return header_offset;
 
 			uint64_t keyword_offset = header_offset;
@@ -174,7 +175,8 @@ namespace IO
 				if (qt_block.block_size == 0)
 					break;
 
-				qt_block.block_size = ntohl(qt_block.block_size);
+				to_big_endian32((uint32_t &)qt_block.block_size);
+
 
 
 				if (!isQuickTime(&qt_block))
@@ -220,7 +222,7 @@ namespace IO
 
 			uint32_t bytesRead = 0;
 			uint32_t bytesWritten = 0;
-			uint64_t write_offset = 0;
+			uint64_t write_offset = target_file->Size();
 
 
 			while (cur_pos < copy_size)
@@ -244,7 +246,7 @@ namespace IO
 			}
 
 
-			return true;
+			return cur_pos;
 		}
 		uint64_t ReadQtAtomSize(qt_block_t &qt_block, uint64_t keyword_offset)
 		{

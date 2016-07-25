@@ -36,50 +36,60 @@ void show_error_invalid_params()
 //
 //////////////////////////////////////////////////////////////////////////
 /*
-if (argc == 4)
-{
-const int opt = 1;
-const int source = 2;
-const int target = 3;
 
-std::wstring option = argv[opt];
-IO::QuickTimeRaw *pQt_raw = nullptr;
-
-if (option.compare(L"-d") == 0)
-{
-auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
-
-auto drive_list = IO::ReadPhysicalDrives();
-auto physical_drive = drive_list.find_by_number(drive_number);
-pQt_raw = new IO::QuickTimeRaw(new IO::DiskDevice(physical_drive));
-pQt_raw->setBlockSize(physical_drive->getTransferLength());
-pQt_raw->setSectorSize(physical_drive->getBytesPerSector());
-}
-else
-if (option.compare(L"-f") == 0)
-{
-auto file_name = argv[source];
-pQt_raw = new IO::QuickTimeRaw(new IO::File(file_name));
-}
-
-std::wstring target_folder = argv[target];
-
-pQt_raw->execute(target_folder);
-delete pQt_raw;
-
-}
 show_help();
 
 
 */
 
 //#include "libstructstorage/libstructstorage.h"
-#include "IOLibrary/MTS_raw.h"
-
+//#include "IOLibrary/MTS_raw.h"
+//#include "IOLibrary/pageaddition.h"
+#include "IOLibrary/QuickTime.h"
 int _tmain(int argc, TCHAR **argv)
 {
+	if (argc == 4)
+	{
+		const int opt = 1;
+		const int source = 2;
+		const int target = 3;
 
-	
+		std::wstring option = argv[opt];
+		IO::QuickTimeRaw *pQt_raw = nullptr;
+
+		if (option.compare(L"-d") == 0)
+		{
+			auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+
+			auto drive_list = IO::ReadPhysicalDrives();
+			auto physical_drive = drive_list.find_by_number(drive_number);
+			pQt_raw = new IO::QuickTimeRaw(new IO::DiskDevice(physical_drive));
+			pQt_raw->setBlockSize(physical_drive->getTransferLength());
+			pQt_raw->setSectorSize(physical_drive->getBytesPerSector());
+		}
+		else
+			if (option.compare(L"-f") == 0)
+			{
+				auto file_name = argv[source];
+				pQt_raw = new IO::QuickTimeRaw(new IO::File(file_name));
+			}
+
+		std::wstring target_folder = argv[target];
+
+		pQt_raw->execute(target_folder);
+		delete pQt_raw;
+
+	}
+	//if (argc == 3)
+	//{
+	//	IO::path_string dump_file = argv[1];
+	//	IO::path_string image_file = argv[2];
+	//	PageAddition pageAddition(dump_file);
+	//	pageAddition.execute(image_file);
+	//}
+	//else
+	//	wprintf(L"Invalid params.");
+/*
 	if (argc == 4)
 	{
 	const int opt = 1;
@@ -111,7 +121,8 @@ int _tmain(int argc, TCHAR **argv)
 	delete pMTS_raw;
 
 	}
-	show_help();
+
+*/
 
 
 	//////////////////////////////////////////////////////////////////////////

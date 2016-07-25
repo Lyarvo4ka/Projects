@@ -201,13 +201,3 @@ BOOST_AUTO_TEST_CASE(isMlvBlock_Test)
 
 }
 
-#include <IOLibrary/MovRaw.h>
-BOOST_AUTO_TEST_CASE(to_big_endian64_Test)
-{
-	uint64_t expected = 0x0807060504030201;
-	uint64_t test_value = 0x0102030405060708;
-	to_big_endian64(test_value);
-
-	BOOST_CHECK_EQUAL(test_value, expected);
-
-}

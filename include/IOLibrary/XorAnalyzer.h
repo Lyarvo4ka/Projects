@@ -6,6 +6,8 @@
 #include <vector>
 using std::vector;
 
+#pragma warning(disable:4251)
+
 ULONGLONG NumBytesForBlock( DWORD block_size );
 int chunksPrerBlock( ULONGLONG block_size );
 

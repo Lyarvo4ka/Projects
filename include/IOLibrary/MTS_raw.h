@@ -108,7 +108,7 @@ namespace IO
 					break;
 				}
 
-				for (int iSector = 0; iSector < bytes_read; iSector += sector_size_)
+				for (DWORD iSector = 0; iSector < bytes_read; iSector += sector_size_)
 				{
 					uint8_t * pSector = (uint8_t *)&buffer.data[iSector];
 					if (isMTSHeader(pSector))

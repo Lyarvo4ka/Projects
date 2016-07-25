@@ -15,7 +15,7 @@
 
 inline bool isDirectoryAttribute(const WIN32_FIND_DATA & attributes)
 {
-	return attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY;
+	return (attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
 using path_list = std::list<IO::path_string>;
@@ -70,10 +70,10 @@ public:
 	}
 private:
 
-	void Find(IO::DirectoryNode::Ptr folder_node, const path_list & list_extensions)
+	void Find(IO::DirectoryNode::Ptr folder_node , const path_list & list_extensions)
 	{
 		IO::path_string current_folder = folder_node->getFullPath();
-		IO::path_string mask_folder(current_folder + mask_all);
+		IO::path_string mask_folder(IO::addBackSlash(current_folder) + mask_all);
 		HANDLE hFindFile = INVALID_HANDLE_VALUE;
 		WIN32_FIND_DATA findData = { 0 };
 
@@ -90,8 +90,11 @@ private:
 				if (isDirectoryAttribute(findData))
 				{
 					IO::path_string new_folder = findData.cFileName;
-					folder_node->AddDirectory(new_folder);
-					//Find(new_folder, list_extensions);
+
+					auto new_folder_node = IO::DirectoryNode::CreateDirectoryNode(new_folder);
+
+					folder_node->AddDirectory(new_folder_node);
+					Find(new_folder_node, list_extensions);
 				}
 
 				// Than it's must be file

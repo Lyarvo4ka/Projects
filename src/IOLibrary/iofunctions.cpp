@@ -620,7 +620,7 @@ void IO::SaveOnlyData( const std::string & source_file , const std::string & tar
 			break;
 
 		write_offset = 0;
-		for ( int iSector = 0 ; iSector < bytesRead ; iSector += SECTOR_SIZE )
+		for ( DWORD iSector = 0 ; iSector < bytesRead ; iSector += SECTOR_SIZE )
 		{
 			if ( IO::isDataSector( &read_data[iSector] ) )
 			{

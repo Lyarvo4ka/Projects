@@ -1,8 +1,8 @@
 #pragma once
 #include "QuickTime.h"
-using namespace IO;
+//using namespace IO;
 
-
+/*
 class GoPro
 
 {
@@ -119,3 +119,4 @@ public:
 	}
 
 };
+*/

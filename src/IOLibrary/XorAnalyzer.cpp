@@ -14,7 +14,7 @@ ULONGLONG NumBytesForBlock( DWORD block_size )
 
 int chunksPrerBlock( ULONGLONG block_size )
 {
-	return block_size / BS::GB;
+	return (int)(block_size / BS::GB);
 }
 
 
@@ -49,7 +49,7 @@ BYTE ByteCount::getMax()
 	{
 		if (bytes_[i] > dwMax)
 		{
-			popularByte = i;
+			popularByte = (BYTE)i;
 			dwMax = bytes_[i];
 		}
 	}
@@ -142,7 +142,7 @@ void XorAnalyzer::Analize(const std::string & result_xor, DWORD xor_size)
 
 			if (IO::isBlockNot00andFF(pBuffer, bytesRead))
 			{
-				for (int nByte = 0; nByte < bytesRead; ++nByte)
+				for (DWORD nByte = 0; nByte < bytesRead; ++nByte)
 					pByteCounts[nByte].add(pBuffer[nByte]);
 			}
 

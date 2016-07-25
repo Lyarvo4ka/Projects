@@ -93,9 +93,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="EntropyTest.cpp" />
+    <ClCompile Include="FileFinderTest.cpp" />
     <ClCompile Include="IODeviceTest.cpp" />
     <ClCompile Include="IOLibraryTest.cpp" />
+    <ClCompile Include="PageAdditionTest.cpp" />
     <ClCompile Include="physicaldrivetest.cpp" />
     <ClCompile Include="quicktimetest.cpp" />
     <ClCompile Include="stdafx.cpp">

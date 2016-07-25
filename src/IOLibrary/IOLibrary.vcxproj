@@ -93,7 +93,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BlockNumber.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -110,6 +109,7 @@
     <ClCompile Include="MovRaw.cpp" />
     <ClCompile Include="MTS_raw.cpp" />
     <ClCompile Include="physicaldrive.cpp" />
+    <ClCompile Include="QuickTime.cpp" />
     <ClCompile Include="SignatureTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -119,7 +119,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\AbstractRaw.h" />
-    <ClInclude Include="..\..\include\IOLibrary\BlockNumber.h" />
     <ClInclude Include="..\..\include\IOLibrary\calcRaid5Parity.h" />
     <ClInclude Include="..\..\include\IOLibrary\ChangeHeader.h" />
     <ClInclude Include="..\..\include\IOLibrary\constants.h" />
@@ -140,6 +139,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />
     <ClInclude Include="..\..\include\IOLibrary\MTS_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
+    <ClInclude Include="..\..\include\IOLibrary\pageaddition.h" />
     <ClInclude Include="..\..\include\IOLibrary\PanasonicRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\physicaldrive.h" />
     <ClInclude Include="..\..\include\IOLibrary\QuickTime.h" />

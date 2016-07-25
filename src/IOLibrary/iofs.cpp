@@ -12,7 +12,7 @@ namespace IO
 		auto  pParent = parent_;
 		while (pParent)
 		{
-			full_path.insert(0, pParent->getName() + back_slash);
+			full_path.insert(0, addBackSlash(pParent->getName()));
 			pParent = pParent->getParent();
 		}
 		return full_path;
