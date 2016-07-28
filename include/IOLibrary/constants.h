@@ -17,8 +17,16 @@ const uint64_t ERROR_RESULT = _UI64_MAX;
 namespace IO
 {
 	using path_string = std::wstring;
+	using path_list = std::list<IO::path_string>;
+
 	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };
+
 	const wchar_t back_slash = L'\\';
+	const path_string UNC_prefix = L"\\\\?\\";
+	const path_string OneDot = L".";
+	const path_string TwoDot = L"..";
+	const path_string mask_all = L"*.*";
+
 };
 
 #include <array>

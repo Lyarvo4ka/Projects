@@ -149,6 +149,7 @@
     <ClInclude Include="..\..\include\IOLibrary\stdafx.h" />
     <ClInclude Include="..\..\include\IOLibrary\targetver.h" />
     <ClInclude Include="..\..\include\IOLibrary\Translator.h" />
+    <ClInclude Include="..\..\include\IOLibrary\utility.h" />
     <ClInclude Include="..\..\include\IOLibrary\XorAnalyzer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
