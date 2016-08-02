@@ -3,8 +3,8 @@
 
 #include "iolibrary_global.h"
 #include "constants.h"
+#include "utility.h"
 #include <memory>
-#include <list>
 
 #include <boost/filesystem.hpp>
 
@@ -14,8 +14,6 @@ namespace IO
 {
 
 	class DirectoryNode;
-	//using ListDirectories = std::list<DirectoryNode::Ptr>;
-	//using ListFiles = std::list<DirectoryNode::Ptr>;
 
 	class IOLIBRARY_EXPORT Node
 	{
@@ -88,6 +86,7 @@ namespace IO
 	private:
 		std::list<DirectoryNode::Ptr> directories_;
 		std::list<FileNode::Ptr> files_;
+		mutable std::list<FileNode::Ptr>::const_iterator fileIter_;
 	public:
 		DirectoryNode(const path_string & directory_name)
 			: Node(directory_name)
@@ -117,18 +116,22 @@ namespace IO
 			files_.push_back(new_file);
 		}
 
-		//FileNode::Ptr getFirstFile() const
-		//{
-		//	auto fileIter = files_.begin();
-		//	if (fileIter != files_.end())
-		//		return *fileIter;
+		FileNode::Ptr getFirstFile() const
+		{
+			fileIter_ = files_.begin();
+			if (fileIter_ != files_.end())
+				return *fileIter_;
 
-		//	return nullptr;
-		//}
-		//FileNode::Ptr getNextFile() const 
-		//{
-
-		//}
+			return nullptr;
+		}
+		FileNode::Ptr getNextFile() const 
+		{
+			if (fileIter_ != files_.end())
+				++fileIter_;
+			if (fileIter_ != files_.end())
+				return *fileIter_;
+			return false;
+		}
 
 		//bool hasNext() const
 		//{

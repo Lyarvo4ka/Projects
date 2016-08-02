@@ -2,7 +2,7 @@
 #define FILEFINDER_H
 
 #include "iofs.h"
-#include "utility.h"
+
 
 namespace IO
 {
@@ -36,7 +36,22 @@ namespace IO
 			path_list list;
 			return list;
 		}
+		void printAll()
+		{
+			if (!rootFolder_)
+				return;
+			wprintf_s(L"Root: %s\n", rootFolder_->getFullPath().c_str());
+			if (auto file = rootFolder_->getFirstFile())
+			{
+				do
+				{
+					wprintf_s(L"%s\n", file->getFullPath().c_str());
 
+					file = rootFolder_->getNextFile();
+				} while (file != nullptr);
+			}
+
+		}
 	private:
 
 		void Find(IO::DirectoryNode::Ptr folder_node)

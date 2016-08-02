@@ -233,14 +233,14 @@ public:
 	}
 	void execute(const std::string source_folder , const std::string & target_folder)
 	{
-		stringlist files_path = readAllFiles(source_folder);
+		//stringlist files_path = readAllFiles(source_folder);
 
-		auto iter = files_path.begin();
-		while (iter != files_path.end())
-		{
-			analyze_file(*iter, target_folder);
-			++iter;
-		}
+		//auto iter = files_path.begin();
+		//while (iter != files_path.end())
+		//{
+		//	analyze_file(*iter, target_folder);
+		//	++iter;
+		//}
 
 	}
 

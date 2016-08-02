@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <string>
+#include <list>
 #include <stdint.h>
 
 #define SIZEOF_ARRAY( a ) (sizeof( a ) / sizeof( a[ 0 ] ))

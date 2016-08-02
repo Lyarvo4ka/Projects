@@ -320,16 +320,16 @@ class Mlv_repair
 public:
 	void repair_files(const std::string & folder)
 	{
-		stringlist mlv_ext = { ".mlv" };
-		FileFinder finder;
-		finder.FindFiles(folder, mlv_ext);
+		//stringlist mlv_ext = { ".mlv" };
+		//FileFinder finder;
+		//finder.FindFiles(folder, mlv_ext);
 
-		auto file_list = finder.getFileNames();
-		for (auto mlv_file : file_list)
-		{
-			repair_mlv_file(mlv_file);
-			//repair_file_size(mlv_file);
-		}
+		//auto file_list = finder.getFileNames();
+		//for (auto mlv_file : file_list)
+		//{
+		//	repair_mlv_file(mlv_file);
+		//	repair_file_size(mlv_file);
+		//}
 
 	}
 	void repair_file_size(const std::string & mlv_file)
