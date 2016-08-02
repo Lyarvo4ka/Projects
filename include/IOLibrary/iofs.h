@@ -116,6 +116,24 @@ namespace IO
 			new_file->setParent(this);
 			files_.push_back(new_file);
 		}
+
+		//FileNode::Ptr getFirstFile() const
+		//{
+		//	auto fileIter = files_.begin();
+		//	if (fileIter != files_.end())
+		//		return *fileIter;
+
+		//	return nullptr;
+		//}
+		//FileNode::Ptr getNextFile() const 
+		//{
+
+		//}
+
+		//bool hasNext() const
+		//{
+
+		//}
 	};
 
 

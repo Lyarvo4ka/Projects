@@ -17,24 +17,26 @@ namespace IO
 		{
 
 		}
-		void FindFiles(const std::string, stringlist ext_list)
-		{
-			// convert std::string to IO::path_string 
-		}
 		void FindFiles(const path_string & folder)
 		{
-			
+			this->rootFolder_ = IO::DirectoryNode::CreateDirectoryNode(folder);
+			Find(rootFolder_);
 		}
 		void FindFiles(const path_string & folder, const path_list & list_extensions)
 		{
-			this->rootFolder_ = IO::DirectoryNode::CreateDirectoryNode(folder);
 			this->list_ext_ = list_extensions;
-			Find(rootFolder_);
+			FindFiles(folder);
 		}
-		stringlist getFileNames() const {
-			stringlist list;
+		path_list getFileNames() const {
+			// TODO: 
+			// Find first file 
+			// find next file
+
+			// recursive ... repeat again in sub folder
+			path_list list;
 			return list;
 		}
+
 	private:
 
 		void Find(IO::DirectoryNode::Ptr folder_node)

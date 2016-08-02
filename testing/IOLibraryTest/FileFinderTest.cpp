@@ -6,12 +6,10 @@
 BOOST_AUTO_TEST_CASE(FindTest)
 {
 	IO::path_string root_folder = L"d:\\test_folder\\";
-	FileFinder finder;
+	IO::FileFinder finder;
 
-	path_list ext_list = { L".doc", L".docx" , L".xls", L".xlsx" };
+	IO::path_list ext_list = { L".doc", L".docx" , L".xls", L".xlsx" };
 
 	finder.FindFiles(root_folder, ext_list );
-
-	
 
 }
