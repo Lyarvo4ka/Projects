@@ -1,19 +1,19 @@
-#ifndef FILEFINDER_H
-#define FILEFINDER_H
+#ifndef FINDER_H
+#define FINDER_H
 
 #include "iofs.h"
 
 
 namespace IO
 {
-	class FileFinder
+	class Finder
 	{
 	private:
 		IO::DirectoryNode::Ptr rootFolder_;
 		path_list list_ext_;
 
 	public:
-		FileFinder()
+		Finder()
 		{
 
 		}
@@ -36,20 +36,35 @@ namespace IO
 			path_list list;
 			return list;
 		}
-		void printAll()
+		void printFiles(DirectoryNode::Ptr current_folder)
 		{
-			if (!rootFolder_)
-				return;
-			wprintf_s(L"Root: %s\n", rootFolder_->getFullPath().c_str());
-			if (auto file = rootFolder_->getFirstFile())
+
+			if (auto file = current_folder->getFirstFile())
 			{
 				do
 				{
 					wprintf_s(L"%s\n", file->getFullPath().c_str());
 
-					file = rootFolder_->getNextFile();
+					file = current_folder->getNextFile();
 				} while (file != nullptr);
 			}
+			if (auto folder = current_folder->getFirstFolder())
+			{
+				do
+				{
+					printFiles(folder);
+					folder = current_folder->getNextFolder();
+				} while (folder != nullptr);
+			}
+
+		}
+		void printAll()
+		{
+			if (!rootFolder_)
+				return;
+
+			wprintf_s(L"Root: %s\n", rootFolder_->getFullPath().c_str());
+			printFiles(rootFolder_);
 
 		}
 	private:

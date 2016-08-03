@@ -87,6 +87,7 @@ namespace IO
 		std::list<DirectoryNode::Ptr> directories_;
 		std::list<FileNode::Ptr> files_;
 		mutable std::list<FileNode::Ptr>::const_iterator fileIter_;
+		mutable std::list<DirectoryNode::Ptr>::const_iterator dirIter_;
 	public:
 		DirectoryNode(const path_string & directory_name)
 			: Node(directory_name)
@@ -130,7 +131,26 @@ namespace IO
 				++fileIter_;
 			if (fileIter_ != files_.end())
 				return *fileIter_;
-			return false;
+			return nullptr;
+		}
+
+		DirectoryNode::Ptr getFirstFolder() const
+		{
+			dirIter_ = directories_.begin();
+			if (dirIter_ != directories_.end())
+				return *dirIter_;
+			return nullptr;
+		}
+
+		DirectoryNode::Ptr getNextFolder() const
+		{
+			if (dirIter_ != directories_.end())
+			{
+				++dirIter_;
+				if (dirIter_ != directories_.end())
+					return *dirIter_;
+			}
+			return nullptr;
 		}
 
 		//bool hasNext() const

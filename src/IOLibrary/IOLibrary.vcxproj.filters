@@ -83,9 +83,6 @@
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\IOLibrary\FileFinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\djvu_raw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -153,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\Finder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
