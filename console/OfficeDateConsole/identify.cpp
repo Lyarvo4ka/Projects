@@ -4,9 +4,71 @@ const std::string core_xml_str = "core.xml";
 #include "../ZipLib/ZipFile.h"
 #include "../libTinyXML2/tinyxml2.h"
 
-#include "IOLibrary/FileFinder.h"
+#include "IOLibrary/Finder.h"
 #include "libstructstorage/libstructstorage.h"
 
+OfficeTester::OfficeTester() :ext_list_({ L".doc",L".xls",L".ppt" })
+{
+
+}
+
+void OfficeTester::checkFiles(IO::path_string & folder)
+{
+	IO::Finder finder;
+	finder.FindFiles(folder, ext_list_);
+	auto root_folder = finder.getFiles();
+
+	listFiles(root_folder);
+}
+
+void OfficeTester::listFiles(IO::DirectoryNode::Ptr dir_node)
+{
+	if (auto file = dir_node->getFirstFile())
+	{
+		auto folder_path = dir_node->getFullPath();
+		do
+		{
+			// TODO:::::
+			auto file_name = file->getName();
+
+			if (IO::isOffice2003(IO::getExtension(file_name)))
+				test_file(folder_path, file_name);
+			file = dir_node->getNextFile();
+		} while (file != nullptr);
+	}
+	if (auto folder = dir_node->getFirstFolder())
+	{
+		do
+		{
+			listFiles(folder);
+			folder = dir_node->getNextFolder();
+		} while (folder != nullptr);
+	}
+}
+
+void OfficeTester::test_file(const IO::path_string & folder, const IO::path_string & file)
+{
+	// Test file signature
+	SSReader ssreader;
+	auto file_path = IO::addBackSlash(folder) + file;
+	auto pStorage = ssreader.open_storage(file_path);
+	if (pStorage)
+	{
+		wprintf_s(L"%s - ", file_path.c_str());
+		if (ssreader.read_storage(pStorage))
+		{
+			wprintf_s(L"OK\n");
+		}
+		else
+			wprintf_s(L"FALSE\n");
+
+	}
+
+
+
+}
+
+/*
 
 
 void identify_files(const std::string & source_dir, const std::string & target_dir)
@@ -146,3 +208,6 @@ bool identify_office2007(const std::string & file_name, std::string & new_filena
 	return false;
 }
 
+
+
+*/

@@ -27,22 +27,19 @@ namespace IO
 			this->list_ext_ = list_extensions;
 			FindFiles(folder);
 		}
-		path_list getFileNames() const {
-			// TODO: 
-			// Find first file 
-			// find next file
-
-			// recursive ... repeat again in sub folder
-			path_list list;
-			return list;
+		DirectoryNode::Ptr getFiles()
+		{
+			return rootFolder_;
 		}
 		void printFiles(DirectoryNode::Ptr current_folder)
 		{
 
 			if (auto file = current_folder->getFirstFile())
 			{
+				auto folder_path = current_folder->getFullPath();
 				do
 				{
+					
 					wprintf_s(L"%s\n", file->getFullPath().c_str());
 
 					file = current_folder->getNextFile();

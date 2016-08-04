@@ -8,9 +8,9 @@ namespace IO
 {
 	inline path_string addBackSlash(const path_string & path_str)
 	{
-		IO::path_string new_string(path_str);
-		if (*path_str.rbegin() != L'\\')
-			new_string.push_back(L'\\');
+		path_string new_string(path_str);
+		if (*path_str.rbegin() != back_slash)
+			new_string.push_back(back_slash);
 
 		return new_string;
 	}
@@ -25,7 +25,7 @@ namespace IO
 		return (attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 	}
 
-	inline bool isOneDotOrTwoDots(const IO::path_string & name_string)
+	inline bool isOneDotOrTwoDots(const path_string & name_string)
 	{
 		if (name_string.compare(OneDot) == 0)
 			return true;
@@ -35,7 +35,7 @@ namespace IO
 	}
 
 
-	inline bool isPresentInList(const IO::path_string & text_value, const path_list & listToFind)
+	inline bool isPresentInList(const path_string & text_value, const path_list & listToFind)
 	{
 		auto str = text_value;
 		boost::algorithm::to_lower(str);
@@ -43,5 +43,20 @@ namespace IO
 		return (findIter != listToFind.end()) ? true : false;
 	}
 
+	inline path_string getExtension(const path_string & file_name)
+	{
+		boost::filesystem::path file_path(file_name);	// can crash ????
+		return file_path.extension().generic_wstring();
+	}
+
+	inline bool isOffice2003(const path_string & file_extension)
+	{
+		return isPresentInList(file_extension, listExtensions2003);
+	}
+
+	inline bool isOffice2007(const path_string & file_extension)
+	{
+		return isPresentInList(file_extension, listExtensions2007);
+	}
 
 };

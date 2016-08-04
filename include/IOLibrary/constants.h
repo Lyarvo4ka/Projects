@@ -18,7 +18,7 @@ const uint64_t ERROR_RESULT = _UI64_MAX;
 namespace IO
 {
 	using path_string = std::wstring;
-	using path_list = std::list<IO::path_string>;
+	using path_list = std::list<path_string>;
 
 	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };
 
@@ -27,6 +27,10 @@ namespace IO
 	const path_string OneDot = L".";
 	const path_string TwoDot = L"..";
 	const path_string mask_all = L"*.*";
+
+	const path_list listExtensions2007 = { L".docx",L".xlsx",L".pptx" };
+	const path_list listExtensions2003 = { L".doc",L".xls",L".ppt" };
+
 
 };
 

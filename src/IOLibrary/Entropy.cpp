@@ -1,5 +1,5 @@
 #include "Entropy.h"
-#include "FileFinder.h"
+#include "Finder.h"
 
 
 

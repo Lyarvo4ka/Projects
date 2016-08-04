@@ -220,6 +220,8 @@ private:
 			if (FAILED(pStorage->EnumElements(0, nullptr, 0, &iEnumStg)))
 				return false;
 
+			const OLECHAR * wordDocumentName = L"WordDocument";
+
 			STATSTG statstg = { 0 };
 			wprintf(L"\n\nSTART ENUM\n");
 			auto hr = iEnumStg->Next(1, &statstg, NULL);
@@ -227,25 +229,32 @@ private:
 			IStream *pStream = NULL;
 			while (hr == S_OK)
 			{
+				wprintf(L"%s\n", statstg.pwcsName);
+
 				switch (statstg.type)
 				{
 				case STGTY_STREAM:
-					
-					if (SUCCEEDED(pStorage->OpenStream(statstg.pwcsName, NULL, STGM_READ | STGM_SHARE_EXCLUSIVE, 0, &pStream) ) )
+					if  (wcscmp(statstg.pwcsName , wordDocumentName) == 0 )
 					{
-						auto strream_size = statstg.cbSize.QuadPart;
-						if (SUCCEEDED(ReadStream(pStream, strream_size)) )
-							bOpenResult = true;
-						else
+						if (SUCCEEDED(pStorage->OpenStream(statstg.pwcsName, NULL, STGM_READ | STGM_SHARE_EXCLUSIVE, 0, &pStream)))
 						{
-							wprintf(L"Error read stream.\n");
-							return false;
+							auto strream_size = statstg.cbSize.QuadPart;
+							if (SUCCEEDED(ReadStream(pStream, strream_size)))
+							{
+								
+								bOpenResult = true;
+								return bOpenResult;
+							}
+							else
+							{
+								wprintf(L"Error read stream.\n");
+								return false;
+							}
+
 						}
-
+						else
+							return false;
 					}
-					else
-						return false;
-
 					break;
 				//case STGTY_STORAGE:
 				//	// read storage inside
@@ -255,7 +264,6 @@ private:
 					break;
 				}
 
-				wprintf(L"%s\n", statstg.pwcsName);
 				hr = iEnumStg->Next(1, &statstg, nullptr);
 			}
 			return bOpenResult;

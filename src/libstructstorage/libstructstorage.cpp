@@ -206,7 +206,7 @@ IPropertySetStorage * SSReader::toPropertySetStorage(IStorage * pStorage)
 
 IStorage * SSReader::open_storage(const std::wstring & file)
 {
-	wprintf(L"%s",file.c_str());
+//	wprintf(L"%s",file.c_str());
 
 	HRESULT hr = S_OK;
 	IStorage *pStorage = NULL;

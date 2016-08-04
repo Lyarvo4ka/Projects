@@ -4,13 +4,29 @@
 #define NOMINMAX
 #include <windows.h>
 
+#include "IOLibrary/iofs.h"
+
 const std::string docx_extension = ".docx";
 const std::string xlsx_extension = ".xlsx";
 const std::string pptx_extension = ".pptx";
 
-void identify_files(const std::string & source_dir, const std::string & target_dir);
-bool identify_office2003(const std::string & file_name, std::string & new_filename, int counter);
-bool identify_office2007(const std::string & file_name, std::string & new_filename, int counter);
+class OfficeTester
+{
+private:
+	IO::path_list ext_list_;
+public:
+	OfficeTester();
+	void checkFiles(IO::path_string & folder);
+
+	void listFiles(IO::DirectoryNode::Ptr dir_node);
+	void test_file(const IO::path_string & folder, const IO::path_string & file);
+
+};
+
+//void identify_files(const std::string & source_dir, const std::string & target_dir);
+//bool identify_office2003(const std::string & file_name, std::string & new_filename, int counter);
+//bool identify_office2007(const std::string & file_name, std::string & new_filename, int counter);
+//
 
 inline bool isOffice2007(const std::string & extension)
 {
