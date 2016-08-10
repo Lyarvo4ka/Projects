@@ -63,9 +63,6 @@ void OfficeTester::test_file(const IO::path_string & folder, const IO::path_stri
 			wprintf_s(L"FALSE\n");
 
 	}
-
-
-
 }
 
 /*

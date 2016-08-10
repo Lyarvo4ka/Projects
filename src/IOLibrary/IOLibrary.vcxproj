@@ -126,6 +126,7 @@
     <ClInclude Include="..\..\include\IOLibrary\djvu_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\DVR_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\Entropy.h" />
+    <ClInclude Include="..\..\include\IOLibrary\ext2.h" />
     <ClInclude Include="..\..\include\IOLibrary\Finder.h" />
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h" />
     <ClInclude Include="..\..\include\IOLibrary\GoPro.h" />

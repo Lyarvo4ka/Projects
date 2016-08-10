@@ -722,7 +722,7 @@ void IO::JoinWithService(const std::string & data_file, const std::string & serv
 	HANDLE hTarget = INVALID_HANDLE_VALUE;
 
 	const int data_size = 8192;
-	const int service_size = 16;
+	const int service_size = 8;
 	const int page_size = data_size + service_size;
 
 	if (!IO::open_read(hData, data_file))

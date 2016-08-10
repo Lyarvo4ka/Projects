@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
 	OfficeTester tester;
 	tester.listFiles(finder.getFiles());
 
-	//setlocale(LC_ALL, "Russian"); 
+	//setlocale(LC_ALL, "Russian");		
 
 	//if (argc == 3)
 	//{

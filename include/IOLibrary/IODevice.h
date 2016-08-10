@@ -185,6 +185,10 @@ namespace IO
 				::SetFilePointerEx(hFile_, li, NULL, FILE_BEGIN);
 			}
 		}
+		path_string getFileName() const
+		{
+			return file_name_;
+		}
 	};
 
 	class BlockDevice
