@@ -89,41 +89,63 @@ struct ext2_struct_t
 	uint32_t inode_size;
 };
 
-class ext2_raw
-{
-private:
-	IODevice *device_;
-public:
-	ext2_raw(IODevice * device)
-		: device_(device)
-	{
 
-	}
-	void read_superblock(ext2_super_block * superblock, uint64_t offset)
+
+	class ext2_raw
 	{
-		if (!device_->isOpen())
+	private:
+		IODevice *device_;
+	public:
+		ext2_raw(IODevice * device)
+			: device_(device)
 		{
-			wprintf_s(L"Error. Device wasn't open.\n");
-			return;
-		}
-		device_->setPosition(offset);
-		Buffer buffer(default_linux_block);
-		if (device_->ReadData(buffer.data, buffer.data_size))
-			memcpy(superblock, buffer.data + superblock_offset, sizeof(ext2_super_block));
 
-	}
-	bool isSuperblock(ext2_super_block * pSuperblock)
-	{
-		if (pSuperblock)
+		}
+
+		bool read_superblock(ext2_super_block * superblock, uint64_t offset)
 		{
-			if (pSuperblock->s_magic == EXT2_SUPER_MAGIC)
-				return true;
+			if (!device_->isOpen())
+			{
+				device_->setPosition(offset);
+				Buffer buffer(default_linux_block);
+				if (device_->ReadData(buffer.data, buffer.data_size))
+				{
+					memcpy(superblock, buffer.data + superblock_offset, sizeof(ext2_super_block));
+					return true;
+				}
+			}
+			else
+				wprintf_s(L"Error. Device wasn't open.\n");
+
+			return true;
 		}
-		return false;
-	}
+
+		bool isSuperblock(ext2_super_block * pSuperblock)
+		{
+			if (pSuperblock)
+			{
+				if (pSuperblock->s_magic == EXT2_SUPER_MAGIC)
+					return true;
+			}
+			return false;
+		}
+
+		void execute()
+		{
+			ext2_super_block super_block = { 0 };
+			if (read_superblock(&super_block, 0))
+				return;
+
+			if (isSuperblock(&super_block))
+			{
+				wprintf_s(L"Error super_block\n");
+				return;
+			}
+			uint64_t offset = 0;
+			//while(offset )
+		}
+		
 
 
-
-
-};
+	};
 };
