@@ -13,6 +13,9 @@
 //typedef unsigned long long  uint64_t;
 
 const uint64_t ERROR_RESULT = _UI64_MAX;
+const uint64_t ERROR_OPEN_FILE = _UI64_MAX - 1;
+const uint64_t ERROR_READ_FILE = _UI64_MAX - 2;
+
 
 
 namespace IO

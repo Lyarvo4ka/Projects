@@ -2,6 +2,11 @@
 
 #include "IODevice.h"
 
+#include <map>
+#include <utility>
+#include <vector>
+#include <memory>
+
 /*
  * Structure of the super block
  */
@@ -82,6 +87,7 @@ struct ext2_super_block {
 const int default_linux_block = 4096;
 const int superblock_offset = 1024;
 const uint16_t EXT2_SUPER_MAGIC = 0xEF53;
+const int default_linux_blocks_read = 32;
 
 struct ext2_struct_t
 {
@@ -96,22 +102,25 @@ struct HeaderInfo_t
 	path_string ext;
 };
 
-#include <map>
-#include <utility>
-
+using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 
 	class ext2_raw
 	{
+		const uint32_t twelve_blocks = 12;
 	private:
 		IODevice *device_;
-		std::vector<HeaderInfo_t> headers_;
+		std::vector<HeaderInfoPtr> headers_;
+		uint32_t block_size_;
+		uint32_t blocks_count_;
 	public:
 		ext2_raw(IODevice * device)
 			: device_(device)
+			, block_size_(default_linux_block)
+			, blocks_count_(0)
 		{
 
 		}
-		void addHeaderInfo(const HeaderInfo_t & new_header)
+		void addHeaderInfo(HeaderInfoPtr new_header)
 		{
 			headers_.push_back(new_header);
 		}
@@ -221,10 +230,86 @@ struct HeaderInfo_t
 			return true;
 		}
 
-		bool isHeader(const uint8_t * data)
+		HeaderInfoPtr isHeader(const uint8_t * data)
 		{
-			//for ()
-			return false;
+			for (auto header : this->headers_)
+			{
+				if (memcmp(header->header, data, header->header_size) == 0)
+					return header;
+			}
+			return nullptr;
+		}
+
+		HeaderInfoPtr findHeader(const uint64_t start_offset, uint64_t &header_offset)
+		{
+			if (!this->device_)
+				return nullptr;
+			header_offset = start_offset;
+			Buffer buffer(default_block_size);
+			uint32_t bytesRead = 0;
+
+			while (header_offset < device_->Size())
+			{
+				bytesRead = this->device_->ReadData(buffer.data, buffer.data_size);
+				if (bytesRead == 0)
+				{
+					wprintf_s(L"Error read data FindHeader\n");
+					return nullptr;
+				}
+				for (uint32_t iBlock = 0; iBlock < bytesRead; iBlock += block_size_)
+				{
+					auto header_info = isHeader(buffer.data + iBlock);
+					if (header_info)
+					{
+						header_offset += iBlock;
+						return header_info;
+					}
+				}
+				header_offset += buffer.data_size;
+			}
+			return nullptr;
+		}
+
+		uint64_t saveFile(const uint64_t header_offset, path_string file_name)
+		{
+			File write_file(file_name);
+			if (!write_file.Open(OpenMode::Create))
+				return ERROR_OPEN_FILE;
+
+			uint32_t bytes_read = 0;
+			uint32_t bytes_written = 0;
+			uint32_t first_blocks_size = block_size_*twelve_blocks;
+			uint64_t table_offset = header_offset +(uint64_t)first_blocks_size;
+			Buffer table_buffer(block_size_);
+			
+			device_->setPosition(table_offset);
+			bytes_read = device_->ReadData(table_buffer.data, table_buffer.data_size);
+			if (bytes_read != table_buffer.data_size)
+				return ERROR_READ_FILE;
+
+			bool bFullTable = false;
+			if (!isTable(table_buffer.data, table_buffer.data_size, blocks_count_, bFullTable))
+				return ERROR_RESULT;
+
+			uint64_t offset = header_offset;
+			uint32_t buffer_size = block_size_ * default_linux_blocks_read;
+			Buffer buffer(buffer_size);
+			
+			device_->setPosition(offset);
+			bytes_read = device_->ReadData(buffer.data, first_blocks_size);
+			if (bytes_read != first_blocks_size)
+				return ERROR_READ_FILE;
+
+			write_file.WriteData(buffer.data, first_blocks_size);
+			if (bytes_written != first_blocks_size)
+				return ERROR_RESULT;	// add ERROR CODE;
+
+			//uint32_t * pBlockOffset = (uint32_t)table_buffer.data;
+			//for (uint32_t iBlock = 0; iBlock < table_buffer.data_size / sizeof (uint32_t); ++iBlock)
+			//{
+
+			//}
+
 		}
 
 		void execute()
@@ -238,9 +323,22 @@ struct HeaderInfo_t
 				wprintf_s(L"Error super_block\n");
 				return;
 			}
-			uint64_t offset = 0;
+			blocks_count_ = super_block.s_blocks_count;
 
-			//while(offset )
+			uint64_t offset = 0;
+			uint64_t header_offset = 0;
+
+			while (true)
+			{
+				header_offset = 0;
+				auto header_info = findHeader(offset, header_offset);
+				if ( !header_info)
+					break;
+
+
+
+
+			}
 		}
 		
 
