@@ -99,6 +99,12 @@ namespace Signatures
 	const int marker_0x27_size = SIZEOF_ARRAY(marker_0x27);
 
 
+	const uint8_t psd_header[] = { 0x38 , 0x42 , 0x50 , 0x53 , 0x00 , 0x01 };
+	const int psd_header_size = SIZEOF_ARRAY(psd_header);
+
+	const uint8_t cdr_header[] = { 0x52 , 0x49 , 0x46 , 0x46 };
+	const int cdr_header_size = SIZEOF_ARRAY(cdr_header);
+
 };
 
 const int SECTOR_SIZE = 512;

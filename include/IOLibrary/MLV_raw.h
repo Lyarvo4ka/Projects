@@ -4,7 +4,7 @@
 #include "constants.h"
 #include "iofunctions.h"
 #include "AbstractRaw.h"
-#include "FileFinder.h"
+#include "Finder.h"
 
 
 const uint32_t mlv_keyword_size = 4;

@@ -4,7 +4,7 @@
 #include <string>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
-#include "FileFinder.h"
+#include "Finder.h"
 #include "constants.h"
 
 inline std::string make_audio_name(const std::string & file_name, DWORD number)

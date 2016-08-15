@@ -89,17 +89,31 @@ struct ext2_struct_t
 	uint32_t inode_size;
 };
 
+struct HeaderInfo_t
+{
+	const uint8_t * header;
+	const uint32_t header_size;
+	path_string ext;
+};
+
+#include <map>
+#include <utility>
 
 
 	class ext2_raw
 	{
 	private:
 		IODevice *device_;
+		std::vector<HeaderInfo_t> headers_;
 	public:
 		ext2_raw(IODevice * device)
 			: device_(device)
 		{
 
+		}
+		void addHeaderInfo(const HeaderInfo_t & new_header)
+		{
+			headers_.push_back(new_header);
 		}
 
 		bool read_superblock(ext2_super_block * superblock, uint64_t offset)
@@ -130,6 +144,89 @@ struct ext2_struct_t
 			return false;
 		}
 
+		bool isTable(uint8_t * data, uint32_t data_size , uint32_t max_blocks , bool &bFullTable )
+		{
+			if (!data)
+				return false;
+
+			uint32_t * pValue = (uint32_t *)data;
+			uint32_t * pLast = (uint32_t *)(data + data_size);
+			uint32_t NullPos = 0;
+			bool bFoundNull = false;
+			
+			if (!isLessThanValue(pValue, pLast, max_blocks, NullPos))
+				return false;
+
+			if (NullPos == 0)
+				return false;
+
+			bFullTable = isFullTable(NullPos, data_size);
+			if ( !bFullTable )
+				if (!isOnlyNulls(pValue, pLast))
+					return false;
+
+			pValue = (uint32_t *)data;
+			if (hasDuplicates(pValue, pValue + NullPos))
+				return false;
+
+			return true;
+		}
+
+		bool isFullTable(uint32_t null_pos, uint32_t block_size)
+		{
+			return null_pos == block_size;
+		}
+
+		bool isLessThanValue(uint32_t *pStart, uint32_t * pLast, uint32_t value , uint32_t & null_pos)
+		{
+			while (pStart != pLast)
+			{
+				if (*pStart == 0)
+					return true;
+
+				if (*pStart > value)
+					return false;
+
+				++null_pos;
+				++pStart;
+			}
+			return true;
+
+		}
+
+		bool hasDuplicates(uint32_t *pStart, uint32_t * pLast)
+		{
+			std::map<uint32_t, uint32_t> mapValues;
+			while(pStart != pLast)
+			{
+				auto findIter = mapValues.find(*pStart);
+				if (findIter != mapValues.end())
+					return true;
+
+				mapValues.insert(std::make_pair(*pStart, *pStart));
+
+				++pStart;
+			}
+			return false;
+		}
+
+		bool isOnlyNulls(uint32_t * pStart , uint32_t * pLast)
+		{
+			while (pStart != pLast)
+			{
+				if (*pStart != 0)
+					return false;
+				++pStart;
+			}
+			return true;
+		}
+
+		bool isHeader(const uint8_t * data)
+		{
+			//for ()
+			return false;
+		}
+
 		void execute()
 		{
 			ext2_super_block super_block = { 0 };
@@ -142,6 +239,7 @@ struct ext2_struct_t
 				return;
 			}
 			uint64_t offset = 0;
+
 			//while(offset )
 		}
 		
