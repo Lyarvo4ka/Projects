@@ -108,6 +108,17 @@ namespace Signatures
 	const uint8_t cdr_header[] = { 0x52 , 0x49 , 0x46 , 0x46 };
 	const int cdr_header_size = SIZEOF_ARRAY(cdr_header);
 
+	const uint8_t tif_header[] = { 0x49 ,0x49 , 0x2A };
+	const int tif_header_size = SIZEOF_ARRAY(tif_header);
+
+	const uint8_t ai_header[] = { 0xC5 , 0xD0 , 0xD3 , 0xC6 , 0x20 , 0x00 , 0x00 , 0x00 };
+	const int ai_header_size = SIZEOF_ARRAY(ai_header);
+
+	const uint8_t office_2007_header[] = { 0x50 , 0x4B , 0x03 , 0x04 , 0x14 , 0x00 , 0x06 , 0x00 , 0x08 , 0x00 , 0x00 , 0x00 , 0x21 , 0x00 };
+	const int office_2007_header_size = SIZEOF_ARRAY(office_2007_header);
+
+	const uint8_t office_2003_header[] = { 0xD0 , 0xCF , 0x11 };
+	const int office_2003_header_size = SIZEOF_ARRAY(office_2003_header);
 };
 
 const int SECTOR_SIZE = 512;

@@ -45,20 +45,31 @@ show_help();
 //#include "libstructstorage/libstructstorage.h"
 //#include "IOLibrary/MTS_raw.h"
 //#include "IOLibrary/pageaddition.h"
-#include "IOLibrary/QuickTime.h"
+#include "IOLibrary/ext2.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	if (argc == 6)
-	{
-		const IO::path_string data_file = argv[1];
-		const IO::path_string service_file = argv[2];
-		const IO::path_string target_file = argv[3];
-		auto data_size = boost::lexical_cast<uint32_t>(argv[4]);
-		auto service_size = boost::lexical_cast<uint32_t>(argv[5]);
+	auto list_drives = IO::ReadPhysicalDrives();
+	auto physical_drive = list_drives.find_by_number(3);
+	if (!physical_drive)
+		return -1;
 
-	//////////////////////////MAIN FUNCTION///////////////////////////////
-		IO::JoinWithService(data_file, service_file, target_file, data_size, service_size);
-	}
+	IO::path_string target_folder = L"e:\\40152\\";
+	IO::DiskDevice source(physical_drive);
+	IO::ext2_raw ext2(&source);
+	ext2.execute(target_folder);
+	
+
+	//if (argc == 6)
+	//{
+	//	const IO::path_string data_file = argv[1];
+	//	const IO::path_string service_file = argv[2];
+	//	const IO::path_string target_file = argv[3];
+	//	auto data_size = boost::lexical_cast<uint32_t>(argv[4]);
+	//	auto service_size = boost::lexical_cast<uint32_t>(argv[5]);
+
+	////////////////////////////MAIN FUNCTION///////////////////////////////
+	//	IO::JoinWithService(data_file, service_file, target_file, data_size, service_size);
+	//}
 
 	//if (argc == 4)
 	//{

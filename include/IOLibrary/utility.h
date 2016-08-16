@@ -131,4 +131,25 @@ namespace IO
 
 	}
 
+	inline path_string toNumberString(const uint32_t number)
+	{
+		const int numValues = 11;
+		wchar_t buff[numValues];
+		ZeroMemory(buff, sizeof(wchar_t) * numValues);
+
+		swprintf_s(buff, numValues, L"%.10u", number);
+		path_string number_str(buff);
+		return number_str;
+	}
+
+	inline path_string toNumberExtension(const uint32_t number, const path_string & extension)
+	{
+		return toNumberString(number) + extension;
+	}
+	inline path_string toFullPath(const path_string & folder, const uint32_t number, const path_string & extension)
+	{
+		return addBackSlash(folder) + toNumberString(number) + extension;
+	}
+
+
 };

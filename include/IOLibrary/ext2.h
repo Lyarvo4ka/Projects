@@ -98,7 +98,7 @@ struct ext2_struct_t
 struct HeaderInfo_t
 {
 	const uint8_t * header;
-	const uint32_t header_size;
+	uint32_t header_size;
 	path_string ext;
 };
 
@@ -127,7 +127,7 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 
 		bool read_superblock(ext2_super_block * superblock, uint64_t offset)
 		{
-			if (!device_->isOpen())
+			if (device_->isOpen())
 			{
 				device_->setPosition(offset);
 				Buffer buffer(default_linux_block);
@@ -166,16 +166,21 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			if (!isLessThanValue(pValue, pLast, max_blocks, NullPos))
 				return false;
 
+			NullPos *= sizeof(uint32_t);
 			if (NullPos == 0)
 				return false;
 
 			bFullTable = isFullTable(NullPos, data_size);
 			if ( !bFullTable )
-				if (!isOnlyNulls(pValue, pLast))
+			{
+				uint32_t * pNull = (uint32_t *)(data + NullPos);
+				if (!isOnlyNulls(pNull, pLast))
 					return false;
+			}
 
 			pValue = (uint32_t *)data;
-			if (hasDuplicates(pValue, pValue + NullPos))
+			uint32_t * pEND = (uint32_t *)(data + NullPos);
+			if (hasDuplicates(pValue, pEND))
 				return false;
 
 			return true;
@@ -206,6 +211,7 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 		bool hasDuplicates(uint32_t *pStart, uint32_t * pLast)
 		{
 			std::map<uint32_t, uint32_t> mapValues;
+			uint32_t count = 0;
 			while(pStart != pLast)
 			{
 				auto findIter = mapValues.find(*pStart);
@@ -215,6 +221,7 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 				mapValues.insert(std::make_pair(*pStart, *pStart));
 
 				++pStart;
+				++count;
 			}
 			return false;
 		}
@@ -250,6 +257,7 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 
 			while (header_offset < device_->Size())
 			{
+				device_->setPosition(header_offset);
 				bytesRead = this->device_->ReadData(buffer.data, buffer.data_size);
 				if (bytesRead == 0)
 				{
@@ -280,6 +288,14 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			uint32_t bytes_written = 0;
 			uint32_t first_blocks_size = block_size_*twelve_blocks;
 			uint64_t table_offset = header_offset +(uint64_t)first_blocks_size;
+
+			uint64_t offset = header_offset;
+			uint32_t buffer_size = block_size_ * default_linux_blocks_read;
+			Buffer buffer(buffer_size);
+
+			if (!copyTo(device_, offset, &write_file, 0, first_blocks_size))
+				return ERROR_READ_FILE;
+
 			Buffer table_buffer(block_size_);
 			
 			device_->setPosition(table_offset);
@@ -291,31 +307,134 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			if (!isTable(table_buffer.data, table_buffer.data_size, blocks_count_, bFullTable))
 				return ERROR_RESULT;
 
-			uint64_t offset = header_offset;
-			uint32_t buffer_size = block_size_ * default_linux_blocks_read;
-			Buffer buffer(buffer_size);
+
+
+			saveTable(&table_buffer, device_, &write_file);
 			
-			device_->setPosition(offset);
-			bytes_read = device_->ReadData(buffer.data, first_blocks_size);
-			if (bytes_read != first_blocks_size)
-				return ERROR_READ_FILE;
+			uint64_t result_offset = header_offset;
 
-			write_file.WriteData(buffer.data, first_blocks_size);
-			if (bytes_written != first_blocks_size)
-				return ERROR_RESULT;	// add ERROR CODE;
+			// read Double Indirect Blocks
+			if (bFullTable)
+			{
+				result_offset = table_offset;
+				uint32_t * pLastBlock = (uint32_t*)(table_buffer.data + table_buffer.data_size - sizeof(uint32_t));
+				uint32_t dib_pointer = (*pLastBlock + 1);
+				table_offset = (uint64_t)dib_pointer  *  (uint64_t)block_size_;
 
-			//uint32_t * pBlockOffset = (uint32_t)table_buffer.data;
-			//for (uint32_t iBlock = 0; iBlock < table_buffer.data_size / sizeof (uint32_t); ++iBlock)
-			//{
+				bytes_read = device_->ReadData(table_buffer.data, table_buffer.data_size);
+				if (bytes_read != table_buffer.data_size)
+					return ERROR_READ_FILE;
+				
+				// is DIB table
+				bFullTable = false;
+				if (isTable(table_buffer.data, table_buffer.data_size, blocks_count_, bFullTable))
+				{
+					uint32_t * pDIB_pointetr = (uint32_t*)table_buffer.data;
+					for (uint32_t iPtr = 0; iPtr < table_buffer.data_size; iPtr += sizeof(uint32_t))
+					{
+						if ( *pDIB_pointetr == 0 )
+							break;
+						uint64_t dib_table_offset = (uint64_t)(*pDIB_pointetr) * (uint64_t)block_size_;
+						Buffer dib_table(block_size_);
+						device_->setPosition(dib_table_offset);
+						bytes_read = device_->ReadData(dib_table.data, dib_table.data_size);
+						if (bytes_read != dib_table.data_size)
+							return ERROR_READ_FILE;
 
-			//}
+						bool dib_fulltable = false;
+						if (isTable(dib_table.data, dib_table.data_size, blocks_count_, dib_fulltable))
+							saveTable(&dib_table, device_, &write_file);
+
+
+						++pDIB_pointetr;
+					}
+				}
+
+
+			}
+			return result_offset;
+
+		}
+		void saveTable(Buffer * buffer, IODevice * source, IODevice *target)
+		{
+			uint32_t * pBlockOffset = (uint32_t*)buffer->data;
+			uint64_t block_offset = 0;
+			for (uint32_t iBlock = 0; iBlock < buffer->data_size / sizeof(uint32_t); ++iBlock)
+			{
+				if (*pBlockOffset == 0)
+					break;
+
+				block_offset = (uint64_t)*pBlockOffset * (uint64_t)block_size_;
+				if (!copyTo(source, block_offset, target, 0, block_size_))
+					return;
+				++pBlockOffset;
+			}
 
 		}
 
-		void execute()
+		bool copyTo(IODevice * source, uint64_t source_offset, IODevice * target, uint64_t target_offset, uint32_t copy_size)
 		{
+			uint32_t bytes_read = 0;
+			Buffer buffer(copy_size);
+			source->setPosition(source_offset);
+			bytes_read = device_->ReadData(buffer.data, buffer.data_size);
+			if (bytes_read != copy_size)
+				return false;
+
+
+			uint32_t bytes_written = 0;
+			bytes_written = target->WriteData(buffer.data, buffer.data_size);
+			if (bytes_written != copy_size)
+				return false;	
+			return true;
+		}
+		void execute(const path_string & target_folder)
+		{
+			if (!device_->Open(OpenMode::OpenRead))
+			{
+				wprintf_s(L"Error open source device\n");
+				return;
+			}
+
+			auto psd_header_info = std::make_shared<HeaderInfo_t>();
+			psd_header_info->header = Signatures::psd_header;
+			psd_header_info->header_size = Signatures::psd_header_size;
+			psd_header_info->ext = L".psd";
+			this->addHeaderInfo(psd_header_info);
+
+			auto cdr_header_info = std::make_shared<HeaderInfo_t>();
+			cdr_header_info->header = Signatures::cdr_header;
+			cdr_header_info->header_size = Signatures::cdr_header_size;
+			cdr_header_info->ext = L".cdr";
+			this->addHeaderInfo(cdr_header_info);
+
+			auto tif_header_info = std::make_shared<HeaderInfo_t>();
+			tif_header_info->header = Signatures::tif_header;
+			tif_header_info->header_size = Signatures::tif_header_size;
+			tif_header_info->ext = L".tif";
+			this->addHeaderInfo(tif_header_info);
+
+			auto ai_header_info = std::make_shared<HeaderInfo_t>();
+			ai_header_info->header = Signatures::ai_header;
+			ai_header_info->header_size = Signatures::ai_header_size;
+			ai_header_info->ext = L".ai";
+			this->addHeaderInfo(ai_header_info);
+
+			auto office_2007_header_info = std::make_shared<HeaderInfo_t>();
+			office_2007_header_info->header = Signatures::office_2007_header;
+			office_2007_header_info->header_size = Signatures::office_2007_header_size;
+			office_2007_header_info->ext = L".zip";
+			this->addHeaderInfo(office_2007_header_info);
+
+			auto office_2003_header_info = std::make_shared<HeaderInfo_t>();
+			office_2003_header_info->header = Signatures::office_2003_header;
+			office_2003_header_info->header_size = Signatures::office_2003_header_size;
+			office_2003_header_info->ext = L".msdoc";
+			this->addHeaderInfo(office_2003_header_info);
+
+
 			ext2_super_block super_block = { 0 };
-			if (read_superblock(&super_block, 0))
+			if (!read_superblock(&super_block, 0))
 				return;
 
 			if (isSuperblock(&super_block))
@@ -327,7 +446,8 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 
 			uint64_t offset = 0;
 			uint64_t header_offset = 0;
-
+			uint64_t tmp_offset = 0;
+			uint32_t counter = 0;
 			while (true)
 			{
 				header_offset = 0;
@@ -335,8 +455,29 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 				if ( !header_info)
 					break;
 
+				offset = header_offset;
+
+				auto new_folder = addBackSlash(target_folder) + header_info->ext.substr(1, header_info->ext.length() -1);
+				if (!boost::filesystem::exists(new_folder))
+					boost::filesystem::create_directory(new_folder);
+
+				auto target_file = toFullPath(new_folder, counter++, header_info->ext);
+				tmp_offset = saveFile(header_offset, target_file);
+				if (tmp_offset == ERROR_RESULT)
+				{
+					wprintf_s(L"Not found table\n");
+				}
+				else
+					if (tmp_offset == ERROR_READ_FILE)
+						wprintf_s(L"Error read file\n");
+					else
+					{
+						offset = tmp_offset;
+					}
 
 
+
+				offset += block_size_;
 
 			}
 		}
