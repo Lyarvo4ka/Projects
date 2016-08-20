@@ -396,42 +396,47 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 				return;
 			}
 
-			auto psd_header_info = std::make_shared<HeaderInfo_t>();
-			psd_header_info->header = Signatures::psd_header;
-			psd_header_info->header_size = Signatures::psd_header_size;
-			psd_header_info->ext = L".psd";
-			this->addHeaderInfo(psd_header_info);
+			//auto psd_header_info = std::make_shared<HeaderInfo_t>();
+			//psd_header_info->header = Signatures::psd_header;
+			//psd_header_info->header_size = Signatures::psd_header_size;
+			//psd_header_info->ext = L".psd";
+			//this->addHeaderInfo(psd_header_info);
 
-			auto cdr_header_info = std::make_shared<HeaderInfo_t>();
-			cdr_header_info->header = Signatures::cdr_header;
-			cdr_header_info->header_size = Signatures::cdr_header_size;
-			cdr_header_info->ext = L".cdr";
-			this->addHeaderInfo(cdr_header_info);
+			//auto cdr_header_info = std::make_shared<HeaderInfo_t>();
+			//cdr_header_info->header = Signatures::cdr_header;
+			//cdr_header_info->header_size = Signatures::cdr_header_size;
+			//cdr_header_info->ext = L".cdr";
+			//this->addHeaderInfo(cdr_header_info);
 
-			auto tif_header_info = std::make_shared<HeaderInfo_t>();
-			tif_header_info->header = Signatures::tif_header;
-			tif_header_info->header_size = Signatures::tif_header_size;
-			tif_header_info->ext = L".tif";
-			this->addHeaderInfo(tif_header_info);
+			//auto tif_header_info = std::make_shared<HeaderInfo_t>();
+			//tif_header_info->header = Signatures::tif_header;
+			//tif_header_info->header_size = Signatures::tif_header_size;
+			//tif_header_info->ext = L".tif";
+			//this->addHeaderInfo(tif_header_info);
 
-			auto ai_header_info = std::make_shared<HeaderInfo_t>();
-			ai_header_info->header = Signatures::ai_header;
-			ai_header_info->header_size = Signatures::ai_header_size;
-			ai_header_info->ext = L".ai";
-			this->addHeaderInfo(ai_header_info);
+			//auto ai_header_info = std::make_shared<HeaderInfo_t>();
+			//ai_header_info->header = Signatures::ai_header;
+			//ai_header_info->header_size = Signatures::ai_header_size;
+			//ai_header_info->ext = L".ai";
+			//this->addHeaderInfo(ai_header_info);
 
-			auto office_2007_header_info = std::make_shared<HeaderInfo_t>();
-			office_2007_header_info->header = Signatures::office_2007_header;
-			office_2007_header_info->header_size = Signatures::office_2007_header_size;
-			office_2007_header_info->ext = L".zip";
-			this->addHeaderInfo(office_2007_header_info);
+			//auto office_2007_header_info = std::make_shared<HeaderInfo_t>();
+			//office_2007_header_info->header = Signatures::office_2007_header;
+			//office_2007_header_info->header_size = Signatures::office_2007_header_size;
+			//office_2007_header_info->ext = L".zip";
+			//this->addHeaderInfo(office_2007_header_info);
 
-			auto office_2003_header_info = std::make_shared<HeaderInfo_t>();
-			office_2003_header_info->header = Signatures::office_2003_header;
-			office_2003_header_info->header_size = Signatures::office_2003_header_size;
-			office_2003_header_info->ext = L".msdoc";
-			this->addHeaderInfo(office_2003_header_info);
+			//auto office_2003_header_info = std::make_shared<HeaderInfo_t>();
+			//office_2003_header_info->header = Signatures::office_2003_header;
+			//office_2003_header_info->header_size = Signatures::office_2003_header_size;
+			//office_2003_header_info->ext = L".msdoc";
+			//this->addHeaderInfo(office_2003_header_info);
 
+			auto pdf_header_info = std::make_shared<HeaderInfo_t>();
+			pdf_header_info->header = Signatures::pdf_header;
+			pdf_header_info->header_size = Signatures::pdf_header_size;
+			pdf_header_info->ext = L".pdf";
+			this->addHeaderInfo(pdf_header_info);
 
 			ext2_super_block super_block = { 0 };
 			if (!read_superblock(&super_block, 0))

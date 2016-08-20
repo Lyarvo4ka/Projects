@@ -119,6 +119,9 @@ namespace Signatures
 
 	const uint8_t office_2003_header[] = { 0xD0 , 0xCF , 0x11 };
 	const int office_2003_header_size = SIZEOF_ARRAY(office_2003_header);
+
+	const uint8_t pdf_header[] = { 0x25 ,0x50 ,0x44 ,0x46 ,0x2D };
+	const int pdf_header_size = SIZEOF_ARRAY(pdf_header);
 };
 
 const int SECTOR_SIZE = 512;
