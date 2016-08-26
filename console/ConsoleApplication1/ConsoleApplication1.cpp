@@ -45,18 +45,25 @@ show_help();
 //#include "libstructstorage/libstructstorage.h"
 //#include "IOLibrary/MTS_raw.h"
 //#include "IOLibrary/pageaddition.h"
-#include "IOLibrary/ext2.h"
+#include "IOLibrary/cdw_raw.h"
 int _tmain(int argc, TCHAR **argv)
 {
 	auto list_drives = IO::ReadPhysicalDrives();
-	auto physical_drive = list_drives.find_by_number(3);
+	auto physical_drive = list_drives.find_by_number(2);
 	if (!physical_drive)
 		return -1;
 
-	IO::path_string target_folder = L"e:\\40152\\";
+
+	IO::path_string target_folder = L"d:\\PaboTa\\40282\\cdw\\";
 	IO::DiskDevice source(physical_drive);
-	IO::ext2_raw ext2(&source);
-	ext2.execute(target_folder);
+	IO::cdw_raw CDW_raw(&source);
+	CDW_raw.execute(target_folder);
+
+
+	//IO::path_string target_folder = L"e:\\40152\\";
+	//IO::DiskDevice source(physical_drive);
+	//IO::ext2_raw ext2(&source);
+	//ext2.execute(target_folder);
 	
 
 	//if (argc == 6)
