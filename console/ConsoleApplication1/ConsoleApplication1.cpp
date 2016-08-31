@@ -26,7 +26,7 @@ void show_error_invalid_params()
 #include "boost/filesystem.hpp"
 #include <boost/lexical_cast.hpp>
 
-//#include "IOLibrary/QuickTime.h"
+#include "IOLibrary/QuickTime.h"
 #include "IOLibrary/utility.h"
 
 
@@ -45,19 +45,26 @@ show_help();
 //#include "libstructstorage/libstructstorage.h"
 //#include "IOLibrary/MTS_raw.h"
 //#include "IOLibrary/pageaddition.h"
-#include "IOLibrary/cdw_raw.h"
+//#include "IOLibrary/cdw_raw.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	auto list_drives = IO::ReadPhysicalDrives();
-	auto physical_drive = list_drives.find_by_number(2);
-	if (!physical_drive)
-		return -1;
+	const IO::path_string source_file_name = L"d:\\PaboTa\\40385\\image.img";
+	const IO::path_string target_foler_name = L"d:\\PaboTa\\40385\\result\\";
+
+	IO::File *pFile = new IO::File(source_file_name);
+	IO::QuickTimeFragmentRaw qt_raw(pFile);
+	qt_raw.execute(target_foler_name);
+
+	//auto list_drives = IO::ReadPhysicalDrives();
+	//auto physical_drive = list_drives.find_by_number(2);
+	//if (!physical_drive)
+	//	return -1;
 
 
-	IO::path_string target_folder = L"d:\\PaboTa\\40282\\cdw\\";
-	IO::DiskDevice source(physical_drive);
-	IO::cdw_raw CDW_raw(&source);
-	CDW_raw.execute(target_folder);
+	//IO::path_string target_folder = L"d:\\PaboTa\\40282\\cdw\\";
+	//IO::DiskDevice source(physical_drive);
+	//IO::cdw_raw CDW_raw(&source);
+	//CDW_raw.execute(target_folder);
 
 
 	//IO::path_string target_folder = L"e:\\40152\\";

@@ -82,8 +82,11 @@ namespace IO
 		{
 			this->sector_size_ = sector_size;
 		}
-
-		void execute(const path_string & target_folder)
+		IODevice* getDevice()
+		{
+			return device_;
+		}
+		virtual void execute(const path_string & target_folder)
 		{
 			if (!device_->Open(OpenMode::OpenRead))
 			{
@@ -246,6 +249,116 @@ namespace IO
 				write_size = ext_size;
 			}
 			return write_size;
+		}
+	};
+
+	const uint32_t default_sectors_per_cluster = 64;
+	const uint32_t defalut_cluster_size = default_sector_size * default_sectors_per_cluster;
+
+	class QuickTimeFragmentRaw
+		: public QuickTimeRaw
+	{
+	private:
+		uint32_t cluster_size_;
+	public:
+		QuickTimeFragmentRaw(IODevice * device)
+			: QuickTimeRaw(device)
+			, cluster_size_(defalut_cluster_size)
+		{
+
+		}
+		void setClusterSize(uint32_t cluster_size)
+		{
+			this->cluster_size_ = cluster_size;
+		}
+		void execute(const path_string & target_folder) override
+		{
+			auto source = this->getDevice();
+			if (!source->Open(OpenMode::OpenRead))
+			{
+				wprintf(L"Error to open.\n");	// ????????
+				return;
+			}
+
+			bool bResult = false;
+
+			uint64_t offset = 0;
+			uint64_t header_offset = 0;
+			uint32_t counter = 0;
+			const uint32_t four_clusters = 4;
+
+			uint32_t bytes_read = 0;
+
+			uint32_t cluster_per_mdat = 0;
+			uint64_t mdat_offset = 0;
+			uint64_t mdat_entry = 0;
+
+			while (true)
+			{
+				if (!findHeaderOffset(offset, header_offset))
+				{
+					wprintf(L"Not Found Header\n");
+					break;
+				}
+				auto target_name = toFullPath(target_folder, counter++, L".mp4");
+				File write_file(target_name);
+				if (!write_file.Open(OpenMode::Create))
+				{
+					wprintf(L"Error create file\n");
+					break;
+				}
+				qt_block_t qt_block = {0};
+				uint64_t keyword_offset = header_offset;
+
+				while (true)
+				{
+					qt_block_t qt_block = { 0 };
+					source->setPosition(keyword_offset);
+					int bytes_read = source->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t));
+					if (bytes_read == 0)
+						break;
+					if (qt_block.block_size == 0)
+						break;
+
+					to_big_endian32((uint32_t &)qt_block.block_size);
+
+
+
+					if (!isQuickTime(&qt_block))
+						break;
+
+					if (memcmp(qt_block.block_type, QTKeyword::qt_array[2], qt_keyword_size) == 0)
+					{
+						AppendDataToFile(&write_file, keyword_offset, sizeof(qt_block_t));
+						uint32_t mdat_size = qt_block.block_size;
+						cluster_per_mdat = mdat_size / cluster_size_ + 1;
+						uint32_t mdat_aling_clusters = cluster_per_mdat * cluster_size_;
+						if (header_offset > mdat_aling_clusters)
+						{
+							mdat_offset = header_offset - cluster_per_mdat * cluster_size_;
+							AppendDataToFile(&write_file, mdat_offset, mdat_size - sizeof(qt_block_t));
+						}
+
+						break;
+					}
+
+					uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
+					if (write_size == 0)
+						break;
+
+					auto bytes_written = AppendDataToFile(&write_file, keyword_offset, write_size);
+					if (bytes_written != write_size)
+						break;
+
+					keyword_offset += write_size;
+				}
+				
+
+				offset = header_offset + cluster_size_;
+
+
+			}
+
 		}
 	};
 
