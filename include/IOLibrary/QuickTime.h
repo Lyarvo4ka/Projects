@@ -252,6 +252,13 @@ namespace IO
 		}
 	};
 
+
+
+	/*
+	Make fragment raw files.
+	1. 'mdat' data block
+	2. Header data ( 'mdat' keyword in the end of block)
+	*/
 	const uint32_t default_sectors_per_cluster = 64;
 	const uint32_t defalut_cluster_size = default_sector_size * default_sectors_per_cluster;
 

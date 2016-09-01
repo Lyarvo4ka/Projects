@@ -130,6 +130,7 @@
     <ClInclude Include="..\..\include\IOLibrary\ext2.h" />
     <ClInclude Include="..\..\include\IOLibrary\Finder.h" />
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h" />
+    <ClInclude Include="..\..\include\IOLibrary\func_utils.h" />
     <ClInclude Include="..\..\include\IOLibrary\GoPro.h" />
     <ClInclude Include="..\..\include\IOLibrary\HexTexRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\IODevice.h" />

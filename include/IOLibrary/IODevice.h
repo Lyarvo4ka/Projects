@@ -7,7 +7,7 @@ namespace IO
 	struct Buffer
 	{
 		uint32_t data_size;
-		uint8_t * data;
+		ByteArray data;
 
 		Buffer(const uint32_t buffer_size)
 			:data_size(buffer_size)
@@ -51,8 +51,8 @@ namespace IO
 		virtual void Close() = 0;
 		virtual bool isOpen() = 0;
 		virtual void setPosition(uint64_t offset) = 0;
-		virtual uint32_t ReadData(uint8_t * data, uint32_t read_size) = 0;
-		virtual uint32_t WriteData(uint8_t * data, uint32_t read_size) = 0;
+		virtual uint32_t ReadData(ByteArray data, uint32_t read_size) = 0;
+		virtual uint32_t WriteData(ByteArray data, uint32_t read_size) = 0;
 		virtual uint64_t Size() const = 0;
 	};
 
@@ -140,7 +140,7 @@ namespace IO
 			::SetFilePointerEx(hFile_, liPos, NULL, FILE_BEGIN);
 		};
 
-		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
+		uint32_t ReadData(ByteArray data, uint32_t read_size) override
 		{
 			if (data == nullptr)
 				return 0;
@@ -155,7 +155,7 @@ namespace IO
 			return bytes_read;
 		};
 
-		uint32_t WriteData(uint8_t * data, uint32_t write_size) override
+		uint32_t WriteData(ByteArray data, uint32_t write_size) override
 		{
 			if (data == nullptr)
 				return 0;
@@ -196,8 +196,8 @@ namespace IO
 		: public IODevice
 	{
 	public:
-		virtual uint32_t ReadBlock(uint8_t * data, uint32_t read_size) = 0;
-		virtual uint32_t WriteBlock(uint8_t * data, uint32_t read_size) = 0;
+		virtual uint32_t ReadBlock(ByteArray data, uint32_t read_size) = 0;
+		virtual uint32_t WriteBlock(ByteArray data, uint32_t read_size) = 0;
 
 	};
 
@@ -268,7 +268,7 @@ namespace IO
 			return position_;
 		}
 
-		uint32_t ReadDataNotAligned(uint8_t * data, uint32_t read_size)
+		uint32_t ReadDataNotAligned(ByteArray data, uint32_t read_size)
 		{
 			DWORD numByteRead = 0;
 			auto sector_size = physical_drive_->getBytesPerSector();
@@ -278,7 +278,7 @@ namespace IO
 
 			if (bytes_to_read > 0)
 			{
-				uint8_t * temp_buffer = new uint8_t[bytes_to_read];
+				ByteArray temp_buffer = new uint8_t[bytes_to_read];
 
 				uint64_t aling_offset = position_ / sector_size;
 				aling_offset *= sector_size;
@@ -296,7 +296,7 @@ namespace IO
 			return numByteRead;
 
 		}
-		uint32_t ReadData(uint8_t * data, uint32_t read_size) override
+		uint32_t ReadData(ByteArray data, uint32_t read_size) override
 		{
 			if (!isOpen())
 				return 0;
@@ -317,7 +317,7 @@ namespace IO
 				return ReadDataNotAligned(data, read_size);
 			}
 		}
-		uint32_t WriteData(uint8_t * data, uint32_t read_size) override
+		uint32_t WriteData(ByteArray data, uint32_t read_size) override
 		{
 			return 0;
 		}
@@ -327,7 +327,7 @@ namespace IO
 			return physical_drive_->getSize();	// return byte, not sectors
 		}
 
-		uint32_t ReadBlock(uint8_t * data, uint32_t read_size) override
+		uint32_t ReadBlock(ByteArray data, uint32_t read_size) override
 		{
 			if (!isOpen())
 				return 0;
@@ -362,7 +362,7 @@ namespace IO
 
 
 		}
-		uint32_t WriteBlock(uint8_t * data, uint32_t write_size) override
+		uint32_t WriteBlock(ByteArray data, uint32_t write_size) override
 		{
 			if ( !isOpen())
 			return 0;

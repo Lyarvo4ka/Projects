@@ -24,6 +24,7 @@ namespace IO
 {
 	using path_string = std::wstring;
 	using path_list = std::list<path_string>;
+	using ByteArray = uint8_t *;
 
 	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };
 
