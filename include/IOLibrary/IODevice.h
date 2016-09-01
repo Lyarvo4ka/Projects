@@ -183,6 +183,7 @@ namespace IO
 				LARGE_INTEGER li = { 0 };
 				li.QuadPart = size_;
 				::SetFilePointerEx(hFile_, li, NULL, FILE_BEGIN);
+				::SetEndOfFile(hFile_);
 			}
 		}
 		path_string getFileName() const

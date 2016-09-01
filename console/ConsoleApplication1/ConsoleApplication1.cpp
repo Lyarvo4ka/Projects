@@ -46,14 +46,22 @@ show_help();
 //#include "IOLibrary/MTS_raw.h"
 //#include "IOLibrary/pageaddition.h"
 //#include "IOLibrary/cdw_raw.h"
+#include "IOLibrary/SignatureTest.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	const IO::path_string source_file_name = L"d:\\PaboTa\\40385\\image.img";
-	const IO::path_string target_foler_name = L"d:\\PaboTa\\40385\\result\\";
 
-	IO::File *pFile = new IO::File(source_file_name);
-	IO::QuickTimeFragmentRaw qt_raw(pFile);
-	qt_raw.execute(target_foler_name);
+	//const IO::path_string source_file_name = L"d:\\tmp\\044814.psd";
+	const IO::path_string target_foler_name = L"e:\\psd\\";
+	IO::Finder finder;
+	finder.add_extension(L".psd");
+	finder.FindFiles(target_foler_name);
+	finder.printAll();
+	//IO::changeSizeIfFindMarker(source_file_name);
+
+
+	//IO::File *pFile = new IO::File(source_file_name);
+	//IO::QuickTimeFragmentRaw qt_raw(pFile);
+	//qt_raw.execute(target_foler_name);
 
 	//auto list_drives = IO::ReadPhysicalDrives();
 	//auto physical_drive = list_drives.find_by_number(2);

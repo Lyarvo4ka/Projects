@@ -124,6 +124,9 @@ namespace Signatures
 
 	const uint8_t pdf_header[] = { 0x25 ,0x50 ,0x44 ,0x46 ,0x2D };
 	const int pdf_header_size = SIZEOF_ARRAY(pdf_header);
+
+	const uint8_t bad_sector_marker[] = { 0x62 , 0x61 , 0x64 , 0x20 , 0x73 , 0x65 , 0x63 , 0x74 , 0x6F , 0x72 };
+	const uint32_t bad_sector_marker_size = SIZEOF_ARRAY(bad_sector_marker);
 };
 
 const int SECTOR_SIZE = 512;
