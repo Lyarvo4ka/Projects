@@ -26,6 +26,30 @@ namespace IO
 	using path_list = std::list<path_string>;
 	using ByteArray = uint8_t *;
 
+	struct Buffer
+	{
+		uint32_t data_size;
+		ByteArray data;
+
+		Buffer(const uint32_t buffer_size)
+			:data_size(buffer_size)
+			, data(new uint8_t[buffer_size])
+		{
+
+		}
+		~Buffer()
+		{
+			if (data)
+			{
+				delete[] data;
+				data = nullptr;
+			}
+		}
+	};
+
+	using BufferPtr = std::shared_ptr<Buffer>;
+
+
 	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };
 
 	const wchar_t back_slash = L'\\';

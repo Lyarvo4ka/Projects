@@ -4,26 +4,6 @@
 
 namespace IO
 {
-	struct Buffer
-	{
-		uint32_t data_size;
-		ByteArray data;
-
-		Buffer(const uint32_t buffer_size)
-			:data_size(buffer_size)
-			,data( new uint8_t[buffer_size])
-		{
-
-		}
-		~Buffer()
-		{
-			if (data)
-			{
-				delete [] data;
-				data = nullptr;
-			}
-		}
-	};
 
 
 	inline uint32_t calcBlockSize(uint64_t current, uint64_t size, uint32_t block_size)
@@ -56,6 +36,7 @@ namespace IO
 		virtual uint64_t Size() const = 0;
 	};
 
+	using IODevicePtr = std::shared_ptr<IODevice>;
 
 	class File
 		: public IODevice
@@ -191,6 +172,8 @@ namespace IO
 			return file_name_;
 		}
 	};
+
+	using FilePtr = std::shared_ptr<File>;
 
 	class BlockDevice
 		: public IODevice
