@@ -47,7 +47,7 @@ namespace IO
 		}
 	};
 
-	using BufferPtr = std::shared_ptr<Buffer>;
+	//using BufferPtr = shared_ptr<Buffer>;
 
 
 	enum class OpenMode : uint32_t { OpenRead, OpenWrite, Create };

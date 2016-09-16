@@ -1,9 +1,11 @@
 #ifndef ABSTRACT_RAW_H
 #define ABSTRACT_RAW_H
 
+
+#include "iofunctions.h"
 #include "IODevice.h"
 #include <memory>
-
+/*
 namespace IO
 {
 	using BufferPtr = std::unique_ptr<Buffer>;
@@ -133,7 +135,7 @@ namespace IO
 
 
 
-/*
+*/
 class AbstractRaw
 {
 public:
@@ -176,5 +178,5 @@ private:
 	HANDLE hSource_;
 	bool bReady_;
 };
-*/
+
 #endif

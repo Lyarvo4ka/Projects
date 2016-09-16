@@ -23,8 +23,8 @@ void show_error_invalid_params()
 	show_help();
 }
 
-#include "boost/filesystem.hpp"
-#include <boost/lexical_cast.hpp>
+//#include "boost/filesystem.hpp"
+//#include <boost/lexical_cast.hpp>
 
 #include "IOLibrary/QuickTime.h"
 #include "IOLibrary/utility.h"
@@ -46,16 +46,124 @@ show_help();
 //#include "IOLibrary/MTS_raw.h"
 //#include "IOLibrary/pageaddition.h"
 //#include "IOLibrary/cdw_raw.h"
-#include "IOLibrary/SignatureTest.h"
+#include "IOLibrary/IODevice.h"
+//#include "IOLibrary/SignatureTest.h"
+/*
+std::thread read1(thread_read, &source_1, offset, &buffer1, read_size);
+std::thread read2(thread_read, &source_2, offset, &buffer2, read_size);
+
+read1.join();
+read2.join();
+*/
+
+void thread_read(IO::DiskDevice & disk, uint64_t position ,IO::Buffer & buffer , const uint32_t read_size)
+{
+	disk.setPosition(position);
+	disk.ReadBlock(buffer.data, read_size);
+}
+
 int _tmain(int argc, TCHAR **argv)
 {
+	auto list_drives = IO::ReadPhysicalDrives();
+
+	IO::DiskDevice source_1(list_drives.find_by_number(4));
+	IO::DiskDevice source_2(list_drives.find_by_number(2));
+	IO::DiskDevice target(list_drives.find_by_number(3));
+
+	if (!source_1.Open(IO::OpenMode::OpenRead))
+	{
+		printf("Error open source 1\n");
+		return -1;
+	}
+	if (!source_2.Open(IO::OpenMode::OpenRead))
+	{
+		printf("Error open source 2\n");
+		return -1;
+	}
+	if (!target.Open(IO::OpenMode::OpenRead))
+	{
+		printf("Error open target\n");
+		return -1;
+	}
+	auto target_size = target.Size();
+
+	if (target_size == 0)
+	{
+		printf("Error target size is 0\n");
+		return -1;
+	}
+
+	uint32_t bytes_read1 = 0;
+	uint32_t bytes_read2 = 0;
+	uint32_t bytes_written = 0;
+	uint32_t read_size = 0;
+	uint32_t write_size = 0;
+	 
+	uint64_t offset = 0;
+	const uint32_t read_block_size = default_block_size;
+	IO::Buffer buffer1(read_block_size);
+	IO::Buffer buffer2(read_block_size);
+	IO::Buffer target_buffer(read_block_size * 2);
+
+
+	uint64_t write_offset = 0;
+	uint64_t source_size = source_1.Size();
+	if (source_size == 0)
+		return -1;
+	while ( true)
+	{
+		read_size = IO::calcBlockSize(offset, source_size, read_block_size);
+
+		if ( read_size == 0)
+			break;
+
+		source_1.setPosition(offset);
+		bytes_read1 = source_1.ReadBlock(buffer1.data, read_size);
+		if (bytes_read1 == 0)
+		{
+			printf("error read disk 1\n");
+			break;
+		}
+
+		source_2.setPosition(offset);
+		bytes_read2 = source_2.ReadBlock(buffer2.data, read_size);
+		if (bytes_read2 == 0)
+		{
+			printf("error read disk 2\n");
+			break;
+		}
+
+		
+		for (auto iSector = 0; iSector < read_size; iSector += default_sector_size)
+		{
+			memcpy(target_buffer.data + iSector * 2, buffer1.data + iSector, default_sector_size);
+			memcpy(target_buffer.data + iSector * 2 + default_sector_size, buffer2.data + iSector, default_sector_size);
+		}
+
+		write_size = read_size*2;
+		target.setPosition(write_offset);
+		bytes_written = target.WriteBlock(target_buffer.data, write_size);
+		if (bytes_written == 0)
+		{
+			printf("error write target\n");
+			break;
+		}
+
+		offset += read_size;
+		write_offset += write_size;
+	}
+
+
+
+
+
 
 	//const IO::path_string source_file_name = L"d:\\tmp\\044814.psd";
-	const IO::path_string target_foler_name = L"e:\\psd\\";
-	IO::Finder finder;
-	finder.add_extension(L".psd");
-	finder.FindFiles(target_foler_name);
-	finder.printAll();
+	//const IO::path_string target_foler_name = L"e:\\psd\\";
+	//IO::Finder finder;
+	//finder.add_extension(L".psd");
+	//finder.FindFiles(target_foler_name);
+	//finder.printAll();
 	//IO::changeSizeIfFindMarker(source_file_name);
 
 

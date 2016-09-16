@@ -14,7 +14,7 @@
     <ProjectGuid>{14C2973D-DC7A-492A-9393-45E41F2B59D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ConsoleApplication1</RootNamespace>
-    <ProjectName>change_file_size</ProjectName>
+    <ProjectName>Raid 0</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -85,7 +85,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>IOLibrary.lib;libboost_filesystem-vc120-mt-1_57.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>IOLibrary.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)_lib\$(Configuration);$(BOOST_ROOT)\stage\lib\</AdditionalLibraryDirectories>
       <Version>1.0</Version>
     </Link>
