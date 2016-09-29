@@ -54,4 +54,58 @@ namespace IO
 		}
 		wprintf_s(L"Not found bad sector marker.\n");
 	}
+
+	void addValuesToEachPage(const path_string & source_name, const path_string & target_name , uint8_t val_marker)
+	{
+		const uint32_t source_size = 17600;
+		const uint32_t target_size = 17664;
+		const uint32_t source_buff_size = source_size *default_sector_size;
+		const uint32_t target_buff_size = target_size * default_sector_size;
+
+
+		File source(source_name);
+		if (!source.Open(OpenMode::OpenRead))
+		{
+			wprintf_s(L"Error open file. %s\n", source.getFileName().c_str());
+			return;
+		}
+
+		File target(target_name);
+		if (!target.Open(OpenMode::Create))
+		{
+			wprintf_s(L"Error open file. %s\n", target.getFileName().c_str());
+			return;
+		}
+		uint64_t cur_pos = 0;
+		uint64_t max_file_size = source.Size();
+		uint32_t bytes_to_copy = 0;
+		uint32_t bytes_to_write = 0;
+
+		uint32_t bytes_read = 0;
+		uint32_t bytes_written = 0;
+
+		Buffer source_buffer(source_buff_size);
+		Buffer target_buffer(target_buff_size);
+
+		while (cur_pos < max_file_size)
+		{
+			bytes_to_copy = calcBlockSize(cur_pos, max_file_size, source_buff_size);
+			bytes_read = source.ReadData(source_buffer.data, source_buffer.data_size);
+			if (bytes_read == 0)
+				break;
+
+			memset(target_buffer.data, val_marker, target_buffer.data_size);
+			for (uint32_t iPage = 0; iPage < default_sector_size; ++iPage)
+			{
+				memcpy(target_buffer.data + iPage * target_size, source_buffer.data + iPage*source_size, source_size);
+			}
+			bytes_to_write = (bytes_to_copy / source_size) * target_size;
+			bytes_written = target.WriteData(target_buffer.data, target_buffer.data_size);
+			if ( bytes_written == 0 )
+				break;
+
+
+		}
+
+	}
 }

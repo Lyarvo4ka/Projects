@@ -23,8 +23,8 @@ void show_error_invalid_params()
 	show_help();
 }
 
-//#include "boost/filesystem.hpp"
-//#include <boost/lexical_cast.hpp>
+#include "boost/filesystem.hpp"
+#include <boost/lexical_cast.hpp>
 
 #include "IOLibrary/QuickTime.h"
 #include "IOLibrary/utility.h"
@@ -48,6 +48,7 @@ show_help();
 //#include "IOLibrary/cdw_raw.h"
 #include "IOLibrary/IODevice.h"
 //#include "IOLibrary/SignatureTest.h"
+#include "IOLibrary/GoPro.h"
 /*
 std::thread read1(thread_read, &source_1, offset, &buffer1, read_size);
 std::thread read2(thread_read, &source_2, offset, &buffer2, read_size);
@@ -62,99 +63,212 @@ void thread_read(IO::DiskDevice & disk, uint64_t position ,IO::Buffer & buffer ,
 	disk.ReadBlock(buffer.data, read_size);
 }
 
+
+/************************************************************************/
+/*                              RAID 0                                  */
+/************************************************************************/
+
+/*
+auto list_drives = IO::ReadPhysicalDrives();
+
+IO::DiskDevice source_1(list_drives.find_by_number(4));
+IO::DiskDevice source_2(list_drives.find_by_number(2));
+IO::DiskDevice target(list_drives.find_by_number(3));
+
+if (!source_1.Open(IO::OpenMode::OpenRead))
+{
+printf("Error open source 1\n");
+return -1;
+}
+if (!source_2.Open(IO::OpenMode::OpenRead))
+{
+printf("Error open source 2\n");
+return -1;
+}
+if (!target.Open(IO::OpenMode::OpenRead))
+{
+printf("Error open target\n");
+return -1;
+}
+auto target_size = target.Size();
+
+if (target_size == 0)
+{
+printf("Error target size is 0\n");
+return -1;
+}
+
+uint32_t bytes_read1 = 0;
+uint32_t bytes_read2 = 0;
+uint32_t bytes_written = 0;
+uint32_t read_size = 0;
+uint32_t write_size = 0;
+
+uint64_t offset = 0;
+const uint32_t read_block_size = default_block_size;
+IO::Buffer buffer1(read_block_size);
+IO::Buffer buffer2(read_block_size);
+IO::Buffer target_buffer(read_block_size * 2);
+
+
+uint64_t write_offset = 0;
+uint64_t source_size = source_1.Size();
+if (source_size == 0)
+return -1;
+while ( true)
+{
+read_size = IO::calcBlockSize(offset, source_size, read_block_size);
+
+if ( read_size == 0)
+break;
+
+source_1.setPosition(offset);
+bytes_read1 = source_1.ReadBlock(buffer1.data, read_size);
+if (bytes_read1 == 0)
+{
+printf("error read disk 1\n");
+break;
+}
+
+source_2.setPosition(offset);
+bytes_read2 = source_2.ReadBlock(buffer2.data, read_size);
+if (bytes_read2 == 0)
+{
+printf("error read disk 2\n");
+break;
+}
+
+
+for (auto iSector = 0; iSector < read_size; iSector += default_sector_size)
+{
+memcpy(target_buffer.data + iSector * 2, buffer1.data + iSector, default_sector_size);
+memcpy(target_buffer.data + iSector * 2 + default_sector_size, buffer2.data + iSector, default_sector_size);
+}
+
+write_size = read_size*2;
+target.setPosition(write_offset);
+bytes_written = target.WriteBlock(target_buffer.data, write_size);
+if (bytes_written == 0)
+{
+printf("error write target\n");
+break;
+}
+
+offset += read_size;
+write_offset += write_size;
+}
+
+
+*/
+
+#include "IOLibrary/func_utils.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	auto list_drives = IO::ReadPhysicalDrives();
+	IO::path_string source_file(L"i:\\40629\\40629.img");
+	IO::path_string target_folder(L"i:\\40629\\mov\\");
+	//IO::addValuesToEachPage(source_file,target_file,0xFF);
+	//IO::path_string target_folder(L"e:\\40629\\mov\\");
+	//IO::File *source_file = new IO::File(L"e:\\40629\\40629.img");
+	//IO::QuickTimeRaw qt_raw(source_file);
 
-	IO::DiskDevice source_1(list_drives.find_by_number(4));
-	IO::DiskDevice source_2(list_drives.find_by_number(2));
-	IO::DiskDevice target(list_drives.find_by_number(3));
+	//qt_raw.setSectorSize(default_sector_size);
+	//qt_raw.setBlockSize(131072);
 
-	if (!source_1.Open(IO::OpenMode::OpenRead))
-	{
-		printf("Error open source 1\n");
-		return -1;
-	}
-	if (!source_2.Open(IO::OpenMode::OpenRead))
-	{
-		printf("Error open source 2\n");
-		return -1;
-	}
-	if (!target.Open(IO::OpenMode::OpenRead))
-	{
-		printf("Error open target\n");
-		return -1;
-	}
-	auto target_size = target.Size();
+	//qt_raw.execute(target_folder);
+	IO::File *s_file = new IO::File(source_file);
+	IO::GoPro go_pro(s_file);
+	go_pro.setClusterSize(131072);
+	go_pro.execute(target_folder);
 
-	if (target_size == 0)
+
+/*
+	IO::File source_file(L"d:\\PaboTa\\40599\\Root\\AGRO_UTP82\\1Cv8.1CD.grihtih");
+	if (!source_file.Open(IO::OpenMode::OpenRead))
 	{
-		printf("Error target size is 0\n");
+		wprintf(L"Error open source file.\n");
 		return -1;
 	}
 
-	uint32_t bytes_read1 = 0;
-	uint32_t bytes_read2 = 0;
-	uint32_t bytes_written = 0;
-	uint32_t read_size = 0;
-	uint32_t write_size = 0;
-	 
-	uint64_t offset = 0;
-	const uint32_t read_block_size = default_block_size;
-	IO::Buffer buffer1(read_block_size);
-	IO::Buffer buffer2(read_block_size);
-	IO::Buffer target_buffer(read_block_size * 2);
 
-
-	uint64_t write_offset = 0;
-	uint64_t source_size = source_1.Size();
-	if (source_size == 0)
-		return -1;
-	while ( true)
+	IO::File target_file(L"d:\\PaboTa\\40599\\Root\\AGRO_UTP82\\1Cv8.1CD.grihtih.result");
+	if (!target_file.Open(IO::OpenMode::Create))
 	{
-		read_size = IO::calcBlockSize(offset, source_size, read_block_size);
+		wprintf(L"Error create target file.\n");
+		return -1;
+	}
 
-		if ( read_size == 0)
+
+	uint32_t bytes_read = 0;
+	uint32_t need_bytes = 0;
+	uint32_t pos = 0;
+
+	uint32_t start_enc = 0x78;
+	uint32_t end_enc = 0x1FA8A0;
+
+	IO::Buffer buffer(default_block_size);
+
+	const uint8_t xor_1[] = { 0xCC , 0x12 , 0x63 , 0x04 , 0x65 , 0x44 , 0x7D , 0x39 };
+	const uint32_t xor_1_size = SIZEOF_ARRAY(xor_1);
+
+	while (pos < source_file.Size())
+	{
+		need_bytes = IO::calcBlockSize(pos, source_file.Size(), buffer.data_size);
+		bytes_read = source_file.ReadData(buffer.data, buffer.data_size);
+		if (bytes_read == 0)
 			break;
 
-		source_1.setPosition(offset);
-		bytes_read1 = source_1.ReadBlock(buffer1.data, read_size);
-		if (bytes_read1 == 0)
+
+		for (auto i8_bytes = 0; i8_bytes < bytes_read; i8_bytes += 8)
 		{
-			printf("error read disk 1\n");
-			break;
+			if ((i8_bytes + pos) > start_enc)
+			{
+				if ((i8_bytes + pos) < end_enc)
+				for (auto iXor = 0; iXor < xor_1_size; ++iXor)
+					buffer.data[i8_bytes + iXor] ^= xor_1[iXor];
+			}
 		}
 
-		source_2.setPosition(offset);
-		bytes_read2 = source_2.ReadBlock(buffer2.data, read_size);
-		if (bytes_read2 == 0)
-		{
-			printf("error read disk 2\n");
-			break;
-		}
+		target_file.WriteData(buffer.data, buffer.data_size);
 
-		
-		for (auto iSector = 0; iSector < read_size; iSector += default_sector_size)
-		{
-			memcpy(target_buffer.data + iSector * 2, buffer1.data + iSector, default_sector_size);
-			memcpy(target_buffer.data + iSector * 2 + default_sector_size, buffer2.data + iSector, default_sector_size);
-		}
 
-		write_size = read_size*2;
-		target.setPosition(write_offset);
-		bytes_written = target.WriteBlock(target_buffer.data, write_size);
-		if (bytes_written == 0)
-		{
-			printf("error write target\n");
-			break;
-		}
-
-		offset += read_size;
-		write_offset += write_size;
 	}
 
+	*/
 
-
+	////////////////////////////MAIN FUNCTION///////////////////////////////
+//
+//if (argc == 4)
+//{
+//	const int opt = 1;
+//	const int source = 2;
+//	const int target = 3;
+//
+//	std::wstring option = argv[opt];
+//	IO::QuickTimeRaw *pQt_raw = nullptr;
+//
+//	if (option.compare(L"-d") == 0)
+//	{
+//		auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+//
+//		auto drive_list = IO::ReadPhysicalDrives();
+//		auto physical_drive = drive_list.find_by_number(drive_number);
+//		pQt_raw = new IO::QuickTimeRaw(new IO::DiskDevice(physical_drive));
+//		pQt_raw->setBlockSize(physical_drive->getTransferLength());
+//		pQt_raw->setSectorSize(physical_drive->getBytesPerSector());
+//	}
+//	else
+//		if (option.compare(L"-f") == 0)
+//		{
+//			auto file_name = argv[source];
+//			pQt_raw = new IO::QuickTimeRaw(new IO::File(file_name));
+//		}
+//
+//	std::wstring target_folder = argv[target];
+//
+//	pQt_raw->execute(target_folder);
+//	delete pQt_raw;
+//
+//}
 
 
 
@@ -197,42 +311,6 @@ int _tmain(int argc, TCHAR **argv)
 	//	auto data_size = boost::lexical_cast<uint32_t>(argv[4]);
 	//	auto service_size = boost::lexical_cast<uint32_t>(argv[5]);
 
-	////////////////////////////MAIN FUNCTION///////////////////////////////
-	//	IO::JoinWithService(data_file, service_file, target_file, data_size, service_size);
-	//}
-
-	//if (argc == 4)
-	//{
-	//	const int opt = 1;
-	//	const int source = 2;
-	//	const int target = 3;
-
-	//	std::wstring option = argv[opt];
-	//	IO::QuickTimeRaw *pQt_raw = nullptr;
-
-	//	if (option.compare(L"-d") == 0)
-	//	{
-	//		auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
-
-	//		auto drive_list = IO::ReadPhysicalDrives();
-	//		auto physical_drive = drive_list.find_by_number(drive_number);
-	//		pQt_raw = new IO::QuickTimeRaw(new IO::DiskDevice(physical_drive));
-	//		pQt_raw->setBlockSize(physical_drive->getTransferLength());
-	//		pQt_raw->setSectorSize(physical_drive->getBytesPerSector());
-	//	}
-	//	else
-	//		if (option.compare(L"-f") == 0)
-	//		{
-	//			auto file_name = argv[source];
-	//			pQt_raw = new IO::QuickTimeRaw(new IO::File(file_name));
-	//		}
-
-	//	std::wstring target_folder = argv[target];
-
-	//	pQt_raw->execute(target_folder);
-	//	delete pQt_raw;
-
-	//}
 
 	//////////////////////////////////////////////////////////////////////////
 	//if (argc == 3)

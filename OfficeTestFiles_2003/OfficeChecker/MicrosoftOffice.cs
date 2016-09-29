@@ -167,7 +167,8 @@ namespace OfficeChecker
             {
                 try
                 {
-                    m_DocWord.Close(SaveChanges: WdSaveOptions.wdDoNotSaveChanges);
+                   
+                    m_DocWord.Close(SaveChanges: WdSaveOptions.wdSaveChanges);
                     m_DocWord = null;
                 }
                 catch (System.Exception ex)
@@ -182,7 +183,7 @@ namespace OfficeChecker
                     m_AppWord.Documents.Add(Visible: true);
                     try
                     {
-                        m_AppWord.Documents.Close(SaveChanges: WdSaveOptions.wdDoNotSaveChanges);
+                        m_AppWord.Documents.Close(SaveChanges: WdSaveOptions.wdSaveChanges);
                     }
                     catch (System.Exception ex)
                     {
@@ -256,19 +257,20 @@ namespace OfficeChecker
             {
                 string root_path = System.IO.Path.GetPathRoot(fileName.ToString());
                 //System.IO.Directory.SetCurrentDirectory();
-                m_DocWord = m_AppWord.Documents.Open(FileName: ref fileName,
-                                                      ReadOnly: true,
-                                                      Visible: false,
-                                                      OpenAndRepair: true,
-                                                      ConfirmConversions: false,
-                                                      Encoding: false,
-                                                      Revert: false,
-                                                      NoEncodingDialog: true,
-                                                      Format: OpenFormat,
-                                                      PasswordDocument: "XUY"
-                    //WritePasswordDocument: "",
-                    //PasswordDocument: ""
-                                                  );
+                m_DocWord = m_AppWord.Documents.Open(FileName: ref fileName);
+                //m_DocWord = m_AppWord.Documents.Open(FileName: ref fileName,
+                //                                      ReadOnly: false,
+                //                                      Visible: false,
+                //                                      OpenAndRepair: true,
+                //                                      ConfirmConversions: false,
+                //                                      Encoding: false,
+                //                                      Revert: false,
+                //                                      NoEncodingDialog: true,
+                //                                      Format: OpenFormat,
+                //                                      PasswordDocument: "XUY"
+                //    //WritePasswordDocument: "",
+                //    //PasswordDocument: ""
+                //                                  );
 
                 m_OpenStatus = OpenStatus.OpenGOOD;
             }

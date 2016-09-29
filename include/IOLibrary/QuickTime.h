@@ -168,7 +168,17 @@ namespace IO
 					break;
 
 				if (memcmp(qt_block.block_type, QTKeyword::qt_array[2], qt_keyword_size) == 0)
+				{
 					isBeenMDAT = true;
+					uint32_t new_size = qt_block.block_size;
+					auto save_size = SaveFragmentMdat(&write_file, keyword_offset, new_size);
+					//if (qt_block.block_size != save_size)
+					//	break;
+
+					keyword_offset += new_size;
+
+					continue;
+				}
 
 				uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
 				if (write_size == 0)
@@ -187,6 +197,78 @@ namespace IO
 			if (!isBeenMDAT)
 				keyword_offset = header_offset;
 			return keyword_offset;
+
+		}
+		uint64_t SaveFragmentMdat(File * target_file, uint64_t offset, uint32_t & copy_size)
+		{
+			Buffer buffer(block_size_);
+			ZeroMemory(buffer.data, block_size_);
+
+			uint32_t bytes_to_copy = block_size_;
+
+			uint64_t cur_pos = 0;
+			uint64_t read_pos = 0;
+			uint32_t write_size = 0;
+			const uint32_t nulls_count = 5000;
+			uint32_t null_counter = 0;
+
+			uint32_t bytesRead = 0;
+			uint32_t bytesWritten = 0;
+			uint64_t write_offset = target_file->Size();
+
+			bool isNulls = false;
+			uint32_t real_size = 0;
+
+			while (cur_pos < copy_size)
+			{
+				read_pos = offset + cur_pos;
+				write_size = block_size_;
+				null_counter = 0;
+				isNulls = false;
+				if ((read_pos % block_size_) != 0)
+				{
+					write_size = block_size_ - read_pos % block_size_;
+				}
+
+				bytes_to_copy = calcBlockSize(cur_pos, copy_size, write_size);
+
+				device_->setPosition(read_pos);
+				bytesRead = device_->ReadData(buffer.data, bytes_to_copy);
+				if (bytesRead == 0)
+					break;
+
+				for (uint32_t iByte = 0; iByte < bytes_to_copy; ++iByte)
+				{
+					if (buffer.data[iByte] == 0)
+					{
+						++null_counter;
+						if (null_counter > nulls_count)
+						{
+							isNulls = true;
+							break;
+						}
+					}
+
+				}
+				if (isNulls)
+				{
+					cur_pos += block_size_ ;
+					copy_size += block_size_ ;
+					continue;
+				}
+
+
+
+				target_file->setPosition(write_offset);
+				bytesWritten = target_file->WriteData(buffer.data, bytes_to_copy);
+				if (bytesWritten == 0)
+					break;
+
+				write_offset += bytesWritten;
+				cur_pos += bytesWritten;
+				real_size += bytesWritten;
+			}
+			return cur_pos;
 
 		}
 		uint64_t AppendDataToFile(File * target_file, uint64_t offset, uint64_t copy_size)
