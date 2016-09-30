@@ -170,13 +170,14 @@ namespace IO
 				if (memcmp(qt_block.block_type, QTKeyword::qt_array[2], qt_keyword_size) == 0)
 				{
 					isBeenMDAT = true;
+/*
 					uint32_t new_size = qt_block.block_size;
 					auto save_size = SaveFragmentMdat(&write_file, keyword_offset, new_size);
 					//if (qt_block.block_size != save_size)
 					//	break;
 
 					keyword_offset += new_size;
-
+*/
 					continue;
 				}
 
@@ -199,6 +200,8 @@ namespace IO
 			return keyword_offset;
 
 		}
+
+		// save fragment only 'mdat' data, when found nulls more then 5000, skip this cluster.
 		uint64_t SaveFragmentMdat(File * target_file, uint64_t offset, uint32_t & copy_size)
 		{
 			Buffer buffer(block_size_);

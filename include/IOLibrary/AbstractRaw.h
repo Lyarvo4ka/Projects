@@ -5,7 +5,7 @@
 #include "iofunctions.h"
 #include "IODevice.h"
 #include <memory>
-/*
+
 namespace IO
 {
 	using BufferPtr = std::unique_ptr<Buffer>;
@@ -58,18 +58,14 @@ namespace IO
 	};
 
 
-
-	class AbstractRaw
+	class RawAlgorithm
 	{
-	public:
-		
-		virtual void execute(HeaderPtr header, const uint64_t & header_offset) = 0;
-
-
+		virtual void RawFile(HeaderPtr header, const uint64_t & header_offset) = 0;
 	};
 
+
 	class StandartRaw
-		: public AbstractRaw
+		: public RawAlgorithm
 	{
 	private:
 		IODevicePtr device_;
@@ -124,18 +120,8 @@ namespace IO
 
 
 };
-//class Header_t
-//{
-//public:
-//
-//
-//};
 
-
-
-
-
-*/
+/*
 class AbstractRaw
 {
 public:
@@ -178,5 +164,5 @@ private:
 	HANDLE hSource_;
 	bool bReady_;
 };
-
+*/
 #endif
