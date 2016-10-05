@@ -59,11 +59,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "ZipLib\extlibs\zlib
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Console Application", "Console Application", "{48A54E45-2C44-4E20-B776-BE5DFB693A34}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeDateConsole", "console\OfficeDateConsole\OfficeDateConsole.vcxproj", "{E9CE2AEF-07B5-44E3-830C-2E42A1393DF5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeChecker", "console\OfficeDateConsole\OfficeDateConsole.vcxproj", "{E9CE2AEF-07B5-44E3-830C-2E42A1393DF5}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfCheckerConsole", "console\PdfChecker\PdfChecker.vcxproj", "{25E7C402-13A6-4865-87A0-37675EABA997}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cdw_raw", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoPro2_raw", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterTestQt", "testing\DiskMasterTestQt\DiskMasterTestQt.vcxproj", "{D3F22268-53BD-447E-940B-AC0F5BD7DABA}"
 EndProject
@@ -74,6 +74,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "CSharp\ConsoleApplication1\ConsoleApplication1.csproj", "{645FF227-F83B-4287-AF63-72152E9C92F6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpsd", "libpsd\libpsd.vcxproj", "{AED2A5FC-AE2B-4A9F-BFFD-6857C25B43A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeTestConsole", "OfficeTestFiles_2003\OfficeTestConsole\OfficeTestConsole.csproj", "{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -506,6 +508,20 @@ Global
 		{AED2A5FC-AE2B-4A9F-BFFD-6857C25B43A1}.ReleaseNew|Win32.Build.0 = Release|Win32
 		{AED2A5FC-AE2B-4A9F-BFFD-6857C25B43A1}.ReleaseNew|x64.ActiveCfg = Release|x64
 		{AED2A5FC-AE2B-4A9F-BFFD-6857C25B43A1}.ReleaseNew|x64.Build.0 = Release|x64
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Debug|Win32.ActiveCfg = Debug|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Debug|Win32.Build.0 = Debug|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Debug|x64.ActiveCfg = Debug|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Release|Any CPU.ActiveCfg = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Release|Win32.ActiveCfg = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Release|Win32.Build.0 = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.Release|x64.ActiveCfg = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.ReleaseNew|Any CPU.ActiveCfg = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.ReleaseNew|Any CPU.Build.0 = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.ReleaseNew|Win32.ActiveCfg = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.ReleaseNew|Win32.Build.0 = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.ReleaseNew|x64.ActiveCfg = Release|x86
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}.ReleaseNew|x64.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -542,6 +558,7 @@ Global
 		{CABB2787-3747-4EAE-B9EB-EB620041566F} = {6B911329-42D5-4B98-B0C2-A8B04585DC65}
 		{645FF227-F83B-4287-AF63-72152E9C92F6} = {6B911329-42D5-4B98-B0C2-A8B04585DC65}
 		{AED2A5FC-AE2B-4A9F-BFFD-6857C25B43A1} = {4B9D109F-2499-4334-82CF-38D8360BFF62}
+		{B5CF2221-E38A-41A3-8296-DC3D78FB4F60} = {6B911329-42D5-4B98-B0C2-A8B04585DC65}
 	EndGlobalSection
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True

@@ -55,7 +55,7 @@ namespace OfficeTestConsole
             officeFactory = new PowerPointFactory();
             PowerPoint = officeFactory.CreateOffice();
             PowerPoint.DirectoryPath = strDirPath;
-            PowerPoint.SearchFilter = "*.ppt";
+            PowerPoint.SearchFilter = "*.pptx";
             PowerPoint.CreateApplication();
             PowerPoint.OpenDocuments(PowerPoint);
             PowerPoint.CloseApplication();

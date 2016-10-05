@@ -8,115 +8,115 @@
 
 namespace IO
 {
-	using BufferPtr = std::unique_ptr<Buffer>;
-	static BufferPtr BufferFactory(const ByteArray data,  uint32_t data_size)
-	{
-		return std::make_unique<Buffer>(data,data_size);
-	}
-	struct Header_t
-	{
-		BufferPtr header_data;
-		uint32_t header_offset;
+	//using BufferPtr = std::unique_ptr<Buffer>;
+	//static BufferPtr BufferFactory(const ByteArray data,  uint32_t data_size)
+	//{
+	//	return std::make_unique<Buffer>(data,data_size);
+	//}
+	//struct Header_t
+	//{
+	//	BufferPtr header_data;
+	//	uint32_t header_offset;
 
-		Header_t(ByteArray data, uint32_t data_size)
-			: header_data (BufferFactory(data , data_size))
-		{
+	//	Header_t(ByteArray data, uint32_t data_size)
+	//		: header_data (BufferFactory(data , data_size))
+	//	{
 
-		}
-	};
-
-
-
-	using HeaderPtr = std::shared_ptr<Header_t>;
-
-	static HeaderPtr HeaderFactory(ByteArray data, uint32_t data_size)
-	{
-		return std::make_shared<Header_t>(Header_t(data, data_size));
-	}
+	//	}
+	//};
 
 
-	class HeaderBase
-	{
-	private:
-		std::list<HeaderPtr> listHeaders_;
-	public:
-		void addHeader(HeaderPtr new_header)
-		{
-			listHeaders_.push_back(new_header);
-		}
-		HeaderPtr findHeader(const ByteArray data)
-		{
-			for (auto theHeader : listHeaders_)
-			{
-				if (memcmp(	theHeader->header_data->data + theHeader->header_offset, 
-							data, 
-							theHeader->header_data->data_size) == 0)
-					return theHeader;
-			}
-			return nullptr;
-		}
-	};
+
+	//using HeaderPtr = std::shared_ptr<Header_t>;
+
+	//static HeaderPtr HeaderFactory(ByteArray data, uint32_t data_size)
+	//{
+	//	return std::make_shared<Header_t>(Header_t(data, data_size));
+	//}
 
 
-	class RawAlgorithm
-	{
-		virtual void RawFile(HeaderPtr header, const uint64_t & header_offset) = 0;
-	};
+	//class HeaderBase
+	//{
+	//private:
+	//	std::list<HeaderPtr> listHeaders_;
+	//public:
+	//	void addHeader(HeaderPtr new_header)
+	//	{
+	//		listHeaders_.push_back(new_header);
+	//	}
+	//	HeaderPtr findHeader(const ByteArray data)
+	//	{
+	//		for (auto theHeader : listHeaders_)
+	//		{
+	//			if (memcmp(	theHeader->header_data->data + theHeader->header_offset, 
+	//						data, 
+	//						theHeader->header_data->data_size) == 0)
+	//				return theHeader;
+	//		}
+	//		return nullptr;
+	//	}
+	//};
 
 
-	class StandartRaw
-		: public RawAlgorithm
-	{
-	private:
-		IODevicePtr device_;
-		uint32_t block_size_;
-		uint32_t sector_size_;
-	public:
-		StandartRaw(IODevicePtr device)
-			:device_(device)
-		{
+	//class RawAlgorithm
+	//{
+	//	virtual void RawFile(HeaderPtr header, const uint64_t & header_offset) = 0;
+	//};
 
-		}
-		void setBlockSize(const uint32_t block_size)
-		{
-			this->block_size_ = block_size;
-		}
-		void setSectorSize(const uint32_t sector_size)
-		{
-			this->sector_size_ = sector_size;
-		}
-		HeaderPtr findHeaderAndOffset(const uint64_t start_offset, uint64_t & header_offset)
-		{
-			return nullptr;
-		}
-		void execute(HeaderPtr header, const uint64_t & header_offset) override
-		{
-			if (!device_->Open(OpenMode::OpenRead))
-			{
-				wprintf(L"Error to open.\n");	// ????????
-				return;
-			}
 
-			uint64_t offset = (uint64_t)0x0;
-			uint64_t header_offset = 0;
-			uint32_t counter = 0;
-			while (true)
-			{
-				if (!findHeaderAndOffset(offset, header_offset))
-				{
-					wprintf(L"Not Found Header\n");
-					break;
-				}
+	//class StandartRaw
+	//	: public RawAlgorithm
+	//{
+	//private:
+	//	IODevicePtr device_;
+	//	uint32_t block_size_;
+	//	uint32_t sector_size_;
+	//public:
+	//	StandartRaw(IODevicePtr device)
+	//		:device_(device)
+	//	{
 
-				auto target_file = target_folder + std::to_wstring(counter++) + L".mts";
-				offset = SaveToFile(header_offset, target_file);
-				offset += sector_size_;
+	//	}
+	//	void setBlockSize(const uint32_t block_size)
+	//	{
+	//		this->block_size_ = block_size;
+	//	}
+	//	void setSectorSize(const uint32_t sector_size)
+	//	{
+	//		this->sector_size_ = sector_size;
+	//	}
+	//	HeaderPtr findHeaderAndOffset(const uint64_t start_offset, uint64_t & header_offset)
+	//	{
+	//		return nullptr;
+	//	}
+	//	void execute(HeaderPtr header, const uint64_t & header_offset) override
+	//	{
+	//		if (!device_->Open(OpenMode::OpenRead))
+	//		{
+	//			wprintf(L"Error to open.\n");	// ????????
+	//			return;
+	//		}
 
-			}
+	//		uint64_t offset = (uint64_t)0x0;
+	//		uint64_t header_offset = 0;
+	//		uint32_t counter = 0;
+	//		while (true)
+	//		{
+	//			if (!findHeaderAndOffset(offset, header_offset))
+	//			{
+	//				wprintf(L"Not Found Header\n");
+	//				break;
+	//			}
 
-		}
+	//			auto target_file = target_folder + std::to_wstring(counter++) + L".mts";
+	//			offset = SaveToFile(header_offset, target_file);
+	//			offset += sector_size_;
 
-	};
+	//		}
+
+	//	}
+
+	//};
 
 
 };

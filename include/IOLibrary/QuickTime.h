@@ -26,14 +26,6 @@ namespace IO
 		return false;
 	}
 
-	bool isQuickTimeHeader(const qt_block_t * pQtBlock)
-	{
-		for (auto iKeyword = 0; iKeyword < 1; ++iKeyword)
-			if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
-				return true;
-		return false;
-	}
-
 	inline void to_big_endian64(uint64_t & val)
 	{
 		const int type_size = sizeof(uint64_t);
@@ -86,6 +78,13 @@ namespace IO
 		{
 			return device_;
 		}
+		virtual bool isQuickTimeHeader(const qt_block_t * pQtBlock)
+		{
+			for (auto iKeyword = 0; iKeyword < 1; ++iKeyword)
+				if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
+					return true;
+			return false;
+		}
 		virtual void execute(const path_string & target_folder)
 		{
 			if (!device_->Open(OpenMode::OpenRead))
@@ -130,7 +129,7 @@ namespace IO
 				for (uint32_t iSector = 0; iSector < bytes_read; iSector += sector_size_)
 				{
 					qt_block_t * pQt_block = (qt_block_t *)&buffer.data[iSector];
-					if (isQuickTimeHeader(pQt_block))
+					if (this->isQuickTimeHeader(pQt_block))
 					{
 						header_offset = offset + iSector;
 						return true;
@@ -452,6 +451,27 @@ namespace IO
 			}
 
 		}
+	};
+
+
+	class CanonFragmentRaw
+		:public QuickTimeRaw
+	{
+	public:
+		CanonFragmentRaw(IODevice * device)
+		{
+
+
+		}
+		bool isQuickTimeHeader(const qt_block_t * pQtBlock) override
+		{
+			if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[QTKeyword::mdat_key_id], qt_keyword_size) == 0)
+				return true;
+			return false;
+		}
+
+
+
 	};
 
 }

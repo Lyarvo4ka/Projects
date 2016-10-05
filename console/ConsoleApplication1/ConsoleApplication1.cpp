@@ -164,8 +164,8 @@ write_offset += write_size;
 #include "IOLibrary/func_utils.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	IO::path_string source_file(L"i:\\40629\\40629.img");
-	IO::path_string target_folder(L"i:\\40629\\mov\\");
+	IO::path_string source_file(L"i:\\40626\\40626.img");
+	IO::path_string target_folder(L"c:\\40626\\mov\\");
 	//IO::addValuesToEachPage(source_file,target_file,0xFF);
 	//IO::path_string target_folder(L"e:\\40629\\mov\\");
 	//IO::File *source_file = new IO::File(L"e:\\40629\\40629.img");
@@ -177,7 +177,7 @@ int _tmain(int argc, TCHAR **argv)
 	//qt_raw.execute(target_folder);
 	IO::File *s_file = new IO::File(source_file);
 	IO::GoPro go_pro(s_file);
-	go_pro.setClusterSize(131072);
+	go_pro.setClusterSize(32768);
 	go_pro.execute(target_folder);
 
 

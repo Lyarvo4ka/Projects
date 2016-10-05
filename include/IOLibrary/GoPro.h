@@ -56,6 +56,8 @@ namespace IO
 				return cluster_number;
 			}
 
+			const uint32_t max_count = 6;
+
 			uint32_t number = cluster_number;
 			Buffer buffer(this->cluster_size_);
 			if (!ReadCluster(number++, &buffer))
@@ -65,11 +67,16 @@ namespace IO
 
 			while (ReadCluster(number, &buffer))
 			{
-				if (memcmp(buffer.data, jpg_sing, 3) == 0)
-					break;
+				if (!isQuickTimeHeader((qt_block_t *) buffer.data) )
+				{
+					if (memcmp(buffer.data, jpg_sing, 3) == 0)
+						break;
 
-				if (calc0x4750(&buffer) < 10)
-					write_file.WriteData(buffer.data, buffer.data_size);
+					if (calc0x4750(&buffer) < max_count)
+						write_file.WriteData(buffer.data, buffer.data_size);
+				}
+				else
+				wprintf_s(L"Found new qt_header\n");
 
 				++number;
 			}
@@ -104,7 +111,7 @@ namespace IO
 
 			uint32_t counter = 0;
 
-			uint32_t cluster_number = 125237;
+			uint32_t cluster_number = 508916;
 			Buffer buffer(cluster_size_);
 			while (ReadCluster(cluster_number, &buffer))
 			{
@@ -113,7 +120,7 @@ namespace IO
 				{
 					path_string target_name = toFullPath(folder, counter++, L".mp4");
 
-					cluster_number = SaveFile_WithoutLRV(cluster_number, target_name);
+					/*cluster_number =*/ SaveFile_WithoutLRV(cluster_number, target_name);
 
 				}
 				++cluster_number;

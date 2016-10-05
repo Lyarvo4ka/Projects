@@ -81,6 +81,8 @@ namespace QTKeyword
 	static const char * qt_array[] = { "ftyp", "moov", "mdat", "free", "skip", "wide", "pnot", "prfl", 
 									   "mvhd", "clip", "trak", "udta", "ctab", "cmov", "rmra" , "uuid", "meta" };
 	const int qt_array_size = SIZEOF_ARRAY(qt_array);
+	const int mdat_key_id = 2;
+
 	//const int 
 }
 
