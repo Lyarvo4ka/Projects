@@ -15,7 +15,7 @@ struct mlv_block_t
 	uint8_t block_type[mlv_keyword_size];
 	uint32_t block_size;
 };
-#pragma pack
+#pragma pack()
 
 const int mlv_struct_size = sizeof(mlv_block_t);
 

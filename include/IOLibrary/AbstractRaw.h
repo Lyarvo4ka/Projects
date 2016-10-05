@@ -121,7 +121,7 @@ namespace IO
 
 };
 
-/*
+
 class AbstractRaw
 {
 public:
@@ -164,5 +164,5 @@ private:
 	HANDLE hSource_;
 	bool bReady_;
 };
-*/
+
 #endif

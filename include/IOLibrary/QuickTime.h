@@ -12,7 +12,7 @@ namespace IO
 #pragma pack(1)
 	struct qt_block_t
 	{
-		DWORD block_size;
+		uint32_t block_size;
 		char block_type[qt_keyword_size];
 	};
 #pragma pack()
@@ -23,6 +23,16 @@ namespace IO
 			if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
 				return true;
 
+		return false;
+	}
+
+	bool isPresentInKeywordArray(const QTKeyword::keyword_array & keywords , const char * key_val)
+	{
+		for (auto theKeyword : keywords)
+		{
+			if (memcmp(theKeyword, key_val, qt_keyword_size) == 0)
+				return true;
+		}
 		return false;
 	}
 
@@ -454,21 +464,100 @@ namespace IO
 	};
 
 
+	/*
+
+	1. 'mdat' data block and save offset
+	2. In the end of 'mdat', aling to cluster size and plus one cluster (+1 cluster) must 'ftyp' and 'moov' atom
+	3. Save header data block
+	4. Save 'mdat'.
+
+	*/
 	class CanonFragmentRaw
 		:public QuickTimeRaw
 	{
 	public:
 		CanonFragmentRaw(IODevice * device)
+			: QuickTimeRaw(device)
 		{
 
 
 		}
-		bool isQuickTimeHeader(const qt_block_t * pQtBlock) override
+		bool isMdat(const qt_block_t * pQtBlock)
 		{
 			if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[QTKeyword::mdat_key_id], qt_keyword_size) == 0)
 				return true;
 			return false;
 		}
+		bool isQuickTimeHeader(const qt_block_t * pQtBlock) override
+		{
+			return isMdat(pQtBlock);
+		}
+		bool findMdatOffset(uint64_t offset, uint64_t & header_offset)
+		{
+			return findHeaderOffset(offset, header_offset);
+		}
+		uint64_t readKeywordsSizes(const uint64_t start_offset, const QTKeyword::keyword_array & key_array)
+		{
+			uint64_t keyword_offset = start_offset;
+			auto device = this->getDevice();
+			uint64_t result_size = 0;
+			while (true)
+			{
+				qt_block_t qt_block = { 0 };
+				device->setPosition(keyword_offset);
+				int bytes_read = device->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t));
+				if (bytes_read == 0)
+					return keyword_offset;
+				if (qt_block.block_size == 0)
+					break;
+
+				to_big_endian32((uint32_t &)qt_block.block_size);
+
+				if (!isPresentInKeywordArray(key_array , qt_block.block_type))
+					break;
+
+				uint64_t theSize = ReadQtAtomSize(qt_block, keyword_offset);
+				if (theSize == 0)
+					break;
+
+				result_size += theSize;
+				keyword_offset += theSize;
+			}
+
+			return result_size;
+		}
+		void execute(const path_string & target_folder)
+		{
+			if (!this->getDevice()->Open(OpenMode::OpenRead))
+			{
+				wprintf(L"Error to open.\n");	// ????????
+				return;
+			}
+
+			bool bResult = false;
+
+			uint64_t offset = 0;
+			uint64_t header_offset = 0;
+			uint32_t counter = 0;
+			while (true)
+			{
+				if (!findMdatOffset(offset, header_offset))
+				{
+					wprintf(L"Not Found Mdat Keyword\n");
+					break;
+				}
+				QTKeyword::keyword_array array_mdat_free = { QTKeyword::mdat , QTKeyword::free };
+				auto mdat_free_size = readKeywordsSizes(header_offset, array_mdat_free);
+
+
+				auto target_file = toFullPath(target_folder, counter++, L".mov");
+				offset = SaveToFile(header_offset, target_file);
+				offset += default_sector_size;
+			}
+
+
+		}
+
 
 
 

@@ -33,3 +33,16 @@ BOOST_AUTO_TEST_CASE(TestNumberToSting)
 
 }
 
+BOOST_AUTO_TEST_CASE(TestIsPresetInKeywordArray)
+{
+	QTKeyword::keyword_array array_mdat_moov = { QTKeyword::mdat ,QTKeyword::moov };
+	auto expected = IO::isPresentInKeywordArray(array_mdat_moov, QTKeyword::mdat);
+	BOOST_CHECK_EQUAL(true, expected);
+	expected = IO::isPresentInKeywordArray(array_mdat_moov, QTKeyword::moov);
+	BOOST_CHECK_EQUAL(true, expected);
+
+	expected = IO::isPresentInKeywordArray(array_mdat_moov, QTKeyword::ftyp);
+	BOOST_CHECK_EQUAL(false, expected);
+
+
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IODevice.h"
+#include "utility.h"
 
 #include <map>
 #include <utility>
