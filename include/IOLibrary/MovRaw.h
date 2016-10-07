@@ -227,8 +227,8 @@
 //
 //inline bool isQuickTime(const qt_block_t * pQtBlock)
 //{
-//	for (auto iKeyword = 0; iKeyword < QTKeyword::qt_array_size; ++iKeyword)
-//		if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
+//	for (auto iKeyword = 0; iKeyword < qt_array_size; ++iKeyword)
+//		if (memcmp(pQtBlock->block_type, qt_array[iKeyword], qt_keyword_size) == 0)
 //			return true;
 //
 //	return false;
@@ -237,7 +237,7 @@
 //bool isQuickTimeHeader(const qt_block_t * pQtBlock)
 //{
 //	for (auto iKeyword = 0; iKeyword < 3; ++iKeyword)
-//		if (memcmp(pQtBlock->block_type, QTKeyword::qt_array[iKeyword], qt_keyword_size) == 0)
+//		if (memcmp(pQtBlock->block_type, qt_array[iKeyword], qt_keyword_size) == 0)
 //			return true;
 //	return false;
 //}
@@ -320,7 +320,7 @@
 //			if (!isQuickTime(&qt_block))
 //				break;
 //
-//			if (memcmp(qt_block.block_type, QTKeyword::qt_array[2], qt_keyword_size) == 0)
+//			if (memcmp(qt_block.block_type, qt_array[2], qt_keyword_size) == 0)
 //				isBeenMDAT = true;
 //
 //			uint64_t write_size = qt_block.block_size;

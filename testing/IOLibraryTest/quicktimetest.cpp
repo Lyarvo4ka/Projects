@@ -46,3 +46,5 @@ BOOST_AUTO_TEST_CASE(TestIsPresetInKeywordArray)
 
 
 }
+
+BOOST_AUTO_TEST_CASE(TestI)

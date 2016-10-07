@@ -164,8 +164,20 @@ write_offset += write_size;
 #include "IOLibrary/func_utils.h"
 int _tmain(int argc, TCHAR **argv)
 {
-	IO::path_string source_file(L"i:\\40626\\40626.img");
-	IO::path_string target_folder(L"c:\\40626\\mov\\");
+	IO::QuickTimeRaw qt_raw(nullptr);
+	qt_raw.show_header_keywords();
+
+
+	IO::QuickTimeRaw qt_raw2(-1);
+	qt_raw2.show_header_keywords();
+
+	//IO::path_string source_file_name(L"d:\\incoming\\40486\\Disk.image");
+	//IO::path_string target_folder(L"d:\\incoming\\40486\\mov\\");
+	//IO::File *source_file = new IO::File(source_file_name);
+	//IO::QuitTimeRawNoSize qt_no_mdat_size(source_file);
+	//qt_no_mdat_size.setBlockSize(32768);
+	//qt_no_mdat_size.execute(target_folder);
+
 	//IO::addValuesToEachPage(source_file,target_file,0xFF);
 	//IO::path_string target_folder(L"e:\\40629\\mov\\");
 	//IO::File *source_file = new IO::File(L"e:\\40629\\40629.img");
@@ -175,10 +187,10 @@ int _tmain(int argc, TCHAR **argv)
 	//qt_raw.setBlockSize(131072);
 
 	//qt_raw.execute(target_folder);
-	IO::File *s_file = new IO::File(source_file);
-	IO::GoPro go_pro(s_file);
-	go_pro.setClusterSize(32768);
-	go_pro.execute(target_folder);
+	//IO::File *s_file = new IO::File(source_file);
+	//IO::GoPro go_pro(s_file);
+	//go_pro.setClusterSize(32768);
+	//go_pro.execute(target_folder);
 
 
 /*

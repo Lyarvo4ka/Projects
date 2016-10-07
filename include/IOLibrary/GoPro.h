@@ -67,16 +67,16 @@ namespace IO
 
 			while (ReadCluster(number, &buffer))
 			{
-				if (!isQuickTimeHeader((qt_block_t *) buffer.data) )
-				{
-					if (memcmp(buffer.data, jpg_sing, 3) == 0)
-						break;
+				//if (!isQuickTimeHeader((qt_block_t *) buffer.data) )
+				//{
+				//	if (memcmp(buffer.data, jpg_sing, 3) == 0)
+				//		break;
 
-					if (calc0x4750(&buffer) < max_count)
-						write_file.WriteData(buffer.data, buffer.data_size);
-				}
-				else
-				wprintf_s(L"Found new qt_header\n");
+				//	if (calc0x4750(&buffer) < max_count)
+				//		write_file.WriteData(buffer.data, buffer.data_size);
+				//}
+				//else
+				//wprintf_s(L"Found new qt_header\n");
 
 				++number;
 			}
@@ -116,7 +116,7 @@ namespace IO
 			while (ReadCluster(cluster_number, &buffer))
 			{
 				qt_block_t * pQt_block = (qt_block_t *)buffer.data;
-				if (isQuickTimeHeader(pQt_block))
+				//if (isQuickTimeHeader(pQt_block))
 				{
 					path_string target_name = toFullPath(folder, counter++, L".mp4");
 
