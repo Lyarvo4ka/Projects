@@ -61,7 +61,7 @@ namespace IO
 		return false;
 	}
 
-	bool isPresentInKeywordArray(const array_keywords & keywords , const char * key_val)
+	bool isPresentInArrayKeywords(const array_keywords & keywords , const char * key_val)
 	{
 		for (auto theKeyword : keywords)
 		{
@@ -90,31 +90,23 @@ namespace IO
 	class QuickTimeRaw
 	{
 	private:
-		IODevice* device_ = nullptr;
+		IODevicePtr device_ = nullptr;
 		uint32_t block_size_ = default_block_size;
 		uint32_t sector_size_ = default_sector_size;
 		array_keywords header_keywords_ = { s_ftyp, s_moov, s_mdat };
 	public:
-		QuickTimeRaw(IODevice * device)
+		explicit QuickTimeRaw(IODevice * device)
+			: device_(device)
+		{
+		}
+		explicit QuickTimeRaw(IODevicePtr device)
 			: device_(device)
 		{
 		}
 
-		~QuickTimeRaw()
+
+		virtual ~QuickTimeRaw()
 		{
-			if (device_)
-			{
-				delete device_;
-				device_ = nullptr;
-			}
-		}
-		void show_header_keywords()
-		{
-			for (auto theHeader : header_keywords_)
-			{
-				printf("%s\t", theHeader);
-			}
-			printf("\r\n");
 		}
 		void setBlockSize(const uint32_t block_size)
 		{
@@ -128,7 +120,7 @@ namespace IO
 		{
 			this->sector_size_ = sector_size;
 		}
-		IODevice* getDevice()
+		IODevicePtr getDevice()
 		{
 			return device_;
 		}
@@ -230,8 +222,8 @@ namespace IO
 					//	break;
 
 					keyword_offset += new_size;
-*/
 					continue;
+*/
 				}
 
 				uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
@@ -557,7 +549,7 @@ namespace IO
 
 				to_big_endian32((uint32_t &)qt_block.block_size);
 
-				if (!isPresentInKeywordArray(key_array , qt_block.block_type))
+				if (!isPresentInArrayKeywords(key_array , qt_block.block_type))
 					break;
 
 				uint64_t theSize = ReadQtAtomSize(qt_block, keyword_offset);

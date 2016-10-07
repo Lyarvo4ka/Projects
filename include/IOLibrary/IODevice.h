@@ -174,6 +174,10 @@ namespace IO
 	};
 
 	using FilePtr = std::shared_ptr<File>;
+	inline FilePtr makeFilePtr(File * pFile)
+	{
+		return std::make_shared<File>(pFile);
+	}
 
 	class BlockDevice
 		: public IODevice
