@@ -14,15 +14,30 @@ namespace IO
 		return std::make_unique<Buffer>(data, data_size);
 	}
 
-	struct Header_t
+	class Header_t	// ??????
 	{
-		BufferPtr header_data;
+		std::list<BufferPtr> headers_array;	// ??????
 		uint32_t header_offset;
-
+	public:
 		Header_t(ByteArray data, uint32_t data_size)
-			: header_data(BufferFactory(data, data_size))
 		{
+			addHeader(data, data_size));
+		}
+		void addHeader(ByteArray data, uint32_t data_size)
+		{
+			headers_array.push_back(BufferFactory(data, data_size));
+		}
+		bool isHeader(const ByteArray data)
+		{
+			for (auto & header : headers_array)
+			{
+				if (memcmp(header->data + header_offset,
+					data,
+					header->data_size) == 0)
+					return true;
 
+			}
+			return false;
 		}
 	};
 	using HeaderPtr = std::shared_ptr<Header_t>;
@@ -45,9 +60,7 @@ namespace IO
 		{
 			for (auto theHeader : listHeaders_)
 			{
-				if (memcmp(theHeader->header_data->data + theHeader->header_offset,
-						   data,
-						   theHeader->header_data->data_size) == 0)
+				if (theHeader->isHeader(data))
 					return theHeader;
 			}
 			return nullptr;
