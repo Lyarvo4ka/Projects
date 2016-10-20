@@ -234,18 +234,22 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 	return crc;
 }
 
-#include "IOLibrary/AbstractRaw.h"
+#include "IOLibrary/Finder.h"
 int _tmain(int argc, TCHAR **argv)
 {
+	IO::Finder finder;
+	finder.add_extension(L".pck");
+	finder.printAll();
 
-	auto drive_number = 2;
-	IO::path_string target_folder(L"e:\\zbk\\");
-	auto drive_list = IO::ReadPhysicalDrives();
-	auto physical_drive = drive_list.find_by_number(drive_number);
-	auto disk_ptr = std::make_shared<IO::DiskDevice>(physical_drive);
-	//auto file_ptr = std::make_shared<IO::File>(L"d:\\PaboTa\\40746\\test\\1.bin");
-	IO::ZBKRaw zbk_raw(disk_ptr);
-	zbk_raw.execute(target_folder);
+
+	//auto drive_number = 2;
+	//IO::path_string target_folder(L"e:\\zbk\\");
+	//auto drive_list = IO::ReadPhysicalDrives();
+	//auto physical_drive = drive_list.find_by_number(drive_number);
+	//auto disk_ptr = std::make_shared<IO::DiskDevice>(physical_drive);
+	////auto file_ptr = std::make_shared<IO::File>(L"d:\\PaboTa\\40746\\test\\1.bin");
+	//IO::ZBKRaw zbk_raw(disk_ptr);
+	//zbk_raw.execute(target_folder);
 
 
 	//////////////////////////////////////////////////////////////////////////
