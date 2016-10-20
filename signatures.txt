@@ -1,0 +1,9 @@
+[name]="QuickTime"
+[extension]=".mov"
+[id]=0
+[keywords]="ftyp","moov","mdat","free","skip","wide","pnot","prfl","mvhd","clip","trak","udta","ctab","cmov","rmra","uuid","meta"
+[offset]=4
+[name]="JPG"
+[extension]=".jpg"
+[id]=1
+
