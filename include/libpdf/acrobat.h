@@ -36,7 +36,7 @@ public:
 	long Show();
 	long CloseAllDocs();
 	long MenuItemExecute(LPCTSTR szMenuItemName);
-	CString GetActiveTool();
+	CStringA GetActiveTool();
 	long SetActiveTool(LPCTSTR szButtonName, long bPersistent);
 	long ToolButtonRemove(LPCTSTR szButtonName);
 	long ToolButtonIsEnabled(LPCTSTR szButtonName);
@@ -46,7 +46,7 @@ public:
 	long GetNumAVDocs();
 	LPDISPATCH GetAVDoc(long nIndex);
 	LPDISPATCH GetActiveDoc();
-	CString GetLanguage();
+	CStringA GetLanguage();
 	long Lock(LPCTSTR szLockedBy);
 	long Unlock();
 	long SetPreference(short nType, long nValue);
@@ -83,18 +83,18 @@ public:
 	long DeletePages(long nStartPage, long nEndPage);
 	long GetNumPages();
 	long Create();
-	CString GetInfo(LPCTSTR szInfoKey);
+	CStringA GetInfo(LPCTSTR szInfoKey);
 	long SetInfo(LPCTSTR szInfoKey, LPCTSTR szBuffer);
 	long DeleteThumbs(long nStartPage, long nEndPage);
 	long MovePage(long nMoveAfterThisPage, long nPageToMove);
-	CString GetFileName();
+	CStringA GetFileName();
 	long GetPageMode();
 	long SetPageMode(long nPageMode);
 	long CreateThumbs(long nFirstPage, long nLastPage);
 	LPDISPATCH CreateTextSelect(long nPage, LPDISPATCH iAcroRect);
 	LPDISPATCH AcquirePage(long nPage);
-	CString GetInstanceID();
-	CString GetPermanentID();
+	CStringA GetInstanceID();
+	CStringA GetPermanentID();
 	long GetFlags();
 	long SetFlags(long nFlags);
 	LPDISPATCH OpenAVDoc(LPCTSTR szTempTitle);
@@ -129,7 +129,7 @@ public:
 	long PrintPages(long nFirstPage, long nLastPage, long nPSLevel, long bBinaryOk, long bShrinkToFit);
 	long ClearSelection();
 	long BringToFront();
-	CString GetTitle();
+	CStringA GetTitle();
 	long Maximize(long bMaxSize);
 	long SetTitle(LPCTSTR szTitle);
 	long OpenInWindow(LPCTSTR szFullPath, short hWnd);
@@ -225,13 +225,13 @@ public:
 // Operations
 public:
 	long IsValid();
-	CString GetSubtype();
+	CStringA GetSubtype();
 	long IsEqual(LPDISPATCH PDAnnot);
 	long GetColor();
 	long SetColor(long nRGBColor);
-	CString GetTitle();
+	CStringA GetTitle();
 	long SetTitle(LPCTSTR szTitle);
-	CString GetContents();
+	CStringA GetContents();
 	long SetContents(LPCTSTR szContents);
 	long IsOpen();
 	long SetOpen(long bIsOpen);
@@ -336,7 +336,7 @@ public:
 	long GetNumText();
 	LPDISPATCH GetBoundingRect();
 	long GetPage();
-	CString GetText(long nTextIndex);
+	CStringA GetText(long nTextIndex);
 };
 /////////////////////////////////////////////////////////////////////////////
 // CAcroHiliteList wrapper class
@@ -373,7 +373,7 @@ public:
 	long GetByTitle(LPDISPATCH iAcroPDDoc, LPCTSTR szBookmarkTitle);
 	long Destroy();
 	long IsValid();
-	CString GetTitle();
+	CStringA GetTitle();
 	long SetTitle(LPCTSTR szNewTitle);
 	long Perform(LPDISPATCH iAcroAVDoc);
 };

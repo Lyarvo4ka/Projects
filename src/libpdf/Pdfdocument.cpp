@@ -12,7 +12,7 @@ BOOL isAcrobatInstalled(COleException & e)
 	return pdfDoc.CreateDocument( e );
 }
 
-void PdfStringToTime( const CString & pdf_string , DateString & date_string )
+void PdfStringToTime( const CStringA & pdf_string , DateString & date_string )
 {
 	date_string.YEAR = pdf_string.Mid(0,4);
 	date_string.MONTH = pdf_string.Mid(4,2);
@@ -22,7 +22,7 @@ void PdfStringToTime( const CString & pdf_string , DateString & date_string )
 	date_string.SECONDS = pdf_string.Mid(12,2);
 }
 
-bool ParseDateString( const CString & date_string , DateString & parsed_date)
+bool ParseDateString( const CStringA & date_string , DateString & parsed_date)
 {
 	if ( date_string.IsEmpty() )
 	{
@@ -34,11 +34,11 @@ bool ParseDateString( const CString & date_string , DateString & parsed_date)
 	const int full_length = date_length + D_size;
 	const char * D_str = "D:";
 
-	CString str_date;
+	CStringA str_date;
 	int str_len = date_string.GetLength();
 	if ( date_string.GetLength() >= full_length )
 	{
-		CString d_str = date_string.Left(D_size);
+		CStringA d_str = date_string.Left(D_size);
 		if ( d_str.Compare( D_str ) == 0 )
 			str_date = date_string.Mid( D_size , date_length );
 		else

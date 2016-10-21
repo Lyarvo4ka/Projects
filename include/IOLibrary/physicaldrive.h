@@ -2,6 +2,7 @@
 
 #include "constants.h"
 #include <windows.h>
+#include <WinIoCtl.h >
 
 #include <setupapi.h>
 #pragma comment(lib, "setupapi.lib")

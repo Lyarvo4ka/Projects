@@ -4,6 +4,10 @@
 #include "iofs.h"
 #include <iostream>
 #include <boost/filesystem.hpp>
+#include <locale>
+#include <codecvt>
+#include <boost/algorithm/string.hpp>
+
 
 namespace IO
 {
@@ -12,7 +16,7 @@ namespace IO
 	{
 		char header[3];
 		char reserved[29];
-		char digits[9];
+		char digits[15];
 		char text[33];
 	}; 
 
@@ -21,6 +25,7 @@ namespace IO
 	private:
 		DirectoryNode::Ptr rootFolder_;
 		path_list list_ext_;
+		path_list files_;
 
 	public:
 		void add_extension(path_string ext)
@@ -45,6 +50,10 @@ namespace IO
 		{
 			return rootFolder_;
 		}
+		path_list getFiles() const
+		{
+			return files_;
+		}
 		void printFiles(DirectoryNode::Ptr current_folder)
 		{
 
@@ -55,17 +64,23 @@ namespace IO
 				{
 					//changeSizeIfFindMarker(file->getFullPath());
 					wprintf_s(L"%s\n", file->getFullPath().c_str());
-					path_string source_name(file->getFullPath().begin(), file->getFullPath().end());
-					auto new_name = getNameFromPCKFileAndChangeSize(source_name);
+					auto full_path = file->getFullPath();
+					files_.push_back(full_path);
 
-					try
-					{
-						boost::filesystem::rename(source_name, new_name);
-					}
-					catch (const boost::filesystem::filesystem_error& e)
-					{
-						std::cout << "Error: " << e.what() << std::endl;
-					}
+
+
+					//path_string source_name(full_path.begin(), full_path.end());
+					//auto new_name = getNameFromPCKFileAndChangeSize(source_name);
+					//const std::string target_folder("d:\\PaboTa\\40746\\result\\");
+
+					//try
+					//{
+					//	boost::filesystem::rename(full_path, target_folder + new_name + ".PCK");
+					//}
+					//catch (const boost::filesystem::filesystem_error& e)
+					//{
+					//	std::cout << "Error: " << e.what() << std::endl;
+					//}
 
 
 					file = current_folder->getNextFile();
@@ -90,7 +105,7 @@ namespace IO
 			printFiles(rootFolder_);
 
 		}
-		path_string getNameFromPCKFileAndChangeSize(const path_string & file_path)
+		std::string getNameFromPCKFileAndChangeSize(const path_string & file_path)
 		{
 			static int counter = 0;
 			++counter;
@@ -98,23 +113,32 @@ namespace IO
 			if (!file.Open(OpenMode::OpenWrite))
 			{
 				wprintf_s(L"Error open file.\n");
-				return std::to_wstring(counter);
+				return std::to_string(counter);
 			}
-			const int pck_size = sizeof(pck_t);
-			pck_t pck_header = { 0 };
-			uint32_t bytes_read = file.ReadData((ByteArray)&pck_header, pck_size);
-			if (bytes_read != pck_size)
-				return std::to_wstring(counter);
+			std::string new_name = std::to_string(counter);
 
-			std::string digit_name(pck_header.digits);
-			std::string text_name(pck_header.text);
-
-			std::string new_name = digit_name + text_name + std::to_string(counter);
 			auto file_size = file.Size();
 			if (file_size > 0)
 			{
+				uint32_t bytes_read = 0;
+				const int pck_size = sizeof(pck_t);
+				pck_t * pck_header = nullptr;
+
 				Buffer buffer(file_size);
 				bytes_read = file.ReadData(buffer.data, buffer.data_size);
+				if (bytes_read != file_size)
+					return std::to_string(counter);
+
+				pck_header = (pck_t *)buffer.data;
+
+				std::string digit_name(pck_header->digits);
+				std::string text_name(pck_header->text);
+
+				new_name = digit_name + "_"/* + text_name + "_"*/ + std::to_string(counter);
+				boost::algorithm::erase_all(new_name, "_"); // '\"'
+				//new_name.erase(std::remove_if(new_name.begin(), new_name.end(), '\\'), new_name.end());
+				//std::remove_if(new_name.begin(), new_name.end(), );
+
 				int pos = file_size - 1;
 				while (pos != 0)
 				{
@@ -123,10 +147,10 @@ namespace IO
 					--pos;
 				}
 
-				file.setSize(pos);
+				file.setSize(pos+1);
 			}
-			path_string new_name_w(new_name.begin(), new_name.end());
-			return new_name_w;
+
+			return new_name;
 		}
 	private:
 

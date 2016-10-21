@@ -11,40 +11,40 @@
 
 BOOL LIBPDF_API isAcrobatInstalled( COleException &e );
 
-const CString sAutor = "Autor";
-const CString sCreationDate = "CreationDate";
-const CString sCreator = "Creator";
-const CString sProducer = "Producer";
-const CString sTitle = "Title";
-const CString sSubject = "Subject";
-const CString sKeywords = "Keywords";
-const CString sModDate = "ModDate";
+const CStringA sAutor = "Autor";
+const CStringA sCreationDate = "CreationDate";
+const CStringA sCreator = "Creator";
+const CStringA sProducer = "Producer";
+const CStringA sTitle = "Title";
+const CStringA sSubject = "Subject";
+const CStringA sKeywords = "Keywords";
+const CStringA sModDate = "ModDate";
 
 
 struct LIBPDF_API DocInfo
 {
-	CString Author;
-	CString CreationDate;
-	CString Creator;
-	CString Producer;
-	CString Title;
-	CString Subject;
-	CString Keywords;
-	CString ModDate;
+	CStringA Author;
+	CStringA CreationDate;
+	CStringA Creator;
+	CStringA Producer;
+	CStringA Title;
+	CStringA Subject;
+	CStringA Keywords;
+	CStringA ModDate;
 };
 
 struct LIBPDF_API DateString
 {
-	CString YEAR;
-	CString MONTH;
-	CString DAY;
-	CString HOUR;
-	CString MINUTES;
-	CString SECONDS;
+	CStringA YEAR;
+	CStringA MONTH;
+	CStringA DAY;
+	CStringA HOUR;
+	CStringA MINUTES;
+	CStringA SECONDS;
 };
 
-void LIBPDF_API PdfStringToTime( const CString & pdf_string , DateString & date_string );
-bool LIBPDF_API ParseDateString( const CString & date_string , DateString & parsed_date );
+void LIBPDF_API PdfStringToTime( const CStringA & pdf_string , DateString & date_string );
+bool LIBPDF_API ParseDateString( const CStringA & date_string , DateString & parsed_date );
 
 class LIBPDF_API PdfDocument
 {
@@ -55,7 +55,7 @@ public:
 	void DestroyDocument();
 	BOOL Open( const std::string & pdf_file );
 	void Close();
-	//CString getInfo( const CString & info_keyword );
+	//CStringA getInfo( const CStringA & info_keyword );
 	DocInfo getInfo( );
 
 private:

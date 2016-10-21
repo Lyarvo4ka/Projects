@@ -234,13 +234,21 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 	return crc;
 }
 
+
+
 #include "IOLibrary/Finder.h"
 int _tmain(int argc, TCHAR **argv)
 {
 	IO::Finder finder;
-	finder.add_extension(L".pck");
+	finder.add_extension(L".doc");
+	finder.add_extension(L".docx");
+	finder.add_extension(L".xls");
+	finder.FindFiles(L"d:\\LongPathFolder\\");
 	finder.printAll();
 
+	auto listFiles = finder.getFiles();
+	int k = 1;
+	k = 2;
 
 	//auto drive_number = 2;
 	//IO::path_string target_folder(L"e:\\zbk\\");

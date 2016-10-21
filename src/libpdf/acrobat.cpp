@@ -72,9 +72,9 @@ long CAcroApp::MenuItemExecute(LPCTSTR szMenuItemName)
 	return result;
 }
 
-CString CAcroApp::GetActiveTool()
+CStringA CAcroApp::GetActiveTool()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x6, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -163,9 +163,9 @@ LPDISPATCH CAcroApp::GetActiveDoc()
 	return result;
 }
 
-CString CAcroApp::GetLanguage()
+CStringA CAcroApp::GetLanguage()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x10, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -362,9 +362,9 @@ long CAcroPDDoc::Create()
 	return result;
 }
 
-CString CAcroPDDoc::GetInfo(LPCTSTR szInfoKey)
+CStringA CAcroPDDoc::GetInfo(LPCTSTR szInfoKey)
 {
-	CString result;
+	CStringA result;
 	static BYTE parms[] =
 		VTS_BSTR;
 	InvokeHelper(0x8, DISPATCH_METHOD, VT_BSTR, (void*)&result, parms,
@@ -402,9 +402,9 @@ long CAcroPDDoc::MovePage(long nMoveAfterThisPage, long nPageToMove)
 	return result;
 }
 
-CString CAcroPDDoc::GetFileName()
+CStringA CAcroPDDoc::GetFileName()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0xc, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -456,16 +456,16 @@ LPDISPATCH CAcroPDDoc::AcquirePage(long nPage)
 	return result;
 }
 
-CString CAcroPDDoc::GetInstanceID()
+CStringA CAcroPDDoc::GetInstanceID()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x12, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
 
-CString CAcroPDDoc::GetPermanentID()
+CStringA CAcroPDDoc::GetPermanentID()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x13, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -636,9 +636,9 @@ long CAcroAVDoc::BringToFront()
 	return result;
 }
 
-CString CAcroAVDoc::GetTitle()
+CStringA CAcroAVDoc::GetTitle()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0xb, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -1070,9 +1070,9 @@ long CAcroPDAnnot::IsValid()
 	return result;
 }
 
-CString CAcroPDAnnot::GetSubtype()
+CStringA CAcroPDAnnot::GetSubtype()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x2, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -1104,9 +1104,9 @@ long CAcroPDAnnot::SetColor(long nRGBColor)
 	return result;
 }
 
-CString CAcroPDAnnot::GetTitle()
+CStringA CAcroPDAnnot::GetTitle()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x6, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -1121,9 +1121,9 @@ long CAcroPDAnnot::SetTitle(LPCTSTR szTitle)
 	return result;
 }
 
-CString CAcroPDAnnot::GetContents()
+CStringA CAcroPDAnnot::GetContents()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x8, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
@@ -1423,9 +1423,9 @@ long CAcroPDTextSelect::GetPage()
 	return result;
 }
 
-CString CAcroPDTextSelect::GetText(long nTextIndex)
+CStringA CAcroPDTextSelect::GetText(long nTextIndex)
 {
-	CString result;
+	CStringA result;
 	static BYTE parms[] =
 		VTS_I4;
 	InvokeHelper(0x5, DISPATCH_METHOD, VT_BSTR, (void*)&result, parms,
@@ -1481,9 +1481,9 @@ long CAcroPDBookmark::IsValid()
 	return result;
 }
 
-CString CAcroPDBookmark::GetTitle()
+CStringA CAcroPDBookmark::GetTitle()
 {
-	CString result;
+	CStringA result;
 	InvokeHelper(0x4, DISPATCH_METHOD, VT_BSTR, (void*)&result, NULL);
 	return result;
 }
