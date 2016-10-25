@@ -65,6 +65,15 @@ BOOST_AUTO_TEST_CASE(TestSortDriveList)
 	drivelist.sort();
 	BOOST_CHECK_EQUAL(drivelist.index(0)->getDriveNumber(), 0);
 }
+BOOST_AUTO_TEST_CASE(TestIsVaidGUID)
+{
+	DriveAttributesReader attr_reader;
+	GUID guid = { 0 };
+	BOOST_CHECK_EQUAL(attr_reader.isValidGUID(guid), FALSE);
+	guid.Data4[0] = 1;
+	BOOST_CHECK_EQUAL(attr_reader.isValidGUID(guid), TRUE);
+
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

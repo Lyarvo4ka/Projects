@@ -261,7 +261,7 @@ std::string IO::file_path_number(const std::string & folder, DWORD number, const
 {
 	char buff[10];
 	memset(buff,0,10);
-	sprintf_s(buff,10,"%.9d", number );
+	sprintf_s(buff,10,"%.9u", number );
 	std::string file_name( folder );
 
 	file_name.append( buff );

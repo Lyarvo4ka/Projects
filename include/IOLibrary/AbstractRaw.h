@@ -24,7 +24,7 @@ namespace IO
 		uint32_t header_size_ = 0;
 		uint32_t header_offset = 0;
 		ByteArray footer_ = nullptr;
-		uint32_t footer_size = 0;
+		uint32_t footer_size_ = 0;
 		uint32_t add_footer_size = 0;
 		uint64_t max_file_size = 0;
 	public:
@@ -55,7 +55,7 @@ namespace IO
 		{
 			this->footer_ = new uint8_t[footer_size];
 			memcpy(this->footer_, footer, footer_size);
-			this->footer_size = footer_size;
+			this->footer_size_ = footer_size;
 		}
 		void setAddFooterSize(const uint32_t add_footer_size)
 		{
@@ -87,9 +87,9 @@ namespace IO
 		}
 		bool isFooter(const ByteArray data, const uint32_t data_size , uint32_t & footer_pos)
 		{
-			for (uint32_t iByte = 0; iByte < data_size - footer_size; ++iByte)
+			for (uint32_t iByte = 0; iByte < data_size - footer_size_; ++iByte)
 			{
-				if (memcmp(footer_, data + iByte, footer_size) == 0)
+				if (memcmp(footer_, data + iByte, footer_size_) == 0)
 				{
 					footer_pos = iByte;
 					return true;
@@ -136,6 +136,28 @@ namespace IO
 		RawAlgorithm * createRawAlgorithm(HeaderPtr)
 		{
 			return nullptr;
+		}
+
+	};
+
+	class FileMake
+	{
+		path_string folder_;
+		uint64_t counter = 0;
+	public:
+		FilePtr create(const uint64_t offset_value, const path_string & extension)
+		{
+			if (boost::filesystem::exists(folder_))
+			{
+				auto ext_folder = addBackSlash(folder_) + extension;
+				if (boost::filesystem::exists(ext_folder))
+				{
+					path_string new_file_name/* = toNumberString(offset_value)*/;
+					// create new file name;
+
+					auto file_ptr = makeFilePtr(new_file_name);
+				}
+			}
 		}
 
 	};

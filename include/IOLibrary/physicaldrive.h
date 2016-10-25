@@ -67,21 +67,15 @@ namespace IO
 	class PhysicalDrive
 	{
 	private:
-		uint32_t drive_number_;
-		uint32_t bytes_per_sector_;
-		uint64_t size_;
-		uint32_t transfer_length_;
-		path_string path_;
-		path_string drive_name_;
-		std::string serial_number_;
+		uint32_t drive_number_ = 0;
+		uint32_t bytes_per_sector_ = 0;
+		uint64_t size_ = 0;
+		uint32_t transfer_length_ = 0;
+		path_string path_ = L"";
+		path_string drive_name_ = L"";
+		std::string serial_number_ = "";
 	public:
 		PhysicalDrive()
-			: drive_number_(0)
-			, size_(0)
-			, bytes_per_sector_(0)
-			, path_(L"")
-			, drive_name_(L"")
-			, serial_number_("")
 		{
 
 		}
@@ -155,8 +149,8 @@ namespace IO
 	class DriveAttributesReader
 	{
 	private:
-		HDEVINFO hDevInfo_;
-		SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData_;
+		HDEVINFO hDevInfo_ = INVALID_HANDLE_VALUE;
+		SP_DEVICE_INTERFACE_DATA spDeviceInterfaceData_ = {0};
 
 	public:
 		DriveAttributesReader()
@@ -217,17 +211,11 @@ namespace IO
 		
 		BOOL isValidGUID(GUID guid)
 		{
-			BOOL bValid = FALSE;
-			if (guid.Data1 != 0)
-				return TRUE;
-			if (guid.Data2 != 0)
-				return TRUE;
-			if (guid.Data3 != 0)
-				return TRUE;
-			if (guid.Data4 != 0)
-				return TRUE;
+			static char null_array[sizeof(GUID)] = { 0 };
+			ZeroMemory(null_array, sizeof(GUID));
 
-			return bValid;
+			return (memcmp(&guid, null_array, sizeof(GUID)) != 0 ) ? TRUE : FALSE;
+
 		}
 
 		BOOL readDriveAttribute(uint32_t member_index, PhysicalDrivePtr physical_drive)
@@ -306,9 +294,9 @@ namespace IO
 
 
 			char * pTmpBuffer = new char[dwInterfaceDetailDataSize];
-			PSP_DEVICE_INTERFACE_DETAIL_DATA pspOUTDevIntDetailData = nullptr;
+			PSP_DEVICE_INTERFACE_DETAIL_DATA pspOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)pTmpBuffer;
 
-			pspOUTDevIntDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA ) pTmpBuffer;
+			
 			::ZeroMemory(pspOUTDevIntDetailData, dwInterfaceDetailDataSize);
 
 			::ZeroMemory(&spDevInfoData, sizeof(SP_DEVINFO_DATA));
@@ -359,8 +347,6 @@ namespace IO
 
 			if (nameBufferSize == 0)
 				return FALSE;
-
-			dwErrorCode = ::GetLastError();
 
 			BYTE * buffer = new BYTE[nameBufferSize];
 			ZeroMemory(buffer, nameBufferSize);

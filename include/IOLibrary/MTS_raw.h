@@ -18,14 +18,7 @@ namespace IO
 		sector *= sector_size;
 		return sector;
 	}
-	inline path_string numberToWString(const int number)
-	{
-		const int size = 10* sizeof(wchar_t);
-		wchar_t buff[size];
-		memset(buff, 0, size );
-		wprintf_s(buff, 10, L"%.5d", number);
-		return std::wstring(buff);
-	}
+
 
 	class RawMTS
 	{
@@ -114,7 +107,7 @@ namespace IO
 					if (isMTSHeader(pSector))
 					{
 						header_offset = offset + iSector;
-						wprintf(L"Found MTS header %lld (sectors)\n", header_offset / sector_size_);
+						wprintf(L"Found MTS header %llu (sectors)\n", header_offset / sector_size_);
 						return true;
 					}
 				}

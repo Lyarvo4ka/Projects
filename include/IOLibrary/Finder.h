@@ -122,14 +122,13 @@ namespace IO
 			{
 				uint32_t bytes_read = 0;
 				const int pck_size = sizeof(pck_t);
-				pck_t * pck_header = nullptr;
 
 				Buffer buffer(file_size);
 				bytes_read = file.ReadData(buffer.data, buffer.data_size);
 				if (bytes_read != file_size)
 					return std::to_string(counter);
 
-				pck_header = (pck_t *)buffer.data;
+				pck_t * pck_header = (pck_t *)buffer.data;
 
 				std::string digit_name(pck_header->digits);
 				std::string text_name(pck_header->text);
@@ -158,10 +157,9 @@ namespace IO
 		{
 			path_string current_folder = folder_node->getFullPath();
 			path_string mask_folder(addBackSlash(current_folder) + mask_all);
-			HANDLE hFindFile = INVALID_HANDLE_VALUE;
 			WIN32_FIND_DATA findData = { 0 };
 
-			hFindFile = FindFirstFile(mask_folder.c_str(), &findData);
+			HANDLE hFindFile = FindFirstFile(mask_folder.c_str(), &findData);
 			if (hFindFile != INVALID_HANDLE_VALUE)
 			{
 				do

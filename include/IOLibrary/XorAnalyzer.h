@@ -27,7 +27,7 @@ class IOLIBRARY_EXPORT XorAnalyzer
 {
 private:
 	std::string dump_file_;
-	HANDLE hDump_;
+	HANDLE hDump_ = INVALID_HANDLE_VALUE;
 public:
 	XorAnalyzer()
 	{}

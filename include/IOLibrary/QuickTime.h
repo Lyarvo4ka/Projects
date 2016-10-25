@@ -322,11 +322,11 @@ namespace IO
 		uint64_t AppendDataToFile(File * target_file, uint64_t offset, uint64_t copy_size)
 		{
 			if (!device_)
-				return false;
+				return 0;
 			if (!target_file)
-				return false;
+				return 0;
 			if (!target_file->isOpen())
-				return false;
+				return 0;
 
 			Buffer buffer(block_size_);
 			ZeroMemory(buffer.data, block_size_);

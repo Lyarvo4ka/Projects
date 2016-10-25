@@ -62,7 +62,7 @@ bool IO::calcEntropyForFile(const std::string & file_name, DWORD block_size)
 		++cluster_number;
 	}
 
-	delete pBuffer;
+	delete [] pBuffer;
 
 	CloseHandle(hWrite);
 	CloseHandle(hRead);
@@ -127,7 +127,7 @@ void IO::removeLRV(const std::string & input_file, const std::string & output_fi
 		}
 	}
 
-	delete pBuffer;
+	delete [] pBuffer;
 
 	CloseHandle(hRead);
 	CloseHandle(hWrite);

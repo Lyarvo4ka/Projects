@@ -134,7 +134,7 @@ namespace IO
 	inline path_string toNumberString(const uint32_t number)
 	{
 		const int numValues = 11;
-		wchar_t buff[numValues];
+		wchar_t buff[numValues] = {0};
 		ZeroMemory(buff, sizeof(wchar_t) * numValues);
 
 		swprintf_s(buff, numValues, L"%.10u", number);
