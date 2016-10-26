@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<signatures>
+  <zbk>
+    <header>0x0F000B67636667507267506C7573</header>
+    <offset>2</offset>
+    <footer>0x504B050600000000</footer>
+  </zbk>  
+  <cdw>
+    <header>0x4B46</header>
+    <offset>0</offset>
+    <header>0x0100000000000000</header>
+    <offset>16</offset>
+  </cdw>
+  <mov>
+    <keyword>ftyp</keyword>
+    <keyword>moov</keyword>   
+    <keyword>mdat</keyword>
+  </mov>
+  <zip>
+    <header>0x504B</header>
+  </zip>
+  <docx>
+    <header>0x504b</header>
+  </docx>
+  <avi>
+  <header>0x52494646</header>
+  </avi>  
+  <wav>
+  <header>0x52494646</header>
+  </wav>   
+</signatures>

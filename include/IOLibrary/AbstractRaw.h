@@ -105,34 +105,88 @@ namespace IO
 	}
 
 
-	//class HeaderBase
-	//{
-	//private:
-	//	std::list<HeaderPtr> listHeaders_;
-	//public:
-	//	void addHeader(HeaderPtr new_header)
-	//	{
-	//		listHeaders_.push_back(new_header);
-	//	}
-	//	HeaderPtr findHeader(const ByteArray data)
-	//	{
-	//		for (auto theHeader : listHeaders_)
-	//		{
-	//			if (theHeader->isHeader(data))
-	//				return theHeader;
-	//		}
-	//		return nullptr;
-	//	}
-	//};
+	class HeaderBase
+	{
+	private:
+		std::list<HeaderPtr> listHeaders_;
+	public:
+		void addHeader(HeaderPtr new_header)
+		{
+			listHeaders_.push_back(new_header);
+		}
+		HeaderPtr findHeader(const ByteArray data)
+		{
+			for (auto theHeader : listHeaders_)
+			{
+				if (theHeader->isHeader(data))
+					return theHeader;
+			}
+			return nullptr;
+		}
+	};
 
 	class RawAlgorithm;
 
 	class SignatureFinder
 	{
+		IODevicePtr device_;
+		uint32_t block_size_ = default_block_size;
+		uint32_t sector_size_ = default_sector_size;
+		HeaderBase * header_base_;
+	public:
+		SignatureFinder(IODevicePtr device)
+			: device_(device)
+		{
+
+		}
 		HeaderPtr findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
+			if (!device_->Open(OpenMode::OpenRead))
+			{
+				wprintf_s(L"Error open device\n%");
+				return nullptr;
+			}
+
+			uint64_t file_size = device_->Size();
+			uint64_t offset = start_offset;
+			Buffer buffer(block_size_);
+			uint32_t bytes_read = 0;
+			uint32_t result_offset = 0;
+
+			while (offset < file_size)
+			{
+				device_->setPosition(offset);
+				bytes_read = device_->ReadData(buffer.data, block_size_);
+				if (bytes_read == 0)
+				{
+					printf("Error read drive\r\n");
+					break;
+				}
+				if (auto header_ptr = cmpHeader(buffer, bytes_read, result_offset))
+				{
+					header_pos = offset;
+					header_pos += result_offset;
+					return header_ptr;
+				}
+
+				offset += bytes_read;
+			}
 			return nullptr;
 		}
+
+		HeaderPtr cmpHeader(const Buffer & buffer, const uint32_t size, uint32_t header_pos)
+		{
+			for (uint32_t iSector = 0; iSector < size; iSector += sector_size_)
+			{
+				if (auto header_ptr = header_base_->findHeader(buffer.data))
+				{
+					return header_ptr;
+				}
+			}
+
+		}
+
+
 		RawAlgorithm * createRawAlgorithm(HeaderPtr)
 		{
 			return nullptr;
