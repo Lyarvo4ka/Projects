@@ -19,9 +19,17 @@
   <zip>
     <header>0x504B</header>
   </zip>
-  <docx>
-    <header>0x504b</header>
-  </docx>
+  <Office2007>
+    <header>0x504B</header>
+    <offset>0</offset>
+    <header>0x5B436F6E74656E745F54797065735D2E786D6C</header>
+    <offset>30</offset>
+    <footer>0x504B0506</footer>
+    <addsize>18</addsize>
+    <extension>.docx</extension>
+    <extension>.xlsx</extension>
+    <extension>.pptx</extension>
+  </Office2007>
   <avi>
   <header>0x52494646</header>
   </avi>  
