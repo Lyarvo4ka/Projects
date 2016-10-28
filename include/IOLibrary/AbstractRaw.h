@@ -240,6 +240,94 @@ namespace IO
 
 	};
 
+
+	class StandartRaw
+		: public RawAlgorithm
+	{
+	private:
+		IODevicePtr device_;
+		uint32_t block_size_ = default_block_size;
+		uint32_t sector_size_ = default_sector_size;
+	public:
+		StandartRaw(IODevicePtr device)
+			:device_(device)
+		{
+
+		}
+		void setBlockSize(const uint32_t block_size)
+		{
+			this->block_size_ = block_size;
+		}
+		uint32_t getBlockSize() const
+		{
+			return block_size_;
+		}
+		void setSectorSize(const uint32_t sector_size)
+		{
+			this->sector_size_ = sector_size;
+		}
+		uint32_t getSectorSize() const
+		{
+			return sector_size_;
+		}
+		uint64_t SaveRawFile(HeaderPtr &header_ptr, const uint64_t header_offset, const path_string & target_name) override
+		{
+			File target_file(target_name);
+			if (!target_file.Open(OpenMode::Create))
+			{
+				wprintf(L"Error create file\n");
+			}
+
+			Buffer buffer(block_size_);
+			uint32_t bytes_read = 0;
+			uint64_t offset = header_offset;
+			uint32_t footer_pos = 0;
+			uint64_t target_size = 0;
+
+			while (true)
+			{
+				device_->setPosition(offset);
+				bytes_read = device_->ReadData(buffer.data, block_size_);
+				if (bytes_read == 0)
+				{
+					printf("Error read drive\r\n");
+					break;
+				}
+
+				if (header_ptr->isFooter(buffer.data, bytes_read, footer_pos))
+				{
+					uint32_t write_size = footer_pos + header_ptr->getAddFooterSize();
+					if (target_file.WriteData(buffer.data, write_size) == 0)
+					{
+						printf("Error write to file\r\n");
+						break;
+					}
+					target_size += write_size;
+					return target_size;
+				}
+				else
+				{
+					if (target_file.WriteData(buffer.data, bytes_read) == 0)
+					{
+						printf("Error write to file\r\n");
+						break;
+					}
+				}
+
+				target_size += bytes_read;
+				if (target_size > header_ptr->getMaxFileSize())
+					return target_size;
+
+				offset += bytes_read;
+			}
+
+
+			return 0;
+		}
+
+
+	};
+
 	class ZBKRaw
 		: public RawAlgorithm
 	{

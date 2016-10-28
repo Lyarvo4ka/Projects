@@ -255,7 +255,7 @@ void show_elements(tinyxml2::XMLNode * xml_node)
 
 int _tmain(int argc, TCHAR **argv)
 {
-	const std::string xml_filename = "c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.xml";
+	const std::string xml_filename = "c:\\Users\\sergey\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.xml";
 	tinyxml2::XMLDocument xml_signature;
 	auto xml_result = xml_signature.LoadFile(xml_filename.c_str());
 	if (xml_result != tinyxml2::XML_SUCCESS)
