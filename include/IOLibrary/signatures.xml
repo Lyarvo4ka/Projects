@@ -15,6 +15,8 @@
     <keyword>ftyp</keyword>
     <keyword>moov</keyword>   
     <keyword>mdat</keyword>
+    <extension>.mov</extension>
+    <extension>.mp4</extension>
   </mov>
   <zip>
     <header>0x504B</header>

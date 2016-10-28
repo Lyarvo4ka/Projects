@@ -143,7 +143,7 @@ namespace IO
 		{
 			if (!device_->Open(OpenMode::OpenRead))
 			{
-				wprintf_s(L"Error open device\n%");
+				wprintf_s(L"Error open device\n");
 				return nullptr;
 			}
 
@@ -183,7 +183,7 @@ namespace IO
 					return header_ptr;
 				}
 			}
-
+			return nullptr;
 		}
 
 

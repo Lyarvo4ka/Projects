@@ -14,7 +14,7 @@
     <ProjectGuid>{14C2973D-DC7A-492A-9393-45E41F2B59D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ConsoleApplication1</RootNamespace>
-    <ProjectName>TestLongFolder</ProjectName>
+    <ProjectName>TestXml</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -112,6 +112,9 @@
     <ResourceCompile Include="XorAnalyzer.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\libTinyXML2\libTinyXML2.vcxproj">
+      <Project>{b7a2ec08-f29b-4922-bcae-011aa5054218}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\IOLibrary\IOLibrary.vcxproj">
       <Project>{c0525921-31e3-4e1a-b7b6-4ea88d4de419}</Project>
     </ProjectReference>

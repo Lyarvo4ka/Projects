@@ -46,7 +46,7 @@ show_help();
 //#include "IOLibrary/MTS_raw.h"
 //#include "IOLibrary/pageaddition.h"
 //#include "IOLibrary/cdw_raw.h"
-#include "IOLibrary/IODevice.h"
+//#include "IOLibrary/IODevice.h"
 //#include "IOLibrary/SignatureTest.h"
 //#include "IOLibrary/GoPro.h"
 /*
@@ -234,19 +234,66 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 	return crc;
 }
 
-
+#include "../libTinyXML2/tinyxml2.h"
 
 #include "IOLibrary/Finder.h"
+
+void show_elements(tinyxml2::XMLNode * xml_node)
+{
+	if ( tinyxml2::XMLNode * pNode = xml_node->FirstChild())
+	{
+		do {
+			if (auto xml_element = pNode->ToElement())
+			if ( auto value_element = pNode->FirstChild())
+			{
+				printf("\t\t%s - %s\r\n", pNode->ToElement()->Value(), value_element->Value());
+			}
+			pNode = pNode->NextSibling();
+		} while (pNode);
+	}
+}
+
 int _tmain(int argc, TCHAR **argv)
 {
-	IO::Finder finder;
-	finder.add_extension(L".doc");
-	finder.add_extension(L".docx");
-	finder.add_extension(L".xls");
-	finder.FindFiles(L"d:\\LongPathFolder\\");
-	finder.printAll();
+	const std::string xml_filename = "c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.xml";
+	tinyxml2::XMLDocument xml_signature;
+	auto xml_result = xml_signature.LoadFile(xml_filename.c_str());
+	if (xml_result != tinyxml2::XML_SUCCESS)
+	{
+		wprintf_s(L"Error open xml file\n");
+		return -1;
+	}
 
-	auto listFiles = finder.getFiles();
+	auto root = xml_signature.RootElement();
+	if (root)
+	{
+		printf("Root:%s\r\n", root->Value());
+
+		if (auto xml_node = root->FirstChild())
+		{
+			printf("\t%s\r\n", xml_node->ToElement()->Value());
+			show_elements(xml_node);
+			tinyxml2::XMLNode * pNode = xml_node;
+			while (auto next_node = pNode->NextSibling())
+			{
+				printf("\t%s\r\n", next_node->ToElement()->Value());
+				show_elements(next_node);
+				pNode = next_node;
+			}
+		}
+
+
+	}
+
+	
+	//IO::Finder finder;
+	//finder.add_extension(L".doc");
+	//finder.add_extension(L".docx");
+	//finder.add_extension(L".xls");
+	//finder.FindFiles(L"d:\\LongPathFolder\\");
+	//finder.printAll();
+
+	//auto listFiles = finder.getFiles();
 	int k = 1;
 	k = 2;
 
@@ -553,5 +600,5 @@ int _tmain(int argc, TCHAR **argv)
 	printf("finished");
 	_getch();
 
-
+	return 0;
 }
