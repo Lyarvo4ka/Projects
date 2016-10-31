@@ -54,6 +54,9 @@
     <ClCompile Include="QuickTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="factories.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h">

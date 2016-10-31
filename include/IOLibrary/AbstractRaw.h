@@ -176,10 +176,11 @@ namespace IO
 
 		HeaderPtr cmpHeader(const Buffer & buffer, const uint32_t size, uint32_t header_pos)
 		{
-			for (uint32_t iSector = 0; iSector < size; iSector += sector_size_)
+			for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
 			{
 				if (auto header_ptr = header_base_->findHeader(buffer.data))
 				{
+					header_pos = iPos;
 					return header_ptr;
 				}
 			}
@@ -187,9 +188,10 @@ namespace IO
 		}
 
 
-		RawAlgorithm * createRawAlgorithm(HeaderPtr)
+		RawAlgorithm * createRawAlgorithm(HeaderPtr headerPtr)
 		{
-			return nullptr;
+			
+			return ;
 		}
 
 	};

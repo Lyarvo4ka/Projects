@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ext2Test.cpp" />
+    <ClCompile Include="FactoriesTest.cpp" />
     <ClCompile Include="FileFinderTest.cpp" />
     <ClCompile Include="IODeviceTest.cpp" />
     <ClCompile Include="IOLibraryTest.cpp" />

@@ -102,6 +102,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Entropy.cpp" />
+    <ClCompile Include="factories.cpp" />
     <ClCompile Include="IODevice.cpp" />
     <ClCompile Include="iofs.cpp" />
     <ClCompile Include="iofunctions.cpp" />

@@ -1,52 +1,38 @@
 #pragma once
 
-#include "AbstractRaw.h"
+#include "iolibrary_global.h"
+#include "IODevice.h"
 #include <map>
 namespace IO
 {
-	class RawFactory
+	class RawAlgorithm;
+
+	class IOLIBRARY_EXPORT RawFactory
 	{
 	public:
 		virtual ~RawFactory() {}
-		virtual RawAlgorithm * createRaw(IODevicePtr) = 0;
+		virtual RawAlgorithm * createRawAlgorithm(IODevicePtr) = 0;
 	};
 
 	using RawFactoryPtr = std::unique_ptr<RawFactory>;
 
 
-	class StandartRawFactory
+	class IOLIBRARY_EXPORT StandartRawFactory
 		: public RawFactory
 	{
-		RawAlgorithm * createRaw(IODevicePtr device) override
-		{
-			return new StandartRaw(device);
-		};
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override;;
 	};
 
-	class RawManager
+	class IOLIBRARY_EXPORT RawFactoryManager
 	{
 		using FactoryMap = std::map<std::string, RawFactoryPtr> ;
 		using FactoryPair = std::pair<std::string, RawFactoryPtr> ;
 	private:
-		std::map<std::string, RawFactory *> factories_;
+		FactoryMap factories_;
 	public:
 
-		void Register(const std::string & algorithmName, RawFactory * rawFactory)
-		{
-			if (factories_.find(algorithmName) == factories_.end())
-			{
-				auto rawFactoryPtr = std::make_unique<RawFactory>(rawFactory);
-				factories_.insert(std::make_pair(algorithmName, rawFactoryPtr));
-			}
-		}
-		RawFactory * Lookup(const std::string & algorithmName)
-		{
-			auto findIter = factories_.find(algorithmName);
-			if (findIter != factories_.end())
-			{
-				return findIter->second.get();
-			}
-			return nullptr;
-		}
+		void Register(const std::string & algorithmName, RawFactory * rawFactory);
+		RawFactory * Lookup(const std::string & algorithmName);
 	};
 };
