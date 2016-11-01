@@ -15,3 +15,14 @@ BOOST_AUTO_TEST_CASE(FindTest)
 	//finder.printAll();
 
 }
+
+BOOST_AUTO_TEST_CASE(getNotNullFromEndTest)
+{
+	uint32_t size = 10;
+	uint32_t pos = 4;
+	IO::Buffer buffer(size);
+	ZeroMemory(buffer.data, buffer.data_size);
+	buffer.data[size - pos] = 0xFF;
+	auto resPos = IO::NotNullPosFromEnd(buffer);
+	BOOST_CHECK_EQUAL(resPos, size - pos);
+}

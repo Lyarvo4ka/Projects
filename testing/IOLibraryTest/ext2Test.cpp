@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "IOLibrary/ext2.h"
+#include "IOLibrary/ext2_raw.h"
 
 
 BOOST_AUTO_TEST_CASE(isLessThanValueTest)

@@ -11,6 +11,47 @@
 
 namespace IO
 {
+	inline int NotNullPosFromEnd(const Buffer & buffer)
+	{
+		int pos = buffer.data_size - 1;
+		while (pos >= 0)
+		{
+			if (buffer.data[pos] != 0)
+				return pos;
+			--pos;
+		}
+		return 0;
+	}
+
+	inline void removeNullsFromEndFile(const path_string & file_path , uint32_t sizeToTest = 4096)
+	{
+		File file(file_path);
+		if (!file.Open(OpenMode::OpenWrite))
+		{
+			wprintf_s(L"Error open file.\n");
+			return;
+		}
+
+		auto file_size = file.Size();
+		Buffer buffer(sizeToTest);
+		if (file_size > sizeToTest)
+		{
+			uint64_t lastBlock = file_size - sizeToTest;
+			file.setPosition(lastBlock);
+			auto bytesRead = file.ReadData(buffer.data, buffer.data_size);
+			if (bytesRead == sizeToTest)
+			{
+				int not_null = NotNullPosFromEnd(buffer);
+				if (not_null > 0)
+				{
+					uint64_t new_size = file_size - not_null + 1;
+					file.setSize(new_size);
+					wprintf_s(L"FIle size has been changed %s.\n", file_path.c_str());
+				}
+			}
+		}
+
+	}
 
 	struct pck_t
 	{
@@ -65,6 +106,8 @@ namespace IO
 					//changeSizeIfFindMarker(file->getFullPath());
 					wprintf_s(L"%s\n", file->getFullPath().c_str());
 					auto full_path = file->getFullPath();
+					removeNullsFromEndFile(full_path);
+
 					files_.push_back(full_path);
 
 
