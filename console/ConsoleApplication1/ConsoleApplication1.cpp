@@ -237,6 +237,7 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 #include "../libTinyXML2/tinyxml2.h"
 
 #include "IOLibrary/Finder.h"
+#include "IOLibrary/ext2_raw.h"
 
 void show_elements(tinyxml2::XMLNode * xml_node)
 {
@@ -255,6 +256,20 @@ void show_elements(tinyxml2::XMLNode * xml_node)
 
 int _tmain(int argc, TCHAR **argv)
 {
+	auto list_drives = IO::ReadPhysicalDrives();
+	auto physical_drive = list_drives.find_by_number(2);
+	if (!physical_drive)
+		return -1;
+
+
+	IO::path_string target_folder = L"e:\\40847\\";
+	IO::DiskDevice source(physical_drive);
+	IO::ext2_raw ext2(&source);
+	ext2.execute(target_folder);
+
+
+/*
+	//////////////////////////////////////////////////////////////////////////
 	const std::string xml_filename = "c:\\Users\\sergey\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.xml";
 	tinyxml2::XMLDocument xml_signature;
 	auto xml_result = xml_signature.LoadFile(xml_filename.c_str());
@@ -284,8 +299,11 @@ int _tmain(int argc, TCHAR **argv)
 
 
 	}
+//////////////////////////////////////////////////////////////////////////
+	*/
 
-	
+
+
 	//IO::Finder finder;
 	//finder.add_extension(L".doc");
 	//finder.add_extension(L".docx");

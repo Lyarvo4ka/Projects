@@ -191,7 +191,7 @@ namespace IO
 		RawAlgorithm * createRawAlgorithm(HeaderPtr headerPtr)
 		{
 			
-			return ;
+			return nullptr;
 		}
 
 	};
@@ -241,7 +241,6 @@ namespace IO
 		u8 reserved1[5];
 
 	};
-
 
 	class StandartRaw
 		: public RawAlgorithm

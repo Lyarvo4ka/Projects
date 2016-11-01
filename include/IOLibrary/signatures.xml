@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <signatures>
   <zbk>
-    <header>0x0F000B67636667507267506C7573</header>
-    <offset>2</offset>
-    <footer>0x504B050600000000</footer>
-  </zbk>  
+    <header>
+      <data>0x0F000B67636667507267506C7573</data>
+      <offset>2</offset>
+    </header>
+    <footer>0x504B0506</footer>
+    <addsize>18</addsize>
+ </zbk>  
   <cdw>
     <header>0x4B46</header>
     <offset>0</offset>
@@ -12,9 +15,18 @@
     <offset>16</offset>
   </cdw>
   <mov>
-    <keyword>ftyp</keyword>
-    <keyword>moov</keyword>   
-    <keyword>mdat</keyword>
+    <header>
+      <text>ftyp</text>
+      <offset>4</offset>
+    </header>
+    <header>
+      <text>moov</text>
+      <offset>4</offset>
+    </header>
+    <header>
+      <text>mdat</text>
+      <offset>4</offset>
+    </header>
     <extension>.mov</extension>
     <extension>.mp4</extension>
   </mov>
@@ -22,10 +34,14 @@
     <header>0x504B</header>
   </zip>
   <Office2007>
-    <header>0x504B</header>
-    <offset>0</offset>
-    <header>0x5B436F6E74656E745F54797065735D2E786D6C</header>
-    <offset>30</offset>
+    <header>
+      <data>0x504B</data>
+      <offset>0</offset>
+     </header>
+    <header>
+      <data>0x5B436F6E74656E745F54797065735D2E786D6C</data>
+      <offset>30</offset>
+    </header>
     <footer>0x504B0506</footer>
     <addsize>18</addsize>
     <extension>.docx</extension>

@@ -129,8 +129,11 @@ namespace Signatures
 	const uint8_t cdr_header[] = { 0x52 , 0x49 , 0x46 , 0x46 };
 	const int cdr_header_size = SIZEOF_ARRAY(cdr_header);
 
-	const uint8_t tif_header[] = { 0x49 ,0x49 , 0x2A };
+	const uint8_t tif_header[] = { 0x49 , 0x49 , 0x2A };
 	const int tif_header_size = SIZEOF_ARRAY(tif_header);
+
+	const uint8_t tif2_header[] = { 0x4D , 0x4D , 0x00 , 0x2A };
+	const int tif2_header_size = SIZEOF_ARRAY(tif2_header);
 
 	const uint8_t ai_header[] = { 0xC5 , 0xD0 , 0xD3 , 0xC6 , 0x20 , 0x00 , 0x00 , 0x00 };
 	const int ai_header_size = SIZEOF_ARRAY(ai_header);
@@ -143,6 +146,9 @@ namespace Signatures
 
 	const uint8_t pdf_header[] = { 0x25 ,0x50 ,0x44 ,0x46 ,0x2D };
 	const int pdf_header_size = SIZEOF_ARRAY(pdf_header);
+
+	const uint8_t jpg_header[] = { 0xFF, 0xD8, 0xFF };
+	const uint8_t jpg_header_size = SIZEOF_ARRAY(jpg_header);
 
 	const uint8_t bad_sector_marker[] = { 0x62 , 0x61 , 0x64 , 0x20 , 0x73 , 0x65 , 0x63 , 0x74 , 0x6F , 0x72 };
 	const uint32_t bad_sector_marker_size = SIZEOF_ARRAY(bad_sector_marker);

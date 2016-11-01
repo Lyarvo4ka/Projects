@@ -102,6 +102,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Entropy.cpp" />
+    <ClCompile Include="ext2_raw.cpp" />
     <ClCompile Include="factories.cpp" />
     <ClCompile Include="IODevice.cpp" />
     <ClCompile Include="iofs.cpp" />
@@ -128,7 +129,7 @@
     <ClInclude Include="..\..\include\IOLibrary\djvu_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\DVR_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\Entropy.h" />
-    <ClInclude Include="..\..\include\IOLibrary\ext2.h" />
+    <ClInclude Include="..\..\include\IOLibrary\ext2_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\Factories.h" />
     <ClInclude Include="..\..\include\IOLibrary\Finder.h" />
     <ClInclude Include="..\..\include\IOLibrary\FireBird.h" />
