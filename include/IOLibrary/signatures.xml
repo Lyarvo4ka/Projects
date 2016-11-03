@@ -2,36 +2,42 @@
 <signatures>
   <zbk>
     <header>
-      <data>0x0F000B67636667507267506C7573</data>
+      <hexdata>0F000B67636667507267506C7573</hexdata>
       <offset>2</offset>
     </header>
-    <footer>0x504B0506</footer>
-    <addsize>18</addsize>
+    <footer>
+      <hexdata>504B0506</hexdata>
+      <addsize>18</addsize>
+    </footer>
  </zbk>  
   <cdw>
-    <header>0x4B46</header>
-    <offset>0</offset>
-    <header>0x0100000000000000</header>
-    <offset>16</offset>
+    <header>
+      <hexdata>4B46</hexdata>
+      <offset>0</offset>
+    </header>
+    <header>
+      <hexdata>0100000000000000</hexdata>
+      <offset>16</offset>
+    </header>
   </cdw>
   <mov>
     <header>
-      <text>ftyp</text>
-      <offset>4</offset>
-    </header>
-    <header>
-      <text>moov</text>
-      <offset>4</offset>
-    </header>
-    <header>
-      <text>mdat</text>
+      <textdata>ftyp</textdata>
+      <textdata>moov</textdata>
+      <textdata>mdat</textdata>
       <offset>4</offset>
     </header>
     <extension>.mov</extension>
     <extension>.mp4</extension>
   </mov>
   <zip>
-    <header>0x504B</header>
+    <header>
+      <hexdata>504B0304</hexdata>
+    </header>
+    <footer>
+      <hexdata>504B0506</hexdata>
+      <addsize>18</addsize>
+    </footer>
   </zip>
   <Office2007>
     <header>

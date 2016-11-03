@@ -16,6 +16,7 @@ namespace IO
 	//{
 	//	return std::make_unique<Buffer>(data, data_size);
 	//}
+	//struct 
 
 	class Header_t	// ??????
 	{
@@ -137,7 +138,22 @@ namespace IO
 		SignatureFinder(IODevicePtr device)
 			: device_(device)
 		{
+			header_base_ = new HeaderBase();
+			auto header_ptr = HeaderFactory((const ByteArray)&Signatures::mxf_header[0], Signatures::mxf_header_size);
+			header_base_->addHeader(header_ptr);
 
+		}
+		~SignatureFinder()
+		{
+			if (header_base_)
+			{
+				delete header_base_;
+				header_base_ = nullptr;
+			}
+		}
+		void setBlockSize(const uint32_t block_size)
+		{
+			this->block_size_ = block_size;
 		}
 		HeaderPtr findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
@@ -270,6 +286,14 @@ namespace IO
 		uint32_t getSectorSize() const
 		{
 			return sector_size_;
+		}
+		uint32_t ReadData(ByteArray data, uint32_t size)
+		{
+			return device_->ReadData(data, size);
+		}
+		void setPosition(uint64_t offset)
+		{
+			device_->setPosition(offset);
 		}
 		uint64_t SaveRawFile(HeaderPtr &header_ptr, const uint64_t header_offset, const path_string & target_name) override
 		{

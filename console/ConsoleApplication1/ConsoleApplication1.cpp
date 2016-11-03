@@ -161,8 +161,11 @@ write_offset += write_size;
 
 */
 
-#include "IOLibrary/func_utils.h"
-
+//#include "IOLibrary/func_utils.h"
+//#include "IOLibrary/Finder.h"
+//#include "IOLibrary/ext2_raw.h"
+#include "IOLibrary/AbstractRaw.h"
+#include "IOLibrary/mxf_raw.h"
 
 /*
 Name  : CRC-16 CCITT
@@ -236,8 +239,6 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 
 #include "../libTinyXML2/tinyxml2.h"
 
-#include "IOLibrary/Finder.h"
-#include "IOLibrary/ext2_raw.h"
 
 void show_elements(tinyxml2::XMLNode * xml_node)
 {
@@ -254,18 +255,56 @@ void show_elements(tinyxml2::XMLNode * xml_node)
 	}
 }
 
+
 int _tmain(int argc, TCHAR **argv)
 {
-	auto list_drives = IO::ReadPhysicalDrives();
-	auto physical_drive = list_drives.find_by_number(2);
-	if (!physical_drive)
-		return -1;
+	//auto list_drives = IO::ReadPhysicalDrives();
+	//auto physical_drive = list_drives.find_by_number(2);
+	//if (!physical_drive)
+	//	return -1;
 
 
-	IO::path_string target_folder = L"e:\\40847\\";
-	IO::DiskDevice source(physical_drive);
-	IO::ext2_raw ext2(&source);
-	ext2.execute(target_folder);
+	//IO::path_string target_folder = L"e:\\40847\\";
+	//IO::DiskDevice source(physical_drive);
+	//IO::ext2_raw ext2(&source);
+	//ext2.execute(target_folder);
+
+	auto filePtr = IO::makeFilePtr(L"d:\\incoming\\40873\\40873.img");
+	IO::path_string folder(L"d:\\incoming\\40873\\result\\");
+	uint32_t counter = 0;
+	const uint32_t Block_Size = 32768;
+	if (filePtr->Open(IO::OpenMode::OpenRead))
+	{
+		IO::SignatureFinder signFinder(filePtr);
+		signFinder.setBlockSize(Block_Size);
+		auto file_size = filePtr->Size();
+		uint64_t offset = 0;
+		uint64_t header_offset = 0;
+		IO::MXF_rawFragment mxf_raw(filePtr);
+		mxf_raw.setBlockSize(Block_Size);
+
+		while (offset < file_size)
+		{
+			auto header_ptr = signFinder.findHeader(offset, header_offset);
+			if (!header_ptr)
+				break;
+
+			auto target_path = IO::toFullPath(folder, counter++, L".mxf");
+			auto saved_size = mxf_raw.SaveRawFile(header_ptr, header_offset, target_path);
+
+			offset = header_offset;
+			if (saved_size > 0)
+			{
+				saved_size /= default_sector_size;
+				saved_size *= default_sector_size;
+				offset += saved_size;
+			}
+			else
+				offset += default_sector_size;
+		}
+
+	}
+
 
 
 /*
@@ -304,11 +343,11 @@ int _tmain(int argc, TCHAR **argv)
 
 
 
+
 	//IO::Finder finder;
-	//finder.add_extension(L".doc");
-	//finder.add_extension(L".docx");
-	//finder.add_extension(L".xls");
-	//finder.FindFiles(L"d:\\LongPathFolder\\");
+	//finder.add_extension(L".jpg");
+	//finder.add_extension(L".tif");
+	//finder.FindFiles(L"e:\\40847_2\\tif\\");
 	//finder.printAll();
 
 	//auto listFiles = finder.getFiles();

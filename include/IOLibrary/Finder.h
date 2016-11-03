@@ -17,7 +17,7 @@ namespace IO
 		while (pos >= 0)
 		{
 			if (buffer.data[pos] != 0)
-				return pos;
+				return (buffer.data_size - pos);
 			--pos;
 		}
 		return 0;
