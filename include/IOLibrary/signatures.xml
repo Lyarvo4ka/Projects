@@ -20,6 +20,20 @@
       <offset>16</offset>
     </header>
   </cdw>
+  <jpg>
+    <header>
+      <hexdata>FFD8FF</hexdata>
+    </header>
+    <footer>
+      <hexdata>FFD9</hexdata>
+    </footer>
+  </jpg>
+  <tif>
+    <header>
+      <hexdata>49492A00</hexdata>
+      <hexdata>4D4D002A</hexdata>
+    </header>
+  </tif>
   <mov>
     <header>
       <textdata>ftyp</textdata>

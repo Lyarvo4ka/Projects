@@ -3,6 +3,11 @@
 
 namespace IO
 {
+
+	/*
+	Saving mxf video file.
+	1. Read cluster if found special signature ("0x01000200") skip "57" clusters
+	*/
 	class MXF_rawFragment
 		: public StandartRaw
 	{

@@ -16,7 +16,34 @@ namespace IO
 	//{
 	//	return std::make_unique<Buffer>(data, data_size);
 	//}
-	//struct 
+	struct Header
+	{
+		ByteArray header_;
+		uint32_t header_size_ = 0;
+		uint32_t header_offset = 0;
+	};
+	using HeaderArray = std::vector<Header*>;
+
+	struct MyStruct
+	{
+		std::vector<HeaderArray> headers_;
+		void addHeader(Header * header)
+		{
+			HeaderArray headerArray = { header };
+			headers_.push_back(headerArray);
+		}
+
+		bool FindHeader(ByteArray data, uint32_t size)
+		{
+			for ( auto arrayHeaders : headers_)
+				for (auto theHeader : arrayHeaders)
+				{
+					if (memcmp(theHeader->header_ + theHeader->header_offset, data, theHeader->header_size_) == 0)
+						return true;
+				}
+			return false;
+		}
+	};
 
 	class Header_t	// ??????
 	{
