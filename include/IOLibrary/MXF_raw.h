@@ -6,7 +6,7 @@ namespace IO
 
 	/*
 	Saving mxf video file.
-	1. Read cluster if found special signature ("0x01000200") skip "57" clusters
+	1. Read cluster if found special signature in offset 0x110 then skip "57" clusters
 	*/
 	class MXF_rawFragment
 		: public StandartRaw
@@ -26,7 +26,8 @@ namespace IO
 				wprintf(L"Error create file\n");
 			}
 
-			const uint8_t fragment_sign[] = { 0x01 , 0x00 , 0x02 , 0x00 };
+			const uint8_t fragment_sign[] = { 0x80 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x12 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 };
+			const uint32_t fragment_offset = 0x110;
 			const uint32_t fragment_sign_size = SIZEOF_ARRAY(fragment_sign);
 			const uint32_t num_skip_cluster = 56;
 
@@ -49,7 +50,7 @@ namespace IO
 					break;
 				}
 
-				if (memcmp(buffer.data, fragment_sign, fragment_sign_size) != 0)
+				if (memcmp(buffer.data + fragment_offset, fragment_sign, fragment_sign_size) != 0)
 				{
 					bFoundFooter = false;
 					for (iPos = 0; iPos < bytes_read - Signatures::mxf_footer_size; ++iPos)

@@ -269,7 +269,7 @@ int _tmain(int argc, TCHAR **argv)
 	//IO::ext2_raw ext2(&source);
 	//ext2.execute(target_folder);
 
-	auto filePtr = IO::makeFilePtr(L"d:\\incoming\\40873\\40873.img");
+	auto filePtr = IO::makeFilePtr(L"d:\\incoming\\40873\\40873.img");	
 	IO::path_string folder(L"d:\\incoming\\40873\\result\\");
 	uint32_t counter = 0;
 	const uint32_t Block_Size = 32768;

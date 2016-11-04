@@ -63,7 +63,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeChecker", "console\Of
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfCheckerConsole", "console\PdfChecker\PdfChecker.vcxproj", "{25E7C402-13A6-4865-87A0-37675EABA997}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GoPro2_raw", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mxf_raw", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterTestQt", "testing\DiskMasterTestQt\DiskMasterTestQt.vcxproj", "{D3F22268-53BD-447E-940B-AC0F5BD7DABA}"
 EndProject
