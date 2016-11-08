@@ -103,8 +103,9 @@ struct ext2_struct_t
 
 struct HeaderInfo_t
 {
-	const uint8_t * header;
-	uint32_t header_size;
+	const uint8_t * header = nullptr;
+	uint32_t header_size = 0;
+	uint32_t header_offset = 0;
 	path_string ext;
 };
 
@@ -255,7 +256,7 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 		{
 			for (auto header : this->headers_)
 			{
-				if (memcmp(header->header, data, header->header_size) == 0)
+				if (memcmp(header->header, data + header->header_offset, header->header_size) == 0)
 					return header;
 			}
 			return nullptr;
@@ -294,9 +295,6 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 
 		uint64_t saveFile(const uint64_t header_offset, path_string file_name)
 		{
-			File write_file(file_name);
-			if (!write_file.Open(OpenMode::Create))
-				return ERROR_OPEN_FILE;
 
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
@@ -307,8 +305,6 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			uint32_t buffer_size = block_size_ * default_linux_blocks_read;
 			Buffer buffer(buffer_size);
 
-			if (!copyTo(device_, offset, &write_file, 0, first_blocks_size))
-				return ERROR_READ_FILE;
 
 			Buffer table_buffer(block_size_);
 			
@@ -321,6 +317,12 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			if (!isTable(table_buffer.data, table_buffer.data_size, blocks_count_, bFullTable))
 				return ERROR_RESULT;
 
+			File write_file(file_name);
+			if (!write_file.Open(OpenMode::Create))
+				return ERROR_OPEN_FILE;
+
+			if (!copyTo(device_, offset, &write_file, 0, first_blocks_size))
+				return ERROR_READ_FILE;
 
 
 			saveTable(&table_buffer, device_, &write_file);
@@ -411,11 +413,12 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 				return;
 			}
 
-			//auto psd_header_info = std::make_shared<HeaderInfo_t>();
-			//psd_header_info->header = Signatures::psd_header;
-			//psd_header_info->header_size = Signatures::psd_header_size;
-			//psd_header_info->ext = L".psd";
-			//this->addHeaderInfo(psd_header_info);
+
+			auto psd_header_info = std::make_shared<HeaderInfo_t>();
+			psd_header_info->header = Signatures::psd_header;
+			psd_header_info->header_size = Signatures::psd_header_size;
+			psd_header_info->ext = L".psd";
+			this->addHeaderInfo(psd_header_info);
 
 			//auto cdr_header_info = std::make_shared<HeaderInfo_t>();
 			//cdr_header_info->header = Signatures::cdr_header;
@@ -440,6 +443,37 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			tif2_header_info->header_size = Signatures::tif2_header_size;
 			tif2_header_info->ext = L".tif";
 			this->addHeaderInfo(tif2_header_info);
+
+			const uint8_t mpg_header[] = { 0x00 , 0x00 , 0x01 , 0xBA };
+			const uint32_t mpg_header_size = SIZEOF_ARRAY(mpg_header);
+
+			auto mpg_header_info = std::make_shared<HeaderInfo_t>();
+			mpg_header_info->header = mpg_header;
+			mpg_header_info->header_size = mpg_header_size;
+			mpg_header_info->ext = L".mpg";
+			this->addHeaderInfo(mpg_header_info);
+
+			const uint8_t qt_ftyp[] = { 0x66 , 0x74 , 0x79 , 0x70 };
+			const uint32_t qt_ftyp_size = SIZEOF_ARRAY(qt_ftyp);
+			const uint32_t qt_ftyp_offset = 4;
+
+			auto qt_header_info = std::make_shared<HeaderInfo_t>();
+			qt_header_info->header = qt_ftyp;
+			qt_header_info->header_size = qt_ftyp_size;
+			qt_header_info->header_offset = qt_ftyp_offset;
+			qt_header_info->ext = L".mov";
+			this->addHeaderInfo(qt_header_info);
+
+			const uint8_t avi_header[] = { 0x52 , 0x49 , 0x46 , 0x46 };
+			const uint32_t avi_header_size = SIZEOF_ARRAY(avi_header);
+
+			auto avi_header_info = std::make_shared<HeaderInfo_t>();
+			avi_header_info->header = avi_header;
+			avi_header_info->header_size = avi_header_size;
+			avi_header_info->ext = L".avi";
+			this->addHeaderInfo(avi_header_info);
+
+
 
 
 			//auto ai_header_info = std::make_shared<HeaderInfo_t>();
@@ -467,18 +501,19 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			//this->addHeaderInfo(pdf_header_info);
 
 			ext2_super_block super_block = { 0 };
-			if (!read_superblock(&super_block, 0x3FBC0400))
-				return;
+			//if (!read_superblock(&super_block, 0x3FBC0400))
+			//	return;
 
-			if (isSuperblock(&super_block))
-			{
-				wprintf_s(L"Error super_block\n");
-				return;
-			}
+			//if (isSuperblock(&super_block))
+			//{
+			//	wprintf_s(L"Error super_block\n");
+			//	return;
+			//}
 			blocks_count_ = super_block.s_blocks_count;
-
-			uint64_t offset = 0x3FBC0400;
-			partition_offset_ = offset;
+			blocks_count_ = 0xE8A0DAE;
+			// super_block offset = 0x40001000
+			uint64_t offset = 0x5780000000;
+			partition_offset_ = 0x40001000;
 			uint64_t header_offset = 0;
 			uint64_t tmp_offset = 0;
 			uint32_t counter = 0;
