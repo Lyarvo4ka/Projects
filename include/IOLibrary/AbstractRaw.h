@@ -114,15 +114,15 @@ namespace IO
 	class FileFormat
 	{
 		HeaderArray headers_;
-		std::string fileTypeName_;
-		std::list<std::string> ext_list;
+		std::string formatName_;
+		path_list ext_list_;
 	public:
-		FileFormat(const std::string & fileTypeName)
-			: fileTypeName_(fileTypeName)
+		FileFormat(const std::string & formatName)
+			: formatName_(formatName)
 		{
 
 		}
-		void addHeader(SignatureOffset & signAndOffset)
+		void add(SignatureOffset & signAndOffset)
 		{
 			headers_.emplace_back(signAndOffset);
 		}
@@ -137,6 +137,12 @@ namespace IO
 			return true;
 		}
 	};
+
+	using FileFormatPtr = std::shared_ptr<FileFormat>;
+	static FileFormatPtr MakeFileFormat(const std::string formatName)
+	{
+		return std::make_shared<FileFormat>(formatName);
+	}
 
 	class Header_t	// ??????
 	{
@@ -229,17 +235,17 @@ namespace IO
 	class HeaderBase
 	{
 	private:
-		std::list<HeaderPtr> listHeaders_;
+		std::list<FileFormatPtr> listHeaders_;
 	public:
-		void addHeader(HeaderPtr new_header)
+		void addFileFormat(FileFormatPtr new_file_format)
 		{
-			listHeaders_.push_back(new_header);
+			listHeaders_.push_back(new_file_format);
 		}
-		HeaderPtr findHeader(const ByteArray data)
+		FileFormatPtr find(const ByteArray data , uint32_t size)
 		{
 			for (auto theHeader : listHeaders_)
 			{
-				if (theHeader->isHeader(data))
+				if (theHeader->compareWithAllHeaders(data, size))
 					return theHeader;
 			}
 			return nullptr;
@@ -259,8 +265,15 @@ namespace IO
 			: device_(device)
 		{
 			header_base_ = new HeaderBase();
-			auto header_ptr = HeaderFactory((const ByteArray)&Signatures::mxf_header[0], Signatures::mxf_header_size);
-			header_base_->addHeader(header_ptr);
+			ByteArray header_data = new uint8_t[Signatures::mxf_header_size];
+			std::memcpy(header_data, Signatures::mxf_header, Signatures::mxf_header_size);
+			
+			DataArray header(header_data, Signatures::mxf_header_size);
+			SignatureOffset signOffset(header);
+			auto file_format = MakeFileFormat("mxf");
+			file_format->add(signOffset);
+
+			header_base_->addFileFormat(file_format);
 
 		}
 		~SignatureFinder()
@@ -277,49 +290,49 @@ namespace IO
 		}
 		HeaderPtr findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
-			if (!device_->Open(OpenMode::OpenRead))
-			{
-				wprintf_s(L"Error open device\n");
-				return nullptr;
-			}
+			//if (!device_->Open(OpenMode::OpenRead))
+			//{
+			//	wprintf_s(L"Error open device\n");
+			//	return nullptr;
+			//}
 
-			uint64_t file_size = device_->Size();
-			uint64_t offset = start_offset;
-			Buffer buffer(block_size_);
-			uint32_t bytes_read = 0;
-			uint32_t result_offset = 0;
+			//uint64_t file_size = device_->Size();
+			//uint64_t offset = start_offset;
+			//Buffer buffer(block_size_);
+			//uint32_t bytes_read = 0;
+			//uint32_t result_offset = 0;
 
-			while (offset < file_size)
-			{
-				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer.data, block_size_);
-				if (bytes_read == 0)
-				{
-					printf("Error read drive\r\n");
-					break;
-				}
-				if (auto header_ptr = cmpHeader(buffer, bytes_read, result_offset))
-				{
-					header_pos = offset;
-					header_pos += result_offset;
-					return header_ptr;
-				}
+			//while (offset < file_size)
+			//{
+			//	device_->setPosition(offset);
+			//	bytes_read = device_->ReadData(buffer.data, block_size_);
+			//	if (bytes_read == 0)
+			//	{
+			//		printf("Error read drive\r\n");
+			//		break;
+			//	}
+			//	if (auto header_ptr = cmpHeader(buffer, bytes_read, result_offset))
+			//	{
+			//		header_pos = offset;
+			//		header_pos += result_offset;
+			//		return header_ptr;
+			//	}
 
-				offset += bytes_read;
-			}
+			//	offset += bytes_read;
+			//}
 			return nullptr;
 		}
 
 		HeaderPtr cmpHeader(const Buffer & buffer, const uint32_t size, uint32_t header_pos)
 		{
-			for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
-			{
-				if (auto header_ptr = header_base_->findHeader(buffer.data))
-				{
-					header_pos = iPos;
-					return header_ptr;
-				}
-			}
+			//for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
+			//{
+			//	if (auto header_ptr = header_base_->findHeader(buffer.data))
+			//	{
+			//		header_pos = iPos;
+			//		return header_ptr;
+			//	}
+			//}
 			return nullptr;
 		}
 

@@ -19,10 +19,10 @@ BOOST_AUTO_TEST_CASE(FindTest)
 BOOST_AUTO_TEST_CASE(getNotNullFromEndTest)
 {
 	uint32_t size = 10;
-	uint32_t pos = 4;
+	uint32_t pos = 6;
 	IO::Buffer buffer(size);
 	ZeroMemory(buffer.data, buffer.data_size);
 	buffer.data[size - pos] = 0xFF;
 	auto resPos = IO::NotNullPosFromEnd(buffer);
-	BOOST_CHECK_EQUAL(resPos, size - pos);
+	BOOST_CHECK_EQUAL(resPos, pos);
 }
