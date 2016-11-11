@@ -162,7 +162,7 @@ write_offset += write_size;
 */
 
 //#include "IOLibrary/func_utils.h"
-#include "IOLibrary/Finder.h"
+//#include "IOLibrary/Finder.h"
 //#include "IOLibrary/ext2_raw.h"
 //#include "IOLibrary/AbstractRaw.h"
 //#include "IOLibrary/mxf_raw.h"
@@ -255,9 +255,14 @@ void show_elements(tinyxml2::XMLNode * xml_node)
 	}
 }
 
-
+#include "IOLibrary/AbstractRaw.h"
 int _tmain(int argc, TCHAR **argv)
 {
+
+	IO::Data data1(100);
+
+	auto buff = data1;
+
 	//auto list_drives = IO::ReadPhysicalDrives();
 	//auto physical_drive = list_drives.find_by_number(2);
 	//if (!physical_drive)

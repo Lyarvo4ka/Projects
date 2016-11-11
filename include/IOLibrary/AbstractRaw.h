@@ -16,32 +16,125 @@ namespace IO
 	//{
 	//	return std::make_unique<Buffer>(data, data_size);
 	//}
-	struct Header
+	class DataArray
 	{
-		ByteArray header_;
-		uint32_t header_size_ = 0;
-		uint32_t header_offset = 0;
-	};
-	using HeaderArray = std::vector<Header*>;
-
-	struct MyStruct
-	{
-		std::vector<HeaderArray> headers_;
-		void addHeader(Header * header)
+		ByteArray data_;
+		uint32_t size_;
+	public:
+		DataArray(const ByteArray data, uint32_t size)
+			: data_(data)
+			, size_(size)
 		{
-			HeaderArray headerArray = { header };
-			headers_.push_back(headerArray);
+
 		}
 
-		bool FindHeader(ByteArray data, uint32_t size)
+		DataArray(const uint32_t size)
+			:data_(nullptr)
+			,size_(size)
 		{
-			for ( auto arrayHeaders : headers_)
-				for (auto theHeader : arrayHeaders)
-				{
-					if (memcmp(theHeader->header_ + theHeader->header_offset, data, theHeader->header_size_) == 0)
-						return true;
-				}
+			if (size > 0)
+			{
+				data_ = new uint8_t[size];
+			}
+		}
+		~DataArray()
+		{
+			if (data_)
+			{
+				delete[] data_;
+				data_ = nullptr;
+			}
+		}
+		uint32_t size() const
+		{
+			return size_;
+		}
+		ByteArray data()
+		{
+			return data_;
+		}
+		ByteArray data() const
+		{
+			return data_;
+		}
+		operator ByteArray()
+		{
+			return data_;
+		}
+		bool compare( const ByteArray data , uint32_t size , uint32_t offset = 0) 
+		{
+			if (size >= this->size())
+			{
+				
+				if (std::memcmp(data_ , data + offset, this->size()) == 0)
+					return true;
+			}
 			return false;
+		}
+		bool compare( const DataArray & dataArray , uint32_t offset = 0)
+		{
+
+			return compare(dataArray.data(), dataArray.size(), offset);
+		}
+	};
+
+	using SignatureArray = std::vector<DataArray>;
+
+	class SignatureOffset
+	{
+		uint32_t signature_offset_ = 0;
+		SignatureArray signatureArray_;
+
+	public:
+		SignatureOffset( DataArray & dataArray, uint32_t signature_offset = 0)
+		{
+			signature_offset_ = signature_offset;
+			addSignature(dataArray);
+		}
+		void addSignature(const DataArray & dataArray)
+		{
+			signatureArray_.emplace_back(dataArray);
+		}
+		void addSignature(ByteArray data, uint32_t size)
+		{
+			signatureArray_.emplace_back(DataArray(data, size));
+		}
+		bool FindSignature(const ByteArray data, uint32_t size)
+		{
+			for (auto & theSignature : signatureArray_)
+			{
+				if (theSignature.compare(data, size, signature_offset_))
+					return true;
+			}
+			return false;
+		}
+	};
+
+	using HeaderArray = std::vector<SignatureOffset>;
+	class FileFormat
+	{
+		HeaderArray headers_;
+		std::string fileTypeName_;
+		std::list<std::string> ext_list;
+	public:
+		FileFormat(const std::string & fileTypeName)
+			: fileTypeName_(fileTypeName)
+		{
+
+		}
+		void addHeader(SignatureOffset & signAndOffset)
+		{
+			headers_.emplace_back(signAndOffset);
+		}
+
+		bool compareWithAllHeaders(ByteArray data, uint32_t size)
+		{
+			for (auto & theHeader : headers_)
+			{
+				if (!theHeader.FindSignature(data, size))
+					return false;
+			}
+			return true;
 		}
 	};
 
