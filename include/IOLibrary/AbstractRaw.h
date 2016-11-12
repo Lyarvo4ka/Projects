@@ -21,6 +21,7 @@ namespace IO
 		ByteArray data_;
 		uint32_t size_;
 	public:
+		using Ptr = std::unique_ptr<DataArray>;
 		DataArray(const ByteArray data, uint32_t size)
 			: data_(data)
 			, size_(size)
@@ -78,7 +79,7 @@ namespace IO
 		}
 	};
 
-	using SignatureArray = std::vector<DataArray>;
+	using SignatureArray = std::vector<DataArray::Ptr>;
 
 	class SignatureOffset
 	{
@@ -86,31 +87,36 @@ namespace IO
 		SignatureArray signatureArray_;
 
 	public:
-		SignatureOffset( DataArray & dataArray, uint32_t signature_offset = 0)
+		using Ptr = std::unique_ptr<SignatureOffset>;
+		SignatureOffset()
+		{
+
+		}
+		SignatureOffset(DataArray::Ptr dataArray, uint32_t signature_offset = 0)
 		{
 			signature_offset_ = signature_offset;
-			addSignature(dataArray);
+			addSignature(std::move(dataArray));
 		}
-		void addSignature(const DataArray & dataArray)
+		void addSignature(DataArray::Ptr dataArray)
 		{
 			signatureArray_.emplace_back(dataArray);
 		}
 		void addSignature(ByteArray data, uint32_t size)
 		{
-			signatureArray_.emplace_back(DataArray(data, size));
+			signatureArray_.emplace_back(std::make_unique<DataArray>(data, size));
 		}
 		bool FindSignature(const ByteArray data, uint32_t size)
 		{
 			for (auto & theSignature : signatureArray_)
 			{
-				if (theSignature.compare(data, size, signature_offset_))
+				if (theSignature->compare(data, size, signature_offset_))
 					return true;
 			}
 			return false;
 		}
 	};
-
-	using HeaderArray = std::vector<SignatureOffset>;
+	using SignatureOffsetPtr = std::unique_ptr<SignatureOffset>;
+	using HeaderArray = std::vector<SignatureOffsetPtr>;
 	class FileFormat
 	{
 		HeaderArray headers_;
@@ -122,7 +128,7 @@ namespace IO
 		{
 
 		}
-		void add(SignatureOffset & signAndOffset)
+		void add(SignatureOffsetPtr signAndOffset)
 		{
 			headers_.emplace_back(signAndOffset);
 		}
@@ -131,7 +137,7 @@ namespace IO
 		{
 			for (auto & theHeader : headers_)
 			{
-				if (!theHeader.FindSignature(data, size))
+				if (!theHeader->FindSignature(data, size))
 					return false;
 			}
 			return true;
@@ -265,15 +271,15 @@ namespace IO
 			: device_(device)
 		{
 			header_base_ = new HeaderBase();
-			ByteArray header_data = new uint8_t[Signatures::mxf_header_size];
-			std::memcpy(header_data, Signatures::mxf_header, Signatures::mxf_header_size);
-			
-			DataArray header(header_data, Signatures::mxf_header_size);
-			SignatureOffset signOffset(header);
-			auto file_format = MakeFileFormat("mxf");
-			file_format->add(signOffset);
+			//ByteArray header_data = new uint8_t[Signatures::mxf_header_size];
+			//std::memcpy(header_data, Signatures::mxf_header, Signatures::mxf_header_size);
+			//
+			//DataArray * header = new DataArray(header_data, Signatures::mxf_header_size);
+			//SignatureOffset signOffset(header);
+			//auto file_format = MakeFileFormat("mxf");
+			//file_format->add(signOffset);
 
-			header_base_->addFileFormat(file_format);
+			//header_base_->addFileFormat(file_format);
 
 		}
 		~SignatureFinder()
