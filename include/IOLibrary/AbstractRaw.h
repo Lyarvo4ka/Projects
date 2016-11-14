@@ -16,13 +16,6 @@ namespace IO
 		uint32_t size_;
 	public:
 		using Ptr = std::unique_ptr<DataArray>;
-		DataArray(ByteArray data, uint32_t size)
-			: data_(data)
-			, size_(size)
-		{
-
-		}
-
 		DataArray(const uint32_t size)
 			:data_(nullptr)
 			,size_(size)
@@ -32,12 +25,33 @@ namespace IO
 				data_ = new uint8_t[size];
 			}
 		}
+		DataArray(ByteArray data, uint32_t size)
+			: data_(data)
+			, size_(size)
+		{
+
+		}
+		DataArray(const uint8_t data[], uint32_t size)
+			: data_(nullptr)
+			, size_(size)
+		{
+			if (size_ > 0)
+			{
+				data_ = new uint8_t[size_];
+				memcpy(data_, data, size_);
+
+			}
+		}
+
 		~DataArray()
 		{
 			if (data_)
 			{
-				delete[] data_;
-				data_ = nullptr;
+				if (_CrtIsValidHeapPointer((const void *)data_))
+				{
+					delete[] data_;
+					data_ = nullptr;
+				}
 			}
 		}
 		uint32_t size() const
