@@ -10,19 +10,13 @@
 
 namespace IO
 {
-	
-	//using BufferPtr = std::unique_ptr<Buffer>;
-	//static BufferPtr BufferFactory(const ByteArray data, uint32_t data_size)
-	//{
-	//	return std::make_unique<Buffer>(data, data_size);
-	//}
 	class DataArray
 	{
 		ByteArray data_;
 		uint32_t size_;
 	public:
 		using Ptr = std::unique_ptr<DataArray>;
-		DataArray(const ByteArray data, uint32_t size)
+		DataArray(ByteArray data, uint32_t size)
 			: data_(data)
 			, size_(size)
 		{
@@ -78,6 +72,14 @@ namespace IO
 			return compare(dataArray.data(), dataArray.size(), offset);
 		}
 	};
+	DataArray::Ptr makeDataArray(ByteArray * data, uint32_t size)
+	{
+		return std::make_unique<DataArray>(data, size);
+	}
+	DataArray::Ptr makeDataArray(uint32_t size)
+	{
+		return std::make_unique<DataArray>(size);
+	}
 
 	using SignatureArray = std::vector<DataArray::Ptr>;
 
@@ -99,7 +101,7 @@ namespace IO
 		}
 		void addSignature(DataArray::Ptr dataArray)
 		{
-			signatureArray_.emplace_back(dataArray);
+			signatureArray_.emplace_back(std::move( dataArray));
 		}
 		void addSignature(ByteArray data, uint32_t size)
 		{
@@ -115,22 +117,23 @@ namespace IO
 			return false;
 		}
 	};
-	using SignatureOffsetPtr = std::unique_ptr<SignatureOffset>;
-	using HeaderArray = std::vector<SignatureOffsetPtr>;
-	class FileFormat
+	using HeaderArray = std::vector<SignatureOffset::Ptr>;
+
+	class FileStruct
 	{
 		HeaderArray headers_;
 		std::string formatName_;
 		path_list ext_list_;
 	public:
-		FileFormat(const std::string & formatName)
+		using Ptr = std::shared_ptr<FileStruct>;
+		FileStruct(const std::string & formatName)
 			: formatName_(formatName)
 		{
 
 		}
-		void add(SignatureOffsetPtr signAndOffset)
+		void add(SignatureOffset::Ptr signAndOffset)
 		{
-			headers_.emplace_back(signAndOffset);
+			headers_.emplace_back(std::move(signAndOffset));
 		}
 
 		bool compareWithAllHeaders(ByteArray data, uint32_t size)
@@ -144,45 +147,20 @@ namespace IO
 		}
 	};
 
-	using FileFormatPtr = std::shared_ptr<FileFormat>;
-	static FileFormatPtr MakeFileFormat(const std::string formatName)
-	{
-		return std::make_shared<FileFormat>(formatName);
-	}
-
 	class Header_t	// ??????
 	{
-		//std::list<BufferPtr> headers_array;	// ??????
-		ByteArray header_ = nullptr;
-		uint32_t header_size_ = 0;
-		uint32_t header_offset = 0;
 		ByteArray footer_ = nullptr;
 		uint32_t footer_size_ = 0;
 		uint32_t add_footer_size = 0;
 		uint64_t max_file_size = 0;
 	public:
-		Header_t(const ByteArray header, uint32_t header_size)
-		{
-			this->header_size_ = header_size;
-			this->header_ = new uint8_t[this->header_size_];
-			memcpy(this->header_, header , this->header_size_);
-		}
 		~Header_t()
 		{
-			if (header_)
-			{
-				delete[] header_;
-				header_ = nullptr;
-			}
 			if (footer_)
 			{
 				delete[] footer_;
 				footer_ = nullptr;
 			}
-		}
-		void setHeaderOffset(const uint32_t header_offset)
-		{
-			this->header_offset = header_offset;
 		}
 		void setFooter(const ByteArray footer, uint32_t footer_size)
 		{
@@ -206,18 +184,6 @@ namespace IO
 		{
 			return max_file_size;
 		}
-		bool isHeader(const ByteArray data)
-		{
-			//for (auto & header : headers_array)
-			//{
-			if (memcmp(header_,
-				data + header_offset,
-				header_size_) == 0)
-				return true;
-
-			//}
-			return false;
-		}
 		bool isFooter(const ByteArray data, const uint32_t data_size , uint32_t & footer_pos)
 		{
 			for (uint32_t iByte = 0; iByte < data_size - footer_size_; ++iByte)
@@ -231,28 +197,23 @@ namespace IO
 			return false;
 		}
 	};
-	using HeaderPtr = std::shared_ptr<Header_t>;
-	static HeaderPtr HeaderFactory(ByteArray data, uint32_t data_size)
-	{
-		return std::make_shared<Header_t>(data, data_size);
-	}
 
 
 	class HeaderBase
 	{
 	private:
-		std::list<FileFormatPtr> listHeaders_;
+		std::list<FileStruct::Ptr> listHeaders_;
 	public:
-		void addFileFormat(FileFormatPtr new_file_format)
+		void addFileFormat(FileStruct::Ptr new_file_format)
 		{
-			listHeaders_.push_back(new_file_format);
+			listHeaders_.emplace_back(new_file_format);
 		}
-		FileFormatPtr find(const ByteArray data , uint32_t size)
+		FileStruct::Ptr find(const ByteArray data , uint32_t size)
 		{
-			for (auto theHeader : listHeaders_)
+			for (auto & theFileStruct : listHeaders_)
 			{
-				if (theHeader->compareWithAllHeaders(data, size))
-					return theHeader;
+				if (theFileStruct->compareWithAllHeaders(data, size))
+					return theFileStruct;
 			}
 			return nullptr;
 		}
@@ -271,15 +232,6 @@ namespace IO
 			: device_(device)
 		{
 			header_base_ = new HeaderBase();
-			//ByteArray header_data = new uint8_t[Signatures::mxf_header_size];
-			//std::memcpy(header_data, Signatures::mxf_header, Signatures::mxf_header_size);
-			//
-			//DataArray * header = new DataArray(header_data, Signatures::mxf_header_size);
-			//SignatureOffset signOffset(header);
-			//auto file_format = MakeFileFormat("mxf");
-			//file_format->add(signOffset);
-
-			//header_base_->addFileFormat(file_format);
 
 		}
 		~SignatureFinder()
@@ -294,7 +246,7 @@ namespace IO
 		{
 			this->block_size_ = block_size;
 		}
-		HeaderPtr findHeader(const uint64_t start_offset, uint64_t & header_pos)
+		FileStruct::Ptr findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
 			//if (!device_->Open(OpenMode::OpenRead))
 			//{
@@ -329,7 +281,7 @@ namespace IO
 			return nullptr;
 		}
 
-		HeaderPtr cmpHeader(const Buffer & buffer, const uint32_t size, uint32_t header_pos)
+		FileStruct::Ptr cmpHeader(const Buffer & buffer, const uint32_t size, uint32_t header_pos)
 		{
 			//for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
 			//{
@@ -343,7 +295,7 @@ namespace IO
 		}
 
 
-		RawAlgorithm * createRawAlgorithm(HeaderPtr headerPtr)
+		RawAlgorithm * createRawAlgorithm(FileStruct::Ptr headerPtr)
 		{
 			
 			return nullptr;
@@ -375,7 +327,7 @@ namespace IO
 
 	class RawAlgorithm
 	{
-		virtual uint64_t SaveRawFile(HeaderPtr & header_ptr, const uint64_t header_offset, const path_string & target_name) = 0;
+		virtual uint64_t SaveRawFile(FileStruct::Ptr  header_ptr, const uint64_t header_offset, const path_string & target_name) = 0;
 	};
 
 	const uint8_t zbk_header[] = { 0x0F , 0x00 , 0x0B , 0x67 , 0x63 , 0x66 , 0x67 , 0x50 , 0x72 , 0x67 , 0x50 , 0x6C , 0x75 , 0x73 };
@@ -434,7 +386,7 @@ namespace IO
 		{
 			device_->setPosition(offset);
 		}
-		uint64_t SaveRawFile(HeaderPtr &header_ptr, const uint64_t header_offset, const path_string & target_name) override
+		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			File target_file(target_name);
 			if (!target_file.Open(OpenMode::Create))
@@ -458,29 +410,29 @@ namespace IO
 					break;
 				}
 
-				if (header_ptr->isFooter(buffer.data, bytes_read, footer_pos))
-				{
-					uint32_t write_size = footer_pos + header_ptr->getAddFooterSize();
-					if (target_file.WriteData(buffer.data, write_size) == 0)
-					{
-						printf("Error write to file\r\n");
-						break;
-					}
-					target_size += write_size;
-					return target_size;
-				}
-				else
-				{
-					if (target_file.WriteData(buffer.data, bytes_read) == 0)
-					{
-						printf("Error write to file\r\n");
-						break;
-					}
-				}
+				//if (header_ptr->isFooter(buffer.data, bytes_read, footer_pos))
+				//{
+				//	uint32_t write_size = footer_pos + header_ptr->getAddFooterSize();
+				//	if (target_file.WriteData(buffer.data, write_size) == 0)
+				//	{
+				//		printf("Error write to file\r\n");
+				//		break;
+				//	}
+				//	target_size += write_size;
+				//	return target_size;
+				//}
+				//else
+				//{
+				//	if (target_file.WriteData(buffer.data, bytes_read) == 0)
+				//	{
+				//		printf("Error write to file\r\n");
+				//		break;
+				//	}
+				//}
 
-				target_size += bytes_read;
-				if (target_size > header_ptr->getMaxFileSize())
-					return target_size;
+				//target_size += bytes_read;
+				//if (target_size > header_ptr->getMaxFileSize())
+				//	return target_size;
 
 				offset += bytes_read;
 			}
@@ -491,7 +443,7 @@ namespace IO
 
 
 	};
-
+/*
 	class ZBKRaw
 		: public RawAlgorithm
 	{
@@ -663,7 +615,7 @@ namespace IO
 
 	};
 
-
+*/
 };
 
 
