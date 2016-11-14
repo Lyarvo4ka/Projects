@@ -72,11 +72,11 @@ namespace IO
 			return compare(dataArray.data(), dataArray.size(), offset);
 		}
 	};
-	DataArray::Ptr makeDataArray(ByteArray * data, uint32_t size)
+	inline DataArray::Ptr makeDataArray(ByteArray data, uint32_t size)
 	{
 		return std::make_unique<DataArray>(data, size);
 	}
-	DataArray::Ptr makeDataArray(uint32_t size)
+	inline DataArray::Ptr makeDataArray(uint32_t size)
 	{
 		return std::make_unique<DataArray>(size);
 	}
@@ -99,6 +99,19 @@ namespace IO
 			signature_offset_ = signature_offset;
 			addSignature(std::move(dataArray));
 		}
+		SignatureOffset(ByteArray data, uint32_t size, uint32_t signature_offset = 0)
+		{
+			signature_offset_ = signature_offset;
+			addSignature(data , size);
+		}
+		void setOffset(const uint32_t signature_offset)
+		{
+			signature_offset_ = signature_offset;
+		}
+		uint32_t getOffset() const
+		{
+			return signature_offset_;
+		}
 		void addSignature(DataArray::Ptr dataArray)
 		{
 			signatureArray_.emplace_back(std::move( dataArray));
@@ -117,6 +130,15 @@ namespace IO
 			return false;
 		}
 	};
+	inline SignatureOffset::Ptr makeSignatureOffset()
+	{
+		return std::make_unique<SignatureOffset>();
+	}
+	inline SignatureOffset::Ptr makeSignatureOffset(ByteArray data, uint32_t size, uint32_t signature_offset = 0)
+	{
+		return std::make_unique<SignatureOffset>(data , size , signature_offset);
+	}
+
 	using HeaderArray = std::vector<SignatureOffset::Ptr>;
 
 	class FileStruct
@@ -129,6 +151,23 @@ namespace IO
 		FileStruct(const std::string & formatName)
 			: formatName_(formatName)
 		{
+
+		}
+		void add(ByteArray data, uint32_t size, uint32_t offset)
+		{
+			auto iter = std::find_if(headers_.begin() , headers_.end(),
+				[offset](const SignatureOffset::Ptr & ptr )
+			{
+				return ptr->getOffset() == offset;
+			}
+			);
+
+			if (iter == headers_.end())
+			{
+				(*iter)->addSignature(data, size);
+			}
+			else
+				headers_.emplace_back(makeSignatureOffset(data, size, offset));
 
 		}
 		void add(SignatureOffset::Ptr signAndOffset)
@@ -146,6 +185,11 @@ namespace IO
 			return true;
 		}
 	};
+	
+	inline FileStruct::Ptr makeFileStruct(const std::string & formatName)
+	{
+		return std::make_shared<FileStruct>(formatName);
+	}
 
 	class Header_t	// ??????
 	{

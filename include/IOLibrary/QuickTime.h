@@ -12,9 +12,9 @@ namespace IO
 	const char s_ftyp[] = "ftyp";
 	const char s_moov[] = "moov";
 	const char s_mdat[] = "mdat";
-	const char s_free[] = "free";
-	const char s_skip[] = "skip";
 	const char s_wide[] = "wide";
+	const char s_skip[] = "skip";
+	const char s_free[] = "free";
 	const char s_pnot[] = "pnot";
 	const char s_prfl[] = "prfl";
 	const char s_mvhd[] = "mvhd";
@@ -32,7 +32,7 @@ namespace IO
 	using array_keywords = std::vector<const char *>;
 
 
-	const array_keywords qt_array = { s_ftyp, s_moov, s_mdat, s_free, s_skip, s_wide, s_pnot, s_prfl,
+	const array_keywords qt_array = { s_ftyp, s_moov, s_mdat, s_wide , s_free, s_skip, s_pnot, s_prfl,
 									  s_mvhd, s_clip, s_trak, s_udta, s_ctab, s_cmov, s_rmra , s_uuid, s_meta };
 
 
@@ -126,7 +126,7 @@ namespace IO
 		}
 		virtual bool isQuickTimeHeader(const qt_block_t * pQtBlock)
 		{
-			for (auto iKeyword = 0; iKeyword < 1; ++iKeyword)
+			for (auto iKeyword = 0; iKeyword < 4; ++iKeyword)
 				if (memcmp(pQtBlock->block_type, qt_array[iKeyword], qt_keyword_size) == 0)
 					return true;
 			return false;

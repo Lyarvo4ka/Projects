@@ -255,13 +255,89 @@ void show_elements(tinyxml2::XMLNode * xml_node)
 	}
 }
 
-#include "IOLibrary/AbstractRaw.h"
+
+#include "IOLibrary/MTS_raw.h"
+
+void run_RawMTS(int argc, TCHAR **argv)
+{
+	if (argc == 4)
+	{
+		const int opt = 1;
+		const int source = 2;
+		const int target = 3;
+
+		std::wstring option = argv[opt];
+		IO::RawMTS *pMTS_raw = nullptr;
+
+		if (option.compare(L"-d") == 0)
+		{
+			auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+
+			auto drive_list = IO::ReadPhysicalDrives();
+			auto physical_drive = drive_list.find_by_number(drive_number);
+			pMTS_raw = new IO::RawMTS(new IO::DiskDevice(physical_drive));
+			//pMTS_raw->setBlockSize(physical_drive->getTransferLength());
+			pMTS_raw->setSectorSize(physical_drive->getBytesPerSector());
+		}
+		else
+			if (option.compare(L"-f") == 0)
+			{
+				auto file_name = argv[source];
+				pMTS_raw = new IO::RawMTS(new IO::File(file_name));
+			}
+
+		std::wstring target_folder = argv[target];
+		pMTS_raw->execute(target_folder);
+		delete pMTS_raw;
+
+	}
+}
+
+//void run_QuickTime(int argc, TCHAR **argv)
+//{
+//	if (argc == 4)
+//	{
+//		const int opt = 1;
+//		const int source = 2;
+//		const int target = 3;
+//
+//		std::wstring option = argv[opt];
+//		IO::QuickTimeRaw *pQt_raw = nullptr;
+//
+//		if (option.compare(L"-d") == 0)
+//		{
+//			auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+//
+//			auto drive_list = IO::ReadPhysicalDrives();
+//			auto physical_drive = drive_list.find_by_number(drive_number);
+//			pQt_raw = new IO::QuickTimeRaw(new IO::DiskDevice(physical_drive));
+//			pQt_raw->setBlockSize(physical_drive->getTransferLength());
+//			pQt_raw->setSectorSize(physical_drive->getBytesPerSector());
+//		}
+//		else
+//			if (option.compare(L"-f") == 0)
+//			{
+//				auto file_name = argv[source];
+//				pQt_raw = new IO::QuickTimeRaw(new IO::File(file_name));
+//			}
+//
+//		std::wstring target_folder = argv[target];
+//
+//		pQt_raw->execute(target_folder);
+//		delete pQt_raw;
+//
+//	}
+//}
+
+
+
 int _tmain(int argc, TCHAR **argv)
 {
+	////////////////////////////MAIN FUNCTION///////////////////////////////
 
-	IO::Data data1(100);
 
-	auto buff = data1;
+	run_RawMTS(argc, argv);
+
 
 	//auto list_drives = IO::ReadPhysicalDrives();
 	//auto physical_drive = list_drives.find_by_number(2);
@@ -349,11 +425,11 @@ int _tmain(int argc, TCHAR **argv)
 
 
 
-	IO::Finder finder;
-	finder.add_extension(L".jpg");
-	finder.add_extension(L".tif");
-	finder.FindFiles(L"f:\\40863\\tif\\");
-	finder.printAll();
+	//IO::Finder finder;
+	//finder.add_extension(L".jpg");
+	//finder.add_extension(L".tif");
+	//finder.FindFiles(L"f:\\40863\\tif\\");
+	//finder.printAll();
 
 	//auto listFiles = finder.getFiles();
 	int k = 1;
@@ -492,40 +568,6 @@ int _tmain(int argc, TCHAR **argv)
 
 	*/
 
-	////////////////////////////MAIN FUNCTION///////////////////////////////
-//
-//if (argc == 4)
-//{
-//	const int opt = 1;
-//	const int source = 2;
-//	const int target = 3;
-//
-//	std::wstring option = argv[opt];
-//	IO::QuickTimeRaw *pQt_raw = nullptr;
-//
-//	if (option.compare(L"-d") == 0)
-//	{
-//		auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
-//
-//		auto drive_list = IO::ReadPhysicalDrives();
-//		auto physical_drive = drive_list.find_by_number(drive_number);
-//		pQt_raw = new IO::QuickTimeRaw(new IO::DiskDevice(physical_drive));
-//		pQt_raw->setBlockSize(physical_drive->getTransferLength());
-//		pQt_raw->setSectorSize(physical_drive->getBytesPerSector());
-//	}
-//	else
-//		if (option.compare(L"-f") == 0)
-//		{
-//			auto file_name = argv[source];
-//			pQt_raw = new IO::QuickTimeRaw(new IO::File(file_name));
-//		}
-//
-//	std::wstring target_folder = argv[target];
-//
-//	pQt_raw->execute(target_folder);
-//	delete pQt_raw;
-//
-//}
 
 
 
