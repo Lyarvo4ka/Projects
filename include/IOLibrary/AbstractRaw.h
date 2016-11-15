@@ -31,14 +31,14 @@ namespace IO
 		{
 
 		}
-		DataArray(const uint8_t data[], uint32_t size)
+		DataArray(const uint8_t const_data[], uint32_t size)
 			: data_(nullptr)
 			, size_(size)
 		{
 			if (size_ > 0)
 			{
 				data_ = new uint8_t[size_];
-				memcpy(data_, data, size_);
+				memcpy(data_, const_data, size_);
 
 			}
 		}
@@ -47,11 +47,9 @@ namespace IO
 		{
 			if (data_)
 			{
-				if (_CrtIsValidHeapPointer((const void *)data_))
-				{
-					delete[] data_;
-					data_ = nullptr;
-				}
+				delete[] data_;
+				data_ = nullptr;
+
 			}
 		}
 		uint32_t size() const
@@ -70,7 +68,13 @@ namespace IO
 		{
 			return data_;
 		}
-		bool compare( const ByteArray data , uint32_t size , uint32_t offset = 0) 
+		friend bool operator == (const DataArray::Ptr & left, const DataArray::Ptr & right) 
+		{
+			if (left->size() == right->size())
+				return (memcmp(left->data(), right->data(), left->size()) == 0);
+			return false;
+		}
+		bool compareData( const ByteArray data , uint32_t size , uint32_t offset = 0) 
 		{
 			if (size >= this->size())
 			{
@@ -80,16 +84,21 @@ namespace IO
 			}
 			return false;
 		}
-		bool compare( const DataArray & dataArray , uint32_t offset = 0)
+		bool compareData( const DataArray & dataArray , uint32_t offset = 0)
 		{
 
-			return compare(dataArray.data(), dataArray.size(), offset);
+			return compareData(dataArray.data(), dataArray.size(), offset);
 		}
 	};
 	inline DataArray::Ptr makeDataArray(ByteArray data, uint32_t size)
 	{
 		return std::make_unique<DataArray>(data, size);
 	}
+	inline DataArray::Ptr makeDataArray(const uint8_t const_data[], uint32_t size)
+	{
+		return std::make_unique<DataArray>(const_data, size);
+	}
+
 	inline DataArray::Ptr makeDataArray(uint32_t size)
 	{
 		return std::make_unique<DataArray>(size);
@@ -130,20 +139,29 @@ namespace IO
 		{
 			signatureArray_.emplace_back(std::move( dataArray));
 		}
+		void addSignature(DataArray * data_array)
+		{
+			signatureArray_.emplace_back(data_array);
+		}
 		void addSignature(ByteArray data, uint32_t size)
 		{
 			signatureArray_.emplace_back(std::make_unique<DataArray>(data, size));
+		}
+		void addSignature(const uint8_t const_data[], uint32_t size)
+		{
+			signatureArray_.emplace_back(std::make_unique<DataArray>(const_data, size));
 		}
 		bool FindSignature(const ByteArray data, uint32_t size)
 		{
 			for (auto & theSignature : signatureArray_)
 			{
-				if (theSignature->compare(data, size, signature_offset_))
+				if (theSignature->compareData(data, size, signature_offset_))
 					return true;
 			}
 			return false;
 		}
 	};
+
 	inline SignatureOffset::Ptr makeSignatureOffset()
 	{
 		return std::make_unique<SignatureOffset>();
@@ -151,6 +169,10 @@ namespace IO
 	inline SignatureOffset::Ptr makeSignatureOffset(ByteArray data, uint32_t size, uint32_t signature_offset = 0)
 	{
 		return std::make_unique<SignatureOffset>(data , size , signature_offset);
+	}
+	inline SignatureOffset::Ptr makeSignatureOffset(DataArray::Ptr data_array, uint32_t signature_offset = 0)
+	{
+		return std::make_unique<SignatureOffset>(std::move(data_array), signature_offset);
 	}
 
 	using HeaderArray = std::vector<SignatureOffset::Ptr>;
@@ -169,20 +191,30 @@ namespace IO
 		}
 		void add(ByteArray data, uint32_t size, uint32_t offset)
 		{
-			auto iter = std::find_if(headers_.begin() , headers_.end(),
-				[offset](const SignatureOffset::Ptr & ptr )
-			{
-				return ptr->getOffset() == offset;
-			}
-			);
+			auto data_array = makeDataArray(data, size);
+			auto iter = findByOffset(offset);
 
-			if (iter == headers_.end())
+			if (iter != headers_.end())
 			{
-				(*iter)->addSignature(data, size);
+				if (!(*iter)->FindSignature(data, size))
+					(*iter)->addSignature(std::move(data_array));
+				else
+				{
+					printf("This signature is already present\r\n");
+				}
 			}
 			else
-				headers_.emplace_back(makeSignatureOffset(data, size, offset));
+				headers_.emplace_back(makeSignatureOffset(std::move(data_array), offset));
 
+		}
+		std::size_t headersCount() const
+		{
+			return headers_.size();
+		}
+
+		void add(DataArray *data_array, uint32_t offset)
+		{
+			// not implemented
 		}
 		void add(SignatureOffset::Ptr signAndOffset)
 		{
@@ -198,6 +230,18 @@ namespace IO
 			}
 			return true;
 		}
+	private:
+		HeaderArray::iterator findByOffset(uint32_t header_offset)
+		{
+			return std::find_if(headers_.begin(), headers_.end(),
+				[header_offset](const SignatureOffset::Ptr & ptr)
+			{
+				return ptr->getOffset() == header_offset;
+			}
+			);
+
+		}
+
 	};
 	
 	inline FileStruct::Ptr makeFileStruct(const std::string & formatName)
