@@ -91,6 +91,19 @@ BOOST_AUTO_TEST_CASE(TestFindSignature)
 	signOffset.setOffset(1);
 	BOOST_CHECK_EQUAL(signOffset.FindSignature(data2->data(), data2_size), true);
 }
+BOOST_AUTO_TEST_CASE(TestSignatureOffset_Find)
+{
+	auto data_array1 = IO::makeDataArray(const_header_1, const_header_1_size);
+	auto data_array2 = IO::makeDataArray(const_header_1, const_header_1_size);
+	auto data_array3 = IO::makeDataArray(const_header_2, const_header_2_size);
+	auto headers = IO::makeSignatureOffset(std::move(data_array1));
+	BOOST_CHECK_EQUAL(headers->find(data_array2), true);
+	BOOST_CHECK_EQUAL(headers->find(data_array3), false);
+
+
+	
+}
+
 
 
 ////////////////////////////////FileStruct//////////////////////////////////////////
@@ -121,7 +134,7 @@ BOOST_AUTO_TEST_CASE(TestcompareWithAllHeaders)
 
 }
 
-BOOST_AUTO_TEST_CASE(TestFileStructAdd)
+BOOST_AUTO_TEST_CASE(TestFileStruct_Add)
 {
 	uint32_t offset_1 = 0;
 	uint32_t offset_2 = 10;

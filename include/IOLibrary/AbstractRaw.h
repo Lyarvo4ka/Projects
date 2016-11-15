@@ -49,7 +49,7 @@ namespace IO
 			{
 				delete[] data_;
 				data_ = nullptr;
-
+				printf("delete data\r\n");
 			}
 		}
 		uint32_t size() const
@@ -160,6 +160,12 @@ namespace IO
 			}
 			return false;
 		}
+		bool find(const DataArray::Ptr & data_array)
+		{
+			auto iter = std::find(signatureArray_.begin(), signatureArray_.end(), data_array);
+			return (iter != signatureArray_.end()) ? true : false;
+		}
+
 	};
 
 	inline SignatureOffset::Ptr makeSignatureOffset()
@@ -189,14 +195,22 @@ namespace IO
 		{
 
 		}
-		void add(ByteArray data, uint32_t size, uint32_t offset)
+		std::size_t headersCount() const
 		{
-			auto data_array = makeDataArray(data, size);
+			return headers_.size();
+		}
+		void add(ByteArray data, uint32_t size, uint32_t header_offset)
+		{
+			add(makeDataArray(data, size), header_offset);
+		}
+
+		void add(DataArray::Ptr & data_array, uint32_t offset)
+		{
 			auto iter = findByOffset(offset);
 
 			if (iter != headers_.end())
 			{
-				if (!(*iter)->FindSignature(data, size))
+				if (!(*iter)->find(data_array))
 					(*iter)->addSignature(std::move(data_array));
 				else
 				{
@@ -205,16 +219,6 @@ namespace IO
 			}
 			else
 				headers_.emplace_back(makeSignatureOffset(std::move(data_array), offset));
-
-		}
-		std::size_t headersCount() const
-		{
-			return headers_.size();
-		}
-
-		void add(DataArray *data_array, uint32_t offset)
-		{
-			// not implemented
 		}
 		void add(SignatureOffset::Ptr signAndOffset)
 		{
