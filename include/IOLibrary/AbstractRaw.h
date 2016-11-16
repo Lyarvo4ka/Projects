@@ -49,7 +49,7 @@ namespace IO
 			{
 				delete[] data_;
 				data_ = nullptr;
-				printf("delete data\r\n");
+//				printf("delete data\r\n");
 			}
 		}
 		uint32_t size() const

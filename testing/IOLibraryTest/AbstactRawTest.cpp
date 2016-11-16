@@ -15,12 +15,21 @@ const uint32_t const_header_1_size = SIZEOF_ARRAY(const_header_1);
 const uint8_t const_header_2[] = { 0x00, 0x11 , 0x22 , 0x33, 0x44, 0x55};
 const uint32_t const_header_2_size = SIZEOF_ARRAY(const_header_2);
 
+const uint32_t offset_1 = 0;
+const uint32_t offset_2 = 10;
 
 IO::ByteArray createFromConstData(const uint8_t const_data[] ,uint32_t size)
 {
 	IO::ByteArray data = new uint8_t[size];
 	memcpy(data, const_data, size);
 	return data;
+}
+IO::DataArray::Ptr createTestDataBlock()
+{
+	auto data_array = IO::makeDataArray(512);
+	memcpy(data_array->data() + offset_1, const_header_1, const_header_1_size);
+	memcpy(data_array->data() + offset_2, const_header_2, const_header_2_size);
+	return data_array;
 }
 
 void deleteDataArray(IO::DataArray * data_array)
@@ -107,31 +116,13 @@ BOOST_AUTO_TEST_CASE(TestSignatureOffset_Find)
 
 
 ////////////////////////////////FileStruct//////////////////////////////////////////
-BOOST_AUTO_TEST_CASE(TestcompareWithAllHeaders)
+
+IO::FileStruct::Ptr createTestFileStruct()
 {
-	auto signOffset = IO::makeSignatureOffset();
-	addsing(*signOffset);
-	const uint32_t header2_size = 5;
-	auto header2 = createTeastDataArrayPtr(header2_size, 0xAA);
-	const uint32_t header2_offset = 10;
-
-	const uint32_t data2_size = 512;
-	auto data2 = createTeastDataArrayPtr(data2_size, 0xFF);
-	for (auto i = 0; i < header2_size; ++i)
-	{
-		data2->data()[i + header2_offset] = 0xAA;
-	}
-	auto signOffset2 = IO::makeSignatureOffset();
-	signOffset2->addSignature(std::move(header2));
-	signOffset2->setOffset(header2_offset);
-
-
-	IO::FileStruct file_struct("test");
-	file_struct.add(std::move(signOffset));
-	file_struct.add(std::move(signOffset2));
-	
-	BOOST_CHECK_EQUAL(file_struct.compareWithAllHeaders(data2->data(), data2_size), true);
-
+	IO::FileStruct::Ptr file_struct = IO::makeFileStruct("test");
+	file_struct->add(createFromConstData(const_header_1, const_header_1_size), const_header_1_size, offset_1);
+	file_struct->add(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_2);
+	return file_struct;
 }
 
 BOOST_AUTO_TEST_CASE(TestFileStruct_Add)
@@ -152,4 +143,14 @@ BOOST_AUTO_TEST_CASE(TestFileStruct_Add)
 
 	file_struct->add(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_2);
 	BOOST_CHECK_EQUAL(file_struct->headersCount(), 2);
+}
+
+BOOST_AUTO_TEST_CASE(TestcompareWithAllHeaders)
+{
+	auto file_struct = createTestFileStruct();
+	auto data_block = createTestDataBlock();
+	BOOST_CHECK_EQUAL(file_struct->compareWithAllHeaders(data_block->data(), data_block->size()), true);
+	memset(data_block->data() + offset_2, 0xFF, 1);
+	BOOST_CHECK_EQUAL(file_struct->compareWithAllHeaders(data_block->data(), data_block->size()), false);
+
 }
