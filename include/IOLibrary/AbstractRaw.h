@@ -188,6 +188,9 @@ namespace IO
 		HeaderArray headers_;
 		std::string formatName_;
 		path_list ext_list_;
+		DataArray::Ptr footer_;
+		uint32_t footerTailEndSize_ = 0;
+		uint64_t maxFileSize_ = 0;
 	public:
 		using Ptr = std::shared_ptr<FileStruct>;
 		FileStruct(const std::string & formatName)
@@ -199,12 +202,12 @@ namespace IO
 		{
 			return headers_.size();
 		}
-		void add(ByteArray data, uint32_t size, uint32_t header_offset)
+		void addSignature(ByteArray data, uint32_t size, uint32_t header_offset)
 		{
-			add(makeDataArray(data, size), header_offset);
+			addSignature(makeDataArray(data, size), header_offset);
 		}
 
-		void add(DataArray::Ptr & data_array, uint32_t offset)
+		void addSignature(DataArray::Ptr & data_array, uint32_t offset)
 		{
 			auto iter = findByOffset(offset);
 
@@ -220,11 +223,43 @@ namespace IO
 			else
 				headers_.emplace_back(makeSignatureOffset(std::move(data_array), offset));
 		}
-		void add(SignatureOffset::Ptr signAndOffset)
+		void addSignature(SignatureOffset::Ptr signAndOffset)
 		{
 			headers_.emplace_back(std::move(signAndOffset));
 		}
 
+		void addFooter(DataArray::Ptr footer)
+		{
+			footer_ = std::move(footer);
+		}
+		void addFooter(ByteArray data, uint32_t size)
+		{
+			footer_ = std::move(makeDataArray(data, size));
+		}
+		void addFooter(const uint8_t const_data[], uint32_t size)
+		{
+			footer_ = std::move(makeDataArray(const_data, size));
+		}
+		DataArray * getFooter() const 
+		{
+			return footer_.get();
+		}
+		void setFooterTailEndSize(uint32_t footerTailEndSize)
+		{
+			footerTailEndSize_ = footerTailEndSize;
+		}
+		uint32_t getFooterTailEndSize() const
+		{
+			return footerTailEndSize_;
+		}
+		void setMaxFileSize(uint64_t maxFileSize)
+		{
+			maxFileSize_ = maxFileSize;
+		}
+		uint64_t getMaxFileSize() const
+		{
+			return maxFileSize_;
+		}
 		bool compareWithAllHeaders(ByteArray data, uint32_t size)
 		{
 			for (auto & theHeader : headers_)
@@ -354,49 +389,49 @@ namespace IO
 		}
 		FileStruct::Ptr findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
-			//if (!device_->Open(OpenMode::OpenRead))
-			//{
-			//	wprintf_s(L"Error open device\n");
-			//	return nullptr;
-			//}
+			if (!device_->Open(OpenMode::OpenRead))
+			{
+				wprintf_s(L"Error open device\n");
+				return nullptr;
+			}
 
-			//uint64_t file_size = device_->Size();
-			//uint64_t offset = start_offset;
-			//Buffer buffer(block_size_);
-			//uint32_t bytes_read = 0;
-			//uint32_t result_offset = 0;
+			uint64_t file_size = device_->Size();
+			uint64_t offset = start_offset;
+			auto buffer = makeDataArray(block_size_);
+			uint32_t bytes_read = 0;
+			uint32_t result_offset = 0;
 
-			//while (offset < file_size)
-			//{
-			//	device_->setPosition(offset);
-			//	bytes_read = device_->ReadData(buffer.data, block_size_);
-			//	if (bytes_read == 0)
-			//	{
-			//		printf("Error read drive\r\n");
-			//		break;
-			//	}
-			//	if (auto header_ptr = cmpHeader(buffer, bytes_read, result_offset))
-			//	{
-			//		header_pos = offset;
-			//		header_pos += result_offset;
-			//		return header_ptr;
-			//	}
+			while (offset < file_size)
+			{
+				device_->setPosition(offset);
+				bytes_read = device_->ReadData(buffer->data(), block_size_);
+				if (bytes_read == 0)
+				{
+					printf("Error read drive\r\n");
+					break;
+				}
+				if (auto header_ptr = cmpHeader(buffer, bytes_read, result_offset))
+				{
+					header_pos = offset;
+					header_pos += result_offset;
+					return header_ptr;
+				}
 
-			//	offset += bytes_read;
-			//}
+				offset += bytes_read;
+			}
 			return nullptr;
 		}
 
-		FileStruct::Ptr cmpHeader(const Buffer & buffer, const uint32_t size, uint32_t header_pos)
+		FileStruct::Ptr cmpHeader(const DataArray::Ptr & buffer, const uint32_t size, uint32_t header_pos)
 		{
-			//for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
-			//{
-			//	if (auto header_ptr = header_base_->findHeader(buffer.data))
-			//	{
-			//		header_pos = iPos;
-			//		return header_ptr;
-			//	}
-			//}
+			for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
+			{
+				if (auto header_ptr = header_base_->find(buffer->data(), buffer->size()))
+				{
+					header_pos = iPos;
+					return header_ptr;
+				}
+			}
 			return nullptr;
 		}
 
@@ -405,28 +440,6 @@ namespace IO
 		{
 			
 			return nullptr;
-		}
-
-	};
-
-	class FileMake
-	{
-		path_string folder_;
-		uint64_t counter = 0;
-	public:
-		FilePtr create(const uint64_t offset_value, const path_string & extension)
-		{
-			if (boost::filesystem::exists(folder_))
-			{
-				auto ext_folder = addBackSlash(folder_) + extension;
-				if (boost::filesystem::exists(ext_folder))
-				{
-					path_string new_file_name/* = toNumberString(offset_value)*/;
-					// create new file name;
-
-					auto file_ptr = makeFilePtr(new_file_name);
-				}
-			}
 		}
 
 	};
@@ -492,6 +505,11 @@ namespace IO
 		{
 			device_->setPosition(offset);
 		}
+		uint64_t getSize() const
+		{
+			return device_->Size();
+		}
+
 		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			File target_file(target_name);
@@ -500,45 +518,53 @@ namespace IO
 				wprintf(L"Error create file\n");
 			}
 
-			Buffer buffer(block_size_);
+			auto buffer = makeDataArray(block_size_);
 			uint32_t bytes_read = 0;
+			uint32_t bytes_written = 0;
+
 			uint64_t offset = header_offset;
 			uint32_t footer_pos = 0;
 			uint64_t target_size = 0;
 
-			while (true)
+			if ( auto footer_data = file_struct->getFooter())
+			while (offset < this->getSize())
 			{
 				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer.data, block_size_);
+				bytes_read = device_->ReadData(buffer->data(), block_size_);
 				if (bytes_read == 0)
 				{
 					printf("Error read drive\r\n");
 					break;
 				}
 
-				//if (header_ptr->isFooter(buffer.data, bytes_read, footer_pos))
-				//{
-				//	uint32_t write_size = footer_pos + header_ptr->getAddFooterSize();
-				//	if (target_file.WriteData(buffer.data, write_size) == 0)
-				//	{
-				//		printf("Error write to file\r\n");
-				//		break;
-				//	}
-				//	target_size += write_size;
-				//	return target_size;
-				//}
-				//else
-				//{
-				//	if (target_file.WriteData(buffer.data, bytes_read) == 0)
-				//	{
-				//		printf("Error write to file\r\n");
-				//		break;
-				//	}
-				//}
+				for (uint32_t iByte = 0; iByte < bytes_read - footer_data->size(), ++iByte)
+				{
+					if (memcmp(buffer->data() + iByte, footer_data->data(), footer_data->size()) == 0)
+					{
+						printf("Found footer");
+						auto write_size = iByte + file_struct->getFooterTailEndSize();
+						bytes_written = target_file.WriteData(buffer->data(), write_size);
+						if (write_size != bytes_written)
+						{
+							printf("Error write to file\r\n");
+							return 0;
+						}
+						return target_size + write_size;
+					}
+				}
 
-				//target_size += bytes_read;
-				//if (target_size > header_ptr->getMaxFileSize())
-				//	return target_size;
+				bytes_written = target_file.WriteData(buffer->data(), bytes_read);
+				if (bytes_written != bytes_read)
+				{
+					printf("Error write to file\r\n");
+					return 0;
+				}
+				target_size += bytes_written;
+
+
+				target_size += bytes_read;
+				if (target_size > file_struct->getMaxFileSize())
+					return target_size;
 
 				offset += bytes_read;
 			}

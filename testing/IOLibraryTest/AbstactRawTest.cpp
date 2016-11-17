@@ -120,31 +120,38 @@ BOOST_AUTO_TEST_CASE(TestSignatureOffset_Find)
 IO::FileStruct::Ptr createTestFileStruct()
 {
 	IO::FileStruct::Ptr file_struct = IO::makeFileStruct("test");
-	file_struct->add(createFromConstData(const_header_1, const_header_1_size), const_header_1_size, offset_1);
-	file_struct->add(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_2);
+	file_struct->addSignature(createFromConstData(const_header_1, const_header_1_size), const_header_1_size, offset_1);
+	file_struct->addSignature(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_2);
 	return file_struct;
 }
 
-BOOST_AUTO_TEST_CASE(TestFileStruct_Add)
+BOOST_AUTO_TEST_CASE(TestFileStruct_addSignature)
 {
 	uint32_t offset_1 = 0;
 	uint32_t offset_2 = 10;
 	auto file_struct = IO::makeFileStruct("test");
 
-	file_struct->add(createFromConstData(const_header_1 , const_header_1_size), const_header_1_size, offset_1);
+	file_struct->addSignature(createFromConstData(const_header_1 , const_header_1_size), const_header_1_size, offset_1);
 	BOOST_CHECK_EQUAL(file_struct->headersCount(), 1);
 
-	file_struct->add(createFromConstData(const_header_1, const_header_1_size), const_header_1_size, offset_1);
+	file_struct->addSignature(createFromConstData(const_header_1, const_header_1_size), const_header_1_size, offset_1);
 	BOOST_CHECK_EQUAL(file_struct->headersCount(), 1);
 
-	file_struct->add(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_1);
+	file_struct->addSignature(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_1);
 	BOOST_CHECK_EQUAL(file_struct->headersCount(), 1);
 
 
-	file_struct->add(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_2);
+	file_struct->addSignature(createFromConstData(const_header_2, const_header_2_size), const_header_2_size, offset_2);
 	BOOST_CHECK_EQUAL(file_struct->headersCount(), 2);
 }
 
+BOOST_AUTO_TEST_CASE(TestFileStruct_addFooter)
+{
+	auto file_struct = IO::makeFileStruct("test");
+	bool isNullptr = file_struct->getFooter() == nullptr;
+	BOOST_CHECK_EQUAL(isNullptr, true);
+
+}
 BOOST_AUTO_TEST_CASE(TestcompareWithAllHeaders)
 {
 	auto file_struct = createTestFileStruct();
