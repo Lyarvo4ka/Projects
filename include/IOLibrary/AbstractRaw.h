@@ -526,53 +526,90 @@ namespace IO
 			uint32_t footer_pos = 0;
 			uint64_t target_size = 0;
 
-			if ( auto footer_data = file_struct->getFooter())
-			while (offset < this->getSize())
+			if (auto footer_data = file_struct->getFooter())
 			{
-				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer->data(), block_size_);
-				if (bytes_read == 0)
+				while (offset < this->getSize())
 				{
-					printf("Error read drive\r\n");
-					break;
-				}
-
-				for (uint32_t iByte = 0; iByte < bytes_read - footer_data->size(), ++iByte)
-				{
-					if (memcmp(buffer->data() + iByte, footer_data->data(), footer_data->size()) == 0)
+					device_->setPosition(offset);
+					bytes_read = device_->ReadData(buffer->data(), block_size_);
+					if (bytes_read == 0)
 					{
-						printf("Found footer");
-						auto write_size = iByte + file_struct->getFooterTailEndSize();
-						bytes_written = target_file.WriteData(buffer->data(), write_size);
-						if (write_size != bytes_written)
-						{
-							printf("Error write to file\r\n");
-							return 0;
-						}
-						return target_size + write_size;
+						printf("Error read drive\r\n");
+						break;
 					}
+					// not working. In end of block... !!!!!!!!!
+					for (uint32_t iByte = 0; iByte < bytes_read - footer_data->size(); ++iByte)
+					{
+						if (memcmp(buffer->data() + iByte, footer_data->data(), footer_data->size()) == 0)
+						{
+							printf("Found footer.\r\n");
+							auto write_size = iByte + file_struct->getFooterTailEndSize();
+							bytes_written = target_file.WriteData(buffer->data(), write_size);
+							if (write_size != bytes_written)
+							{
+								printf("Error write to file\r\n");
+								return 0;
+							}
+							return target_size + write_size;
+						}
+					}
+
+					bytes_written = target_file.WriteData(buffer->data(), bytes_read);
+					if (bytes_written != bytes_read)
+					{
+						printf("Error write to file\r\n");
+						return 0;
+					}
+					target_size += bytes_written;
+
+
+					target_size += bytes_read;
+					if (target_size > file_struct->getMaxFileSize())
+						return target_size;
+
+					offset += bytes_read;
 				}
-
-				bytes_written = target_file.WriteData(buffer->data(), bytes_read);
-				if (bytes_written != bytes_read)
-				{
-					printf("Error write to file\r\n");
-					return 0;
-				}
-				target_size += bytes_written;
-
-
-				target_size += bytes_read;
-				if (target_size > file_struct->getMaxFileSize())
-					return target_size;
-
-				offset += bytes_read;
 			}
+			else
+				return appendToFile(target_file, header_offset, file_struct->getMaxFileSize());
 
 
 			return 0;
 		}
+		uint64_t appendToFile(File & write_file, const uint64_t source_offset, const uint64_t write_size)
+		{
+			auto target_offset = write_file.Size();
+			uint32_t bytes_read = 0;
+			uint32_t bytes_written = 0;
+			uint64_t cur_pos = 0;
+			uint32_t bytes_to_write = 0;
+			auto buffer = makeDataArray(getBlockSize());
+			while (cur_pos < write_size)
+			{
+				bytes_to_write = calcBlockSize(cur_pos, write_size, getBlockSize());
 
+				setPosition(target_offset);
+				bytes_read = ReadData(buffer->data(), bytes_to_write);
+				if (bytes_read == 0)
+				{
+					printf("Error read drive\r\n");
+					return cur_pos;
+				}
+
+				write_file.setPosition(target_offset);
+				bytes_written = write_file.WriteData(buffer->data(), bytes_read);
+				if (bytes_written == 0)
+				{
+					printf("Error write to file\r\n");
+					return cur_pos;
+				}
+
+				target_offset += bytes_written;
+				cur_pos += bytes_written;
+			}
+
+			return cur_pos;
+		}
 
 	};
 /*
