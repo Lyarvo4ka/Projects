@@ -509,13 +509,24 @@ namespace IO
 		{
 			return device_->Size();
 		}
-
+		uint32_t ReadBlockData(const DataArray & data, const uint64_t offset)
+		{
+			device_->setPosition(offset);
+			return this->ReadData(data.data(), block_size_);
+		}
+		uint32_t ReadNextBlock(const DataArray & data, uint64_t & offset)
+		{
+			offset += block_size_;
+			device_->setPosition(offset);
+			return this->ReadData(data.data(), block_size_);
+		}
 		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			File target_file(target_name);
 			if (!target_file.Open(OpenMode::Create))
 			{
 				wprintf(L"Error create file\n");
+				return 0;
 			}
 
 			//auto buffer = makeDataArray(block_size_);
@@ -523,87 +534,75 @@ namespace IO
 			uint32_t bytes_written = 0;
 
 			uint64_t offset = header_offset;
-			uint32_t footer_pos = 0;
 			uint64_t target_size = 0;
 
-			DataArray * current = new DataArray(block_size_);
-			DataArray * next = new DataArray(block_size_);
+			DataArray::Ptr currPtr = makeDataArray(block_size_);
+			auto current = currPtr.get();
+			DataArray::Ptr nextPtr = makeDataArray(block_size_);
+			auto next = nextPtr.get();
+			//DataArray * current = new DataArray(block_size_);
+			//DataArray * next = new DataArray(block_size_);
 			DataArray * temp = nullptr;
+
 			uint32_t footer_pos = 0;
-			auto footer_ptr = file_struct->getFooter();
+			auto footer_data = file_struct->getFooter();
+			if (!footer_data)
+				return appendToFile(target_file, header_offset, file_struct->getMaxFileSize());
 
 
-			if (auto footer_data = file_struct->getFooter())
+			if ( (bytes_read = ReadBlockData(*current, offset)))
+			while (offset < this->getSize())
 			{
-
-				device_->setPosition(offset);
-				bytes_read = device_->ReadData(current->data(), block_size_);
-				if (bytes_read == 0)
+				// Find footer in first block
+				if (findFooter(*current, current->size(), *footer_data, footer_pos))
 				{
-					printf("Error read drive\r\n");
-					return 0;
-				}
-
-				while (offset < this->getSize())
-				{
-					if (!findFooter(*current, current->size() , *footer_data , footer_pos))
-					{
-						offset += bytes_read;
-						device_->setPosition(offset);
-						bytes_read = device_->ReadData(next->data(), block_size_);
-						if (bytes_read == 0)
-						{
-							printf("Error read drive\r\n");
-							break;
-						}
-						// compare between
-						//if ( compareBeetwen(current , next, ) )
-						temp = current;
-						current = next;
-						next = current;
-
-					}
-					else
-					{
-						printf("Found footer.\r\n");
-
-						auto write_size = footer_pos + file_struct->getFooterTailEndSize();
-						bytes_written = target_file.WriteData(current->data(), write_size);
-
-						if (write_size != bytes_written)
-						{
-							printf("Error write to file\r\n");
-							return 0;
-						}
-						return target_size + write_size;
-					}
-
-
-					bytes_written = target_file.WriteData(buffer->data(), bytes_read);
-					if (bytes_written != bytes_read)
+					// found footer
+					auto write_size = footer_pos + file_struct->getFooterTailEndSize();
+					bytes_written = target_file.WriteData(current->data(), write_size);
+					if (write_size != bytes_written)
 					{
 						printf("Error write to file\r\n");
 						return 0;
 					}
-					target_size += bytes_written;
 
-
-					target_size += bytes_read;
-					if (target_size > file_struct->getMaxFileSize())
-						return target_size;
-
-					offset += bytes_read;
+					return target_size + write_size;
 				}
-			}
-			else
-				return appendToFile(target_file, header_offset, file_struct->getMaxFileSize());
 
+				if ((bytes_read = ReadNextBlock(*next, offset)))
+				{
+					if (compareBetween(*current, *next, *footer_data, bytes_read, footer_pos))
+					{
+						auto write_chunk = footer_data->size() - (current->size() - footer_pos) + file_struct->getFooterTailEndSize();
+						bytes_written = appendBetween(target_file, *current, *next, write_chunk);
+						return target_size + bytes_written;
+					}
+	
+					if ( (bytes_written = target_file.WriteData(current->data(), bytes_read)) )
+					{
+						target_size += bytes_written;
+						if (target_size > file_struct->getMaxFileSize())
+							return target_size;
+
+						// change pointers
+						temp = current;
+						current = next;
+						next = current;
+					}
+					else
+					{
+						printf("Error write to file\r\n");
+						return 0;
+					}
+				}
+				else
+					return 0;
+			}
 
 			return 0;
 		}
-		bool findFooter(const DataArray &data_array, uint32_t buffer_size, const DataArray & footer_data , uint32_t & footer_pos)
+		bool findFooter(const DataArray &data_array, uint32_t data_size, const DataArray & footer_data , uint32_t & footer_pos)
 		{
-			for (uint32_t iByte = 0; iByte < buffer_size - footer_data.size(); ++iByte)
+			for (uint32_t iByte = 0; iByte < data_size - footer_data.size(); ++iByte)
 			{
 				if (memcmp(data_array.data() + iByte, footer_data.data(), footer_data.size()) == 0)
 				{
@@ -614,9 +613,21 @@ namespace IO
 			}
 			return false;
 		}
-		bool compareBeetwen(const DataArray & data1, const DataArray & data2, const uint32_t size)
+		bool compareBetween(const DataArray & data1, const DataArray & data2, const DataArray & footer_data , const uint32_t size , uint32_t & footer_pos)
 		{
-
+			ByteArray pData = nullptr;
+			uint32_t pos = 0;
+			for (auto iByte = 1; iByte < footer_data.size(); ++iByte)
+			{
+				pos = data1.size() - footer_data.size() + iByte;
+				pData = (ByteArray)(data1.data() + pos);
+				if ( memcmp(pData, footer_data.data() , footer_data.size() - iByte) == 0)
+					if (memcmp(data2.data(), footer_data.data() - iByte, iByte) == 0)
+					{
+						footer_pos = pos;
+						return true;
+					}
+			}
 		}
 		uint64_t appendToFile(File & write_file, const uint64_t source_offset, const uint64_t write_size)
 		{
@@ -652,6 +663,29 @@ namespace IO
 
 			return cur_pos;
 		}
+		uint32_t appendToFile(File & write_file, const ByteArray data, const uint32_t write_size)
+		{
+			auto target_offset = write_file.Size();
+			write_file.setPosition(target_offset);
+			return write_file.WriteData(data, write_size);
+		}
+		uint32_t appendBetween(File & write_file, const DataArray & data1, const DataArray & data2, const uint32_t data2_size)
+		{
+			uint32_t bytes_written = 0;
+			if ((bytes_written = write_file.WriteData(data1.data(), data1.size())))
+			{
+				auto target_size = bytes_written;
+
+				// Save second chunk
+				if ((bytes_written = write_file.WriteData(data2.data(), data2_size)))
+				{
+					target_size += data2_size;
+					return target_size;
+				}
+			}
+			return 0;
+		}
+
 
 	};
 /*

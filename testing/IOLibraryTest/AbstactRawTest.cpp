@@ -161,3 +161,9 @@ BOOST_AUTO_TEST_CASE(TestcompareWithAllHeaders)
 	BOOST_CHECK_EQUAL(file_struct->compareWithAllHeaders(data_block->data(), data_block->size()), false);
 
 }
+
+BOOST_AUTO_TEST_CASE(TestSaveRawFile)
+{
+
+}
+
