@@ -69,26 +69,26 @@ BOOST_AUTO_TEST_CASE(Test_readQtAtoms)
 	IO::to_big_endian32(qt_block.block_size);
 	moc_file->WriteData((IO::ByteArray) &qt_block, block_size);
 
-	offset += bkl_1 + block_size;
+	offset += bkl_1;
 	memcpy(qt_block.block_type, IO::s_moov, key_size);
 	qt_block.block_size = bkl_2;
 	IO::to_big_endian32(qt_block.block_size);
 	moc_file->setPosition(offset);
 	moc_file->WriteData((IO::ByteArray) &qt_block, block_size);
 
-	offset += bkl_2 + block_size;
+	offset += bkl_2;
 	memcpy(qt_block.block_type, IO::s_mdat, key_size);
 	qt_block.block_size = bkl_3;
 	IO::to_big_endian32(qt_block.block_size);
 	moc_file->setPosition(offset);
 	moc_file->WriteData((IO::ByteArray) &qt_block, block_size);
 
-	uint32_t expected = offset + bkl_3 + block_size;
+	uint32_t expected = offset + bkl_3;
 
 	IO::QuickTimeRaw qt_raw(moc_file);
 	IO::ListQtBlock keywords;
 	auto file_size = qt_raw.readQtAtoms(0, keywords);
-	//BOOST_CHECK_EQUAL(expected, file_size);
+	BOOST_CHECK_EQUAL(expected, file_size);
 }
 
 

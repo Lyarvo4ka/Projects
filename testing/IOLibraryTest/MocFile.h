@@ -38,6 +38,9 @@ public:
 	}
 	virtual uint32_t WriteData(IO::ByteArray data, uint32_t read_size) override
 	{
+		if (offset_ >= data_->size())
+			return 0;
+
 		memcpy(data_->data() + offset_, data, read_size);
 		return read_size;
 	}

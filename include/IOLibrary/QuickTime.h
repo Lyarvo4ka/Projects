@@ -111,7 +111,6 @@ namespace IO
 			qt_block_t qt_block = { 0 };
 			uint32_t bytes_read = 0;
 			uint64_t keyword_offset = start_offset;
-			uint64_t file_size = 0;
 
 			while (true)
 			{
@@ -125,7 +124,7 @@ namespace IO
 				if (qt_block.block_size == 0)
 					break;
 
-				to_big_endian32((uint32_t &)qt_block.block_size); // ???
+				to_big_endian32((uint32_t &)qt_block.block_size);
 
 				uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
 				if (write_size == 0)
@@ -136,7 +135,7 @@ namespace IO
 				keyword_offset += write_size;
 			}
 
-			return file_size;
+			return keyword_offset;
 		}
 
 		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
