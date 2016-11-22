@@ -152,6 +152,7 @@
     <ClInclude Include="..\..\include\IOLibrary\r3d_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\RemoveInserts.h" />
     <ClInclude Include="..\..\include\IOLibrary\SignatureTest.h" />
+    <ClInclude Include="..\..\include\IOLibrary\StandartRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\stdafx.h" />
     <ClInclude Include="..\..\include\IOLibrary\targetver.h" />
     <ClInclude Include="..\..\include\IOLibrary\Translator.h" />
