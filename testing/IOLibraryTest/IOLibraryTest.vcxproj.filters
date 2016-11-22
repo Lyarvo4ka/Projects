@@ -27,6 +27,9 @@
     <ClInclude Include="MockDevice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MocFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

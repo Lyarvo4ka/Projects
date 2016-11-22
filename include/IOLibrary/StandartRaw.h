@@ -155,7 +155,7 @@ namespace IO
 		{
 			ByteArray pData = nullptr;
 			uint32_t pos = 0;
-			for (auto iByte = 1; iByte < footer_data.size(); ++iByte)
+			for (uint32_t iByte = 1; iByte < footer_data.size(); ++iByte)
 			{
 				pos = data1.size() - footer_data.size() + iByte;
 				pData = (ByteArray)(data1.data() + pos);

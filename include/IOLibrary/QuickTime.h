@@ -1,10 +1,12 @@
 #pragma once
 
-#include "IODevice.h"
+
 
 #include "constants.h"
 #include "iofs.h"
+#include "StandartRaw.h"
 
+#include <iostream>
 
 namespace IO
 {
@@ -44,15 +46,16 @@ namespace IO
 	};
 #pragma pack()
 
+	using ListQtBlock = std::list<qt_block_t>;
 
 	const uint32_t qt_block_struct_size = sizeof(qt_block_t);
 
-	inline bool isQuickTimeKeyword(const qt_block_t * pQtBlock , const char * keyword_name )
+	inline bool isQuickTimeKeyword(const qt_block_t & pQtBlock , const char * keyword_name )
 	{
-		return (memcmp(pQtBlock->block_type, keyword_name, qt_keyword_size) == 0);
+		return (memcmp(pQtBlock.block_type, keyword_name, qt_keyword_size) == 0);
 	}
 
-	inline bool isQuickTime(const qt_block_t * pQtBlock)
+	inline bool isQuickTime(const qt_block_t & pQtBlock)
 	{
 		for ( auto keyword_name : qt_array)
 			if (isQuickTimeKeyword(pQtBlock, keyword_name)) 
@@ -87,20 +90,14 @@ namespace IO
 	void IOLIBRARY_EXPORT to_big_endian32(uint32_t & val);
 
 
+	
+
 	class QuickTimeRaw
+		: public StandartRaw
 	{
-	private:
-		IODevicePtr device_ = nullptr;
-		uint32_t block_size_ = default_block_size;
-		uint32_t sector_size_ = default_sector_size;
-		array_keywords header_keywords_ = { s_ftyp, s_moov, s_mdat };
 	public:
-		explicit QuickTimeRaw(IODevice * device)
-			: device_(device)
-		{
-		}
 		explicit QuickTimeRaw(IODevicePtr device)
-			: device_(device)
+			: StandartRaw(device)
 		{
 		}
 
@@ -108,260 +105,79 @@ namespace IO
 		virtual ~QuickTimeRaw()
 		{
 		}
-		void setBlockSize(const uint32_t block_size)
-		{
-			this->block_size_ = block_size;
-		}
-		uint32_t getBlockSize() const 
-		{
-			return block_size_;
-		}
-		void setSectorSize(const uint32_t sector_size)
-		{
-			this->sector_size_ = sector_size;
-		}
-		IODevicePtr getDevice()
-		{
-			return device_;
-		}
-		virtual bool isQuickTimeHeader(const qt_block_t * pQtBlock)
-		{
-			for (auto iKeyword = 0; iKeyword < 4; ++iKeyword)
-				if (memcmp(pQtBlock->block_type, qt_array[iKeyword], qt_keyword_size) == 0)
-					return true;
-			return false;
-		}
-		virtual void execute(const path_string & target_folder)
-		{
-			if (!device_->Open(OpenMode::OpenRead))
-			{
-				wprintf(L"Error to open.\n");	// ????????
-				return;
-			}
 
-			bool bResult = false;
-
-			uint64_t offset = 0;
-			uint64_t header_offset = 0;
-			uint32_t counter = 0;
-			while (true)
-			{
-				if (!findHeaderOffset(offset, header_offset))
-				{
-					wprintf(L"Not Found Header\n");
-					break;
-				}
-				auto target_file = toFullPath(target_folder, counter++, L".mov");
-				offset = SaveToFile(header_offset, target_file);
-				offset += default_sector_size;
-			}
-		}
-
-		bool findHeaderOffset(uint64_t offset, uint64_t & header_offset)
+		uint64_t readQtAtoms(const uint64_t start_offset, ListQtBlock & list_blocks)
 		{
+			qt_block_t qt_block = { 0 };
 			uint32_t bytes_read = 0;
-			Buffer buffer(block_size_);
+			uint64_t keyword_offset = start_offset;
+			uint64_t file_size = 0;
 
 			while (true)
 			{
-				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer.data, block_size_);
-				if (bytes_read == 0)
-				{
-					printf("Error read drive\r\n");
+				this->setPosition(keyword_offset);
+				if (!(bytes_read = this->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t))))
+					 break;
+
+				if (!isQuickTime(qt_block))
 					break;
-				}
 
-				for (uint32_t iSector = 0; iSector < bytes_read; iSector += sector_size_)
-				{
-					qt_block_t * pQt_block = (qt_block_t *)&buffer.data[iSector];
-					if (this->isQuickTimeHeader(pQt_block))
-					{
-						header_offset = offset + iSector;
-						return true;
-					}
-				}
-				offset += bytes_read;
-			}
-			return false;
-		}
-		uint64_t SaveToFile(const uint64_t header_offset, const path_string & target_name)
-		{
-			File write_file(target_name);
-			if (!write_file.Open(OpenMode::Create))
-				return header_offset;
-
-			uint64_t keyword_offset = header_offset;
-
-			bool isBeenMDAT = false;
-
-			while (true)
-			{
-				qt_block_t qt_block = { 0 };
-				device_->setPosition(keyword_offset);
-				int bytes_read = device_->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t));
-				if (bytes_read == 0)
-					return keyword_offset;
 				if (qt_block.block_size == 0)
 					break;
 
-				to_big_endian32((uint32_t &)qt_block.block_size);
-
-
-
-				if (!isQuickTime(&qt_block))
-					break;
-
-				if (memcmp(qt_block.block_type, qt_array[2], qt_keyword_size) == 0)
-				{
-					isBeenMDAT = true;
-/*
-					uint32_t new_size = qt_block.block_size;
-					auto save_size = SaveFragmentMdat(&write_file, keyword_offset, new_size);
-					//if (qt_block.block_size != save_size)
-					//	break;
-
-					keyword_offset += new_size;
-					continue;
-*/
-				}
+				to_big_endian32((uint32_t &)qt_block.block_size); // ???
 
 				uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
 				if (write_size == 0)
 					break;
 
-				auto bytes_written = AppendDataToFile(&write_file, keyword_offset, write_size);
-				if (bytes_written != write_size)
-					break;
+				list_blocks.push_back(qt_block);
 
 				keyword_offset += write_size;
 			}
 
+			return file_size;
+		}
+
+		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
+		{
+			File write_file(target_name);
+			if (!write_file.Open(OpenMode::Create))
+				return header_offset;
+
+			ListQtBlock keywords;
+			uint64_t write_size = readQtAtoms(header_offset, keywords);
+			if (write_size == 0)
+				return 0;
+
+			appendToFile(write_file, header_offset, write_size);
+
 			write_file.Close();
-			keyword_offset /= default_sector_size;
-			keyword_offset *= default_sector_size;
-			if (!isBeenMDAT)
-				keyword_offset = header_offset;
-			return keyword_offset;
 
-		}
-
-		// save fragment only 'mdat' data, when found nulls more then 5000, skip this cluster.
-		uint64_t SaveFragmentMdat(File * target_file, uint64_t offset, uint32_t & copy_size)
-		{
-			Buffer buffer(block_size_);
-			ZeroMemory(buffer.data, block_size_);
-
-			uint32_t bytes_to_copy = block_size_;
-
-			uint64_t cur_pos = 0;
-			uint64_t read_pos = 0;
-			uint32_t write_size = 0;
-			const uint32_t nulls_count = 5000;
-			uint32_t null_counter = 0;
-
-			uint32_t bytesRead = 0;
-			uint32_t bytesWritten = 0;
-			uint64_t write_offset = target_file->Size();
-
-			bool isNulls = false;
-			uint32_t real_size = 0;
-
-			while (cur_pos < copy_size)
+			if (!isPresentMainKeywords(keywords))
 			{
-				read_pos = offset + cur_pos;
-				write_size = block_size_;
-				null_counter = 0;
-				isNulls = false;
-				if ((read_pos % block_size_) != 0)
+				// rename to bad_file
+				auto new_fileName = target_name + L".bad_file";
+				try
 				{
-					write_size = block_size_ - read_pos % block_size_;
+					boost::filesystem::rename(target_name, new_fileName);
+				}
+				catch (const boost::filesystem::filesystem_error& e)
+				{
+					std::cout << "Error: " << e.what() << std::endl;
 				}
 
-				bytes_to_copy = calcBlockSize(cur_pos, copy_size, write_size);
-
-				device_->setPosition(read_pos);
-				bytesRead = device_->ReadData(buffer.data, bytes_to_copy);
-				if (bytesRead == 0)
-					break;
-
-				for (uint32_t iByte = 0; iByte < bytes_to_copy; ++iByte)
-				{
-					if (buffer.data[iByte] == 0)
-					{
-						++null_counter;
-						if (null_counter > nulls_count)
-						{
-							isNulls = true;
-							break;
-						}
-					}
-
-				}
-				if (isNulls)
-				{
-					cur_pos += block_size_ ;
-					copy_size += block_size_ ;
-					continue;
-				}
-
-
-
-				target_file->setPosition(write_offset);
-				bytesWritten = target_file->WriteData(buffer.data, bytes_to_copy);
-				if (bytesWritten == 0)
-					break;
-
-				write_offset += bytesWritten;
-				cur_pos += bytesWritten;
-				real_size += bytesWritten;
-			}
-			return cur_pos;
-
-		}
-		uint64_t AppendDataToFile(File * target_file, uint64_t offset, uint64_t copy_size)
-		{
-			if (!device_)
-				return 0;
-			if (!target_file)
-				return 0;
-			if (!target_file->isOpen())
-				return 0;
-
-			Buffer buffer(block_size_);
-			ZeroMemory(buffer.data, block_size_);
-
-			uint64_t cur_pos = 0;
-			uint64_t read_pos = 0;
-			uint32_t bytes_to_copy = block_size_;
-
-			uint32_t bytesRead = 0;
-			uint32_t bytesWritten = 0;
-			uint64_t write_offset = target_file->Size();
-
-
-			while (cur_pos < copy_size)
-			{
-				bytes_to_copy = calcBlockSize(cur_pos, copy_size, block_size_);
-
-				read_pos = offset + cur_pos;
-
-				device_->setPosition(read_pos);
-				bytesRead = device_->ReadData(buffer.data, bytes_to_copy);
-				if (bytesRead == 0)
-					break;
-
-				target_file->setPosition(write_offset);
-				bytesWritten = target_file->WriteData(buffer.data, bytes_to_copy);
-				if (bytesWritten == 0)
-					break;
-
-				write_offset += bytesWritten;
-				cur_pos += bytesWritten;
 			}
 
+			return write_size;
 
-			return cur_pos;
+		}
+		bool isPresentMainKeywords(const ListQtBlock & keywords)
+		{
+			//if (isPresentInArrayKeywords(keywords, s_mdat))
+			//	if (isPresentInArrayKeywords(keywords, s_moov))
+			//		return true;
+			return false;
 		}
 		uint64_t ReadQtAtomSize(qt_block_t &qt_block, uint64_t keyword_offset)
 		{
@@ -372,8 +188,8 @@ namespace IO
 				uint64_t ext_size = 0;
 				uint64_t ext_size_offset = keyword_offset + sizeof(qt_block_t);
 
-				device_->setPosition(ext_size_offset);
-				if (!device_->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
+				this->setPosition(ext_size_offset);
+				if (!this->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
 					return 0;
 				to_big_endian64(ext_size);
 				write_size = ext_size;
@@ -382,13 +198,133 @@ namespace IO
 		}
 	};
 
+}
+		// save fragment only 'mdat' data, when found nulls more then 5000, skip this cluster.
+		//uint64_t SaveFragmentMdat(File * target_file, uint64_t offset, uint32_t & copy_size)
+		//{
+		//	Buffer buffer(block_size_);
+		//	ZeroMemory(buffer.data, block_size_);
 
+		//	uint32_t bytes_to_copy = block_size_;
+
+		//	uint64_t cur_pos = 0;
+		//	uint64_t read_pos = 0;
+		//	uint32_t write_size = 0;
+		//	const uint32_t nulls_count = 5000;
+		//	uint32_t null_counter = 0;
+
+		//	uint32_t bytesRead = 0;
+		//	uint32_t bytesWritten = 0;
+		//	uint64_t write_offset = target_file->Size();
+
+		//	bool isNulls = false;
+		//	uint32_t real_size = 0;
+
+		//	while (cur_pos < copy_size)
+		//	{
+		//		read_pos = offset + cur_pos;
+		//		write_size = block_size_;
+		//		null_counter = 0;
+		//		isNulls = false;
+		//		if ((read_pos % block_size_) != 0)
+		//		{
+		//			write_size = block_size_ - read_pos % block_size_;
+		//		}
+
+		//		bytes_to_copy = calcBlockSize(cur_pos, copy_size, write_size);
+
+		//		device_->setPosition(read_pos);
+		//		bytesRead = device_->ReadData(buffer.data, bytes_to_copy);
+		//		if (bytesRead == 0)
+		//			break;
+
+		//		for (uint32_t iByte = 0; iByte < bytes_to_copy; ++iByte)
+		//		{
+		//			if (buffer.data[iByte] == 0)
+		//			{
+		//				++null_counter;
+		//				if (null_counter > nulls_count)
+		//				{
+		//					isNulls = true;
+		//					break;
+		//				}
+		//			}
+
+		//		}
+		//		if (isNulls)
+		//		{
+		//			cur_pos += block_size_ ;
+		//			copy_size += block_size_ ;
+		//			continue;
+		//		}
+
+
+
+		//		target_file->setPosition(write_offset);
+		//		bytesWritten = target_file->WriteData(buffer.data, bytes_to_copy);
+		//		if (bytesWritten == 0)
+		//			break;
+
+		//		write_offset += bytesWritten;
+		//		cur_pos += bytesWritten;
+		//		real_size += bytesWritten;
+		//	}
+		//	return cur_pos;
+
+		//}
+		//uint64_t AppendDataToFile(File * target_file, uint64_t offset, uint64_t copy_size)
+		//{
+		//	if (!device_)
+		//		return 0;
+		//	if (!target_file)
+		//		return 0;
+		//	if (!target_file->isOpen())
+		//		return 0;
+
+		//	Buffer buffer(block_size_);
+		//	ZeroMemory(buffer.data, block_size_);
+
+		//	uint64_t cur_pos = 0;
+		//	uint64_t read_pos = 0;
+		//	uint32_t bytes_to_copy = block_size_;
+
+		//	uint32_t bytesRead = 0;
+		//	uint32_t bytesWritten = 0;
+		//	uint64_t write_offset = target_file->Size();
+
+
+		//	while (cur_pos < copy_size)
+		//	{
+		//		bytes_to_copy = calcBlockSize(cur_pos, copy_size, block_size_);
+
+		//		read_pos = offset + cur_pos;
+
+		//		device_->setPosition(read_pos);
+		//		bytesRead = device_->ReadData(buffer.data, bytes_to_copy);
+		//		if (bytesRead == 0)
+		//			break;
+
+		//		target_file->setPosition(write_offset);
+		//		bytesWritten = target_file->WriteData(buffer.data, bytes_to_copy);
+		//		if (bytesWritten == 0)
+		//			break;
+
+		//		write_offset += bytesWritten;
+		//		cur_pos += bytesWritten;
+		//	}
+
+
+		//	return cur_pos;
+		//}
+
+
+/*
 
 	/*
 	Make fragment raw files.
 	1. 'mdat' data block
 	2. Header data ( 'mdat' keyword in the end of block)
-	*/
+	
 	const uint32_t default_sectors_per_cluster = 64;
 	const uint32_t defalut_cluster_size = default_sector_size * default_sectors_per_cluster;
 
@@ -507,7 +443,7 @@ namespace IO
 	3. Save header data block
 	4. Save 'mdat'.
 
-	*/
+
 	class CanonFragmentRaw
 		:public QuickTimeRaw
 	{
@@ -619,7 +555,7 @@ namespace IO
 
 
 	};
-
+	
 
 	class QuitTimeRawNoSize
 		: public QuickTimeRaw
@@ -755,4 +691,4 @@ namespace IO
 			return full_targe_size;
 		}
 	};
-}
+	*/
