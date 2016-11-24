@@ -331,12 +331,12 @@ void run_RawMTS(int argc, TCHAR **argv)
 
 
 
+
 int _tmain(int argc, TCHAR **argv)
 {
 	////////////////////////////MAIN FUNCTION///////////////////////////////
 
-
-	run_RawMTS(argc, argv);
+	//run_RawMTS(argc, argv);
 
 
 	//auto list_drives = IO::ReadPhysicalDrives();
@@ -708,3 +708,86 @@ int _tmain(int argc, TCHAR **argv)
 
 	return 0;
 }
+/* FRAGMENT AVI video
+const uint8_t c_00db[] = { 0x30 , 0x30 , 0x64 , 0x62 };
+const uint32_t size_00db = SIZEOF_ARRAY(c_00db);
+auto file = IO::makeFilePtr(L"d:\\incoming\\41012\\41012.img");
+if (!file->Open(IO::OpenMode::OpenRead))
+{
+printf("Error open source");
+return -1;
+}
+
+IO::SignatureFinder signFinder(file);
+
+uint64_t offset = 0x4537B200;
+uint64_t header_pos = 0;
+
+uint32_t counter = 0;
+const IO::path_string folder(L"d:\\PaboTa\\41012\\avi\\");
+const uint32_t clst_size = 4096;
+uint8_t buff[clst_size];
+uint8_t buff2[clst_size];
+
+uint32_t bytes_read = 0;
+const uint32_t countToWrite = 320;
+uint8_t buffWrite[default_block_size];
+
+
+while (true)
+{
+if (auto file_struct = signFinder.findHeader(offset, header_pos))
+{
+auto target_name = IO::toFullPath(folder, counter++, L".avi");
+IO::File write_file(target_name);
+if ( !write_file.Open(IO::OpenMode::Create))
+{
+printf("Error create target file");
+break;
+}
+// Read first cluster
+file->setPosition(header_pos);
+file->ReadData(buff, clst_size);
+write_file.WriteData(buff, clst_size);
+uint32_t * pSize = (uint32_t *)&buff[0x804];
+
+uint64_t new_pos = header_pos;
+auto dst_pos = *pSize + 4;
+new_pos += dst_pos;
+while (true)
+{
+file->setPosition(new_pos);
+bytes_read = file->ReadData(buff2, clst_size);
+if (bytes_read == 0)
+break;
+if (memcmp(buff2, c_00db, size_00db) == 0)
+{
+printf("Found 00db\r\n");
+auto start_pos = new_pos / default_sector_size;
+start_pos *= default_sector_size;
+auto back_clusters = *pSize / clst_size + 1;
+start_pos -= back_clusters * clst_size;
+for ( uint32_t i = 0; i < countToWrite ; ++i)
+{
+file->setPosition(start_pos);
+bytes_read = file->ReadData(buffWrite, default_block_size);
+if (bytes_read == 0)
+{
+printf("Error read from file.\r\n");
+break;
+}
+write_file.WriteData(buffWrite, default_block_size);
+start_pos += default_block_size;
+}
+}
+
+new_pos += clst_size;
+}
+
+}
+else
+break;
+}
+
+
+*/

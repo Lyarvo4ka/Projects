@@ -171,11 +171,16 @@ namespace IO
 			return write_size;
 
 		}
+		//bool isListQtBlock()
 		bool isPresentMainKeywords(const ListQtBlock & keywords)
 		{
 			//if (isPresentInArrayKeywords(keywords, s_mdat))
 			//	if (isPresentInArrayKeywords(keywords, s_moov))
 			//		return true;
+			//for (auto & refQtBlock : keywords)
+			//{
+			//	if ( memcmp(refQtBlock.block_type , s_mdat, qt_keyword_size) == 0)
+			//}
 			return false;
 		}
 		uint64_t ReadQtAtomSize(qt_block_t &qt_block, uint64_t keyword_offset)

@@ -57,6 +57,59 @@ namespace IO
 			device_->setPosition(offset);
 			return this->ReadData(data.data(), block_size_);
 		}
+
+		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
+		{
+			File target_file(target_name);
+			if (!target_file.Open(OpenMode::Create))
+			{
+				wprintf(L"Error create file\n");
+				return 0;
+			}
+			auto footer_data = file_struct->getFooter();
+			if (!footer_data)
+				return appendToFile(target_file, header_offset, file_struct->getMaxFileSize());
+
+			auto sectorPerFooter = (footer_data->size() / getSectorSize())*getSectorSize();
+			if (sectorPerFooter == 0)
+				sectorPerFooter = getSectorSize();
+
+			uint32_t sizeToRead = getBlockSize() + sectorPerFooter;
+
+			uint32_t bytes_read = 0;
+			uint32_t bytes_written = 0;
+
+			uint64_t offset = header_offset;
+
+			uint32_t footer_pos = 0;
+			uint32_t bytes_to_write = getBlockSize();
+
+			auto buffer = makeDataArray(sizeToRead);
+			while (offset < this->getSize())
+			{
+				setPosition(offset);
+				bytes_read = ReadData(buffer->data(), sizeToRead);
+				if (bytes_read == 0 )
+					break;
+
+				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
+				{
+					offset += bytes_written;
+					bytes_written = target_file.WriteData(buffer->data(), footer_pos + footer_data->size());
+					break;
+				}
+
+				if (bytes_read < getBlockSize() )
+					bytes_to_write = bytes_read;
+
+				bytes_written = target_file.WriteData(buffer->data(), bytes_to_write);
+
+				offset += bytes_written;
+			}
+			return offset - header_offset;
+
+		}
+	/*
 		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			File target_file(target_name);
@@ -138,6 +191,7 @@ namespace IO
 
 			return 0;
 		}
+	*/
 		bool findFooter(const DataArray &data_array, uint32_t data_size, const DataArray & footer_data, uint32_t & footer_pos)
 		{
 			for (uint32_t iByte = 0; iByte < data_size - footer_data.size(); ++iByte)

@@ -362,6 +362,8 @@ namespace IO
 
 	class RawAlgorithm;
 
+	const uint8_t c_riff[] = { 0x52,0x49,0x46,0x46 };
+
 	class SignatureFinder
 	{
 		IODevicePtr device_;
@@ -372,7 +374,12 @@ namespace IO
 		SignatureFinder(IODevicePtr device)
 			: device_(device)
 		{
-			header_base_ = new HeaderBase();
+			//header_base_ = new HeaderBase();
+			//auto riff_avi = makeFileStruct("RIFF AVI");
+			//auto riff_sing = makeDataArray(c_riff, SIZEOF_ARRAY(c_riff));
+			//riff_avi->addSignature(std::move(riff_sing),0);
+
+			//header_base_->addFileFormat(std::move(riff_avi));
 
 		}
 		~SignatureFinder()
