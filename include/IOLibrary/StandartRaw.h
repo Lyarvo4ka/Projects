@@ -58,23 +58,28 @@ namespace IO
 			return this->ReadData(data.data(), block_size_);
 		}
 
+		uint32_t addAlignedToBlockSize(const uint32_t add_size)
+		{
+			uint32_t size = add_size / getSectorSize() + 1;
+			size *= getSectorSize();
+			return getBlockSize() + size;
+		}
+		virtual FilePtr createFile(const path_string & target_name)
+		{
+			auto file = makeFilePtr(target_name);
+			if (!file->Open(OpenMode::Create))
+				wprintf(L"Error create file\n");
+			return file;
+		}
 		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
-			File target_file(target_name);
-			if (!target_file.Open(OpenMode::Create))
-			{
-				wprintf(L"Error create file\n");
+			auto target_file = createFile(target_name);
+			if (!target_file->isOpen())
 				return 0;
-			}
+
 			auto footer_data = file_struct->getFooter();
 			if (!footer_data)
-				return appendToFile(target_file, header_offset, file_struct->getMaxFileSize());
-
-			auto sectorPerFooter = (footer_data->size() / getSectorSize())*getSectorSize();
-			if (sectorPerFooter == 0)
-				sectorPerFooter = getSectorSize();
-
-			uint32_t sizeToRead = getBlockSize() + sectorPerFooter;
+				return appendToFile(*target_file, header_offset, file_struct->getMaxFileSize());
 
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
@@ -84,14 +89,18 @@ namespace IO
 			uint32_t footer_pos = 0;
 			uint32_t bytes_to_write = getBlockSize();
 
+			uint32_t sizeToRead = addAlignedToBlockSize(footer_data->size());
 			auto buffer = makeDataArray(sizeToRead);
+
 			while (offset < this->getSize())
 			{
 				setPosition(offset);
 				bytes_read = ReadData(buffer->data(), sizeToRead);
 				if (bytes_read == 0 )
+				{
+					wprintf(L"Error read block\n");
 					break;
-
+				}
 				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
 				{
 					offset += bytes_written;
@@ -103,6 +112,12 @@ namespace IO
 					bytes_to_write = bytes_read;
 
 				bytes_written = target_file.WriteData(buffer->data(), bytes_to_write);
+				if  (bytes_written == 0 )
+				{
+					wprintf(L"Error write block\n");
+					break;
+				}
+
 
 				offset += bytes_written;
 			}

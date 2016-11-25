@@ -27,6 +27,48 @@ BOOST_AUTO_TEST_CASE(TestFindFooter)
 
 }
 
+BOOST_AUTO_TEST_CASE(Test_addAlignedToBlockSize)
+{
+	IO::StandartRaw standartRaw(nullptr);
+	standartRaw.setBlockSize(1024);
+	standartRaw.setSectorSize(512);
+
+	auto actual = standartRaw.addAlignedToBlockSize(10);
+	BOOST_CHECK_EQUAL(actual, 1536);
+
+	actual = standartRaw.addAlignedToBlockSize(520);
+	BOOST_CHECK_EQUAL(actual, 2048);
+}
+
+#include "MocFile.h"
+class StandartRawMock
+	: public IO::StandartRaw
+{
+public:
+	StandartRawMock(IO::IODevicePtr device)
+		: StandartRaw(device)
+	{
+		setBlockSize(1024);
+		setSectorSize(512);
+	}
+	IO::FilePtr createFile(const IO::path_string & target_name) override
+	{
+		return std::dynamic_pointer_cast<IO::File>(std::make_shared<MocFile>(4096));
+	}
+	uint64_t SaveRawFile(IO::FileStruct::Ptr file_struct, const uint64_t header_offset, const IO::path_string & target_name) override
+	{
+		return IO::StandartRaw::SaveRawFile(file_struct, header_offset, target_name);
+	}
+};
+
+BOOST_AUTO_TEST_CASE(testSaveRawFile)
+{
+	StandartRawMock raw_mock(std::make_shared<MocFile>(8096));
+	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
+
+
+}
+
 BOOST_AUTO_TEST_CASE(TestCompareBetween)
 {
 	IO::StandartRaw standartRaw(nullptr);
