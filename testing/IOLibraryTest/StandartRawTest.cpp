@@ -53,7 +53,8 @@ public:
 	}
 	IO::FilePtr createFile(const IO::path_string & target_name) override
 	{
-		return std::dynamic_pointer_cast<IO::File>(std::make_shared<MocFile>(4096));
+		//IO::FilePtr file_ptr(std::make_shared<MocFile>(4096));
+		return std::make_shared<MocFile>(4096);
 	}
 	uint64_t SaveRawFile(IO::FileStruct::Ptr file_struct, const uint64_t header_offset, const IO::path_string & target_name) override
 	{
@@ -61,10 +62,19 @@ public:
 	}
 };
 
+BOOST_AUTO_TEST_CASE(test_appendToFile)
+{
+
+}
+
 BOOST_AUTO_TEST_CASE(testSaveRawFile)
 {
+
 	StandartRawMock raw_mock(std::make_shared<MocFile>(8096));
-	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
+	auto target_file = raw_mock.createFile(L"Test file");
+	int k = 1;
+	k = 2;
+//	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
 
 
 }

@@ -104,14 +104,14 @@ namespace IO
 				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
 				{
 					offset += bytes_written;
-					bytes_written = target_file.WriteData(buffer->data(), footer_pos + footer_data->size());
+					bytes_written = target_file->WriteData(buffer->data(), footer_pos + footer_data->size());
 					break;
 				}
 
 				if (bytes_read < getBlockSize() )
 					bytes_to_write = bytes_read;
 
-				bytes_written = target_file.WriteData(buffer->data(), bytes_to_write);
+				bytes_written = target_file->WriteData(buffer->data(), bytes_to_write);
 				if  (bytes_written == 0 )
 				{
 					wprintf(L"Error write block\n");
@@ -243,13 +243,18 @@ namespace IO
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
 			uint64_t cur_pos = 0;
+			uint64_t read_pos = source_offset;
+			uint64_t to_write = write_size;
 			uint32_t bytes_to_write = 0;
+			
+			if (source_offset + write_size > write_file.Size())
+				to_write = write_file.Size() - source_offset;
 			auto buffer = makeDataArray(getBlockSize());
-			while (cur_pos < write_size)
+			while (cur_pos < to_write)
 			{
 				bytes_to_write = calcBlockSize(cur_pos, write_size, getBlockSize());
 
-				setPosition(target_offset);
+				setPosition(read_pos);
 				bytes_read = ReadData(buffer->data(), bytes_to_write);
 				if (bytes_read == 0)
 				{

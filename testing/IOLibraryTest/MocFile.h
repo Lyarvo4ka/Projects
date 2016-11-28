@@ -3,7 +3,7 @@
 #include "IOLibrary/AbstractRaw.h"
 
 class MocFile
-	: public IO::IODevice
+	: public IO::File
 {
 private:
 	IO::DataArray::Ptr data_;
