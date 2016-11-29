@@ -76,7 +76,7 @@ namespace IO
 			auto target_file = createFile(target_name);
 			if (!target_file->isOpen())
 				return 0;
-
+			
 			auto footer_data = file_struct->getFooter();
 			if (!footer_data)
 				return appendToFile(*target_file, header_offset, file_struct->getMaxFileSize());
@@ -239,16 +239,20 @@ namespace IO
 		}
 		uint64_t appendToFile(File & write_file, const uint64_t source_offset, const uint64_t write_size)
 		{
+			if (source_offset >= getSize())
+				return 0;
+
+			uint64_t to_write = write_size;
+			if (source_offset + write_size > getSize())	// ?????
+				to_write = getSize() - write_size;
+
+
 			auto target_offset = write_file.Size();
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
 			uint64_t cur_pos = 0;
 			uint64_t read_pos = source_offset;
-			uint64_t to_write = write_size;
 			uint32_t bytes_to_write = 0;
-			
-			if (source_offset + write_size > getSize())
-				to_write = getSize() - source_offset;
 
 			auto buffer = makeDataArray(getBlockSize());
 			while (cur_pos < to_write)
@@ -262,7 +266,7 @@ namespace IO
 					printf("Error read drive\r\n");
 					return cur_pos;
 				}
-				read_pos += bytes_read;
+				//read_pos += bytes_read;
 
 				write_file.setPosition(target_offset);
 				bytes_written = write_file.WriteData(buffer->data(), bytes_read);
@@ -277,12 +281,6 @@ namespace IO
 			}
 
 			return cur_pos;
-		}
-		uint32_t appendToFile(File & write_file, const ByteArray data, const uint32_t write_size)
-		{
-			auto target_offset = write_file.Size();
-			write_file.setPosition(target_offset);
-			return write_file.WriteData(data, write_size);
 		}
 		uint32_t appendBetween(File & write_file, const DataArray & data1, const DataArray & data2, const uint32_t data2_size)
 		{

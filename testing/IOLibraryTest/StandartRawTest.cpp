@@ -46,6 +46,7 @@ class StandartRawMock
 {
 public:
 	uint32_t target_size = 4096;
+	std::shared_ptr<MocFile> target_file_;
 public:
 	StandartRawMock(IO::IODevicePtr device)
 		: StandartRaw(device)
@@ -55,7 +56,8 @@ public:
 	}
 	IO::FilePtr createMockFile(const uint32_t size)
 	{
-		return std::make_shared<MocFile>(size);
+		target_file_ = std::make_shared<MocFile>(size);
+		return target_file_;
 	}
 	IO::FilePtr createFile(const IO::path_string & target_name) override
 	{
@@ -75,9 +77,12 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 	src_file->setPosition(10);
 	src_file->WriteData(src_data.data(), src_data.size());
 	StandartRawMock raw_mock(src_file);
+	raw_mock.setBlockSize(5);
 	auto dst_file = std::make_shared<MocFile>(5);
 	auto actual = raw_mock.appendToFile(*dst_file, 10, 10);
 	BOOST_CHECK_EQUAL(actual, 10);
+
+	BOOST_CHECK_EQUAL(dst_file->Size(), 5 + 10);
 
 	IO::DataArray read_data(10);
 	dst_file->setPosition(5);
@@ -91,11 +96,31 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 
 }
 
-BOOST_AUTO_TEST_CASE(testSaveRawFile)
+BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 {
+	auto src_file = std::make_shared<MocFile>(20);
+	IO::DataArray file_data(20);
+	memset(file_data.data(), 0xEB, file_data.size());
+	memset(file_data.data() + 3, 0xAA, 5);
+	src_file->WriteData(file_data.data(), file_data.size());
 
-	StandartRawMock raw_mock(std::make_shared<MocFile>(8096));
-	auto target_file = raw_mock.createFile(L"Test file");
+	StandartRawMock raw_mock(src_file);
+	raw_mock.setBlockSize(5);
+	auto file_struct = IO::makeFileStruct("test Footer");
+	file_struct->addFooter(test_footer, 3);
+	file_struct->setFooterTailEndSize(3);
+
+	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
+
+	src_file->setPosition(8);
+	src_file->WriteData(footer_data.data(), footer_data.size());
+
+	auto bytes_saved = raw_mock.SaveRawFile(file_struct, 3, L"Test file name");
+	//BOOST_CHECK_EQUAL(bytes_saved, file_struct->getFooter()->size() + file_struct->getFooterTailEndSize());
+
+
+
+	//sraw_mock.SaveRawFile()
 
 //	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
 
