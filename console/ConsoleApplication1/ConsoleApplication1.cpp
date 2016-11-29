@@ -329,13 +329,69 @@ void run_RawMTS(int argc, TCHAR **argv)
 //	}
 //}
 
+/*	SPLIT ONE BIG FILE TO small
+auto src_file = IO::makeFilePtr(L"g:\\mpg\\026657.mpg");
+const IO::path_string target_folder(L"f:\\41003\\mpg\\");
+uint32_t counter = 0;
+IO::SignatureFinder signFinder(src_file);
+uint64_t offset = 0;
+uint64_t header_pos = 0;
+
+IO::StandartRaw raw(src_file);
+
+while (true)
+{
+if (signFinder.findHeader(offset, header_pos))
+{
+uint64_t next_pos = 0;
+if (signFinder.findHeader(header_pos+default_sector_size, next_pos))
+{
+IO::File target_file(IO::toFullPath(target_folder, counter++, L".mpg"));
+target_file.Open(IO::OpenMode::Create);
+raw.appendToFile(target_file, header_pos, next_pos - header_pos);
+}
+else
+break;
+
+offset = next_pos;
+}
+}
+// write end
+IO::File target_file(IO::toFullPath(target_folder, counter++, L".mpg"));
+raw.appendToFile(target_file, header_pos, src_file->Size() - header_pos);
+*/
 
 
+#include "IOLibrary/dbf.h"
 
 int _tmain(int argc, TCHAR **argv)
 {
 	////////////////////////////MAIN FUNCTION///////////////////////////////
+	IO::path_string target_folder(L"e:\\dbf\\");
+	auto list_drives = IO::ReadPhysicalDrives();
+	auto physical_drive = list_drives.find_by_number(2);
+	if (!physical_drive)
+		return -1;
 
+	auto disk_2 = std::make_shared<IO::DiskDevice>(physical_drive);
+
+	IO::SignatureFinder signFinder(disk_2);
+	//0xDE263D9000
+	uint64_t offset = 0;
+	uint64_t header_pos = 0;
+	while (true)
+	{
+
+		if (auto header = signFinder.findHeader(offset, header_pos))
+		{
+			IO::DBFRaw dbf_raw(disk_2);
+			dbf_raw.SaveRawFile(header, header_pos, target_folder);
+		}
+		else
+			break;
+		offset = header_pos;
+		offset += default_sector_size;
+	}
 	//run_RawMTS(argc, argv);
 
 

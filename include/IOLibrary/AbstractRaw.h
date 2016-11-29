@@ -363,6 +363,11 @@ namespace IO
 	class RawAlgorithm;
 
 	const uint8_t c_riff[] = { 0x52,0x49,0x46,0x46 };
+	const uint8_t c_mpeg_header[] = { 0x00 , 0x00 , 0x01 , 0xBA , 0x44 , 0x00 , 0x04 , 0x00 };
+
+	const uint8_t dbf_header_1 = 0x03;
+	const uint8_t dbf_header_2[] = { 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 };
+	const uint32_t dbf_header_2_offset = 0x10;
 
 	class SignatureFinder
 	{
@@ -374,12 +379,23 @@ namespace IO
 		SignatureFinder(IODevicePtr device)
 			: device_(device)
 		{
-			//header_base_ = new HeaderBase();
-			//auto riff_avi = makeFileStruct("RIFF AVI");
-			//auto riff_sing = makeDataArray(c_riff, SIZEOF_ARRAY(c_riff));
-			//riff_avi->addSignature(std::move(riff_sing),0);
+			auto mpeg_video = makeFileStruct("mpeg_video");
+			auto mpeg_sing = makeDataArray(c_mpeg_header, SIZEOF_ARRAY(c_mpeg_header));
+			mpeg_video->addSignature(std::move(mpeg_sing),0);
 
-			//header_base_->addFileFormat(std::move(riff_avi));
+
+			auto dbf = makeFileStruct("dbf");
+			auto header_1 = makeDataArray(1);
+			*header_1->data() = dbf_header_1;
+
+			auto header_2 = makeDataArray(dbf_header_2, SIZEOF_ARRAY(dbf_header_2));
+
+			dbf->addSignature(header_1, 0);
+			dbf->addSignature(header_2, dbf_header_2_offset);
+
+			header_base_ = new HeaderBase();
+			header_base_->addFileFormat(std::move(dbf));
+
 
 		}
 		~SignatureFinder()
@@ -429,11 +445,11 @@ namespace IO
 			return nullptr;
 		}
 
-		FileStruct::Ptr cmpHeader(const DataArray::Ptr & buffer, const uint32_t size, uint32_t header_pos)
+		FileStruct::Ptr cmpHeader(const DataArray::Ptr & buffer, const uint32_t size, uint32_t & header_pos)
 		{
 			for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
 			{
-				if (auto header_ptr = header_base_->find(buffer->data(), buffer->size()))
+				if (auto header_ptr = header_base_->find(buffer->data() + iPos, buffer->size()))
 				{
 					header_pos = iPos;
 					return header_ptr;

@@ -247,8 +247,9 @@ namespace IO
 			uint64_t to_write = write_size;
 			uint32_t bytes_to_write = 0;
 			
-			if (source_offset + write_size > write_file.Size())
-				to_write = write_file.Size() - source_offset;
+			if (source_offset + write_size > getSize())
+				to_write = getSize() - source_offset;
+
 			auto buffer = makeDataArray(getBlockSize());
 			while (cur_pos < to_write)
 			{
@@ -261,6 +262,7 @@ namespace IO
 					printf("Error read drive\r\n");
 					return cur_pos;
 				}
+				read_pos += bytes_read;
 
 				write_file.setPosition(target_offset);
 				bytes_written = write_file.WriteData(buffer->data(), bytes_read);

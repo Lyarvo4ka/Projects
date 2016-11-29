@@ -10,7 +10,8 @@ private:
 	uint64_t offset_ = 0;
 public:
 	MocFile(uint32_t file_size)
-		: data_(IO::makeDataArray(file_size))
+		: IO::File(L"")
+		,data_(IO::makeDataArray(file_size))
 	{
 	}
 	bool Open(IO::OpenMode open_mode) override
@@ -36,13 +37,18 @@ public:
 		memcpy(data, data_->data() + offset_, read_size);
 		return read_size;
 	}
-	virtual uint32_t WriteData(IO::ByteArray data, uint32_t read_size) override
+	virtual uint32_t WriteData(IO::ByteArray data, uint32_t write_size) override
 	{
-		if (offset_ >= data_->size())
-			return 0;
+		if (offset_ + write_size >= data_->size())
+		{
+			auto new_size = offset_ + write_size;
+			IO::DataArray * new_data = new IO::DataArray(new_size);
+			memcpy(new_data->data(), data_->data(), data_->size());
+			data_.reset(new_data);
+		}
 
-		memcpy(data_->data() + offset_, data, read_size);
-		return read_size;
+		memcpy(data_->data() + offset_, data, write_size);
+		return write_size;
 	}
 	virtual uint64_t Size() const
 	{
