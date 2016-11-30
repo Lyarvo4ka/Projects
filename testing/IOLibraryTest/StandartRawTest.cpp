@@ -82,6 +82,7 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 	auto actual = raw_mock.appendToFile(*dst_file, 10, 10);
 	BOOST_CHECK_EQUAL(actual, 10);
 
+
 	BOOST_CHECK_EQUAL(dst_file->Size(), 5 + 10);
 
 	IO::DataArray read_data(10);

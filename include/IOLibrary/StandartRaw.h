@@ -266,7 +266,7 @@ namespace IO
 					printf("Error read drive\r\n");
 					return cur_pos;
 				}
-				//read_pos += bytes_read;
+				read_pos += bytes_read;
 
 				write_file.setPosition(target_offset);
 				bytes_written = write_file.WriteData(buffer->data(), bytes_read);

@@ -376,7 +376,7 @@ int _tmain(int argc, TCHAR **argv)
 	auto disk_2 = std::make_shared<IO::DiskDevice>(physical_drive);
 
 	IO::SignatureFinder signFinder(disk_2);
-	//0xDE263D9000
+	//0xDE263D9000 0xDD4BBA9000
 	uint64_t offset = 0;
 	uint64_t header_pos = 0;
 	while (true)

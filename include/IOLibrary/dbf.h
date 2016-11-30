@@ -37,16 +37,12 @@ namespace IO
 			uint8_t month = header.yymmdd[1];
 			uint8_t day = header.yymmdd[2];
 
-			if (year == 0 && month == 0 && day == 0)
-				return false;
+			if (year >= 15 && year <= 16)
 
-			if (year > 17)
-				return false;
-			if (month > 12)
-				return false;
-			if (day > 31)
-				return false;
-			return true;
+			if (month > 0 && month <= 12)
+			if (day > 0 && day <= 31)
+				return true;
+			return false;
 		}
 		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{

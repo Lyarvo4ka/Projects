@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbstactRawTest.cpp" />
+    <ClCompile Include="DBFRawTest.cpp" />
     <ClCompile Include="ext2Test.cpp" />
     <ClCompile Include="FactoriesTest.cpp" />
     <ClCompile Include="FileFinderTest.cpp" />
