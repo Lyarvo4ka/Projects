@@ -88,6 +88,7 @@ namespace IO
 
 			uint32_t footer_pos = 0;
 			uint32_t bytes_to_write = getBlockSize();
+			uint64_t written_size = 0;
 
 			uint32_t sizeToRead = addAlignedToBlockSize(footer_data->size());
 			auto buffer = makeDataArray(sizeToRead);
@@ -101,10 +102,12 @@ namespace IO
 					wprintf(L"Error read block\n");
 					break;
 				}
+
 				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
 				{
-					offset += bytes_written;
-					bytes_written = target_file->WriteData(buffer->data(), footer_pos + footer_data->size());
+					uint32_t sizeToWrite = footer_pos + footer_data->size() + file_struct->getFooterTailEndSize();
+					bytes_written = target_file->WriteData(buffer->data(), sizeToWrite);
+					written_size += bytes_written;
 					break;
 				}
 
@@ -118,10 +121,10 @@ namespace IO
 					break;
 				}
 
-
-				offset += bytes_written;
+				offset += getBlockSize();
+				written_size += bytes_written;
 			}
-			return offset - header_offset;
+			return written_size;
 
 		}
 	/*

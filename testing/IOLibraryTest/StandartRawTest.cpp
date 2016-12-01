@@ -3,6 +3,7 @@
 #include "IOLibrary/StandartRaw.h"
 
 const uint8_t test_footer[] = { 0xAA , 0xBB , 0xCC , 0xDD , 0xEE, 0xFF};
+const uint32_t test_footer_size = SIZEOF_ARRAY(test_footer);
 
 BOOST_AUTO_TEST_CASE(TestFindFooter)
 {
@@ -13,7 +14,7 @@ BOOST_AUTO_TEST_CASE(TestFindFooter)
 	IO::DataArray data1(test_size);
 	ZeroMemory(data1.data(), data1.size());
 
-	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
+	IO::DataArray footer_data(test_footer, test_footer_size);
 
 	uint32_t footer_pos = 0;
 	auto actual = standartRaw.findFooter(data1, data1.size(), footer_data, footer_pos);
@@ -73,7 +74,11 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 {
 	auto src_file = std::make_shared<MocFile>(20);
 	IO::DataArray src_data(10);
-	memset(src_data.data(), 0xAA, src_data.size());
+	for (auto i = 0; i < src_data.size(); ++i)
+	{
+		src_data.data()[i] = i;
+	}
+	//memset(src_data.data(), 0xAA, src_data.size());
 	src_file->setPosition(10);
 	src_file->WriteData(src_data.data(), src_data.size());
 	StandartRawMock raw_mock(src_file);
@@ -99,25 +104,29 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 
 BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 {
-	auto src_file = std::make_shared<MocFile>(20);
-	IO::DataArray file_data(20);
-	memset(file_data.data(), 0xEB, file_data.size());
-	memset(file_data.data() + 3, 0xAA, 5);
-	src_file->WriteData(file_data.data(), file_data.size());
+	IO::DataArray footer_data(test_footer, test_footer_size);
+	const uint32_t footer_offset = 12;
 
-	StandartRawMock raw_mock(src_file);
-	raw_mock.setBlockSize(5);
+	auto src_file = std::make_shared<MocFile>(20);
+	IO::DataArray src_data(20);
+	memset(src_data.data(), 0xEB, src_data.size());
+	memcpy(src_data.data() + footer_offset, footer_data, test_footer_size);
+	src_file->WriteData(src_data.data(), src_data.size());
+
+
 	auto file_struct = IO::makeFileStruct("test Footer");
 	file_struct->addFooter(test_footer, 3);
 	file_struct->setFooterTailEndSize(3);
 
-	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
+	StandartRawMock raw_mock(src_file);
+	raw_mock.setBlockSize(5);
+	raw_mock.setSectorSize(1);
 
-	src_file->setPosition(8);
-	src_file->WriteData(footer_data.data(), footer_data.size());
+	const uint32_t start_offset = 3;
 
-	auto bytes_saved = raw_mock.SaveRawFile(file_struct, 3, L"Test file name");
-	//BOOST_CHECK_EQUAL(bytes_saved, file_struct->getFooter()->size() + file_struct->getFooterTailEndSize());
+	auto bytes_saved = raw_mock.SaveRawFile(file_struct, start_offset, L"Test file name");
+	auto expected_size = footer_offset - start_offset + file_struct->getFooter()->size() + file_struct->getFooterTailEndSize();
+	BOOST_CHECK_EQUAL(bytes_saved, expected_size);
 
 
 
