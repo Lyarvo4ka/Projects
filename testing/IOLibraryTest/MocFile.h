@@ -32,17 +32,19 @@ public:
 	}
 	uint32_t ReadData(IO::ByteArray data, uint32_t read_size) override
 	{
-		if (offset_ >= data_->size())
-			return 0;
-		memcpy(data, data_->data() + offset_, read_size);
-		return read_size;
+		if (offset_ + read_size <= data_->size())
+		{
+			memcpy(data, data_->data() + offset_, read_size);
+			return read_size;
+		}
+		return 0;
 	}
 	virtual uint32_t WriteData(IO::ByteArray data, uint32_t write_size) override
 	{
 		if (offset_ + write_size >= data_->size())
 		{
 			auto new_size = offset_ + write_size;
-			IO::DataArray * new_data = new IO::DataArray(new_size);
+			IO::DataArray * new_data = new IO::DataArray((uint32_t)new_size);
 			memcpy(new_data->data(), data_->data(), data_->size());
 			data_.reset(new_data);
 		}

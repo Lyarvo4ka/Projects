@@ -46,24 +46,14 @@ namespace IO
 		{
 			return device_->Size();
 		}
-		uint32_t ReadBlockData(const DataArray & data, const uint64_t offset)
-		{
-			device_->setPosition(offset);
-			return this->ReadData(data.data(), block_size_);
-		}
-		uint32_t ReadNextBlock(const DataArray & data, uint64_t & offset)
-		{
-			offset += block_size_;
-			device_->setPosition(offset);
-			return this->ReadData(data.data(), block_size_);
-		}
 
-		uint32_t addAlignedToBlockSize(const uint32_t add_size)
+		uint32_t calcToSectorSize(const uint32_t add_size)
 		{
 			uint32_t size = add_size / getSectorSize() + 1;
 			size *= getSectorSize();
-			return getBlockSize() + size;
+			return size;
 		}
+
 		virtual FilePtr createFile(const path_string & target_name)
 		{
 			auto file = makeFilePtr(target_name);
@@ -90,11 +80,13 @@ namespace IO
 			uint32_t bytes_to_write = getBlockSize();
 			uint64_t written_size = 0;
 
-			uint32_t sizeToRead = addAlignedToBlockSize(footer_data->size());
+			uint32_t sizeToRead = getBlockSize() + calcToSectorSize(footer_data->size());
 			auto buffer = makeDataArray(sizeToRead);
 
 			while (offset < this->getSize())
 			{
+				sizeToRead = calcBlockSize(offset, this->getSize(), sizeToRead);
+				  
 				setPosition(offset);
 				bytes_read = ReadData(buffer->data(), sizeToRead);
 				if (bytes_read == 0 )
@@ -121,7 +113,7 @@ namespace IO
 					break;
 				}
 
-				offset += getBlockSize();
+				offset += bytes_written;
 				written_size += bytes_written;
 			}
 			return written_size;

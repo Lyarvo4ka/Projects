@@ -28,17 +28,17 @@ BOOST_AUTO_TEST_CASE(TestFindFooter)
 
 }
 
-BOOST_AUTO_TEST_CASE(Test_addAlignedToBlockSize)
+BOOST_AUTO_TEST_CASE(Test_calcToSectorSize)
 {
 	IO::StandartRaw standartRaw(nullptr);
 	standartRaw.setBlockSize(1024);
 	standartRaw.setSectorSize(512);
 
-	auto actual = standartRaw.addAlignedToBlockSize(10);
-	BOOST_CHECK_EQUAL(actual, 1536);
+	auto actual = standartRaw.calcToSectorSize(10);
+	BOOST_CHECK_EQUAL(actual, 512);
 
-	actual = standartRaw.addAlignedToBlockSize(520);
-	BOOST_CHECK_EQUAL(actual, 2048);
+	actual = standartRaw.calcToSectorSize(520);
+	BOOST_CHECK_EQUAL(actual, 1024);
 }
 
 #include "MocFile.h"
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 {
 	auto src_file = std::make_shared<MocFile>(20);
 	IO::DataArray src_data(10);
-	for (auto i = 0; i < src_data.size(); ++i)
+	for (uint32_t i = 0; i < src_data.size(); ++i)
 	{
 		src_data.data()[i] = i;
 	}
@@ -107,20 +107,20 @@ BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 	IO::DataArray footer_data(test_footer, test_footer_size);
 	const uint32_t footer_offset = 12;
 
-	auto src_file = std::make_shared<MocFile>(20);
-	IO::DataArray src_data(20);
+	const uint32_t src_size = 30;
+	auto src_file = std::make_shared<MocFile>(src_size);
+	IO::DataArray src_data(src_size);
 	memset(src_data.data(), 0xEB, src_data.size());
 	memcpy(src_data.data() + footer_offset, footer_data, test_footer_size);
 	src_file->WriteData(src_data.data(), src_data.size());
-
 
 	auto file_struct = IO::makeFileStruct("test Footer");
 	file_struct->addFooter(test_footer, 3);
 	file_struct->setFooterTailEndSize(3);
 
 	StandartRawMock raw_mock(src_file);
-	raw_mock.setBlockSize(5);
-	raw_mock.setSectorSize(1);
+	raw_mock.setBlockSize(10);
+	raw_mock.setSectorSize(5);
 
 	const uint32_t start_offset = 3;
 
@@ -128,15 +128,20 @@ BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 	auto expected_size = footer_offset - start_offset + file_struct->getFooter()->size() + file_struct->getFooterTailEndSize();
 	BOOST_CHECK_EQUAL(bytes_saved, expected_size);
 
+	bytes_saved = raw_mock.SaveRawFile(file_struct, src_size + 1, L"Test file name");
+	BOOST_CHECK_EQUAL(bytes_saved, 0);
 
+	memset(src_data.data(), 0xEB, src_data.size());
+	src_file->setPosition(0);
+	src_file->WriteData(src_data.data(), src_data.size());
 
-	//sraw_mock.SaveRawFile()
-
-//	IO::DataArray footer_data(test_footer, SIZEOF_ARRAY(test_footer));
-
+	// no found footer
+	bytes_saved = raw_mock.SaveRawFile(file_struct, 0, L"Test file name");
+	BOOST_CHECK_EQUAL(bytes_saved, src_size);	
 
 }
 
+//////////////////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE(TestCompareBetween)
 {
 	IO::StandartRaw standartRaw(nullptr);
