@@ -136,8 +136,8 @@ BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 	src_file->WriteData(src_data.data(), src_data.size());
 
 	// no found footer
-	bytes_saved = raw_mock.SaveRawFile(file_struct, 0, L"Test file name");
-	BOOST_CHECK_EQUAL(bytes_saved, src_size);	
+	bytes_saved = raw_mock.SaveRawFile(file_struct, start_offset, L"Test file name");
+	BOOST_CHECK_EQUAL(bytes_saved, src_size - start_offset);	
 
 }
 

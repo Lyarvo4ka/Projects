@@ -342,6 +342,8 @@ namespace IO
 
 	class HeaderBase
 	{
+	public:
+		using Ptr = std::shared_ptr<HeaderBase>;
 	private:
 		std::list<FileStruct::Ptr> listHeaders_;
 	public:
@@ -374,10 +376,11 @@ namespace IO
 		IODevicePtr device_;
 		uint32_t block_size_ = default_block_size;
 		uint32_t sector_size_ = default_sector_size;
-		HeaderBase * header_base_;
+		HeaderBase::Ptr header_base_;
 	public:
-		SignatureFinder(IODevicePtr device)
+		SignatureFinder(IODevicePtr device , HeaderBase::Ptr header_base)
 			: device_(device)
+			, header_base_(header_base)
 		{
 			auto mpeg_video = makeFileStruct("mpeg_video");
 			auto mpeg_sing = makeDataArray(c_mpeg_header, SIZEOF_ARRAY(c_mpeg_header));
@@ -393,18 +396,13 @@ namespace IO
 			dbf->addSignature(header_1, 0);
 			dbf->addSignature(header_2, dbf_header_2_offset);
 
-			header_base_ = new HeaderBase();
 			header_base_->addFileFormat(std::move(dbf));
 
 
 		}
 		~SignatureFinder()
 		{
-			if (header_base_)
-			{
-				delete header_base_;
-				header_base_ = nullptr;
-			}
+
 		}
 		void setBlockSize(const uint32_t block_size)
 		{
