@@ -288,57 +288,6 @@ namespace IO
 		return std::make_shared<FileStruct>(formatName);
 	}
 
-	class Header_t	// ??????
-	{
-		ByteArray footer_ = nullptr;
-		uint32_t footer_size_ = 0;
-		uint32_t add_footer_size = 0;
-		uint64_t max_file_size = 0;
-	public:
-		~Header_t()
-		{
-			if (footer_)
-			{
-				delete[] footer_;
-				footer_ = nullptr;
-			}
-		}
-		void setFooter(const ByteArray footer, uint32_t footer_size)
-		{
-			this->footer_ = new uint8_t[footer_size];
-			memcpy(this->footer_, footer, footer_size);
-			this->footer_size_ = footer_size;
-		}
-		void setAddFooterSize(const uint32_t add_footer_size)
-		{
-			this->add_footer_size = add_footer_size;
-		}
-		uint32_t getAddFooterSize() const
-		{
-			return add_footer_size;
-		}
-		void setMaxFileSize(const uint64_t max_file_size)
-		{
-			this->max_file_size = max_file_size;
-		}
-		uint64_t getMaxFileSize() const
-		{
-			return max_file_size;
-		}
-		bool isFooter(const ByteArray data, const uint32_t data_size , uint32_t & footer_pos)
-		{
-			for (uint32_t iByte = 0; iByte < data_size - footer_size_; ++iByte)
-			{
-				if (memcmp(footer_, data + iByte, footer_size_) == 0)
-				{
-					footer_pos = iByte;
-					return true;
-				}
-			}
-			return false;
-		}
-	};
-
 
 	class HeaderBase
 	{
@@ -346,30 +295,44 @@ namespace IO
 		using Ptr = std::shared_ptr<HeaderBase>;
 	private:
 		std::list<FileStruct::Ptr> listHeaders_;
+		std::list<FileStruct::Ptr>::const_iterator iter_;
 	public:
 		void addFileFormat(FileStruct::Ptr new_file_format)
 		{
 			listHeaders_.emplace_back(new_file_format);
 		}
-		FileStruct::Ptr find(const ByteArray data , uint32_t size)
+		FileStruct * find(const ByteArray data , uint32_t size)
 		{
-			for (auto & theFileStruct : listHeaders_)
+			//for (auto & theFileStruct : listHeaders_)
+			//{
+			//	if (theFileStruct->compareWithAllHeaders(data, size))
+			//		return theFileStruct;
+			//}
+			iter_ = listHeaders_.begin();
+			return findInHeaderBase(data, size);
+		}
+		FileStruct * find_next(const ByteArray data, uint32_t size)
+		{
+			if (iter_ == listHeaders_.end())
+				return nullptr;
+			++iter_;
+			return findInHeaderBase(data, size);
+		}
+		FileStruct * findInHeaderBase(const ByteArray data, uint32_t size, std::list<FileStruct::Ptr>::const_iterator & iter)
+		{
+			while (iter != listHeaders_.end())
 			{
+				auto theFileStruct = *iter;
 				if (theFileStruct->compareWithAllHeaders(data, size))
-					return theFileStruct;
+					return theFileStruct.get();
+				++iter;
 			}
 			return nullptr;
 		}
+
 	};
 
 	class RawAlgorithm;
-
-	const uint8_t c_riff[] = { 0x52,0x49,0x46,0x46 };
-	const uint8_t c_mpeg_header[] = { 0x00 , 0x00 , 0x01 , 0xBA , 0x44 , 0x00 , 0x04 , 0x00 };
-
-	const uint8_t dbf_header_1 = 0x03;
-	const uint8_t dbf_header_2[] = { 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 };
-	const uint32_t dbf_header_2_offset = 0x10;
 
 	class SignatureFinder
 	{
@@ -382,22 +345,6 @@ namespace IO
 			: device_(device)
 			, header_base_(header_base)
 		{
-			auto mpeg_video = makeFileStruct("mpeg_video");
-			auto mpeg_sing = makeDataArray(c_mpeg_header, SIZEOF_ARRAY(c_mpeg_header));
-			mpeg_video->addSignature(std::move(mpeg_sing),0);
-
-
-			auto dbf = makeFileStruct("dbf");
-			auto header_1 = makeDataArray(1);
-			*header_1->data() = dbf_header_1;
-
-			auto header_2 = makeDataArray(dbf_header_2, SIZEOF_ARRAY(dbf_header_2));
-
-			dbf->addSignature(header_1, 0);
-			dbf->addSignature(header_2, dbf_header_2_offset);
-
-			header_base_->addFileFormat(std::move(dbf));
-
 
 		}
 		~SignatureFinder()
@@ -408,7 +355,7 @@ namespace IO
 		{
 			this->block_size_ = block_size;
 		}
-		FileStruct::Ptr findHeader(const uint64_t start_offset, uint64_t & header_pos)
+		FileStruct * findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
 			if (!device_->Open(OpenMode::OpenRead))
 			{
@@ -443,15 +390,19 @@ namespace IO
 			return nullptr;
 		}
 
-		FileStruct::Ptr cmpHeader(const DataArray::Ptr & buffer, const uint32_t size, uint32_t & header_pos)
+		FileStruct * cmpHeader(const DataArray::Ptr & buffer, const uint32_t size, uint32_t & header_pos)
 		{
 			for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
 			{
-				if (auto header_ptr = header_base_->find(buffer->data() + iPos, buffer->size()))
+				if (auto header = header_base_->find(buffer->data() + iPos, buffer->size()))
 				{
+					RawFactoryManager factory_manager;
+					factory_manager.Lookup()
+
 					header_pos = iPos;
-					return header_ptr;
+					return header;
 				}
+
 			}
 			return nullptr;
 		}
@@ -468,26 +419,52 @@ namespace IO
 	class RawAlgorithm
 	{
 		virtual uint64_t SaveRawFile(FileStruct::Ptr  header_ptr, const uint64_t header_offset, const path_string & target_name) = 0;
+		virtual bool Specify(const uint64_t header_offset) = 0;
 	};
 
-	const uint8_t zbk_header[] = { 0x0F , 0x00 , 0x0B , 0x67 , 0x63 , 0x66 , 0x67 , 0x50 , 0x72 , 0x67 , 0x50 , 0x6C , 0x75 , 0x73 };
-	const uint32_t zbk_header_size = SIZEOF_ARRAY(zbk_header);
-	const uint8_t zbk_footer[] = { 0x50 , 0x4B , 0x05 , 0x06 , 0x00 , 0x00 , 0x00 , 0x00 };
-	const uint32_t zbk_footer_size = SIZEOF_ARRAY(zbk_footer);
-
-	using u8 = unsigned char;
-	using u16 = unsigned short;
-	struct zbh_header_t
+	class DefaultRaw : public RawAlgorithm
 	{
-		u16 reserver0;
-		u8 day;
-		u8 month;
-		u16 year;
-		u8 hour;
-		u8 seconds;
-		u8 reserved1[5];
+	private:
+		IODevicePtr device_;
+		uint32_t block_size_ = default_block_size;
+		uint32_t sector_size_ = default_sector_size;
+	public:
+		DefaultRaw(IODevicePtr device)
+			: device_(device)
+		{
 
-	};
+		}
+		void setBlockSize(const uint32_t block_size)
+		{
+			this->block_size_ = block_size;
+		}
+		uint32_t getBlockSize() const
+		{
+			return block_size_;
+		}
+		void setSectorSize(const uint32_t sector_size)
+		{
+			this->sector_size_ = sector_size;
+		}
+		uint32_t getSectorSize() const
+		{
+			return sector_size_;
+		}
+		uint32_t ReadData(ByteArray data, uint32_t size)
+		{
+			return device_->ReadData(data, size);
+		}
+		void setPosition(uint64_t offset)
+		{
+			device_->setPosition(offset);
+		}
+		uint64_t getSize() const
+		{
+			return device_->Size();
+		}
+
+	}
+
 
 /*
 	class ZBKRaw

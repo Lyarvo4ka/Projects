@@ -152,6 +152,32 @@ namespace Signatures
 
 	const uint8_t bad_sector_marker[] = { 0x62 , 0x61 , 0x64 , 0x20 , 0x73 , 0x65 , 0x63 , 0x74 , 0x6F , 0x72 };
 	const uint32_t bad_sector_marker_size = SIZEOF_ARRAY(bad_sector_marker);
+
+	const uint8_t zbk_header[] = { 0x0F , 0x00 , 0x0B , 0x67 , 0x63 , 0x66 , 0x67 , 0x50 , 0x72 , 0x67 , 0x50 , 0x6C , 0x75 , 0x73 };
+	const uint32_t zbk_header_size = SIZEOF_ARRAY(zbk_header);
+	const uint8_t zbk_footer[] = { 0x50 , 0x4B , 0x05 , 0x06 , 0x00 , 0x00 , 0x00 , 0x00 };
+	const uint32_t zbk_footer_size = SIZEOF_ARRAY(zbk_footer);
+
+	using u8 = unsigned char;
+	using u16 = unsigned short;
+	struct zbh_header_t
+	{
+		u16 reserver0;
+		u8 day;
+		u8 month;
+		u16 year;
+		u8 hour;
+		u8 seconds;
+		u8 reserved1[5];
+
+	};
+	const uint8_t c_riff[] = { 0x52,0x49,0x46,0x46 };
+	const uint8_t c_mpeg_header[] = { 0x00 , 0x00 , 0x01 , 0xBA , 0x44 , 0x00 , 0x04 , 0x00 };
+
+	const uint8_t dbf_header_1 = 0x03;
+	const uint8_t dbf_header_2[] = { 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 };
+	const uint32_t dbf_header_2_offset = 0x10;
+
 };
 
 const int SECTOR_SIZE = 512;
