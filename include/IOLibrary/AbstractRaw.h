@@ -303,33 +303,13 @@ namespace IO
 		}
 		FileStruct * find(const ByteArray data , uint32_t size)
 		{
-			//for (auto & theFileStruct : listHeaders_)
-			//{
-			//	if (theFileStruct->compareWithAllHeaders(data, size))
-			//		return theFileStruct;
-			//}
-			iter_ = listHeaders_.begin();
-			return findInHeaderBase(data, size);
-		}
-		FileStruct * find_next(const ByteArray data, uint32_t size)
-		{
-			if (iter_ == listHeaders_.end())
-				return nullptr;
-			++iter_;
-			return findInHeaderBase(data, size);
-		}
-		FileStruct * findInHeaderBase(const ByteArray data, uint32_t size, std::list<FileStruct::Ptr>::const_iterator & iter)
-		{
-			while (iter != listHeaders_.end())
+			for (auto & theFileStruct : listHeaders_)
 			{
-				auto theFileStruct = *iter;
 				if (theFileStruct->compareWithAllHeaders(data, size))
 					return theFileStruct.get();
-				++iter;
 			}
 			return nullptr;
 		}
-
 	};
 
 	class RawAlgorithm;
@@ -392,17 +372,10 @@ namespace IO
 
 		FileStruct * cmpHeader(const DataArray::Ptr & buffer, const uint32_t size, uint32_t & header_pos)
 		{
-			for (uint32_t iPos = 0; iPos < size; iPos += sector_size_)
+			for (header_pos = 0; header_pos < size; header_pos += sector_size_)
 			{
-				if (auto header = header_base_->find(buffer->data() + iPos, buffer->size()))
-				{
-					RawFactoryManager factory_manager;
-					factory_manager.Lookup()
-
-					header_pos = iPos;
+				if (auto header = header_base_->find(buffer->data() + header_pos, buffer->size()))
 					return header;
-				}
-
 			}
 			return nullptr;
 		}
@@ -418,7 +391,7 @@ namespace IO
 
 	class RawAlgorithm
 	{
-		virtual uint64_t SaveRawFile(FileStruct::Ptr  header_ptr, const uint64_t header_offset, const path_string & target_name) = 0;
+		virtual uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) = 0;
 		virtual bool Specify(const uint64_t header_offset) = 0;
 	};
 
@@ -463,7 +436,7 @@ namespace IO
 			return device_->Size();
 		}
 
-	}
+	};
 
 
 /*

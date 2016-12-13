@@ -29,15 +29,15 @@ namespace IO
 				wprintf(L"Error create file\n");
 			return file;
 		}
-		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
+		uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			auto target_file = createFile(target_name);
 			if (!target_file->isOpen())
 				return 0;
 			
-			auto footer_data = file_struct->getFooter();
+			auto footer_data = file_struct.getFooter();
 			if (!footer_data)
-				return appendToFile(*target_file, header_offset, file_struct->getMaxFileSize());
+				return appendToFile(*target_file, header_offset, file_struct.getMaxFileSize());
 
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
@@ -65,7 +65,7 @@ namespace IO
 
 				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
 				{
-					uint32_t sizeToWrite = footer_pos + footer_data->size() + file_struct->getFooterTailEndSize();
+					uint32_t sizeToWrite = footer_pos + footer_data->size() + file_struct.getFooterTailEndSize();
 					bytes_written = target_file->WriteData(buffer->data(), sizeToWrite);
 					written_size += bytes_written;
 					break;
@@ -87,19 +87,18 @@ namespace IO
 			return written_size;
 
 		}
-		bool Specify(const uint64_t header_offset)
+		bool Specify(const uint64_t header_offset) override
 		{
 			return true;
 		}
 
 		bool findFooter(const DataArray &data_array, uint32_t data_size, const DataArray & footer_data, uint32_t & footer_pos)
 		{
-			for (uint32_t iByte = 0; iByte < data_size - footer_data.size(); ++iByte)
+			for (footer_pos = 0; footer_pos < data_size - footer_data.size(); ++footer_pos)
 			{
-				if (memcmp(data_array.data() + iByte, footer_data.data(), footer_data.size()) == 0)
+				if (memcmp(data_array.data() + footer_pos, footer_data.data(), footer_data.size()) == 0)
 				{
 					printf("Found footer.\r\n");
-					footer_pos = iByte;
 					return true;
 				}
 			}

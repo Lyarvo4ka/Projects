@@ -44,7 +44,7 @@ namespace IO
 				return true;
 			return false;
 		}
-		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
+		uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			dbf_header header = { 0 };
 			setPosition(header_offset);

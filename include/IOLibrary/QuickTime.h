@@ -138,7 +138,7 @@ namespace IO
 			return keyword_offset;
 		}
 
-		uint64_t SaveRawFile(FileStruct::Ptr file_struct, const uint64_t header_offset, const path_string & target_name) override
+		uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			File write_file(target_name);
 			if (!write_file.Open(OpenMode::Create))
