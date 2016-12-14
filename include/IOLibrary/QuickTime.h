@@ -64,7 +64,7 @@ namespace IO
 		return false;
 	}
 
-	bool isPresentInArrayKeywords(const array_keywords & keywords , const char * key_val)
+	inline bool isPresentInArrayKeywords(const array_keywords & keywords , const char * key_val)
 	{
 		for (auto theKeyword : keywords)
 		{
@@ -74,20 +74,26 @@ namespace IO
 		return false;
 	}
 
-	inline void to_big_endian64(uint64_t & val)
+	//inline void to_big_endian64(uint64_t & val)
+	//{
+	//	const int type_size = sizeof(uint64_t);
+	//	uint8_t * byte_buffer = (uint8_t *)&val;
+	//	uint8_t temp = 0;
+	//	for (int iByte = 0; iByte < type_size / 2; ++iByte)
+	//	{
+	//		temp = byte_buffer[iByte];
+	//		byte_buffer[iByte] = byte_buffer[type_size - iByte - 1];
+	//		byte_buffer[type_size - iByte - 1] = temp;
+	//	}
+	//}
+	inline void toBE64(uint64_t & val)
 	{
-		const int type_size = sizeof(uint64_t);
-		uint8_t * byte_buffer = (uint8_t *)&val;
-		uint8_t temp = 0;
-		for (int iByte = 0; iByte < type_size / 2; ++iByte)
-		{
-			temp = byte_buffer[iByte];
-			byte_buffer[iByte] = byte_buffer[type_size - iByte - 1];
-			byte_buffer[type_size - iByte - 1] = temp;
-		}
+		val = _byteswap_uint64(val);
 	}
-
-	void IOLIBRARY_EXPORT to_big_endian32(uint32_t & val);
+	inline void toBE32(uint32_t & val)
+	{
+		val = _byteswap_ulong(val);
+	}
 
 
 	
@@ -124,7 +130,7 @@ namespace IO
 				if (qt_block.block_size == 0)
 					break;
 
-				to_big_endian32((uint32_t &)qt_block.block_size);
+				toBE32((uint32_t &)qt_block.block_size);
 
 				uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
 				if (write_size == 0)
@@ -195,10 +201,20 @@ namespace IO
 				this->setPosition(ext_size_offset);
 				if (!this->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
 					return 0;
-				to_big_endian64(ext_size);
+				toBE64(ext_size);
 				write_size = ext_size;
 			}
 			return write_size;
+		}
+	};
+
+	class QuickTimeRawFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new QuickTimeRaw(device);
 		}
 	};
 

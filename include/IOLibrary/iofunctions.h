@@ -24,72 +24,74 @@ inline std::string drivePathFromNumber(const DWORD number)
 
 namespace IO
 {
-	bool IOLIBRARY_EXPORT open_read( HANDLE & handle , const std::string & path );
-	bool IOLIBRARY_EXPORT open_write( HANDLE & handle , const std::string & path );
-	bool IOLIBRARY_EXPORT create_file( HANDLE & handle , const std::string & path );
-	LONGLONG IOLIBRARY_EXPORT getFileSize(HANDLE & handle);
+	bool open_read( HANDLE & handle , const std::string & path );
+	bool open_write( HANDLE & handle , const std::string & path );
+	bool create_file( HANDLE & handle , const std::string & path );
+	LONGLONG getFileSize(HANDLE & handle);
 
 
-	void IOLIBRARY_EXPORT set_position( HANDLE & handle , LONGLONG position );
-	bool IOLIBRARY_EXPORT read_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesRead );
-	bool IOLIBRARY_EXPORT write_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesWritten );
+	void set_position( HANDLE & handle , LONGLONG position );
+	bool read_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesRead );
+	bool write_block( HANDLE & handle , BYTE * buffer , DWORD size , DWORD & bytesWritten );
 
-	bool IOLIBRARY_EXPORT read_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
-	bool IOLIBRARY_EXPORT write_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
+	bool read_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
+	bool write_all(HANDLE & handle, BYTE * buffer, LONGLONG size);
 
-	bool IOLIBRARY_EXPORT write_block_to_file( HANDLE & source , 
+	bool write_block_to_file( HANDLE & source , 
 											   LONGLONG source_offset , 
 											   DWORD block_size, 
 											   HANDLE & target ,
 											   LONGLONG target_offset = 0 );
 
-	bool IOLIBRARY_EXPORT copy_to_file( HANDLE & source , 
+	bool copy_to_file( HANDLE & source , 
 										LONGLONG source_offset , 
 										LONGLONG block_size, 
 										HANDLE & target ,
 										LONGLONG target_offset = 0 );
 
-	DWORD IOLIBRARY_EXPORT BytesToCopy(LONGLONG current, LONGLONG max_size, DWORD block_size);
+	DWORD BytesToCopy(LONGLONG current, LONGLONG max_size, DWORD block_size);
 
-	std::string IOLIBRARY_EXPORT get_extension(const std::string & file_name);
-	std::string IOLIBRARY_EXPORT file_path_number( const std::string & folder , DWORD number , const std::string & extension );
-	std::string IOLIBRARY_EXPORT file_offset_name(const std::string & folder, LONGLONG number, const std::string & extension);
+	std::string get_extension(const std::string & file_name);
+	std::string file_path_number( const std::string & folder , DWORD number , const std::string & extension );
+	std::string file_offset_name(const std::string & folder, LONGLONG number, const std::string & extension);
 
-	bool IOLIBRARY_EXPORT isLastBackspace( const std::string str );
-	void IOLIBRARY_EXPORT addBackspace( std::string & str );
-	std::string IOLIBRARY_EXPORT addFolderName( const std::string & folder , std::string new_folder);
-	std::string IOLIBRARY_EXPORT add_folder(const std::string & current_dir, std::string new_folder);
-	std::string IOLIBRARY_EXPORT make_file_path( const std::string & folder , const std::string & file );
+	bool isLastBackspace( const std::string str );
+	void addBackspace( std::string & str );
+	std::string addFolderName( const std::string & folder , std::string new_folder);
+	std::string add_folder(const std::string & current_dir, std::string new_folder);
+	std::string make_file_path( const std::string & folder , const std::string & file );
 
-	bool IOLIBRARY_EXPORT isPresentInList( const std::list< std::string > & strlist , const std::string & text );
+	bool isPresentInList( const std::list< std::string > & strlist , const std::string & text );
 
 
 
 	// from 1 to "00001"
-	std::string IOLIBRARY_EXPORT numberToString( const int number );
+	std::string numberToString( const int number );
 
 
-	LONGLONG IOLIBRARY_EXPORT toSectors( const LONGLONG data_val );
+	LONGLONG toSectors( const LONGLONG data_val );
 
-	void IOLIBRARY_EXPORT read_table( const std::string & table_file ,  tablelist & table_list );
-	void IOLIBRARY_EXPORT gatherByTable( const std::string & source_file , const std::string & target_file , const tablelist * table_list );
+	void read_table( const std::string & table_file ,  tablelist & table_list );
+	void gatherByTable( const std::string & source_file , const std::string & target_file , const tablelist * table_list );
 
-	void IOLIBRARY_EXPORT replaceBads( const std::string & withBad , const std::string & withoutBad , const std::string & target_file );
-	bool IOLIBRARY_EXPORT cmpSectorWithByte( const BYTE * data , BYTE byte_value);
-	bool IOLIBRARY_EXPORT isBlockNot00andFF(const BYTE * data, DWORD size);
-	bool IOLIBRARY_EXPORT isDataSector( const BYTE * data );
-	void IOLIBRARY_EXPORT SaveOnlyData( const std::string & source_file , const std::string & target_file );
-	void IOLIBRARY_EXPORT XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);
-	void IOLIBRARY_EXPORT JoinWithService( const std::string & data_file , const std::string & service_file, const std::string target_file);
+	void replaceBads( const std::string & withBad , const std::string & withoutBad , const std::string & target_file );
+	bool cmpSectorWithByte( const BYTE * data , BYTE byte_value);
+	bool isBlockNot00andFF(const BYTE * data, DWORD size);
+	bool isDataSector( const BYTE * data );
+	void SaveOnlyData( const std::string & source_file , const std::string & target_file );
+	void XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);
+	void JoinWithService( const std::string & data_file , const std::string & service_file, const std::string target_file);
 
-	bool IOLIBRARY_EXPORT isFileHeader00( const std::string & file_name);
+	bool isFileHeader00( const std::string & file_name);
 
 
 };
 
-void IOLIBRARY_EXPORT to_big_endian( DWORD & val );
-void IOLIBRARY_EXPORT to_little_endian( DWORD & val );
-const DWORD IOLIBRARY_EXPORT nameToValue( const char * name  );
+inline void to_big_endian(DWORD & val)
+{
+	_byteswap_ulong(val);
+}
+const DWORD nameToValue( const char * name  );
 
 
 #endif // IO_FUNCTIONS_H

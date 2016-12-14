@@ -18,7 +18,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -102,22 +102,17 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Entropy.cpp" />
-    <ClCompile Include="ext2_raw.cpp" />
     <ClCompile Include="factories.cpp" />
-    <ClCompile Include="IODevice.cpp" />
     <ClCompile Include="iofs.cpp" />
     <ClCompile Include="iofunctions.cpp" />
     <ClCompile Include="IOLibrary.cpp" />
     <ClCompile Include="MovRaw.cpp" />
-    <ClCompile Include="MTS_raw.cpp" />
-    <ClCompile Include="physicaldrive.cpp" />
     <ClCompile Include="QuickTime.cpp" />
     <ClCompile Include="SignatureTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="XorAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\AbstractRaw.h" />
@@ -157,7 +152,6 @@
     <ClInclude Include="..\..\include\IOLibrary\targetver.h" />
     <ClInclude Include="..\..\include\IOLibrary\Translator.h" />
     <ClInclude Include="..\..\include\IOLibrary\utility.h" />
-    <ClInclude Include="..\..\include\IOLibrary\XorAnalyzer.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\include\IOLibrary\signatures.xml">

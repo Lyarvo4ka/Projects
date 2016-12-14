@@ -15,6 +15,24 @@ namespace std {
 	}
 }
 
+BOOST_AUTO_TEST_CASE(Test_toBE32)
+{
+	uint32_t val32	  = 0x01020304;
+	uint32_t expected = 0x04030201;
+	IO::toBE32(val32);
+	BOOST_CHECK_EQUAL(val32, expected);
+
+}
+
+BOOST_AUTO_TEST_CASE(Test_toBE64)
+{
+	uint64_t val64 =	0x0102030405060708;
+	uint64_t expected = 0x0807060504030201;
+	IO::toBE64(val64);
+	BOOST_CHECK_EQUAL(val64, expected);
+
+}
+
 BOOST_AUTO_TEST_CASE(TestNumberToSting)
 {
 	IO::path_string actual = L"0000000001";
@@ -66,20 +84,20 @@ BOOST_AUTO_TEST_CASE(Test_readQtAtoms)
 	uint32_t block_size = sizeof(IO::qt_block_t);
 	memcpy(qt_block.block_type, IO::s_ftyp, key_size);
 	qt_block.block_size = bkl_1;
-	IO::to_big_endian32(qt_block.block_size);
+	IO::toBE32(qt_block.block_size);
 	moc_file->WriteData((IO::ByteArray) &qt_block, block_size);
 
 	offset += bkl_1;
 	memcpy(qt_block.block_type, IO::s_moov, key_size);
 	qt_block.block_size = bkl_2;
-	IO::to_big_endian32(qt_block.block_size);
+	IO::toBE32(qt_block.block_size);
 	moc_file->setPosition(offset);
 	moc_file->WriteData((IO::ByteArray) &qt_block, block_size);
 
 	offset += bkl_2;
 	memcpy(qt_block.block_type, IO::s_mdat, key_size);
 	qt_block.block_size = bkl_3;
-	IO::to_big_endian32(qt_block.block_size);
+	IO::toBE32(qt_block.block_size);
 	moc_file->setPosition(offset);
 	moc_file->WriteData((IO::ByteArray) &qt_block, block_size);
 

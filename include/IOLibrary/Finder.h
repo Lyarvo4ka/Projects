@@ -166,7 +166,7 @@ namespace IO
 				uint32_t bytes_read = 0;
 				const int pck_size = sizeof(pck_t);
 
-				Buffer buffer(file_size);
+				Buffer buffer((uint32_t)file_size);
 				bytes_read = file.ReadData(buffer.data, buffer.data_size);
 				if (bytes_read != file_size)
 					return std::to_string(counter);

@@ -11,7 +11,7 @@ using std::vector;
 ULONGLONG NumBytesForBlock( DWORD block_size );
 int chunksPrerBlock( ULONGLONG block_size );
 
-class IOLIBRARY_EXPORT ByteCount
+class ByteCount
 {
 public:
 	ByteCount(void);
@@ -23,7 +23,7 @@ private:
 };
 
 
-class IOLIBRARY_EXPORT XorAnalyzer
+class XorAnalyzer
 {
 private:
 	std::string dump_file_;

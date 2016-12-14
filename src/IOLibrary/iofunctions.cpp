@@ -544,7 +544,7 @@ bool IO::cmpSectorWithByte( const BYTE * data , BYTE byte_value)
 	return true;
 }
 
-bool IOLIBRARY_EXPORT IO::isBlockNot00andFF(const BYTE * data, DWORD size)
+bool IO::isBlockNot00andFF(const BYTE * data, DWORD size)
 {
 	for (DWORD nByte = 0; nByte < size; ++nByte)
 	{
@@ -809,14 +809,7 @@ bool IO::isFileHeader00(const std::string & file_name)
 }
 
 
-void to_big_endian( DWORD & val )
-{
-	val = ntohl( val );
-}
-void to_little_endian( DWORD & val )
-{
-	val = htonl( val );
-}
+
 const DWORD nameToValue( const char * name  )
 {
 	return * ( DWORD * ) name;

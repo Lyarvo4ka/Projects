@@ -13,7 +13,7 @@
 #include "IOLibrary\constants.h"
 
 #include "IOLibrary\Entropy.h"
-#include "IOLibrary\XorAnalyzer.h"
+
 
 BOOST_AUTO_TEST_CASE( TestIsLastBackspace )
 {
@@ -142,22 +142,6 @@ BOOST_AUTO_TEST_CASE(FileOffsetNameTest)
 	BOOST_CHECK_EQUAL(actual, expected);
 }
 
-BOOST_AUTO_TEST_CASE(getChunckBufferSizeTest)
-{
-	XorAnalyzer xorAnalyzer;
-	DWORD actual = xorAnalyzer.getChunckBufferSize(512, 0, 1024);
-	DWORD expected = 512;
-	BOOST_CHECK_EQUAL(actual, expected);
-
-	actual = xorAnalyzer.getChunckBufferSize(512, 1, 1024);
-	expected = 512;
-	BOOST_CHECK_EQUAL(actual, expected);
-
-	actual = xorAnalyzer.getChunckBufferSize(512, 2, 1025);
-	expected = 1;
-	BOOST_CHECK_EQUAL(actual, expected);
-
-}
 
 
 #include "IOLibrary/RemoveInserts.h"

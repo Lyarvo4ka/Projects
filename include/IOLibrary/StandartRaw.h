@@ -2,7 +2,7 @@
 
 
 #include "AbstractRaw.h"
-
+#include "Factories.h"
 namespace IO
 {
 	class StandartRaw
@@ -268,4 +268,14 @@ namespace IO
 		*/
 	};
 
+
+	class StandartRawFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new StandartRaw(device);
+		}
+	};
 };
