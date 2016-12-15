@@ -1,10 +1,8 @@
 #ifndef MTS_RAW_H
 #define MTS_RAW_H
 
-#include "IODevice.h"
 
-#include "constants.h"
-
+#include "AbstractRaw.h"
 
 
 namespace IO
@@ -21,59 +19,93 @@ namespace IO
 
 
 	class RawMTS
+		: public DefaultRaw
 	{
 		static const uint32_t FRAME_SIZE = 192;
 		static const uint32_t BLOCK_SIZE = 192 * 512;
-	private:
-		uint32_t block_size_;
-		uint32_t sector_size_;
-		IODevice* device_;
 	public:
-		RawMTS( IODevice * device)
-			: device_(device)
-			, block_size_ (BLOCK_SIZE)
-			, sector_size_(default_sector_size)
+		RawMTS( IODevicePtr device)
+			: DefaultRaw(device)
 		{}
 		~RawMTS()
 		{
-			if (device_)
+		}
+		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
+		{
+			auto write_file = std::make_shared<File>(target_name);
+			if (!write_file->Open(OpenMode::Create))
+				return write_file;
+
+			uint32_t bytes_read = 0;
+			Buffer buffer(block_size_);
+
+			uint64_t offset = header_offset;
+
+			bool bCountinue = true;
+			while (offset < device_->Size())
 			{
-				delete device_;
-				device_ = nullptr;
+				device_->setPosition(offset);
+				bytes_read = device_->ReadData(buffer.data, block_size_);
+				if (bytes_read == 0)
+					break;
+
+				bCountinue = true;
+				uint32_t iFrame = 0;
+				for (iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
+				{
+					if (buffer.data[iFrame + marker_0x47_offset] != marker_0x47)
+					{
+						wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
+						bCountinue = false;
+						break;
+					}
+				}
+				AppendFile(write_file, buffer.data, iFrame);
+
+				if (!bCountinue)
+				{
+					uint64_t new_offset = offset;
+					new_offset += alingToSector(iFrame, sector_size_);
+					return new_offset;
+				}
+
+
+				offset += bytes_read;
 			}
+
+			return header_offset;
+
+
+			return nullptr;
 		}
-		void setBlockSize(const uint32_t block_size)
+		bool Specify(const uint64_t header_offset) override
 		{
-			this->block_size_ = block_size;
-		}
-		void setSectorSize(const uint32_t sector_size)
-		{
-			this->sector_size_ = sector_size;
+			return false;
 		}
 		void execute(const path_string & target_folder)
 		{
-			if (!device_->Open(OpenMode::OpenRead))
-			{
-				wprintf(L"Error to open.\n");	// ????????
-				return;
-			}
+			//if (!device_->Open(OpenMode::OpenRead))
+			//{
+			//	wprintf(L"Error to open.\n");	// ????????
+			//	return;
+			//}
 
-			uint64_t offset = (uint64_t)0x0;
-			uint64_t header_offset = 0;
-			uint32_t counter = 0;
-			while (true)
-			{
-				if (!findMTSOffset(offset, header_offset))
-				{
-					wprintf(L"Not Found Header\n");
-					break;
-				}
-				
-				auto target_file = target_folder + std::to_wstring(counter++) + L".mts";
-				offset = SaveToFile(header_offset, target_file);
-				offset += sector_size_;
+			//uint64_t offset = (uint64_t)0x0;
+			//uint64_t header_offset = 0;
+			//uint32_t counter = 0;
+			//while (true)
+			//{
+			//	if (!findMTSOffset(offset, header_offset))
+			//	{
+			//		wprintf(L"Not Found Header\n");
+			//		break;
+			//	}
+			//	
+			//	auto target_file = target_folder + std::to_wstring(counter++) + L".mts";
+			//	offset = SaveToFile(header_offset, target_file);
+			//	offset += sector_size_;
 
-			}
+			//}
 
 
 		}
@@ -119,49 +151,7 @@ namespace IO
 		}
 		uint64_t SaveToFile(const uint64_t header_offset, const path_string & target_name)
 		{
-			File write_file(target_name);
-			if (!write_file.Open(OpenMode::Create))
-				return header_offset;
-
-			uint32_t bytes_read = 0;
-			Buffer buffer(block_size_);
-
-			uint64_t offset = header_offset;
-
-			bool bCountinue = true;
-			while (offset < device_->Size())
-			{
-				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer.data, block_size_);
-				if ( bytes_read == 0 )
-					break;
-
-				bCountinue = true;
-				uint32_t iFrame = 0;
-				for ( iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
-				{
-					if (buffer.data[iFrame + marker_0x47_offset] != marker_0x47)
-					{
-						wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
-						bCountinue = false;
-						break;
-					}
-				}
-				AppendFile(write_file, buffer.data, iFrame);
-
-				if ( !bCountinue )
-				{
-					uint64_t new_offset = offset;
-					new_offset += alingToSector(iFrame, sector_size_);
-					return new_offset;
-				}
-
-
-				offset += bytes_read;
-			}
-
-			return header_offset;
-
+			return 0;
 		}
 		bool AppendFile(File & file_to_write, uint8_t * data, uint32_t data_size)
 		{

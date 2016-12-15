@@ -2,17 +2,26 @@
 
 #include "IOLibrary/Factories.h"
 #include "IOLibrary/StandartRaw.h"
+#include "IOLibrary/QuickTime.h"
 
 BOOST_AUTO_TEST_CASE(TestAddNewFactory)
 {
 
 	IO::RawFactoryManager factoryManager;
-	std::string test1 = "test1";
-	auto filePtr = IO::makeFilePtr(L"Empty file");
-	factoryManager.Register(test1, new IO::StandartRawFactory());
-	auto found_factory = factoryManager.Lookup(test1);
-	//std::string standartRawName = "StandartRawFactory";
-	//auto typeIdName = typeid(found_factory).name();
-	//bool bResult = standartRawName.compare(typeIdName) == 0 ;
-	BOOST_CHECK_EQUAL(bResult, true);
+	std::string standart_name = "standartRaw";
+	std::string qt_name = "QtRaw";
+
+	factoryManager.Register(standart_name, std::make_unique<IO::StandartRawFactory>());
+	factoryManager.Register(qt_name, std::make_unique<IO::QuickTimeRawFactory>());
+
+	auto found_factory = factoryManager.Lookup(standart_name);
+	BOOST_CHECK(found_factory != nullptr);
+
+	found_factory = factoryManager.Lookup(qt_name);
+	BOOST_CHECK(found_factory != nullptr);
+
+	std::string no_name = "No name";
+	found_factory = factoryManager.Lookup(no_name);
+	BOOST_CHECK(found_factory == nullptr);
+
 }

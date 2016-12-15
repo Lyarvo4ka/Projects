@@ -391,7 +391,7 @@ namespace IO
 
 	class RawAlgorithm
 	{
-		virtual uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) = 0;
+		virtual FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) = 0;
 		virtual bool Specify(const uint64_t header_offset) = 0;
 	};
 

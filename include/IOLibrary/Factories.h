@@ -21,12 +21,11 @@ namespace IO
 	class /*IOLIBRARY_EXPORT*/ RawFactoryManager
 	{
 		using FactoryMap = std::map<std::string, RawFactoryPtr>;
-		//using FactoryPair = std::pair<std::string, RawFactoryPtr>;
 	private:
 		FactoryMap factories_;
 	public:
 
-		void Register(const std::string & algorithmName, RawFactory * rawFactory);
+		void Register(const std::string & algorithmName, RawFactoryPtr  rawFactory);
 		RawFactory * Lookup(const std::string & algorithmName);
 	};
 };

@@ -5,11 +5,11 @@
 
 namespace IO
 {
-	void RawFactoryManager::Register(const std::string & algorithmName, RawFactory * rawFactory)
+	void RawFactoryManager::Register(const std::string & algorithmName, RawFactoryPtr rawFactory)
 	{
 		if (factories_.find(algorithmName) == factories_.end())
 		{
-			factories_.emplace(algorithmName, rawFactory);
+			factories_.emplace(algorithmName, std::move(rawFactory));
 		}
 	}
 
