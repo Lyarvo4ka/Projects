@@ -435,6 +435,52 @@ namespace IO
 		{
 			return device_->Size();
 		}
+		uint64_t appendToFile(File & write_file, const uint64_t source_offset, const uint64_t write_size)
+		{
+			if (source_offset >= getSize())
+				return 0;
+
+			uint64_t to_write = write_size;
+			if (source_offset + write_size > getSize())	// ?????
+				to_write = getSize() - write_size;
+
+
+			auto target_offset = write_file.Size();
+			uint32_t bytes_read = 0;
+			uint32_t bytes_written = 0;
+			uint64_t cur_pos = 0;
+			uint64_t read_pos = source_offset;
+			uint32_t bytes_to_write = 0;
+
+			auto buffer = makeDataArray(getBlockSize());
+			while (cur_pos < to_write)
+			{
+				bytes_to_write = calcBlockSize(cur_pos, write_size, getBlockSize());
+
+				setPosition(read_pos);
+				bytes_read = ReadData(buffer->data(), bytes_to_write);
+				if (bytes_read == 0)
+				{
+					printf("Error read drive\r\n");
+					return cur_pos;
+				}
+				read_pos += bytes_read;
+
+				write_file.setPosition(target_offset);
+				bytes_written = write_file.WriteData(buffer->data(), bytes_read);
+				if (bytes_written == 0)
+				{
+					printf("Error write to file\r\n");
+					return cur_pos;
+				}
+
+				target_offset += bytes_written;
+				cur_pos += bytes_written;
+			}
+
+			return cur_pos;
+		}
+
 
 	};
 

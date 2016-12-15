@@ -144,20 +144,20 @@ namespace IO
 			return keyword_offset;
 		}
 
-		uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
+		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
-			File write_file(target_name);
-			if (!write_file.Open(OpenMode::Create))
-				return header_offset;
+			FilePtr write_file = std::make_shared<File>(target_name);
+			if (!write_file->Open(OpenMode::Create))
+				return write_file;
 
 			ListQtBlock keywords;
 			uint64_t write_size = readQtAtoms(header_offset, keywords);
 			if (write_size == 0)
 				return 0;
 
-			appendToFile(write_file, header_offset, write_size);
+			appendToFile(*write_file, header_offset, write_size);
 
-			write_file.Close();
+			write_file->Close();
 
 			if (!isPresentMainKeywords(keywords))
 			{
@@ -174,7 +174,7 @@ namespace IO
 
 			}
 
-			return write_size;
+			return write_file;
 
 		}
 		//bool isListQtBlock()

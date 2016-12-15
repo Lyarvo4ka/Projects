@@ -64,7 +64,7 @@ public:
 	{
 		return createMockFile(target_size);
 	}
-	uint64_t SaveRawFile(const IO::FileStruct & file_struct, const uint64_t header_offset, const IO::path_string & target_name) override
+	IO::FilePtr SaveRawFile(const IO::FileStruct & file_struct, const uint64_t header_offset, const IO::path_string & target_name) override
 	{
 		return IO::StandartRaw::SaveRawFile(file_struct, header_offset, target_name);
 	}
@@ -124,20 +124,20 @@ BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 
 	const uint32_t start_offset = 3;
 
-	auto bytes_saved = raw_mock.SaveRawFile(*file_struct, start_offset, L"Test file name");
+	auto file = raw_mock.SaveRawFile(*file_struct, start_offset, L"Test file name");
 	auto expected_size = footer_offset - start_offset + file_struct->getFooter()->size() + file_struct->getFooterTailEndSize();
-	BOOST_CHECK_EQUAL(bytes_saved, expected_size);
+	BOOST_CHECK_EQUAL(file->Size(), expected_size);
 
-	bytes_saved = raw_mock.SaveRawFile(*file_struct, src_size + 1, L"Test file name");
-	BOOST_CHECK_EQUAL(bytes_saved, 0);
+	file = raw_mock.SaveRawFile(*file_struct, src_size + 1, L"Test file name");
+	BOOST_CHECK_EQUAL(file->Size(), 0);
 
 	memset(src_data.data(), 0xEB, src_data.size());
 	src_file->setPosition(0);
 	src_file->WriteData(src_data.data(), src_data.size());
 
 	// no found footer
-	bytes_saved = raw_mock.SaveRawFile(*file_struct, start_offset, L"Test file name");
-	BOOST_CHECK_EQUAL(bytes_saved, src_size - start_offset);	
+	file = raw_mock.SaveRawFile(*file_struct, start_offset, L"Test file name");
+	BOOST_CHECK_EQUAL(file->Size(), src_size - start_offset);
 
 }
 

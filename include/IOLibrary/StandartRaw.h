@@ -29,15 +29,21 @@ namespace IO
 				wprintf(L"Error create file\n");
 			return file;
 		}
-		uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
+		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			auto target_file = createFile(target_name);
 			if (!target_file->isOpen())
-				return 0;
+			{
+				wprintf(L"File wasn't opened\n");
+				return target_file;
+			}
 			
 			auto footer_data = file_struct.getFooter();
 			if (!footer_data)
-				return appendToFile(*target_file, header_offset, file_struct.getMaxFileSize());
+			{
+				appendToFile(*target_file, header_offset, file_struct.getMaxFileSize());
+				return target_file;
+			}
 
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
@@ -59,6 +65,7 @@ namespace IO
 				bytes_read = ReadData(buffer->data(), sizeToRead);
 				if (bytes_read == 0 )
 				{
+					//	????????????
 					wprintf(L"Error read block\n");
 					break;
 				}
@@ -84,7 +91,7 @@ namespace IO
 				offset += bytes_written;
 				written_size += bytes_written;
 			}
-			return written_size;
+			return target_file;
 
 		}
 		bool Specify(const uint64_t header_offset) override
@@ -120,51 +127,6 @@ namespace IO
 					}
 			}
 			return false;
-		}
-		uint64_t appendToFile(File & write_file, const uint64_t source_offset, const uint64_t write_size)
-		{
-			if (source_offset >= getSize())
-				return 0;
-
-			uint64_t to_write = write_size;
-			if (source_offset + write_size > getSize())	// ?????
-				to_write = getSize() - write_size;
-
-
-			auto target_offset = write_file.Size();
-			uint32_t bytes_read = 0;
-			uint32_t bytes_written = 0;
-			uint64_t cur_pos = 0;
-			uint64_t read_pos = source_offset;
-			uint32_t bytes_to_write = 0;
-
-			auto buffer = makeDataArray(getBlockSize());
-			while (cur_pos < to_write)
-			{
-				bytes_to_write = calcBlockSize(cur_pos, write_size, getBlockSize());
-
-				setPosition(read_pos);
-				bytes_read = ReadData(buffer->data(), bytes_to_write);
-				if (bytes_read == 0)
-				{
-					printf("Error read drive\r\n");
-					return cur_pos;
-				}
-				read_pos += bytes_read;
-
-				write_file.setPosition(target_offset);
-				bytes_written = write_file.WriteData(buffer->data(), bytes_read);
-				if (bytes_written == 0)
-				{
-					printf("Error write to file\r\n");
-					return cur_pos;
-				}
-
-				target_offset += bytes_written;
-				cur_pos += bytes_written;
-			}
-
-			return cur_pos;
 		}
 		uint32_t appendBetween(File & write_file, const DataArray & data1, const DataArray & data2, const uint32_t data2_size)
 		{

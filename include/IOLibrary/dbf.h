@@ -44,16 +44,16 @@ namespace IO
 				return true;
 			return false;
 		}
-		uint64_t SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
+		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
 		{
 			dbf_header header = { 0 };
 			setPosition(header_offset);
 			auto bytes_read = ReadData((ByteArray)&header, dbf_header_size);
 			if (bytes_read == 0)
-				return 0;
+				return nullptr;
 
 			if (!isValidDate(header))
-				return 0;
+				return nullptr;
 			
 			static uint32_t counter = 0;
 			++counter;
@@ -68,17 +68,17 @@ namespace IO
 
 			uint32_t write_size = header.header_size + header.record_size*header.numRecords + 1;
 			if (write_size <= 1)
-				return 0;
+				return nullptr;
 
-			File file(filename);
-			if (!file.Open(OpenMode::Create))
+			FilePtr file = std::make_shared<File>(filename);
+			if (!file->Open(OpenMode::Create))
 			{
 				wprintf(L"Error create file\n");
-				return 0;
+				return nullptr;
 			}
 			 
-			
-			return appendToFile(file, header_offset, write_size);
+			appendToFile(*file, header_offset, write_size);
+			return file;
 		}
 
 	};
