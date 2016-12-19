@@ -81,6 +81,7 @@ namespace IO
 				if (bytes_read < getBlockSize() )
 					bytes_to_write = bytes_read;
 
+				target_file->setPosition(written_size);
 				bytes_written = target_file->WriteData(buffer->data(), bytes_to_write);
 				if  (bytes_written == 0 )
 				{

@@ -46,7 +46,7 @@ class StandartRawMock
 	: public IO::StandartRaw
 {
 public:
-	uint32_t target_size = 4096;
+	uint32_t target_size = 0;
 	std::shared_ptr<MocFile> target_file_;
 public:
 	StandartRawMock(IO::IODevicePtr device)
