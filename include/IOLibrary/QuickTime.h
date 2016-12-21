@@ -144,37 +144,39 @@ namespace IO
 			return keyword_offset;
 		}
 
-		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
-			FilePtr write_file = std::make_shared<File>(target_name);
-			if (!write_file->Open(OpenMode::Create))
-				return write_file;
+			if (!target_file.isOpen())
+			{
+				wprintf(L"File wasn't opened.\n");
+				return 0;
+			}
 
 			ListQtBlock keywords;
-			uint64_t write_size = readQtAtoms(header_offset, keywords);
+			uint64_t write_size = readQtAtoms(start_offset, keywords);
 			if (write_size == 0)
 				return 0;
 
-			appendToFile(*write_file, header_offset, write_size);
+			return appendToFile(target_file, start_offset, write_size);
 
-			write_file->Close();
+			//write_file->Close();
 
-			if (!isPresentMainKeywords(keywords))
-			{
-				// rename to bad_file
-				auto new_fileName = target_name + L".bad_file";
-				try
-				{
-					boost::filesystem::rename(target_name, new_fileName);
-				}
-				catch (const boost::filesystem::filesystem_error& e)
-				{
-					std::cout << "Error: " << e.what() << std::endl;
-				}
+			//if (!isPresentMainKeywords(keywords))
+			//{
+			//	// rename to bad_file
+			//	auto new_fileName = target_name + L".bad_file";
+			//	try
+			//	{
+			//		boost::filesystem::rename(target_name, new_fileName);
+			//	}
+			//	catch (const boost::filesystem::filesystem_error& e)
+			//	{
+			//		std::cout << "Error: " << e.what() << std::endl;
+			//	}
 
-			}
+			//}
 
-			return write_file;
+			//return 0;
 
 		}
 		//bool isListQtBlock()

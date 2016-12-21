@@ -237,60 +237,60 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 	return crc;
 }
 
-#include "../libTinyXML2/tinyxml2.h"
+//#include "../libTinyXML2/tinyxml2.h"
 
-
-void show_elements(tinyxml2::XMLNode * xml_node)
-{
-	if ( tinyxml2::XMLNode * pNode = xml_node->FirstChild())
-	{
-		do {
-			if (auto xml_element = pNode->ToElement())
-			if ( auto value_element = pNode->FirstChild())
-			{
-				printf("\t\t%s - %s\r\n", pNode->ToElement()->Value(), value_element->Value());
-			}
-			pNode = pNode->NextSibling();
-		} while (pNode);
-	}
-}
+//
+//void show_elements(tinyxml2::XMLNode * xml_node)
+//{
+//	if ( tinyxml2::XMLNode * pNode = xml_node->FirstChild())
+//	{
+//		do {
+//			if (auto xml_element = pNode->ToElement())
+//			if ( auto value_element = pNode->FirstChild())
+//			{
+//				printf("\t\t%s - %s\r\n", pNode->ToElement()->Value(), value_element->Value());
+//			}
+//			pNode = pNode->NextSibling();
+//		} while (pNode);
+//	}
+//}
 
 
 #include "IOLibrary/MTS_raw.h"
 
 void run_RawMTS(int argc, TCHAR **argv)
 {
-	if (argc == 4)
-	{
-		const int opt = 1;
-		const int source = 2;
-		const int target = 3;
+	//if (argc == 4)
+	//{
+	//	const int opt = 1;
+	//	const int source = 2;
+	//	const int target = 3;
 
-		std::wstring option = argv[opt];
-		IO::RawMTS *pMTS_raw = nullptr;
+	//	std::wstring option = argv[opt];
+	//	IO::RawMTS *pMTS_raw = nullptr;
 
-		if (option.compare(L"-d") == 0)
-		{
-			auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+	//	if (option.compare(L"-d") == 0)
+	//	{
+	//		auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
 
-			auto drive_list = IO::ReadPhysicalDrives();
-			auto physical_drive = drive_list.find_by_number(drive_number);
-			pMTS_raw = new IO::RawMTS(new IO::DiskDevice(physical_drive));
-			//pMTS_raw->setBlockSize(physical_drive->getTransferLength());
-			pMTS_raw->setSectorSize(physical_drive->getBytesPerSector());
-		}
-		else
-			if (option.compare(L"-f") == 0)
-			{
-				auto file_name = argv[source];
-				pMTS_raw = new IO::RawMTS(new IO::File(file_name));
-			}
+	//		auto drive_list = IO::ReadPhysicalDrives();
+	//		auto physical_drive = drive_list.find_by_number(drive_number);
+	//		pMTS_raw = new IO::RawMTS(new IO::DiskDevice(physical_drive));
+	//		//pMTS_raw->setBlockSize(physical_drive->getTransferLength());
+	//		pMTS_raw->setSectorSize(physical_drive->getBytesPerSector());
+	//	}
+	//	else
+	//		if (option.compare(L"-f") == 0)
+	//		{
+	//			auto file_name = argv[source];
+	//			pMTS_raw = new IO::RawMTS(new IO::File(file_name));
+	//		}
 
-		std::wstring target_folder = argv[target];
-		pMTS_raw->execute(target_folder);
-		delete pMTS_raw;
+	//	std::wstring target_folder = argv[target];
+	//	pMTS_raw->execute(target_folder);
+	//	delete pMTS_raw;
 
-	}
+	//}
 }
 
 //void run_QuickTime(int argc, TCHAR **argv)
@@ -362,36 +362,58 @@ raw.appendToFile(target_file, header_pos, src_file->Size() - header_pos);
 */
 
 
-#include "IOLibrary/dbf.h"
+#include "IOLibrary/StandartRaw.h"
+#include "rapidjson/document.h"
 
 int _tmain(int argc, TCHAR **argv)
 {
-	////////////////////////////MAIN FUNCTION///////////////////////////////
-	IO::path_string target_folder(L"e:\\dbf\\");
-	auto list_drives = IO::ReadPhysicalDrives();
-	auto physical_drive = list_drives.find_by_number(2);
-	if (!physical_drive)
-		return -1;
-
-	auto disk_2 = std::make_shared<IO::DiskDevice>(physical_drive);
-
-	IO::SignatureFinder signFinder(disk_2);
-	//0xDE263D9000 0xDD4BBA9000
-	uint64_t offset = 0;
-	uint64_t header_pos = 0;
-	while (true)
+	auto json_filename = L"c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.json";
+	IO::File json_file(json_filename);
+	if (!json_file.Open(IO::OpenMode::OpenRead))
 	{
-
-		if (auto header = signFinder.findHeader(offset, header_pos))
-		{
-			IO::DBFRaw dbf_raw(disk_2);
-			dbf_raw.SaveRawFile(header, header_pos, target_folder);
-		}
-		else
-			break;
-		offset = header_pos;
-		offset += default_sector_size;
+		wprintf(L"Error open file\n");
+		return -1;
 	}
+	uint32_t file_size = (uint32_t)json_file.Size();
+	auto data = IO::makeDataArray(file_size);
+	json_file.ReadData(data->data(), data->size());
+
+	//std::string str(data->data());
+	rapidjson::Document doc;
+	doc.Parse((const char *)data->data());
+	auto count = doc.MemberCount();
+
+	int a = 0;
+	a = 1;
+	//rapidjson:: val;
+	//Document document;
+	//IO::HeaderBase headerBase;
+	////////////////////////////MAIN FUNCTION///////////////////////////////
+	//IO::path_string target_folder(L"e:\\dbf\\");
+	//auto list_drives = IO::ReadPhysicalDrives();
+	//auto physical_drive = list_drives.find_by_number(2);
+	//if (!physical_drive)
+	//	return -1;
+
+	//auto disk_2 = std::make_shared<IO::DiskDevice>(physical_drive);
+
+	//IO::SignatureFinder signFinder(disk_2);
+	////0xDE263D9000 0xDD4BBA9000
+	//uint64_t offset = 0;
+	//uint64_t header_pos = 0;
+	//while (true)
+	//{
+
+	//	if (auto header = signFinder.findHeader(offset, header_pos))
+	//	{
+	//		IO::DBFRaw dbf_raw(disk_2);
+	//		dbf_raw.SaveRawFile(header, header_pos, target_folder);
+	//	}
+	//	else
+	//		break;
+	//	offset = header_pos;
+	//	offset += default_sector_size;
+	//}
 	//run_RawMTS(argc, argv);
 
 

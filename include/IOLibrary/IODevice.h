@@ -167,6 +167,11 @@ namespace IO
 				::SetEndOfFile(hFile_);
 			}
 		}
+		void setFileName(const path_string new_filename)
+		{
+			Close();
+			file_name_ = new_filename;
+		}
 		path_string getFileName() const
 		{
 			return file_name_;

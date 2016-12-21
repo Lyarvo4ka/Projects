@@ -106,9 +106,6 @@
     <ProjectReference Include="..\..\src\libstructstorage\libstructstorage.vcxproj">
       <Project>{9b90f2fc-5f26-4390-8a8b-81f6fe875151}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\libTinyXML2\libTinyXML2.vcxproj">
-      <Project>{b7a2ec08-f29b-4922-bcae-011aa5054218}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\ZipLib\extlibs\bzip2\bzip2.vcxproj">
       <Project>{dbbf348d-c221-4f2e-8a0d-24efa0d98e71}</Project>
     </ProjectReference>

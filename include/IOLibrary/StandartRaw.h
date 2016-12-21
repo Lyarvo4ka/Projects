@@ -3,16 +3,44 @@
 
 #include "AbstractRaw.h"
 #include "Factories.h"
+
 namespace IO
 {
 	class StandartRaw
 		: public DefaultRaw
 	{
+	private:
+		DataArray::Ptr footer_;
+		uint32_t tailSize_ = 0;
+		uint64_t maxFileSize_ = 0;
 	public:
 		StandartRaw(IODevicePtr device)
 			:DefaultRaw(device)
 		{
 
+		}
+
+		void setFooter(DataArray * footer_data , const uint32_t tailSize)
+		{
+			if (footer_data)
+			{
+				if (footer_data->size() > 0)
+				{
+					footer_ = makeDataArray(footer_data->size());
+					memcpy(footer_->data(), footer_data->data(), footer_data->size());
+				}
+			}
+			setTailSize(tailSize);
+		}
+
+		void setTailSize(const uint32_t tailSize)
+		{
+			tailSize_ = tailSize;
+		}
+
+		void setMaxFileSize(const uint64_t maxFileSize)
+		{
+			maxFileSize_ = maxFileSize;
 		}
 
 		uint32_t calcToSectorSize(const uint32_t add_size)
@@ -22,33 +50,33 @@ namespace IO
 			return size;
 		}
 
-		virtual FilePtr createFile(const path_string & target_name)
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset)   override
 		{
-			auto file = makeFilePtr(target_name);
-			if (!file->Open(OpenMode::Create))
-				wprintf(L"Error create file\n");
-			return file;
-		}
-		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
-		{
-			auto target_file = createFile(target_name);
-			if (!target_file->isOpen())
+			if (!target_file.isOpen())
 			{
-				wprintf(L"File wasn't opened\n");
-				return target_file;
+				wprintf(L"File wasn't opened.\n Try to create file.");
+				if ( !target_file.Open(OpenMode::Create) )
+				{
+					wprintf(L"Error to create file.");
+					return 0;
+				}
 			}
+
+			if (maxFileSize_ == 0)
+			{
+				wprintf(L"Error maximum target file size is 0.\n");
+				return 0;
+			}
+
 			
-			auto footer_data = file_struct.getFooter();
+			auto footer_data = footer_.get();;
 			if (!footer_data)
-			{
-				appendToFile(*target_file, header_offset, file_struct.getMaxFileSize());
-				return target_file;
-			}
+				return appendToFile(target_file, start_offset, maxFileSize_);;
 
 			uint32_t bytes_read = 0;
 			uint32_t bytes_written = 0;
 
-			uint64_t offset = header_offset;
+			uint64_t offset = start_offset;
 
 			uint32_t footer_pos = 0;
 			uint32_t bytes_to_write = getBlockSize();
@@ -72,8 +100,8 @@ namespace IO
 
 				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
 				{
-					uint32_t sizeToWrite = footer_pos + footer_data->size() + file_struct.getFooterTailEndSize();
-					bytes_written = target_file->WriteData(buffer->data(), sizeToWrite);
+					uint32_t sizeToWrite = footer_pos + footer_data->size() + tailSize_;
+					bytes_written = target_file.WriteData(buffer->data(), sizeToWrite);
 					written_size += bytes_written;
 					break;
 				}
@@ -81,8 +109,8 @@ namespace IO
 				if (bytes_read < getBlockSize() )
 					bytes_to_write = bytes_read;
 
-				target_file->setPosition(written_size);
-				bytes_written = target_file->WriteData(buffer->data(), bytes_to_write);
+				target_file.setPosition(written_size);
+				bytes_written = target_file.WriteData(buffer->data(), bytes_to_write);
 				if  (bytes_written == 0 )
 				{
 					wprintf(L"Error write block\n");
@@ -92,7 +120,7 @@ namespace IO
 				offset += bytes_written;
 				written_size += bytes_written;
 			}
-			return target_file;
+			return written_size;
 
 		}
 		bool Specify(const uint64_t header_offset) override

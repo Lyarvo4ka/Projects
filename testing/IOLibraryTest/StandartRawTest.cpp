@@ -42,33 +42,33 @@ BOOST_AUTO_TEST_CASE(Test_calcToSectorSize)
 }
 
 #include "MocFile.h"
-class StandartRawMock
-	: public IO::StandartRaw
-{
-public:
-	uint32_t target_size = 0;
-	std::shared_ptr<MocFile> target_file_;
-public:
-	StandartRawMock(IO::IODevicePtr device)
-		: StandartRaw(device)
-	{
-		setBlockSize(1024);
-		setSectorSize(512);
-	}
-	IO::FilePtr createMockFile(const uint32_t size)
-	{
-		target_file_ = std::make_shared<MocFile>(size);
-		return target_file_;
-	}
-	IO::FilePtr createFile(const IO::path_string & target_name) override
-	{
-		return createMockFile(target_size);
-	}
-	IO::FilePtr SaveRawFile(const IO::FileStruct & file_struct, const uint64_t header_offset, const IO::path_string & target_name) override
-	{
-		return IO::StandartRaw::SaveRawFile(file_struct, header_offset, target_name);
-	}
-};
+//class StandartRawMock
+//	: public IO::StandartRaw
+//{
+//public:
+//	uint32_t target_size = 0;
+//	std::shared_ptr<MocFile> target_file_;
+//public:
+//	StandartRawMock(IO::IODevicePtr device)
+//		: StandartRaw(device)
+//	{
+//		setBlockSize(1024);
+//		setSectorSize(512);
+//	}
+//	IO::FilePtr createMockFile(const uint32_t size)
+//	{
+//		target_file_ = std::make_shared<MocFile>(size);
+//		return target_file_;
+//	}
+//	IO::FilePtr createFile(const IO::path_string & target_name) override
+//	{
+//		return createMockFile(target_size);
+//	}
+//	IO::FilePtr SaveRawFile(const IO::FileStruct & file_struct, const uint64_t header_offset, const IO::path_string & target_name) override
+//	{
+//		return IO::StandartRaw::SaveRawFile(file_struct, header_offset, target_name);
+//	}
+//};
 
 BOOST_AUTO_TEST_CASE(test_appendToFile)
 {
@@ -81,10 +81,10 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 	//memset(src_data.data(), 0xAA, src_data.size());
 	src_file->setPosition(10);
 	src_file->WriteData(src_data.data(), src_data.size());
-	StandartRawMock raw_mock(src_file);
-	raw_mock.setBlockSize(5);
+	IO::StandartRaw standart_raw(src_file);
+	standart_raw.setBlockSize(5);
 	auto dst_file = std::make_shared<MocFile>(5);
-	auto actual = raw_mock.appendToFile(*dst_file, 10, 10);
+	auto actual = standart_raw.appendToFile(*dst_file, 10, 10);
 	BOOST_CHECK_EQUAL(actual, 10);
 
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(test_appendToFile)
 	auto res = memcmp(read_data.data(), src_data.data(), read_data.size());
 	BOOST_CHECK_EQUAL(res, 0);
 
-	actual = raw_mock.appendToFile(*dst_file, 1000, 10);
+	actual = standart_raw.appendToFile(*dst_file, 1000, 10);
 	BOOST_CHECK_EQUAL(actual, 0);
 
 
@@ -117,27 +117,34 @@ BOOST_AUTO_TEST_CASE(test_SaveRawFile)
 	auto file_struct = IO::makeFileStruct("test Footer");
 	file_struct->addFooter(test_footer, 3);
 	file_struct->setFooterTailEndSize(3);
+	file_struct->setMaxFileSize(src_size);
 
-	StandartRawMock raw_mock(src_file);
-	raw_mock.setBlockSize(10);
-	raw_mock.setSectorSize(5);
+
+	MocFile dst_file1(0);
+	IO::StandartRaw standart_raw(src_file);
+	standart_raw.setBlockSize(10);
+	standart_raw.setSectorSize(5);
+	standart_raw.setFooter(file_struct->getFooter(), file_struct->getFooterTailEndSize());
+	standart_raw.setMaxFileSize(file_struct->getMaxFileSize());
 
 	const uint32_t start_offset = 3;
 
-	auto file = raw_mock.SaveRawFile(*file_struct, start_offset, L"Test file name");
+	auto saved_size = standart_raw.SaveRawFile(dst_file1, start_offset);
 	auto expected_size = footer_offset - start_offset + file_struct->getFooter()->size() + file_struct->getFooterTailEndSize();
-	BOOST_CHECK_EQUAL(file->Size(), expected_size);
+	BOOST_CHECK_EQUAL(saved_size, expected_size);
 
-	file = raw_mock.SaveRawFile(*file_struct, src_size + 1, L"Test file name");
-	BOOST_CHECK_EQUAL(file->Size(), 0);
+	MocFile dst_file2(0);
+	saved_size = standart_raw.SaveRawFile(dst_file2, src_size + 1);
+	BOOST_CHECK_EQUAL(saved_size, 0);
 
 	memset(src_data.data(), 0xEB, src_data.size());
 	src_file->setPosition(0);
 	src_file->WriteData(src_data.data(), src_data.size());
 
 	// no found footer
-	file = raw_mock.SaveRawFile(*file_struct, start_offset, L"Test file name");
-	BOOST_CHECK_EQUAL(file->Size(), src_size - start_offset);
+	MocFile dst_file3(0);
+	saved_size = standart_raw.SaveRawFile(dst_file3, start_offset);
+	BOOST_CHECK_EQUAL(saved_size, src_size - start_offset);
 
 }
 

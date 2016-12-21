@@ -167,4 +167,7 @@
   <ItemGroup>
     <Xml Include="..\..\include\IOLibrary\signatures.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\include\IOLibrary\signatures.json" />
+  </ItemGroup>
 </Project>

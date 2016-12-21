@@ -30,53 +30,53 @@ namespace IO
 		~RawMTS()
 		{
 		}
-		FilePtr SaveRawFile(const FileStruct & file_struct, const uint64_t header_offset, const path_string & target_name) override
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
-			auto write_file = std::make_shared<File>(target_name);
-			if (!write_file->Open(OpenMode::Create))
-				return write_file;
+			//auto write_file = std::make_shared<File>(target_name);
+			//if (!write_file->Open(OpenMode::Create))
+			//	return write_file;
 
-			uint32_t bytes_read = 0;
-			Buffer buffer(block_size_);
+			//uint32_t bytes_read = 0;
+			//Buffer buffer(block_size_);
 
-			uint64_t offset = header_offset;
+			//uint64_t offset = header_offset;
 
-			bool bCountinue = true;
-			while (offset < device_->Size())
-			{
-				device_->setPosition(offset);
-				bytes_read = device_->ReadData(buffer.data, block_size_);
-				if (bytes_read == 0)
-					break;
+			//bool bCountinue = true;
+			//while (offset < device_->Size())
+			//{
+			//	device_->setPosition(offset);
+			//	bytes_read = device_->ReadData(buffer.data, block_size_);
+			//	if (bytes_read == 0)
+			//		break;
 
-				bCountinue = true;
-				uint32_t iFrame = 0;
-				for (iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
-				{
-					if (buffer.data[iFrame + marker_0x47_offset] != marker_0x47)
-					{
-						wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
-						bCountinue = false;
-						break;
-					}
-				}
-				AppendFile(write_file, buffer.data, iFrame);
+			//	bCountinue = true;
+			//	uint32_t iFrame = 0;
+			//	for (iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
+			//	{
+			//		if (buffer.data[iFrame + marker_0x47_offset] != marker_0x47)
+			//		{
+			//			wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
+			//			bCountinue = false;
+			//			break;
+			//		}
+			//	}
+			//	AppendFile(write_file, buffer.data, iFrame);
 
-				if (!bCountinue)
-				{
-					uint64_t new_offset = offset;
-					new_offset += alingToSector(iFrame, sector_size_);
-					return new_offset;
-				}
-
-
-				offset += bytes_read;
-			}
-
-			return header_offset;
+			//	if (!bCountinue)
+			//	{
+			//		uint64_t new_offset = offset;
+			//		new_offset += alingToSector(iFrame, sector_size_);
+			//		return new_offset;
+			//	}
 
 
-			return nullptr;
+			//	offset += bytes_read;
+			//}
+
+			return start_offset;
+
+
+
 		}
 		bool Specify(const uint64_t header_offset) override
 		{
@@ -119,32 +119,32 @@ namespace IO
 		}
 		bool findMTSOffset(uint64_t offset, uint64_t & header_offset)
 		{
-			uint32_t bytes_read = 0;
-			Buffer buffer(block_size_);
+			//uint32_t bytes_read = 0;
+			//Buffer buffer(getBlockSize());
 
-			while (true)
-			{
-				device_->setPosition(offset);
-				ZeroMemory(buffer.data, buffer.data_size);
-				bytes_read = device_->ReadData(buffer.data, block_size_);
-				if (bytes_read == 0)
-				{
-					printf("Error read drive\r\n");
-					break;
-				}
+			//while (true)
+			//{
+			//	device_->setPosition(offset);
+			//	ZeroMemory(buffer.data, buffer.data_size);
+			//	bytes_read = device_->ReadData(buffer.data, getBlockSize());
+			//	if (bytes_read == 0)
+			//	{
+			//		printf("Error read drive\r\n");
+			//		break;
+			//	}
 
-				for (DWORD iSector = 0; iSector < bytes_read; iSector += sector_size_)
-				{
-					uint8_t * pSector = (uint8_t *)&buffer.data[iSector];
-					if (isMTSHeader(pSector))
-					{
-						header_offset = offset + iSector;
-						wprintf(L"Found MTS header %llu (sectors)\n", header_offset / sector_size_);
-						return true;
-					}
-				}
-				offset += bytes_read;
-			}
+			//	for (DWORD iSector = 0; iSector < bytes_read; iSector += sector_size_)
+			//	{
+			//		uint8_t * pSector = (uint8_t *)&buffer.data[iSector];
+			//		if (isMTSHeader(pSector))
+			//		{
+			//			header_offset = offset + iSector;
+			//			wprintf(L"Found MTS header %llu (sectors)\n", header_offset / sector_size_);
+			//			return true;
+			//		}
+			//	}
+			//	offset += bytes_read;
+			//}
 			return false;
 
 
