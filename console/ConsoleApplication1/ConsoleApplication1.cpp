@@ -367,24 +367,104 @@ raw.appendToFile(target_file, header_pos, src_file->Size() - header_pos);
 
 int _tmain(int argc, TCHAR **argv)
 {
-	auto json_filename = L"c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.json";
-	IO::File json_file(json_filename);
-	if (!json_file.Open(IO::OpenMode::OpenRead))
-	{
-		wprintf(L"Error open file\n");
-		return -1;
-	}
-	uint32_t file_size = (uint32_t)json_file.Size();
-	auto data = IO::makeDataArray(file_size);
-	json_file.ReadData(data->data(), data->size());
+	//auto json_filename = L"c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.json";
+	//IO::File json_file(json_filename);
+	//if (!json_file.Open(IO::OpenMode::OpenRead))
+	//{
+	//	wprintf(L"Error open file\n");
+	//	return -1;
+	//}
+	//uint32_t file_size = (uint32_t)json_file.Size();
+	//auto data = IO::makeDataArray(file_size);
+	//json_file.ReadData(data->data(), data->size());
+
+	auto json_str = R"(
+{
+    "signatures": {
+        "zbk": {
+            "header": 
+            [
+              {
+                "hexdata": "0F000B67636667507267506C7573",
+                "offset": 2
+              }
+            ],
+            "footer": {
+                "hexdata": "504B0506",
+                "tailsize": 18
+            },
+            "maxfilesize":  104857600,
+            "extension": ".zbk"
+        },
+        "cdw": {
+            "header": 
+            [
+                {
+                    "hexdata": "4B46",
+                    "offset": 0
+                },
+                {
+                    "hexdata": "0100000000000000",
+                    "data": "",
+                    "offset": 16
+                }
+            ],
+            "extension": ".cdw"
+        },
+        "zs2":{
+          "header":
+          [
+            {
+                "hexdata":"308203D602010330",
+                "offset": 0
+            }
+          ],
+          "maxfilesize":  986,
+          "extension": ".ZS2"
+        },
+        "QT":{
+          "header":
+          [
+            {
+                "textdata":"ftyp",
+                "offset": 4
+            },
+            {
+                "textdata":"moov",
+                "offset": 4
+            },
+            {
+                "textdata":"mdat",
+                "offset": 4
+            }            
+            
+          ],
+          "extension": ".mov"
+        }
+        
+    }
+}	)";
+
 
 	//std::string str(data->data());
 	rapidjson::Document doc;
-	doc.Parse((const char *)data->data());
-	auto count = doc.MemberCount();
-
-	int a = 0;
-	a = 1;
+	doc.Parse(json_str);
+	if (doc.HasParseError())
+	{
+		wprintf(L"Error parse json string.\n");
+		return -1;
+	}
+	const rapidjson::Value& signatures = doc["signatures"];
+	if (signatures.IsObject())
+	{
+		for (rapidjson::Value::ConstMemberIterator itr = signatures.MemberBegin();
+			itr != signatures.MemberEnd(); ++itr)
+		{
+			printf("%s\t",itr->name.GetString());
+		}
+		int a = 0;
+		a = 1;
+	}
 	//rapidjson:: val;
 	//Document document;
 	//IO::HeaderBase headerBase;
