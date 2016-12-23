@@ -392,7 +392,7 @@ namespace IO
 	class RawAlgorithm
 	{
 		virtual uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) = 0;
-		virtual bool Specify(const uint64_t header_offset) = 0;
+		virtual bool Specify(const uint64_t start_offset) = 0;
 	};
 
 	class DefaultRaw : public RawAlgorithm

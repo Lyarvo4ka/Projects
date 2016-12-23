@@ -363,7 +363,10 @@ raw.appendToFile(target_file, header_pos, src_file->Size() - header_pos);
 
 
 #include "IOLibrary/StandartRaw.h"
+#include "IOLibrary/QuickTime.h"
 #include "rapidjson/document.h"
+
+const uint8_t keystore_header[] = { 0xFE, 0xED, 0xFE, 0xED };
 
 int _tmain(int argc, TCHAR **argv)
 {
@@ -446,25 +449,6 @@ int _tmain(int argc, TCHAR **argv)
 }	)";
 
 
-	//std::string str(data->data());
-	rapidjson::Document doc;
-	doc.Parse(json_str);
-	if (doc.HasParseError())
-	{
-		wprintf(L"Error parse json string.\n");
-		return -1;
-	}
-	const rapidjson::Value& signatures = doc["signatures"];
-	if (signatures.IsObject())
-	{
-		for (rapidjson::Value::ConstMemberIterator itr = signatures.MemberBegin();
-			itr != signatures.MemberEnd(); ++itr)
-		{
-			printf("%s\t",itr->name.GetString());
-		}
-		int a = 0;
-		a = 1;
-	}
 	//rapidjson:: val;
 	//Document document;
 	//IO::HeaderBase headerBase;
@@ -476,24 +460,58 @@ int _tmain(int argc, TCHAR **argv)
 	//	return -1;
 
 	//auto disk_2 = std::make_shared<IO::DiskDevice>(physical_drive);
+	const uint32_t source_param = 1;
+	const uint32_t size_param = 2;
+	const uint32_t folder_param =3;
 
-	//IO::SignatureFinder signFinder(disk_2);
+	//auto drive_number = boost::lexical_cast<uint32_t>(argv[source_param]);
+	uint32_t drive_number = 4;
+	
+	auto drive_list = IO::ReadPhysicalDrives();
+	auto physical_drive = drive_list.find_by_number(drive_number);
+	auto disk = std::make_shared<IO::DiskDevice>(physical_drive);
+
+	uint64_t max_file_size = 4096;
+
+//	IO::path_string soruce_name(L"d:\\PaboTa\\41156\\41156.bin");
+	IO::path_string folder = L"d:\\PaboTa\\41170\\";
+	//auto source_file = IO::makeFilePtr(soruce_name);
+	if (!disk->Open(IO::OpenMode::OpenRead))
+		return -1;
+	auto heade_base = std::make_shared<IO::HeaderBase>();
+	auto keystore_struct = IO::makeFileStruct("keystore");
+	auto keystore_data = IO::makeDataArray((const uint8_t*)keystore_header, SIZEOF_ARRAY(keystore_header));
+	keystore_struct->addSignature(keystore_data, 0);
+	keystore_struct->setMaxFileSize(max_file_size);
+	
+	heade_base->addFileFormat(keystore_struct);
+
+	IO::SignatureFinder signFinder(disk, heade_base);
 	////0xDE263D9000 0xDD4BBA9000
-	//uint64_t offset = 0;
-	//uint64_t header_pos = 0;
-	//while (true)
-	//{
+	uint64_t offset = 0;
+	uint64_t header_pos = 0;
+	uint32_t counter = 0;
+	while (true)
+	{
 
-	//	if (auto header = signFinder.findHeader(offset, header_pos))
-	//	{
-	//		IO::DBFRaw dbf_raw(disk_2);
-	//		dbf_raw.SaveRawFile(header, header_pos, target_folder);
-	//	}
-	//	else
-	//		break;
-	//	offset = header_pos;
-	//	offset += default_sector_size;
-	//}
+		if (auto header = signFinder.findHeader(offset, header_pos))
+		{
+			IO::StandartRaw standartRaw(disk);
+			standartRaw.setMaxFileSize(header->getMaxFileSize());
+			auto new_file_name = IO::toFullPath(folder, ++counter, L".keystore");
+			IO::File target_file (new_file_name);
+			if ( !target_file.Open(IO::OpenMode::Create))
+				break;
+
+			standartRaw.SaveRawFile(target_file, header_pos);
+
+			offset = header_pos;
+		}
+		else
+			break;
+		//offset = header_pos;
+		offset += default_sector_size;
+	}
 	//run_RawMTS(argc, argv);
 
 
