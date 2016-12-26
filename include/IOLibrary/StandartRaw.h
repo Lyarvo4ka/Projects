@@ -32,6 +32,10 @@ namespace IO
 			}
 			setTailSize(tailSize);
 		}
+		DataArray * getFooter() const
+		{
+			return footer_.get();
+		}
 
 		void setTailSize(const uint32_t tailSize)
 		{
@@ -259,7 +263,6 @@ namespace IO
 		*/
 	};
 
-
 	class StandartRawFactory
 		: public RawFactory
 	{
@@ -269,4 +272,97 @@ namespace IO
 			return new StandartRaw(device);
 		}
 	};
+
+	class OnlyHeadersRaw
+		: public StandartRaw
+	{
+	public:
+		OnlyHeadersRaw(IODevicePtr device)
+			: StandartRaw(device)
+		{
+
+		}
+
+		bool Specify(const uint64_t header_offset) override
+		{
+			return true;
+		}
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset)   override
+		{
+			if (!target_file.isOpen())
+			{
+				wprintf(L"File wasn't opened.\n Try to create file.");
+				if (!target_file.Open(OpenMode::Create))
+				{
+					wprintf(L"Error to create file.");
+					return 0;
+				}
+			}
+
+			auto footer_data = getFooter();
+			if (!footer_data)
+				return 0;
+
+			uint32_t bytes_read = 0;
+			uint32_t bytes_written = 0;
+
+			uint64_t offset = start_offset;
+
+			uint32_t footer_pos = 0;
+			uint32_t bytes_to_write = getBlockSize();
+			uint64_t written_size = 0;
+
+			uint32_t start_cmp = 0;
+
+			auto buffer = makeDataArray(getBlockSize());
+			uint32_t sizeToRead = getBlockSize();
+
+			while (offset < this->getSize())
+			{
+				sizeToRead = calcBlockSize(offset, this->getSize(), sizeToRead);
+
+				setPosition(offset);
+				bytes_read = ReadData(buffer->data(), sizeToRead);
+				if (bytes_read == 0)
+				{
+					//	????????????
+					wprintf(L"Error read block\n");
+					break;
+				}
+				start_cmp = 0;
+				if (offset == start_offset)
+					start_cmp = getSectorSize();
+				for (footer_pos = start_cmp; footer_pos < bytes_read; footer_pos += getSectorSize())
+					if (memcmp(buffer->data() + footer_pos, footer_data->data(), footer_data->size()) == 0)
+					{
+						if (footer_pos > 0)
+						{
+							target_file.setPosition(written_size);
+							bytes_written = target_file.WriteData(buffer->data(), footer_pos);
+							written_size += bytes_written;
+						}
+						return written_size;
+					}
+
+				if (bytes_read < getBlockSize())
+					bytes_to_write = bytes_read;
+
+				target_file.setPosition(written_size);
+				bytes_written = target_file.WriteData(buffer->data(), bytes_to_write);
+				if (bytes_written == 0)
+				{
+					wprintf(L"Error write block\n");
+					break;
+				}
+
+				offset += bytes_written;
+				written_size += bytes_written;
+			}
+			return written_size;
+
+		}
+
+	};
+
+
 };

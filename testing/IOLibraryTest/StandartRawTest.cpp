@@ -174,3 +174,39 @@ BOOST_AUTO_TEST_CASE(TestCompareBetween)
 	BOOST_CHECK_EQUAL(actual, false);
 	//standartRaw.compareBetween
 }
+
+
+BOOST_AUTO_TEST_CASE(test_OnlyHeadersRaw_SaveRawFile)
+{
+	IO::DataArray footer_data(test_footer, test_footer_size);
+	const uint32_t footer_offset = 15;
+
+	const uint32_t src_size = 30;
+	auto src_file = std::make_shared<MocFile>(src_size);
+	IO::DataArray src_data(src_size);
+	memset(src_data.data(), 0xEB, src_data.size());
+	memcpy(src_data.data() + footer_offset, footer_data, test_footer_size);
+	src_file->WriteData(src_data.data(), src_data.size());
+
+	auto file_struct = IO::makeFileStruct("test Footer");
+	file_struct->addFooter(test_footer, 3);
+
+
+	MocFile dst_file1(0);
+	IO::OnlyHeadersRaw test_raw(src_file);
+	test_raw.setFooter(file_struct->getFooter(), 0);
+	test_raw.setBlockSize(10);
+	test_raw.setSectorSize(5);
+	test_raw.setFooter(file_struct->getFooter(), file_struct->getFooterTailEndSize());
+
+	const uint32_t start_offset = 0;
+
+	auto saved_size = test_raw.SaveRawFile(dst_file1, 0);
+	auto expected_size = footer_offset;
+	BOOST_CHECK_EQUAL(saved_size, expected_size);
+
+	//MocFile dst_file3(0);
+	//saved_size = standart_raw.SaveRawFile(dst_file3, start_offset);
+	//BOOST_CHECK_EQUAL(saved_size, src_size - start_offset);
+
+}

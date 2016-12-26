@@ -473,20 +473,19 @@ int _tmain(int argc, TCHAR **argv)
 
 	uint64_t max_file_size = 4096;
 
-//	IO::path_string soruce_name(L"d:\\PaboTa\\41156\\41156.bin");
+	IO::path_string soruce_name(L"SOURCE NAME");
 	IO::path_string folder = L"d:\\PaboTa\\41170\\";
-	//auto source_file = IO::makeFilePtr(soruce_name);
-	if (!disk->Open(IO::OpenMode::OpenRead))
-		return -1;
-	auto heade_base = std::make_shared<IO::HeaderBase>();
-	auto keystore_struct = IO::makeFileStruct("keystore");
-	auto keystore_data = IO::makeDataArray((const uint8_t*)keystore_header, SIZEOF_ARRAY(keystore_header));
-	keystore_struct->addSignature(keystore_data, 0);
-	keystore_struct->setMaxFileSize(max_file_size);
+	auto src_device = IO::makeFilePtr(soruce_name);
 	
-	heade_base->addFileFormat(keystore_struct);
+	if (!src_device->Open(IO::OpenMode::OpenRead))
+		return -1;
+	auto header_base = std::make_shared<IO::HeaderBase>();
+	auto file_struct = IO::makeFileStruct("split_mp4");
+	//auto header_data = IO::makeDataArray((const uint8_t*)keystore_header, SIZEOF_ARRAY(keystore_header));
+	
+	header_base->addFileFormat(file_struct);
 
-	IO::SignatureFinder signFinder(disk, heade_base);
+	IO::SignatureFinder signFinder(disk, header_base);
 	////0xDE263D9000 0xDD4BBA9000
 	uint64_t offset = 0;
 	uint64_t header_pos = 0;
@@ -496,16 +495,15 @@ int _tmain(int argc, TCHAR **argv)
 
 		if (auto header = signFinder.findHeader(offset, header_pos))
 		{
-			IO::StandartRaw standartRaw(disk);
-			standartRaw.setMaxFileSize(header->getMaxFileSize());
-			auto new_file_name = IO::toFullPath(folder, ++counter, L".keystore");
+			IO::OnlyHeadersRaw headers_raw(src_device);
+			auto new_file_name = IO::toFullPath(folder, ++counter, L".mp4");
 			IO::File target_file (new_file_name);
 			if ( !target_file.Open(IO::OpenMode::Create))
 				break;
 
-			standartRaw.SaveRawFile(target_file, header_pos);
+			headers_raw.SaveRawFile(target_file, header_pos);
 
-			offset = header_pos;
+			continue;
 		}
 		else
 			break;
