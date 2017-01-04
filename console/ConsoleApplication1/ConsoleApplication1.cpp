@@ -367,6 +367,7 @@ raw.appendToFile(target_file, header_pos, src_file->Size() - header_pos);
 #include "rapidjson/document.h"
 
 const uint8_t keystore_header[] = { 0xFE, 0xED, 0xFE, 0xED };
+const uint8_t ext_qt_header[] = { 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x00, 0x00 };
 
 int _tmain(int argc, TCHAR **argv)
 {
@@ -380,74 +381,6 @@ int _tmain(int argc, TCHAR **argv)
 	//uint32_t file_size = (uint32_t)json_file.Size();
 	//auto data = IO::makeDataArray(file_size);
 	//json_file.ReadData(data->data(), data->size());
-
-	auto json_str = R"(
-{
-    "signatures": {
-        "zbk": {
-            "header": 
-            [
-              {
-                "hexdata": "0F000B67636667507267506C7573",
-                "offset": 2
-              }
-            ],
-            "footer": {
-                "hexdata": "504B0506",
-                "tailsize": 18
-            },
-            "maxfilesize":  104857600,
-            "extension": ".zbk"
-        },
-        "cdw": {
-            "header": 
-            [
-                {
-                    "hexdata": "4B46",
-                    "offset": 0
-                },
-                {
-                    "hexdata": "0100000000000000",
-                    "data": "",
-                    "offset": 16
-                }
-            ],
-            "extension": ".cdw"
-        },
-        "zs2":{
-          "header":
-          [
-            {
-                "hexdata":"308203D602010330",
-                "offset": 0
-            }
-          ],
-          "maxfilesize":  986,
-          "extension": ".ZS2"
-        },
-        "QT":{
-          "header":
-          [
-            {
-                "textdata":"ftyp",
-                "offset": 4
-            },
-            {
-                "textdata":"moov",
-                "offset": 4
-            },
-            {
-                "textdata":"mdat",
-                "offset": 4
-            }            
-            
-          ],
-          "extension": ".mov"
-        }
-        
-    }
-}	)";
-
 
 	//rapidjson:: val;
 	//Document document;
@@ -467,25 +400,28 @@ int _tmain(int argc, TCHAR **argv)
 	//auto drive_number = boost::lexical_cast<uint32_t>(argv[source_param]);
 	uint32_t drive_number = 4;
 	
-	auto drive_list = IO::ReadPhysicalDrives();
-	auto physical_drive = drive_list.find_by_number(drive_number);
-	auto disk = std::make_shared<IO::DiskDevice>(physical_drive);
+	//auto drive_list = IO::ReadPhysicalDrives();
+	//auto physical_drive = drive_list.find_by_number(drive_number);
+	//auto disk = std::make_shared<IO::DiskDevice>(physical_drive);
 
 	uint64_t max_file_size = 4096;
 
-	IO::path_string soruce_name(L"SOURCE NAME");
-	IO::path_string folder = L"d:\\PaboTa\\41170\\";
+	IO::path_string soruce_name(L"d:\\PaboTa\\41156\\41156_new.bin");
+	IO::path_string folder = L"d:\\PaboTa\\41156\\mp4\\";
 	auto src_device = IO::makeFilePtr(soruce_name);
 	
-	if (!src_device->Open(IO::OpenMode::OpenRead))
-		return -1;
+	//if (!src_device->Open(IO::OpenMode::OpenRead))
+	//	return -1;
 	auto header_base = std::make_shared<IO::HeaderBase>();
+	auto header_data = IO::makeDataArray((const uint8_t*)ext_qt_header, SIZEOF_ARRAY(ext_qt_header));
+	auto footer_data = IO::makeDataArray((const uint8_t*)ext_qt_header, SIZEOF_ARRAY(ext_qt_header));
 	auto file_struct = IO::makeFileStruct("split_mp4");
-	//auto header_data = IO::makeDataArray((const uint8_t*)keystore_header, SIZEOF_ARRAY(keystore_header));
-	
+	file_struct->addSignature(header_data, 0);
+	file_struct->addFooter(footer_data);
+
 	header_base->addFileFormat(file_struct);
 
-	IO::SignatureFinder signFinder(disk, header_base);
+	IO::SignatureFinder signFinder(src_device, header_base);
 	////0xDE263D9000 0xDD4BBA9000
 	uint64_t offset = 0;
 	uint64_t header_pos = 0;
@@ -496,13 +432,17 @@ int _tmain(int argc, TCHAR **argv)
 		if (auto header = signFinder.findHeader(offset, header_pos))
 		{
 			IO::OnlyHeadersRaw headers_raw(src_device);
+			headers_raw.setFooter(header->getFooter(), 0);
 			auto new_file_name = IO::toFullPath(folder, ++counter, L".mp4");
 			IO::File target_file (new_file_name);
 			if ( !target_file.Open(IO::OpenMode::Create))
 				break;
 
-			headers_raw.SaveRawFile(target_file, header_pos);
+			auto saved_size = headers_raw.SaveRawFile(target_file, header_pos);
+			if (saved_size == 0)
+				break;
 
+			offset = header_pos + saved_size;
 			continue;
 		}
 		else

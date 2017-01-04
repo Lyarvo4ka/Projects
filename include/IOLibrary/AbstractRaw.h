@@ -228,7 +228,7 @@ namespace IO
 			headers_.emplace_back(std::move(signAndOffset));
 		}
 
-		void addFooter(DataArray::Ptr footer)
+		void addFooter(DataArray::Ptr & footer)
 		{
 			footer_ = std::move(footer);
 		}
@@ -337,6 +337,7 @@ namespace IO
 		}
 		FileStruct * findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
+			if ( !device_->isOpen())
 			if (!device_->Open(OpenMode::OpenRead))
 			{
 				wprintf_s(L"Error open device\n");
