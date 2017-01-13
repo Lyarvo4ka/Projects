@@ -1,7 +1,11 @@
 #include <QtCore/QCoreApplication>
 
+#include <QVariant>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonValue>
+
 #include <QDebug>
 
 
@@ -32,7 +36,6 @@ auto json_str = R"(
                 },
                 {
                     "hexdata": "0100000000000000",
-                    "data": "",
                     "offset": 16
                 }
             ],
@@ -86,33 +89,46 @@ int main(int argc, char *argv[])
 
 	auto root = json_doc.object();
 	auto signatures_root = root.value("signatures").toObject();
-	auto signatures = signatures_root.toVariantMap();
 
+	auto signatureKeys = signatures_root.keys();
 
-
-	for (QVariantMap::const_iterator iter = signatures.begin(); iter != signatures.end(); ++iter) 
+	for (auto signature_name : signatureKeys)
 	{
-		QString key_name = iter.key();
-		qInfo() << "name = " << key_name << endl;
-		auto val = iter.value();
-		if ( val.isValid())
+
+		auto object_value = signatures_root.value(signature_name);
+		if (object_value.isObject())
 		{
-			auto headers = val.toJsonObject();
-			QJsonValue header_value = headers.value(header_txt);
+			qInfo() << "name = " << signature_name << endl;
+			// find only header
+			QJsonValue header_value = object_value.toObject().value(header_txt);
 			if (header_value.isArray())
 			{
-				QJsonArray array_headers = header_value.toArray();
-				
-				for ( int i = 0 ; i < array_headers.size(); ++i)
+				auto array_headers = header_value.toArray();
+
+				for (int i = 0; i < array_headers.size(); ++i)
 				{
-					auto headerData = array_headers[i].toObject().toVariantMap();
-					qInfo() << headerData.key();
-					//for ( auto data_iter = headerData.)
+					auto theHeader = array_headers.at(i);
+					if (theHeader.isObject())
+					{
+						auto header_keys = theHeader.toObject().keys();
+						for (auto name_value : header_keys)
+						{
+							auto the_value = theHeader.toObject().value(name_value);
+							if (the_value.isString())
+							{
+								qInfo()  << name_value << " : " << the_value.toString();
+							}
+							else
+								qInfo() << name_value << " : " << the_value.toInt();
+						}
+
+					}
 				}
 			}
 		}
-		//headers.
+		qInfo() << endl;
 	}
-	//auto objects = root.keys();
+
+
 	return a.exec();
 }
