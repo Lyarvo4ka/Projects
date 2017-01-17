@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="SignaturesEditor">
+    <file>icons/exit.png</file>
+    <file>icons/savefile.png</file>
+    <file>icons/loadfile2.png</file>
+    <file>icons/loadfile.png</file>
+    <file>icons/newfile.png</file>
+  </qresource>
+</RCC>

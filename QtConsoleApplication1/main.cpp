@@ -79,6 +79,10 @@ auto json_str = R"(
 #include <iostream>
 
 const QString header_txt = "header";
+const QString footer_txt = "footer";
+const QString maxfilesize_txt = "maxfilesize";
+
+//void 
 
 int main(int argc, char *argv[])
 {
@@ -110,8 +114,7 @@ int main(int argc, char *argv[])
 					auto theHeader = array_headers.at(i);
 					if (theHeader.isObject())
 					{
-						auto header_keys = theHeader.toObject().keys();
-						for (auto name_value : header_keys)
+						for (auto name_value : theHeader.toObject().keys())
 						{
 							auto the_value = theHeader.toObject().value(name_value);
 							if (the_value.isString())
@@ -120,6 +123,7 @@ int main(int argc, char *argv[])
 							}
 							else
 								qInfo() << name_value << " : " << the_value.toInt();
+							//the_value.toDo
 						}
 
 					}
