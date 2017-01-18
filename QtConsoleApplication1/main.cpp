@@ -79,10 +79,49 @@ auto json_str = R"(
 #include <iostream>
 
 const QString header_txt = "header";
+const QString offset_txt = "offset";
 const QString footer_txt = "footer";
+const QString textdata_txt = "textdata";
+const QString hexdata_txt = "hexdata";
+
 const QString maxfilesize_txt = "maxfilesize";
 
 //void 
+
+struct HeaderOffset
+{
+	QString header;
+	int offset;
+};
+
+using ArrayOfHeader = QVector<HeaderOffset>;
+
+void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array)
+{
+	for (int i = 0; i < json_array.size(); ++i)
+	{
+		auto theHeader = json_array.at(i);
+		HeaderOffset headerOffset;
+		if (theHeader.isObject())
+		{
+			auto text_value = theHeader.toObject().value(textdata_txt);
+			if (text_value.isUndefined())
+			{
+				text_value = theHeader.toObject().value(hexdata_txt);
+				if ( text_value.isUndefined() )
+					return;
+			}
+			headerOffset.header = text_value.toString();
+
+			auto offset_value = theHeader.toObject().value(offset_txt);
+			if (!offset_value.isUndefined())
+				headerOffset.offset = offset_value.toInt();
+
+			header_array.append(headerOffset);
+		}
+	}
+
+}
 
 int main(int argc, char *argv[])
 {
@@ -108,7 +147,8 @@ int main(int argc, char *argv[])
 			if (header_value.isArray())
 			{
 				auto array_headers = header_value.toArray();
-
+				ArrayOfHeader arrayOfHeaders;
+				ReadHadersOffset(array_headers, arrayOfHeaders);
 				for (int i = 0; i < array_headers.size(); ++i)
 				{
 					auto theHeader = array_headers.at(i);
@@ -119,7 +159,7 @@ int main(int argc, char *argv[])
 							auto the_value = theHeader.toObject().value(name_value);
 							if (the_value.isString())
 							{
-								qInfo()  << name_value << " : " << the_value.toString();
+								qInfo() << name_value << " : " << the_value.toString();
 							}
 							else
 								qInfo() << name_value << " : " << the_value.toInt();
@@ -127,6 +167,7 @@ int main(int argc, char *argv[])
 						}
 
 					}
+
 				}
 			}
 		}
