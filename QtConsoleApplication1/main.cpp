@@ -91,7 +91,15 @@ const QString maxfilesize_txt = "maxfilesize";
 struct HeaderOffset
 {
 	QString header;
-	int offset;
+	int offset = 0;
+	bool bHex = false;
+};
+
+struct Footer
+{
+	QString footer;
+	int tailsize = 0;
+	bool bHex = false;
 };
 
 using ArrayOfHeader = QVector<HeaderOffset>;
@@ -110,6 +118,7 @@ void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array
 				text_value = theHeader.toObject().value(hexdata_txt);
 				if ( text_value.isUndefined() )
 					return;
+				headerOffset.bHex = true;
 			}
 			headerOffset.header = text_value.toString();
 
@@ -120,6 +129,24 @@ void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array
 			header_array.append(headerOffset);
 		}
 	}
+
+}
+
+void ReadFooter(const QJsonObject footer_object, Footer & footer)
+{
+	auto text_value = footer_object.value(hexdata_txt);
+	if (!text_value.isUndefined())
+	{
+		footer.bHex = true;
+
+	}
+
+
+	if (text_value.isUndefined())
+		return;
+
+
+
 
 }
 
@@ -169,6 +196,13 @@ int main(int argc, char *argv[])
 					}
 
 				}
+			}
+
+			auto footer_value = object_value.toObject().value(footer_txt);
+			if (footer_value.isObject())
+			{
+				Footer footer;
+				ReadFooter(footer_value.toObject(), footer);
 			}
 		}
 		qInfo() << endl;

@@ -71,5 +71,8 @@
     <ClInclude Include="GeneratedFiles\ui_signatureseditor.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="TreeItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -158,7 +158,7 @@ public:
         actionAbout->setText(QApplication::translate("SignaturesEditorClass", "About", Q_NULLPTR));
         pushButton->setText(QApplication::translate("SignaturesEditorClass", "Add", Q_NULLPTR));
         pushButton_2->setText(QApplication::translate("SignaturesEditorClass", "Remove", Q_NULLPTR));
-        pushButton_3->setText(QApplication::translate("SignaturesEditorClass", "Change", Q_NULLPTR));
+        pushButton_3->setText(QApplication::translate("SignaturesEditorClass", "Modify", Q_NULLPTR));
         menuFile->setTitle(QApplication::translate("SignaturesEditorClass", "File", Q_NULLPTR));
         menuHelp->setTitle(QApplication::translate("SignaturesEditorClass", "Help", Q_NULLPTR));
     } // retranslateUi
