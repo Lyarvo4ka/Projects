@@ -7,6 +7,7 @@
 #include <QJsonValue>
 
 #include <QDebug>
+#include <QList>
 
 
 auto json_str = R"(
@@ -81,10 +82,12 @@ auto json_str = R"(
 const QString header_txt = "header";
 const QString offset_txt = "offset";
 const QString footer_txt = "footer";
+const QString tailsize_txt = "tailsize";
 const QString textdata_txt = "textdata";
 const QString hexdata_txt = "hexdata";
 
 const QString maxfilesize_txt = "maxfilesize";
+const QString extension_txt = "extension";
 
 //void 
 
@@ -103,6 +106,15 @@ struct Footer
 };
 
 using ArrayOfHeader = QVector<HeaderOffset>;
+
+struct JsonFileStruct
+{
+	QString name;
+	ArrayOfHeader headers;
+	Footer footer;
+	qlonglong maxfilesize = 0;
+	QString extension;
+};
 
 void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array)
 {
@@ -138,16 +150,19 @@ void ReadFooter(const QJsonObject footer_object, Footer & footer)
 	if (!text_value.isUndefined())
 	{
 		footer.bHex = true;
-
+		footer.footer = text_value.toString();
 	}
-
-
-	if (text_value.isUndefined())
-		return;
-
-
-
-
+	else
+	{
+		text_value = footer_object.value(textdata_txt);
+		if (text_value.isUndefined())
+			return;
+		footer.footer = text_value.toString();
+	}
+	
+	auto tail_size = footer_object.value(tailsize_txt);
+	if (!tail_size.isUndefined())
+		footer.tailsize = tail_size.toInt();
 }
 
 int main(int argc, char *argv[])
@@ -162,9 +177,12 @@ int main(int argc, char *argv[])
 
 	auto signatureKeys = signatures_root.keys();
 
+	QList<JsonFileStruct> listHeaders;
+
 	for (auto signature_name : signatureKeys)
 	{
-
+		JsonFileStruct jsonFileStruct;
+		jsonFileStruct.name = signature_name;
 		auto object_value = signatures_root.value(signature_name);
 		if (object_value.isObject())
 		{
@@ -174,36 +192,25 @@ int main(int argc, char *argv[])
 			if (header_value.isArray())
 			{
 				auto array_headers = header_value.toArray();
-				ArrayOfHeader arrayOfHeaders;
-				ReadHadersOffset(array_headers, arrayOfHeaders);
-				for (int i = 0; i < array_headers.size(); ++i)
-				{
-					auto theHeader = array_headers.at(i);
-					if (theHeader.isObject())
-					{
-						for (auto name_value : theHeader.toObject().keys())
-						{
-							auto the_value = theHeader.toObject().value(name_value);
-							if (the_value.isString())
-							{
-								qInfo() << name_value << " : " << the_value.toString();
-							}
-							else
-								qInfo() << name_value << " : " << the_value.toInt();
-							//the_value.toDo
-						}
-
-					}
-
-				}
+				ReadHadersOffset(array_headers, jsonFileStruct.headers);
 			}
 
 			auto footer_value = object_value.toObject().value(footer_txt);
 			if (footer_value.isObject())
 			{
-				Footer footer;
-				ReadFooter(footer_value.toObject(), footer);
+				ReadFooter(footer_value.toObject(), jsonFileStruct.footer);
 			}
+
+			auto maxsize_value = signatures_root.value(maxfilesize_txt);
+			if (!maxsize_value.isUndefined())
+				jsonFileStruct.maxfilesize = maxsize_value.toVariant().toLongLong();
+
+			auto extension_value = signatures_root.value(extension_txt);
+			if (extension_value.isString())
+				jsonFileStruct.extension = extension_value.toString();
+
+			listHeaders.append(jsonFileStruct);
+				
 		}
 		qInfo() << endl;
 	}
