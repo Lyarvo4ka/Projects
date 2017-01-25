@@ -79,57 +79,13 @@ auto json_str = R"(
 
 #include <iostream>
 
-
+#include "../JsonReader/JsonReader.h"
 int main(int argc, char *argv[])
 {
 
 	QCoreApplication a(argc, argv);
-	QJsonDocument json_doc = QJsonDocument::fromJson(json_str);
-	qDebug() << "Hello" << endl;
-
-	auto root = json_doc.object();
-	auto signatures_root = root.value("signatures").toObject();
-
-	auto signatureKeys = signatures_root.keys();
-
-	QList<JsonFileStruct> listHeaders;
-
-	for (auto signature_name : signatureKeys)
-	{
-		JsonFileStruct jsonFileStruct;
-		jsonFileStruct.name = signature_name;
-		auto object_value = signatures_root.value(signature_name);
-		if (object_value.isObject())
-		{
-			qInfo() << "name = " << signature_name << endl;
-			// find only header
-			QJsonValue header_value = object_value.toObject().value(header_txt);
-			if (header_value.isArray())
-			{
-				auto array_headers = header_value.toArray();
-				ReadHadersOffset(array_headers, jsonFileStruct.headers);
-			}
-
-			auto footer_value = object_value.toObject().value(footer_txt);
-			if (footer_value.isObject())
-			{
-				ReadFooter(footer_value.toObject(), jsonFileStruct.footer);
-			}
-
-			auto maxsize_value = object_value.toObject().value(maxfilesize_txt);
-			if (!maxsize_value.isUndefined())
-				jsonFileStruct.maxfilesize = maxsize_value.toVariant().toLongLong();
-
-			auto extension_value = object_value.toObject().value(extension_txt);
-			if (extension_value.isString())
-				jsonFileStruct.extension = extension_value.toString();
-
-			listHeaders.append(jsonFileStruct);
-				
-		}
-		qInfo() << endl;
-	}
-
+	QList<JsonFileStruct> listFileStruct;
+	ReadJsonFIle(json_str, listFileStruct);
 
 	return a.exec();
 }
