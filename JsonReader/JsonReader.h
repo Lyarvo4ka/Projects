@@ -23,27 +23,22 @@ const QString hexdata_txt = "hexdata";
 const QString maxfilesize_txt = "maxfilesize";
 const QString extension_txt = "extension";
 
-struct HeaderOffset
+struct SignatureHandle
 {
-	QString header;
-	int offset = 0;
+	QString value_string;
+	int value_int = 0;
 	bool bHex = false;
 };
 
-struct Footer
-{
-	QString footer;
-	int tailsize = 0;
-	bool bHex = false;
-};
 
-using ArrayOfHeader = QVector<HeaderOffset>;
+
+using ArrayOfHeader = QVector<SignatureHandle>;
 
 struct JsonFileStruct
 {
 	QString name;
 	ArrayOfHeader headers;
-	Footer footer;
+	SignatureHandle footer;
 	qlonglong maxfilesize = 0;
 	QString extension;
 };
@@ -53,7 +48,7 @@ void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array
 	for (int i = 0; i < json_array.size(); ++i)
 	{
 		auto theHeader = json_array.at(i);
-		HeaderOffset headerOffset;
+		SignatureHandle headerOffset;
 		if (theHeader.isObject())
 		{
 			auto text_value = theHeader.toObject().value(textdata_txt);
@@ -64,11 +59,11 @@ void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array
 					return;
 				headerOffset.bHex = true;
 			}
-			headerOffset.header = text_value.toString();
+			headerOffset.value_string = text_value.toString();
 
 			auto offset_value = theHeader.toObject().value(offset_txt);
 			if (!offset_value.isUndefined())
-				headerOffset.offset = offset_value.toInt();
+				headerOffset.value_int = offset_value.toInt();
 
 			header_array.append(headerOffset);
 		}
@@ -76,25 +71,25 @@ void ReadHadersOffset(const QJsonArray & json_array, ArrayOfHeader &header_array
 
 }
 
-void ReadFooter(const QJsonObject footer_object, Footer & footer)
+void ReadFooter(const QJsonObject footer_object, SignatureHandle & footer)
 {
 	auto text_value = footer_object.value(hexdata_txt);
 	if (!text_value.isUndefined())
 	{
 		footer.bHex = true;
-		footer.footer = text_value.toString();
+		footer.value_string = text_value.toString();
 	}
 	else
 	{
 		text_value = footer_object.value(textdata_txt);
 		if (text_value.isUndefined())
 			return;
-		footer.footer = text_value.toString();
+		footer.value_string = text_value.toString();
 	}
 
 	auto tail_size = footer_object.value(tailsize_txt);
 	if (!tail_size.isUndefined())
-		footer.tailsize = tail_size.toInt();
+		footer.value_int = tail_size.toInt();
 }
 
 void ReadJsonFIle(const QByteArray & byte_data, QList<JsonFileStruct> & parsedResult)
@@ -151,19 +146,41 @@ void ReadJsonFile(const QString & jsonFileName , QList<JsonFileStruct> & parsedR
 	auto byte_data = file.readAll();
 	ReadJsonFIle(byte_data, parsedResult);
 }
+IO::DataArray::Ptr JsonToDataArray(SignatureHandle signHandle)
+{
+	IO::DataArray::Ptr data_array = nullptr;
+	if (signHandle.bHex)
+	{
+		if (signHandle.value_string.length() % 2 != 0)
+			return nullptr;
+		auto byte_array = QByteArray::fromHex(signHandle.value_string.toLatin1());
+		data_array = IO::makeDataArray(byte_array.size());
+		memcpy(data_array->data(), byte_array.data(), data_array->size());
+
+	}
+	else
+	{
+		data_array = IO::makeDataArray(signHandle.value_string.length());
+		memcpy(data_array->data(), signHandle.value_string.constData(), data_array->size());
+	}
+	return data_array;
+}
+
 IO::FileStruct::Ptr toFileStruct(const JsonFileStruct & jsonFileStruct)
 {
 	auto file_struct = IO::makeFileStruct(jsonFileStruct.name.toStdString());
 	for (auto theHeader : jsonFileStruct.headers)
 	{
-		if (theHeader.bHex)
-		{
-			if (theHeader.header.length() % 2 != 0)
-				return nullptr;
-			auto byte_array = QByteArray::fromHex(theHeader.header.toLatin1());
-			//auto data_array = 
-			//file_struct->addSignature(byte_array.constData(), theHeader.offset));
+		auto data_array = JsonToDataArray(theHeader);
 
-		}
+		file_struct->addSignature(data_array, theHeader.value_int);
 	}
+
+	if (!jsonFileStruct.footer.value_string.isEmpty())
+	{
+		auto data_array = JsonToDataArray(jsonFileStruct.footer);
+		file_struct->addFooter(data_array);
+		file_struct->setFooterTailEndSize(jsonFileStruct.footer.value_int);
+	}
+	return file_struct;
 }

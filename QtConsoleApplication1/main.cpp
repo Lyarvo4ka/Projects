@@ -87,5 +87,8 @@ int main(int argc, char *argv[])
 	QList<JsonFileStruct> listFileStruct;
 	ReadJsonFIle(json_str, listFileStruct);
 
+	for ( auto theFileStruct : listFileStruct)
+		 toFileStruct(theFileStruct);
+
 	return a.exec();
 }
