@@ -65,6 +65,27 @@ BOOST_AUTO_TEST_CASE(TestIsPresetInKeywordArray)
 	BOOST_CHECK_EQUAL(false, expected);
 }
 
+BOOST_AUTO_TEST_CASE(TestisPresentMainKeywords)
+{
+	IO::QuickTimeRaw qt_raw(nullptr);
+	IO::ListQtBlock qt_blocks;
+	IO::qt_block_t qtBlock;
+
+	memcpy(qtBlock.block_type, IO::s_free, IO::qt_keyword_size);
+	qt_blocks.push_back(qtBlock);
+	BOOST_CHECK_EQUAL(false, qt_raw.isPresentMainKeywords(qt_blocks));
+
+	memcpy(qtBlock.block_type, IO::s_moov, IO::qt_keyword_size);
+	qt_blocks.push_back(qtBlock);
+	BOOST_CHECK_EQUAL(false, qt_raw.isPresentMainKeywords(qt_blocks));
+
+	memcpy(qtBlock.block_type, IO::s_mdat, IO::qt_keyword_size);
+	qt_blocks.push_back(qtBlock);
+	BOOST_CHECK_EQUAL(true, qt_raw.isPresentMainKeywords(qt_blocks));
+
+
+}
+
 BOOST_AUTO_TEST_CASE(Test_readQtAtoms)
 {
 	const uint32_t data_size = 1024;

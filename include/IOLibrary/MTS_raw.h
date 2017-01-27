@@ -74,40 +74,11 @@ namespace IO
 			//}
 
 			return start_offset;
-
-
-
 		}
 		bool Specify(const uint64_t header_offset) override
 		{
+			// Read 1 Mb and check marker 0x47
 			return false;
-		}
-		void execute(const path_string & target_folder)
-		{
-			//if (!device_->Open(OpenMode::OpenRead))
-			//{
-			//	wprintf(L"Error to open.\n");	// ????????
-			//	return;
-			//}
-
-			//uint64_t offset = (uint64_t)0x0;
-			//uint64_t header_offset = 0;
-			//uint32_t counter = 0;
-			//while (true)
-			//{
-			//	if (!findMTSOffset(offset, header_offset))
-			//	{
-			//		wprintf(L"Not Found Header\n");
-			//		break;
-			//	}
-			//	
-			//	auto target_file = target_folder + std::to_wstring(counter++) + L".mts";
-			//	offset = SaveToFile(header_offset, target_file);
-			//	offset += sector_size_;
-
-			//}
-
-
 		}
 		bool isMTSHeader(const uint8_t * data_sector)
 		{
@@ -116,42 +87,6 @@ namespace IO
 		bool isMTSFooter(const uint8_t * data_sector)
 		{
 			return (memcmp(data_sector + Signatures::mts_header_offset, Signatures::mts_footer, Signatures::mts_footer_size) == 0);
-		}
-		bool findMTSOffset(uint64_t offset, uint64_t & header_offset)
-		{
-			//uint32_t bytes_read = 0;
-			//Buffer buffer(getBlockSize());
-
-			//while (true)
-			//{
-			//	device_->setPosition(offset);
-			//	ZeroMemory(buffer.data, buffer.data_size);
-			//	bytes_read = device_->ReadData(buffer.data, getBlockSize());
-			//	if (bytes_read == 0)
-			//	{
-			//		printf("Error read drive\r\n");
-			//		break;
-			//	}
-
-			//	for (DWORD iSector = 0; iSector < bytes_read; iSector += sector_size_)
-			//	{
-			//		uint8_t * pSector = (uint8_t *)&buffer.data[iSector];
-			//		if (isMTSHeader(pSector))
-			//		{
-			//			header_offset = offset + iSector;
-			//			wprintf(L"Found MTS header %llu (sectors)\n", header_offset / sector_size_);
-			//			return true;
-			//		}
-			//	}
-			//	offset += bytes_read;
-			//}
-			return false;
-
-
-		}
-		uint64_t SaveToFile(const uint64_t header_offset, const path_string & target_name)
-		{
-			return 0;
 		}
 		bool AppendFile(File & file_to_write, uint8_t * data, uint32_t data_size)
 		{

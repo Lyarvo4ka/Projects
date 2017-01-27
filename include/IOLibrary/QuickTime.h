@@ -103,6 +103,7 @@ namespace IO
 	{
 	private:
 		ListQtBlock keywords_;
+		uint64_t sizeToWrite_ = 0;
 	public:
 		explicit QuickTimeRaw(IODevicePtr device)
 			: StandartRaw(device)
@@ -150,52 +151,39 @@ namespace IO
 		{
 			if (!target_file.isOpen())
 			{
-				wprintf(L"File wasn't opened.\n");
+				wprintf(L"Target file wasn't opened.\n");
 				return 0;
 			}
+			
+			if (sizeToWrite_ > 0)
+				return appendToFile(target_file, start_offset, sizeToWrite_);
 
 			return 0;
-			//uint64_t write_size = readQtAtoms(start_offset, keywords);
-			//if (write_size == 0)
-			//	return 0;
-
-			//return appendToFile(target_file, start_offset, write_size);
-
-			//write_file->Close();
-
-			//if (!isPresentMainKeywords(keywords))
-			//{
-			//	// rename to bad_file
-			//	auto new_fileName = target_name + L".bad_file";
-			//	try
-			//	{
-			//		boost::filesystem::rename(target_name, new_fileName);
-			//	}
-			//	catch (const boost::filesystem::filesystem_error& e)
-			//	{
-			//		std::cout << "Error: " << e.what() << std::endl;
-			//	}
-
-			//}
-
-			//return 0;
-
 		}
 		bool Specify(const uint64_t start_offset) override
 		{
 			keywords_.clear();
-			auto size = readQtAtoms(start_offset, keywords_);
+			auto sizeKeywords = readQtAtoms(start_offset, keywords_);
+			if (isPresentMainKeywords(keywords_))
+				sizeToWrite_ = sizeKeywords;
 			return false;
 		}
-		bool isPresentMainKeywords(const ListQtBlock & keywords)
+		bool isPresentMainKeywords(const ListQtBlock & keywords )
 		{
-			//if (isPresentInArrayKeywords(keywords, s_mdat))
-			//	if (isPresentInArrayKeywords(keywords, s_moov))
-			//		return true;
-			//for (auto & refQtBlock : keywords)
-			//{
-			//	if ( memcmp(refQtBlock.block_type , s_mdat, qt_keyword_size) == 0)
-			//}
+			bool bmdat = false;
+			bool bmoov = false;
+
+			for (auto & refQtBlock : keywords)
+			{
+				if (memcmp(refQtBlock.block_type, s_mdat, qt_keyword_size) == 0)
+					bmdat = true;
+				else if (memcmp(refQtBlock.block_type, s_moov, qt_keyword_size) == 0)
+					bmoov = true;
+
+				if (bmdat && bmoov)
+					return true;
+			}
+			
 			return false;
 		}
 		uint64_t ReadQtAtomSize(qt_block_t &qt_block, uint64_t keyword_offset)
