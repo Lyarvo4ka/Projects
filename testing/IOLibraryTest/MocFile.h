@@ -14,6 +14,10 @@ public:
 		,data_(IO::makeDataArray(file_size))
 	{
 	}
+	IO::DataArray * getData()
+	{
+		return data_.get();
+	}
 	bool Open(IO::OpenMode open_mode) override
 	{
 		return true;

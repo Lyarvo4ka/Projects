@@ -9,28 +9,21 @@ namespace IO
 {
 	const uint8_t marker_0x47 = 0x47;
 	const uint32_t marker_0x47_offset = 4;
-
-	inline uint32_t alingToSector(const uint32_t offset, const uint32_t sector_size)
-	{
-		uint32_t sector = offset % sector_size;
-		sector *= sector_size;
-		return sector;
-	}
-
+	const uint32_t default_specify_count = 10;
+	const uint32_t FRAME_SIZE = 192;
 
 	class RawMTS
 		: public DefaultRaw
 	{
-		static const uint32_t FRAME_SIZE = 192;
-		static const uint32_t BLOCK_SIZE = 192 * 512;
 
 	private:
-		//DataArray::Ptr specify_buffer;
+		uint32_t frames_count_ = default_specify_count;
+
 	public:
 		RawMTS( IODevicePtr device)
 			: DefaultRaw(device)
 		{
-			setBlockSize(BLOCK_SIZE);
+			setBlockSize( getSectorSize() * FRAME_SIZE);
 		}
 		~RawMTS()
 		{
@@ -60,7 +53,7 @@ namespace IO
 
 				for (iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
 				{
-					if (data_buffer->data[iFrame + marker_0x47_offset] != marker_0x47)
+					if (data_buffer->data()[iFrame + marker_0x47_offset] != marker_0x47)
 					{
 						//wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
 						bEnd = true;
@@ -79,19 +72,24 @@ namespace IO
 		}
 		bool Specify(const uint64_t header_offset) override
 		{
-			const uint32_t specify_count = 10;
-			const uint32_t specify_size = specify_count * BLOCK_SIZE;
+			const uint32_t specify_size = frames_count_ * getBlockSize();
 			auto specify_buffer = makeDataArray(specify_size);
 			uint32_t bytes_read = 0;
+
+			setPosition(header_offset);
 			if (ReadData(specify_buffer->data(), specify_buffer->size()) == 0)
 				return false;
 
 			for (auto iFrame = marker_0x47_offset; iFrame < specify_buffer->size(); iFrame += FRAME_SIZE)
 			{
-				if (specify_buffer[iFrame] != marker_0x47)
+				if (specify_buffer->data()[iFrame] != marker_0x47)
 					return false;
 			}
 			return true;
+		}
+		void setFramesCount(const uint32_t frames_count)
+		{
+			frames_count_ = frames_count;
 		}
 
 	};

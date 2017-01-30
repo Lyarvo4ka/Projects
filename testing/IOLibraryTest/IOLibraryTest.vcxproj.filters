@@ -68,5 +68,8 @@
     <ClCompile Include="DBFRawTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MTSRawTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
