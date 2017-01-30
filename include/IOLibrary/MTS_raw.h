@@ -23,78 +23,77 @@ namespace IO
 	{
 		static const uint32_t FRAME_SIZE = 192;
 		static const uint32_t BLOCK_SIZE = 192 * 512;
+
+	private:
+		//DataArray::Ptr specify_buffer;
 	public:
 		RawMTS( IODevicePtr device)
 			: DefaultRaw(device)
-		{}
+		{
+			setBlockSize(BLOCK_SIZE);
+		}
 		~RawMTS()
 		{
 		}
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
-			//auto write_file = std::make_shared<File>(target_name);
-			//if (!write_file->Open(OpenMode::Create))
-			//	return write_file;
+			if (!target_file.isOpen())
+			{
+				wprintf(L"Target file wasn't opened.\n");
+				return 0;
+			}
+			uint32_t bytes_read = 0;
+			auto data_buffer = makeDataArray(getBlockSize());
 
-			//uint32_t bytes_read = 0;
-			//Buffer buffer(block_size_);
+			uint64_t offset = start_offset;
 
-			//uint64_t offset = header_offset;
+			uint32_t iFrame = 0;
 
-			//bool bCountinue = true;
-			//while (offset < device_->Size())
-			//{
-			//	device_->setPosition(offset);
-			//	bytes_read = device_->ReadData(buffer.data, block_size_);
-			//	if (bytes_read == 0)
-			//		break;
+			bool bEnd = false;
 
-			//	bCountinue = true;
-			//	uint32_t iFrame = 0;
-			//	for (iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
-			//	{
-			//		if (buffer.data[iFrame + marker_0x47_offset] != marker_0x47)
-			//		{
-			//			wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
-			//			bCountinue = false;
-			//			break;
-			//		}
-			//	}
-			//	AppendFile(write_file, buffer.data, iFrame);
+			while (offset < this->getSize())
+			{
+				setPosition(offset);
+				bytes_read = ReadData(data_buffer->data(), data_buffer->size());
+				if (bytes_read == 0)
+					break;
 
-			//	if (!bCountinue)
-			//	{
-			//		uint64_t new_offset = offset;
-			//		new_offset += alingToSector(iFrame, sector_size_);
-			//		return new_offset;
-			//	}
+				for (iFrame = 0; iFrame < bytes_read; iFrame += FRAME_SIZE)
+				{
+					if (data_buffer->data[iFrame + marker_0x47_offset] != marker_0x47)
+					{
+						//wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
+						bEnd = true;
+						break;
+					}
+				}
+				appendToFile(target_file, offset, iFrame);
 
+				if (bEnd)
+					break;
 
-			//	offset += bytes_read;
-			//}
+				offset += bytes_read;
+			}
 
-			return start_offset;
+			return offset - start_offset;
 		}
 		bool Specify(const uint64_t header_offset) override
 		{
-			// Read 1 Mb and check marker 0x47
-			return false;
-		}
-		bool isMTSHeader(const uint8_t * data_sector)
-		{
-			return (memcmp(data_sector + Signatures::mts_header_offset, Signatures::mts_header, Signatures::mts_header_size) == 0);
-		}
-		bool isMTSFooter(const uint8_t * data_sector)
-		{
-			return (memcmp(data_sector + Signatures::mts_header_offset, Signatures::mts_footer, Signatures::mts_footer_size) == 0);
-		}
-		bool AppendFile(File & file_to_write, uint8_t * data, uint32_t data_size)
-		{
-			if (!file_to_write.isOpen())
+			const uint32_t specify_count = 10;
+			const uint32_t specify_size = specify_count * BLOCK_SIZE;
+			auto specify_buffer = makeDataArray(specify_size);
+			uint32_t bytes_read = 0;
+			if (ReadData(specify_buffer->data(), specify_buffer->size()) == 0)
 				return false;
-			file_to_write.setPosition(file_to_write.Size());
-			return ( file_to_write.WriteData(data, data_size) == data_size);
+
+			for (auto iFrame = marker_0x47_offset; iFrame < specify_buffer->size(); iFrame += FRAME_SIZE)
+			{
+				if (specify_buffer[iFrame] != marker_0x47)
+					return false;
+			}
+			return true;
 		}
+
 	};
 }
 

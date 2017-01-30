@@ -138,6 +138,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />
+    <ClInclude Include="..\..\include\IOLibrary\MPG_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MTS_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\pageaddition.h" />

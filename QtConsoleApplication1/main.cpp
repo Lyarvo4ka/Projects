@@ -53,6 +53,15 @@ auto json_str = R"(
           "maxfilesize":  986,
           "extension": ".ZS2"
         },
+		"mts":{
+			"header":
+			[
+				{	"hexdata":"474000100000B01100",
+					"offset":4
+				}
+			],
+			"extension": ".mts"
+		},
         "QT":{
           "header":
           [
