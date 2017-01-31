@@ -96,8 +96,6 @@ BOOST_AUTO_TEST_CASE(Test_readQtAtoms)
 	const uint32_t bkl_2 = 20;
 	const uint32_t bkl_3 = 50;
 
-
-
 	auto moc_file = std::make_shared<MocFile>(data_size);
 
 	IO::qt_block_t qt_block = { 0 };

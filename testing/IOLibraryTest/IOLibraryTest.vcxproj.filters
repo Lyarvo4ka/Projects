@@ -68,7 +68,10 @@
     <ClCompile Include="DBFRawTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MTSRawTest.cpp">
+    <ClCompile Include="RawMTSTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RawMPEGTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

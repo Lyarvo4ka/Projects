@@ -95,18 +95,15 @@ void ReadFooter(const QJsonObject footer_object, SignatureHandle & footer)
 void ReadJsonFIle(const QByteArray & byte_data, QList<JsonFileStruct> & parsedResult)
 {
 	QJsonDocument json_doc = QJsonDocument::fromJson(byte_data);
-	qDebug() << "Hello" << endl;
 
 	auto root = json_doc.object();
-	auto signatures_root = root.value("signatures").toObject();
-
-	auto signatureKeys = signatures_root.keys();
+	auto signatureKeys = root.keys();
 
 	for (auto signature_name : signatureKeys)
 	{
 		JsonFileStruct jsonFileStruct;
 		jsonFileStruct.name = signature_name;
-		auto object_value = signatures_root.value(signature_name);
+		auto object_value = root.value(signature_name);
 		if (object_value.isObject())
 		{
 			qInfo() << "name = " << signature_name << endl;

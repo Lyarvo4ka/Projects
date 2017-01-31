@@ -67,6 +67,10 @@
       <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(BOOST_ROOT)stage\lib\</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -138,8 +142,8 @@
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />
-    <ClInclude Include="..\..\include\IOLibrary\MPG_raw.h" />
-    <ClInclude Include="..\..\include\IOLibrary\MTS_raw.h" />
+    <ClInclude Include="..\..\include\IOLibrary\RawMPEG.h" />
+    <ClInclude Include="..\..\include\IOLibrary\RawMTS.h" />
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\pageaddition.h" />
     <ClInclude Include="..\..\include\IOLibrary\PanasonicRaw.h" />

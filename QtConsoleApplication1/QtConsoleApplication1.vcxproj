@@ -75,6 +75,10 @@
       <Project>{a519d8a9-c4be-4669-b0b3-18f563864d80}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="signatures.json" />
+    <None Include="video.json" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

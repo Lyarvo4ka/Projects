@@ -9,7 +9,7 @@ namespace IO
 {
 	class RawAlgorithm;
 
-	class /*IOLIBRARY_EXPORT*/ RawFactory
+	class RawFactory
 	{
 	public:
 		virtual ~RawFactory() {}
@@ -18,7 +18,7 @@ namespace IO
 
 	using RawFactoryPtr = std::unique_ptr<RawFactory>;
 
-	class /*IOLIBRARY_EXPORT*/ RawFactoryManager
+	class RawFactoryManager
 	{
 		using FactoryMap = std::map<std::string, RawFactoryPtr>;
 	private:
