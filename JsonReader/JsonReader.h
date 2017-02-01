@@ -158,7 +158,7 @@ IO::DataArray::Ptr JsonToDataArray(SignatureHandle signHandle)
 	else
 	{
 		data_array = IO::makeDataArray(signHandle.value_string.length());
-		memcpy(data_array->data(), signHandle.value_string.constData(), data_array->size());
+		memcpy(data_array->data(), signHandle.value_string.toStdString().c_str(), data_array->size());
 	}
 	return data_array;
 }
@@ -170,6 +170,10 @@ IO::FileStruct::Ptr toFileStruct(const JsonFileStruct & jsonFileStruct)
 	{
 		auto data_array = JsonToDataArray(theHeader);
 
+		uint8_t buff[20];
+		ZeroMemory(buff, 20);
+		memcpy(buff, data_array->data(), data_array->size());
+
 		file_struct->addSignature(data_array, theHeader.value_int);
 	}
 
@@ -179,5 +183,6 @@ IO::FileStruct::Ptr toFileStruct(const JsonFileStruct & jsonFileStruct)
 		file_struct->addFooter(data_array);
 		file_struct->setFooterTailEndSize(jsonFileStruct.footer.value_int);
 	}
+	file_struct->setExtension(jsonFileStruct.extension.toStdWString());
 	return file_struct;
 }

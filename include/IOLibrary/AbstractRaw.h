@@ -187,7 +187,7 @@ namespace IO
 	{
 		HeaderArray headers_;
 		std::string formatName_;
-		path_list ext_list_;
+		path_string extension_;
 		DataArray::Ptr footer_;
 		uint32_t footerTailEndSize_ = 0;
 		uint64_t maxFileSize_ = 0;
@@ -197,6 +197,10 @@ namespace IO
 			: formatName_(formatName)
 		{
 
+		}
+		std::string getName() const
+		{
+			return formatName_;
 		}
 		std::size_t headersCount() const
 		{
@@ -268,6 +272,14 @@ namespace IO
 					return false;
 			}
 			return true;
+		}
+		void setExtension(const path_string & extension)
+		{
+			extension_ = extension;
+		}
+		path_string getExtension() const
+		{
+			return extension_;
 		}
 	private:
 		HeaderArray::iterator findByOffset(uint32_t header_offset)
@@ -392,6 +404,7 @@ namespace IO
 
 	class RawAlgorithm
 	{
+	public:
 		virtual uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) = 0;
 		virtual bool Specify(const uint64_t start_offset) = 0;
 	};

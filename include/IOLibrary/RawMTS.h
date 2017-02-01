@@ -3,6 +3,7 @@
 
 
 #include "AbstractRaw.h"
+#include "Factories.h"
 
 
 namespace IO
@@ -93,6 +94,17 @@ namespace IO
 		}
 
 	};
+
+	class RawMTSFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new RawMTS(device);
+		}
+	};
+
 }
 
 #endif
