@@ -70,6 +70,12 @@ int main(int argc, char *argv[])
 			src_device = IO::makeFilePtr(IO::path_string(src_path.begin(), src_path.end()));
 		}
 
+		if (!src_device->Open(IO::OpenMode::OpenRead))
+		{
+			qInfo() << "Error open source device.";
+			return -1;
+		}
+
 		std::string targer_path = argv[target];
 		IO::path_string target_folder(targer_path.begin(), targer_path.end());
 
@@ -112,6 +118,8 @@ int main(int argc, char *argv[])
 			}
 			qInfo() << "Found signature for " << file_struct->getName().c_str() << "file."; 
 			qInfo() << "Offset : " << header_offset << "(bytes)";
+
+			start_offset = header_offset;
  			auto raw_factory = factory_manager.Lookup(file_struct->getName());
 			if (raw_factory)
 			{
@@ -121,11 +129,20 @@ int main(int argc, char *argv[])
 					auto target_file = IO::toFullPath(target_folder, counter++, file_struct->getExtension());
 					auto dst_file = IO::makeFilePtr(target_file);
 					if (dst_file->Open(IO::OpenMode::Create))
-						raw_algorithm->SaveRawFile(*dst_file, start_offset);
+					{
+						auto target_size = raw_algorithm->SaveRawFile(*dst_file, header_offset);
+						if ( target_size > 0)
+						{
+							//target_size /= src_device;
+
+						}
+					}
+							
 
 				}
 			}
 
+			start_offset += default_sector_size;
 
 		}
 
