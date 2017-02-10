@@ -349,6 +349,7 @@ namespace IO
 		}
 		FileStruct * findHeader(const uint64_t start_offset, uint64_t & header_pos)
 		{
+			header_pos = 0;
 			if ( !device_->isOpen())
 			if (!device_->Open(OpenMode::OpenRead))
 			{

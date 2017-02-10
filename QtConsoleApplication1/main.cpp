@@ -113,10 +113,10 @@ int main(int argc, char *argv[])
 			auto file_struct = signatureFinder.findHeader(start_offset, header_offset);
 			if (!file_struct)
 			{
-				qInfo() << "No more found headers.";
+				qInfo() << endl << endl << endl << "No more signatures found. Press any key to exit.";
 				break;
 			}
-			qInfo() << "Found signature for " << file_struct->getName().c_str() << "file."; 
+			qInfo() << "Found signature for [" << file_struct->getName().c_str() << "] file."; 
 			qInfo() << "Offset : " << header_offset << "(bytes)";
 
 			start_offset = header_offset;
@@ -131,14 +131,34 @@ int main(int argc, char *argv[])
 					if (dst_file->Open(IO::OpenMode::Create))
 					{
 						auto target_size = raw_algorithm->SaveRawFile(*dst_file, header_offset);
-						if ( target_size > 0)
+						
+						if ( target_size == 0)
 						{
-							//target_size /= src_device;
+							qInfo() << "Error to save file. Exit." ;
+							break;
 
 						}
+						auto dst_size = dst_file->Size();
+						dst_file->Close();
+						qInfo() << "Successfully saved " << target_size << "(bytes)" << endl << endl;
+						target_size /= default_sector_size;
+						target_size *= default_sector_size;
+						start_offset = header_offset + target_size;
+
 					}
+					else
+					{
+						qInfo() << "Error to create target file." << QString::fromStdWString(target_file);
+						qInfo() << "Exit.";
+						break;
+					}
+
 							
 
+				}
+				else
+				{
+					qInfo() << "Not specified for " << QString::fromStdString(file_struct->getName()) << "continue search for other signatures."<<endl;
 				}
 			}
 

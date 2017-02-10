@@ -120,6 +120,7 @@ namespace IO
 			qt_block_t qt_block = { 0 };
 			uint32_t bytes_read = 0;
 			uint64_t keyword_offset = start_offset;
+			uint64_t full_size = 0;
 
 			while (true)
 			{
@@ -140,11 +141,11 @@ namespace IO
 					break;
 
 				list_blocks.push_back(qt_block);
-
+				full_size += write_size;
 				keyword_offset += write_size;
 			}
 
-			return keyword_offset;
+			return full_size;
 		}
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
@@ -165,7 +166,10 @@ namespace IO
 			keywords_.clear();
 			auto sizeKeywords = readQtAtoms(start_offset, keywords_);
 			if (isPresentMainKeywords(keywords_))
+			{
 				sizeToWrite_ = sizeKeywords;
+				return true;
+			}
 			return false;
 		}
 		bool isPresentMainKeywords(const ListQtBlock & keywords )

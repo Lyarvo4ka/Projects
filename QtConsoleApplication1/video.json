@@ -13,8 +13,8 @@
 		"header":
 		[
 			{	
-				"hexdata":"474000100000B01100",
-				"offset":4
+				"hexdata":"00000000474000100000B01100",
+				"offset":0
 			}
 		],
 			"extension": ".mts"

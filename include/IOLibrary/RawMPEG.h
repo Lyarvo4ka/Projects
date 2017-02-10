@@ -9,7 +9,7 @@ namespace IO
 	const uint8_t mpeg_data[] = { 0x00 , 0x00 , 0x01 , 0xBA };
 	const uint32_t mpeg_data_size = SIZEOF_ARRAY(mpeg_data);
 	const uint32_t default_mpeg_data_size = 2048;
-	const uint32_t DEFAULT_MPEG_SPECIFY_COUNT = 262144;
+	const uint32_t DEFAULT_MPEG_SPECIFY_COUNT = 256;
 
 
 	class RawMPEG
@@ -37,6 +37,7 @@ namespace IO
 			auto data_buffer = makeDataArray(getBlockSize());
 
 			uint64_t offset = start_offset;
+			uint64_t bytesWritten = 0;
 			bool bEnd = false;
 			uint32_t iBlock = 0;
 
@@ -57,7 +58,7 @@ namespace IO
 					}
 				}
 
-				appendToFile(target_file, offset, iBlock);
+				bytesWritten += appendToFile(target_file, offset, iBlock);
 
 				if (bEnd)
 					break;
@@ -65,7 +66,7 @@ namespace IO
 				offset += bytes_read;
 			}
 
-			return offset - start_offset;
+			return bytesWritten;
 		}
 		bool Specify(const uint64_t start_offset) override
 		{

@@ -56,7 +56,7 @@ namespace IO
 				{
 					if (data_buffer->data()[iFrame + marker_0x47_offset] != marker_0x47)
 					{
-						//wprintf(L"Found in mts incorrect marker.(It's not 0x47).Start find new mts header.\n");
+						//wprintf(L"Found in mts incorrect marker.(It's not 0x47).\n");
 						bEnd = true;
 						break;
 					}
