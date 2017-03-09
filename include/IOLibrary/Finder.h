@@ -181,7 +181,7 @@ namespace IO
 				//new_name.erase(std::remove_if(new_name.begin(), new_name.end(), '\\'), new_name.end());
 				//std::remove_if(new_name.begin(), new_name.end(), );
 
-				int pos = file_size - 1;
+				int pos = (int)(file_size - 1);
 				while (pos != 0)
 				{
 					if ( buffer.data[pos] != 0)

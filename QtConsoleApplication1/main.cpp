@@ -22,6 +22,7 @@
 #include "IOLibrary/RawMTS.h"
 #include "IOLibrary/RawMPEG.h"
 #include "IOLibrary/QuickTime.h"
+#include "IOLibrary/RawAVI.h"
 
 const int param_count = 4;
 const int option = 1;
@@ -36,6 +37,7 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 	factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
 	factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
 	factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
+	factory_manager.Register("avi", std::make_unique<IO::RawAVIFactory>());
 
 
 }
@@ -89,12 +91,17 @@ int main(int argc, char *argv[])
 		QFile file("video.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
-			qInfo() << "Error to open file.";
+			qInfo() << "Error to open file. \"video.json\"";
 			return -1;
 		}
 
 		auto json_str = file.readAll();
 		ReadJsonFIle(json_str, listFileStruct);
+		if ( listFileStruct.empty())
+		{
+			qInfo() << "Error to read video.json file. Wrong syntax.";
+			return -1;
+		}
 
 		IO::HeaderBase::Ptr headerBase = std::make_shared<IO::HeaderBase>();
 		for (auto theFileStruct : listFileStruct)
@@ -105,7 +112,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0;
+		uint64_t start_offset = 0/*1815176*512*/;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())

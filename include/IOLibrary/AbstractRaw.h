@@ -453,12 +453,19 @@ namespace IO
 		uint64_t appendToFile(File & write_file, const uint64_t source_offset, const uint64_t write_size)
 		{
 			if (source_offset >= getSize())
+			{
+				printf("Error append to file. Source offset is more than size.\r\n");
 				return 0;
+			}
 
 			uint64_t to_write = write_size;
 			if (source_offset + write_size > getSize())	// ?????
 				to_write = getSize() - write_size;
 
+			if (to_write == 0)
+			{
+				printf("Error append to file. Write size is 0.\r\n");
+			}
 
 			auto target_offset = write_file.Size();
 			uint32_t bytes_read = 0;

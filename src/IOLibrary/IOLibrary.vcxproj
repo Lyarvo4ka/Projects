@@ -24,7 +24,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -142,6 +142,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />
+    <ClInclude Include="..\..\include\IOLibrary\RawAVI.h" />
     <ClInclude Include="..\..\include\IOLibrary\RawMPEG.h" />
     <ClInclude Include="..\..\include\IOLibrary\RawMTS.h" />
     <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h" />

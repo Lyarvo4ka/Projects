@@ -256,7 +256,7 @@ unsigned short Crc16_new(unsigned char *pcBlock, unsigned short len)
 //}
 
 
-#include "IOLibrary/MTS_raw.h"
+//#include "IOLibrary/MTS_raw.h"
 
 void run_RawMTS(int argc, TCHAR **argv)
 {
@@ -364,13 +364,108 @@ raw.appendToFile(target_file, header_pos, src_file->Size() - header_pos);
 
 #include "IOLibrary/StandartRaw.h"
 #include "IOLibrary/QuickTime.h"
-#include "rapidjson/document.h"
+//#include "rapidjson/document.h"
 
 const uint8_t keystore_header[] = { 0xFE, 0xED, 0xFE, 0xED };
 const uint8_t ext_qt_header[] = { 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x00, 0x00 };
-
+const int param_count = 2;
+const int number = 1;
 int _tmain(int argc, TCHAR **argv)
 {
+
+	if (argc != param_count)
+	{
+		wprintf(L"Wrong params.\n");
+		return -1;
+
+	}
+
+	auto drive_number = boost::lexical_cast<uint32_t>(argv[number]);
+
+
+	auto drive_list = IO::ReadPhysicalDrives();
+	auto physical_drive = drive_list.find_by_number(drive_number);
+	if (!physical_drive)
+	{
+		wprintf(L"Wrong drive number.\n");
+		return -1;
+	}
+	wprintf(L"You selected\n");
+	wprintf(L"Number : %d\n", drive_number);
+	auto drive_name = physical_drive->getDriveName().c_str();
+	wprintf(L"Name : %s\n", drive_name);
+	printf("Serial number : %s\n", physical_drive->getSerialNumber().c_str());
+	wprintf(L"Size : %I64d (bytes)", physical_drive->getSize());
+
+	IO::SystemIO systemIO;
+	auto drive_handle = systemIO.OpenPhysicalDrive(physical_drive->getPath());
+	if (drive_handle == INVALID_HANDLE_VALUE)
+	{
+		wprintf(L"Error open drive .\n");
+		return -1;
+	}
+
+	uint64_t sector_number = 0;
+
+	char number_data[17];
+
+	uint8_t sector_data[default_sector_size];
+	uint8_t block_data[default_block_size];
+
+	memset(sector_data, 0x00, default_sector_size);
+
+	const char begin_name[] = "           BEGIN";
+	memcpy(sector_data, begin_name, 16);
+	sprintf_s(number_data, 17, "%.16I64d", sector_number);
+	memcpy(sector_data + 16, number_data, 16);
+
+	// write first sector
+	DWORD bytesWritten = 0;
+
+	if (!WriteFile(drive_handle, sector_data, default_sector_size, &bytesWritten, NULL))
+	{
+		printf("Error write to drive.");
+		return -1;
+	}
+	if (bytesWritten == 0)
+	{
+		printf("Error write to drive.");
+		return -1;
+	}
+
+	uint64_t offset = default_sector_size;
+
+	LARGE_INTEGER liOffset = { 0 };
+
+	liOffset.QuadPart = offset;
+
+	while (liOffset.QuadPart < physical_drive->getSize())
+	{
+		ZeroMemory(block_data, default_block_size);
+
+		for (DWORD iSector = 0; iSector < defalut_number_sectors; ++iSector)
+		{
+			memset(number_data, 0, 17);
+			sprintf_s(number_data, 17, "%.16I64d", ++sector_number);
+			memcpy(block_data + iSector*default_sector_size, number_data, 16);
+		}
+
+		::SetFilePointerEx(drive_handle, liOffset, NULL, FILE_BEGIN);
+		if (!WriteFile(drive_handle, block_data, default_block_size, &bytesWritten, NULL))
+		{
+			printf("Error write to drive.");
+			return -1;
+		}
+		if (bytesWritten == 0)
+		{
+			printf("Error write to drive.");
+			return -1;
+		}
+		printf("Write Sector %I64d\r\n", liOffset.QuadPart);
+
+		liOffset.QuadPart += default_block_size;
+
+	}
 	//auto json_filename = L"c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.json";
 	//IO::File json_file(json_filename);
 	//if (!json_file.Open(IO::OpenMode::OpenRead))
@@ -391,7 +486,7 @@ int _tmain(int argc, TCHAR **argv)
 	//auto physical_drive = list_drives.find_by_number(2);
 	//if (!physical_drive)
 	//	return -1;
-
+/*
 	//auto disk_2 = std::make_shared<IO::DiskDevice>(physical_drive);
 	const uint32_t source_param = 1;
 	const uint32_t size_param = 2;
@@ -452,7 +547,7 @@ int _tmain(int argc, TCHAR **argv)
 	}
 	//run_RawMTS(argc, argv);
 
-
+*/
 	//auto list_drives = IO::ReadPhysicalDrives();
 	//auto physical_drive = list_drives.find_by_number(2);
 	//if (!physical_drive)

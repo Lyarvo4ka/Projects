@@ -62,6 +62,20 @@ namespace IO
 	const path_list listExtensions2003 = { L".doc",L".xls",L".ppt" };
 
 
+	inline void toBE64(uint64_t & val)
+	{
+		val = _byteswap_uint64(val);
+	}
+	inline void toBE32(uint32_t & val)
+	{
+		val = _byteswap_ulong(val);
+	}
+	inline void toBE16(uint16_t & val)
+	{
+		val = _byteswap_ushort(val);
+	}
+
+
 };
 
 #include <array>
@@ -177,6 +191,8 @@ namespace Signatures
 	const uint8_t dbf_header_1 = 0x03;
 	const uint8_t dbf_header_2[] = { 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 };
 	const uint32_t dbf_header_2_offset = 0x10;
+
+
 
 };
 

@@ -86,14 +86,7 @@ namespace IO
 	//		byte_buffer[type_size - iByte - 1] = temp;
 	//	}
 	//}
-	inline void toBE64(uint64_t & val)
-	{
-		val = _byteswap_uint64(val);
-	}
-	inline void toBE32(uint32_t & val)
-	{
-		val = _byteswap_ulong(val);
-	}
+
 
 
 	

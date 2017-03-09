@@ -9,6 +9,7 @@
 		],
 		 "extension": ".mpg"
 		},
+
 	"mts":{
 		"header":
 		[
@@ -19,6 +20,7 @@
 		],
 			"extension": ".mts"
 		},
+
     "quicktime":{
 		"header":
           [
@@ -37,5 +39,22 @@
             
           ],
           "extension": ".mov"
-        }
+        },
+
+	"avi":{
+	"header":
+	[
+		{
+			"hexdata":"52494646",
+			"offset": 0
+		},
+		{
+			"hexdata":"415649204C495354",
+			"offset": 8
+		}
+
+	],
+	"extension":".avi"
+	
+	}
 }
