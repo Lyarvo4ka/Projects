@@ -98,7 +98,6 @@ namespace IO
 	{
 	private:
 		uint32_t mpegBlockSize_ = default_mpeg_data_size;
-		uint32_t blocksForSpecify_ = DEFAULT_MPEG_SPECIFY_COUNT;
 		uint32_t checkMaxSize_ = VALUE_512Kb;
 	public:
 		RawMPEG(IODevicePtr device)
@@ -178,7 +177,11 @@ namespace IO
 			auto new_mpeg_size = calcMpegBlockSize(start_offset);
 
 			if (new_mpeg_size == 0)
-				return false;
+			{
+				new_mpeg_size = pickUpBlockSize(start_offset);
+				if ( new_mpeg_size == 0)
+					return false;
+			}
 
 			new_mpeg_size /= default_mpeg_data_size;
 			new_mpeg_size *= default_mpeg_data_size;
@@ -204,10 +207,6 @@ namespace IO
 		void setMpegBlockSize(const uint32_t mpegBlockSize)
 		{
 			mpegBlockSize_ = mpegBlockSize;
-		}
-		void setBlocksForSpecify(const uint32_t blocksForSpecify)
-		{
-			blocksForSpecify_ = blocksForSpecify;
 		}
 
 		uint32_t calcMpegBlockSize(const uint64_t start_offset)
@@ -273,6 +272,21 @@ namespace IO
 			}
 
 			return mpeg_block_size;
+		}
+
+		uint32_t pickUpBlockSize(const uint64_t start_offset)
+		{
+			auto data_buffer = makeDataArray(VALUE_512Kb);
+			setPosition(start_offset);
+			ReadData(data_buffer->data(), data_buffer->size());
+
+			for (auto iBlock = default_mpeg_data_size; iBlock < VALUE_512Kb; iBlock *= 2)
+			{
+				if (memcmp(data_buffer->data() + iBlock, mpeg_data, mpeg_data_size) == 0)
+					return iBlock;
+			}
+
+			return 0;
 		}
 
 
