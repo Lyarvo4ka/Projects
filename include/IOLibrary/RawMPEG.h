@@ -114,9 +114,16 @@ namespace IO
 				wprintf(L"Target file wasn't opened.\n");
 				return 0;
 			}
+			if (mpegBlockSize_ == 0)
+			{
+				wprintf(L"Error mpeg_block_size is 0.\n");
+				return 0;
+			}
+
 			uint32_t bytes_read = 0;
 			if (getBlockSize() < mpegBlockSize_)
 				setBlockSize(mpegBlockSize_);
+
 			auto data_buffer = makeDataArray(getBlockSize());
 
 			uint64_t offset = start_offset;
@@ -124,13 +131,9 @@ namespace IO
 			bool bEnd = false;
 			uint32_t iBlock = 0;
 
-			uint32_t end_code = ISO_11172_END_CODE;
-			toBE32(end_code);
 
-			uint32_t end_seq_code = SEQUENCE_END_CODE;
-			toBE32(end_seq_code);
-			const uint32_t marker_size = sizeof(uint32_t);
-
+			uint32_t sizeToWrite = 0;
+			uint32_t end_pos = 0;
 			while (offset < this->getSize())
 			{ 
 				setPosition(offset);
@@ -138,32 +141,13 @@ namespace IO
 				if (bytes_read == 0 )
 					break;
 
+				sizeToWrite = data_buffer->size();
 
-				for (iBlock = 0; iBlock < data_buffer->size(); iBlock += mpegBlockSize_)
-				{
-					if (memcmp(data_buffer->data() + iBlock, mpeg_data, mpeg_data_size) != 0)
-					{
-						bEnd = true;
-						break;
-					}
-				}
-				if ( iBlock > 0)
-				{
-					for (auto iByte = marker_size; iByte < iBlock - marker_size; ++iByte)
-					{
-						if (memcmp(data_buffer->data() + iByte, &end_code, marker_size) == 0)
-						{
-							if (memcmp(data_buffer->data() + iByte - marker_size, &end_seq_code, marker_size) == 0)
-							{
-								iBlock = iByte + marker_size;
-								bEnd = true;
-								break;
-							}
-						}
-					}
+				if (bEnd = findEndFile(data_buffer->data(), data_buffer->size(), end_pos))
+					sizeToWrite = end_pos;
 
-					bytesWritten += appendToFile(target_file, offset, iBlock);
-				}
+				bytesWritten += appendToFile(target_file, offset, sizeToWrite);
+
 				if (bEnd)
 					break;
 
@@ -172,13 +156,46 @@ namespace IO
 
 			return bytesWritten;
 		}
+		bool findEndFile(const ByteArray data , const uint32_t data_size, uint32_t & end_pos)
+		{
+			uint32_t end_code = ISO_11172_END_CODE;
+			toBE32(end_code);
+
+			uint32_t end_seq_code = SEQUENCE_END_CODE;
+			toBE32(end_seq_code);
+			const uint32_t marker_size = sizeof(uint32_t);
+
+			for (auto iBlock = 0; iBlock < data_size - marker_size; ++iBlock)
+			{
+				if ((iBlock % mpegBlockSize_) == 0)
+					if (memcmp(data + iBlock, mpeg_data, mpeg_data_size) != 0)
+					{
+						end_pos = iBlock;
+						printf("not header\r\n");
+						return true;
+					}
+
+				if (memcmp(data + iBlock, &end_code, marker_size) == 0)
+				{
+					if (iBlock >= marker_size)
+					if (memcmp(data + iBlock - marker_size, &end_seq_code, marker_size) == 0)
+					{
+						iBlock += marker_size;
+						end_pos = iBlock;
+						printf("End code.\r\n");
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 		bool Specify(const uint64_t start_offset) override
 		{
 			auto new_mpeg_size = calcMpegBlockSize(start_offset);
 
 			if (new_mpeg_size == 0)
 			{
-				new_mpeg_size = pickUpBlockSize(start_offset);
+				new_mpeg_size = pickUpBlockSize(start_offset, VALUE_512Kb);
 				if ( new_mpeg_size == 0)
 					return false;
 			}
@@ -274,13 +291,19 @@ namespace IO
 			return mpeg_block_size;
 		}
 
-		uint32_t pickUpBlockSize(const uint64_t start_offset)
+		uint32_t pickUpBlockSize(const uint64_t start_offset, const uint32_t max_block_size)
 		{
-			auto data_buffer = makeDataArray(VALUE_512Kb);
+			if (max_block_size < default_mpeg_data_size)
+				return 0;
+
+			if (max_block_size % default_mpeg_data_size != 0)
+				return 0;
+
+			auto data_buffer = makeDataArray(max_block_size);
 			setPosition(start_offset);
 			ReadData(data_buffer->data(), data_buffer->size());
 
-			for (auto iBlock = default_mpeg_data_size; iBlock < VALUE_512Kb; iBlock *= 2)
+			for (auto iBlock = default_mpeg_data_size; iBlock < max_block_size; iBlock *= 2)
 			{
 				if (memcmp(data_buffer->data() + iBlock, mpeg_data, mpeg_data_size) == 0)
 					return iBlock;
