@@ -127,10 +127,13 @@ int main(int argc, char *argv[])
 			qInfo() << "Offset : " << header_offset << "(bytes)";
 
 			start_offset = header_offset;
+			if (file_struct->getName().compare("quicktime") == 0 )
+			{
  			auto raw_factory = factory_manager.Lookup(file_struct->getName());
 			if (raw_factory)
 			{
-				auto raw_algorithm = raw_factory->createRawAlgorithm(src_device);
+				//auto raw_algorithm = raw_factory->createRawAlgorithm(src_device);
+				auto raw_algorithm = new IO::Qt_ESER_YDXJ_Raw(src_device);
 				if (raw_algorithm->Specify(header_offset))
 				{
 					auto target_file = IO::toFullPath(target_folder, counter++, file_struct->getExtension());
@@ -150,7 +153,7 @@ int main(int argc, char *argv[])
 						qInfo() << "Successfully saved " << target_size << "(bytes)" << endl << endl;
 						target_size /= default_sector_size;
 						target_size *= default_sector_size;
-						start_offset = header_offset + target_size;
+						start_offset = header_offset + default_sector_size;
 
 					}
 					else
@@ -167,6 +170,7 @@ int main(int argc, char *argv[])
 				{
 					qInfo() << "Not specified for " << QString::fromStdString(file_struct->getName()) << "continue search for other signatures."<<endl;
 				}
+			}
 			}
 
 			start_offset += default_sector_size;

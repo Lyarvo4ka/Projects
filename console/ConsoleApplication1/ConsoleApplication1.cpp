@@ -370,9 +370,19 @@ const uint8_t keystore_header[] = { 0xFE, 0xED, 0xFE, 0xED };
 const uint8_t ext_qt_header[] = { 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x00, 0x00 };
 const int param_count = 2;
 const int number = 1;
+
+#include "IOLibrary/Entropy.h"
+
+
 int _tmain(int argc, TCHAR **argv)
 {
+	IO::calcEntropyForFile("f:\\41523_example\\100MEDIA\\YDXJ0516.MP4", 131072);
+	IO::calcEntropyForFile("f:\\41523_example\\100MEDIA\\YDXJ0516_thm.MP4", 131072);
 
+
+
+
+	/*
 	if (argc != param_count)
 	{
 		wprintf(L"Wrong params.\n");
@@ -466,6 +476,7 @@ int _tmain(int argc, TCHAR **argv)
 		liOffset.QuadPart += default_block_size;
 
 	}
+	*/
 	//auto json_filename = L"c:\\Users\\ssavchenko\\Source\\Repos\\Projects\\include\\IOLibrary\\signatures.json";
 	//IO::File json_file(json_filename);
 	//if (!json_file.Open(IO::OpenMode::OpenRead))

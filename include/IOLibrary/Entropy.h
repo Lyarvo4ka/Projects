@@ -19,10 +19,10 @@ namespace IO
 {
 	static double Log2 = log(2.0);
 
-	double IOLIBRARY_EXPORT calcEntropy( BYTE * data, DWORD size );
-	bool IOLIBRARY_EXPORT calcEntropyForFile(const std::string & file_name, DWORD block_size);
-	void IOLIBRARY_EXPORT calcEntropyForFolder(const std::string & folder, DWORD block_size);
-	void IOLIBRARY_EXPORT removeLRV(const std::string & input_file, const std::string & output_file, DWORD cluster_size);
+	double calcEntropy( BYTE * data, DWORD size );
+	bool calcEntropyForFile(const std::string & file_name, DWORD block_size);
+	void calcEntropyForFolder(const std::string & folder, DWORD block_size);
+	void removeLRV(const std::string & input_file, const std::string & output_file, DWORD cluster_size);
 }
 
 

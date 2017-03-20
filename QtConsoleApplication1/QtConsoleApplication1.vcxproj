@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{50A8BBFD-5EBF-45CC-BF89-D7C0387A6260}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
-    <ProjectName>VideoRecoveryQt</ProjectName>
+    <ProjectName>QT_FragmentRaw</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

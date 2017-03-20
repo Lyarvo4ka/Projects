@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "iofs.h"
 #include "StandartRaw.h"
+#include "Entropy.h"
 
 #include <iostream>
 
@@ -286,6 +287,108 @@ namespace IO
 		{
 			return true;
 		}
+	};
+
+	class Qt_ESER_YDXJ_Raw
+		: public QuickTimeRaw
+	{
+	public:
+		Qt_ESER_YDXJ_Raw(IODevicePtr device)
+			: QuickTimeRaw(device)
+		{
+
+		}
+
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
+		{
+			const uint32_t cluster_size = 131072;
+			const uint32_t max_nulls = 875;
+			uint32_t nulls_count = 0;
+
+			auto cluster_data = IO::makeDataArray(cluster_size);
+
+			uint64_t offset = start_offset;
+			uint64_t file_size = 0;
+			uint32_t cluster_number = 0;
+			while (true)
+			{
+				setPosition(offset);
+				if (!ReadData(cluster_data->data(), cluster_data->size()))
+				{
+					printf("Error read cluster %d\n", offset / cluster_size);
+					break;
+				}
+				nulls_count = 0;
+				if (!calcNullsAndFindMOOV(cluster_data->data(), cluster_data->size() , nulls_count) )
+				{
+					auto entropy = calcEntropy(cluster_data->data(), cluster_data->size());
+					//printf("#%d = %lf \r\n", cluster_number, entropy);
+					if (cluster_number <= 10 )
+						appendToFile(target_file, offset, cluster_data->size());
+					else
+					if (entropy > 7.9974)
+						appendToFile(target_file, offset, cluster_data->size());
+
+					//if (nulls_count < max_nulls)
+					//	appendToFile(target_file, offset, cluster_data->size());
+					//else
+					//{
+					//	if (offset == start_offset)
+					//		return 0;
+					//	printf("a lot of nulls \r\n");
+					//}
+				}
+				else
+				{
+					uint32_t moov_pos = nulls_count - sizeof(s_moov) + 1 ;
+					appendToFile(target_file, offset, moov_pos);
+					file_size += moov_pos;
+
+					uint64_t moov_offset = offset + moov_pos;
+					qt_block_t qt_block = { 0 };
+
+					setPosition(moov_offset);
+					ReadData((ByteArray)&qt_block, qt_block_struct_size);
+					toBE32((uint32_t &)qt_block.block_size);
+
+					appendToFile(target_file, moov_offset, qt_block.block_size);
+					file_size += qt_block.block_size;
+					return file_size;
+
+				}
+				++cluster_number;
+				offset += cluster_size;
+				file_size += cluster_size;
+			}
+			return file_size;
+
+		}
+		bool calcNullsAndFindMOOV(const ByteArray data, const uint32_t size , uint32_t & nulls_count )
+		{
+			for (auto iByte = 0; iByte < size - sizeof(s_moov); ++iByte)
+			{
+				if (memcmp(data + iByte, s_moov, sizeof(s_moov) ) == 0)
+				{
+					nulls_count = iByte;
+					return true;
+				}
+
+				if (data[iByte] == 0)
+					++nulls_count;
+			}
+
+			for ( auto iByte = size - sizeof(s_moov) ; iByte < size ; ++iByte)
+				if (data[iByte] == 0)
+					++nulls_count;
+
+			return false;
+		}
+
+		bool Specify(const uint64_t start_offset) override
+		{
+			return true;
+		}
+
 	};
 
 }

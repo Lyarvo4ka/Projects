@@ -70,7 +70,7 @@ bool IO::calcEntropyForFile(const std::string & file_name, DWORD block_size)
 }
 
 
-void IOLIBRARY_EXPORT IO::calcEntropyForFolder(const std::string & folder, DWORD block_size)
+void IO::calcEntropyForFolder(const std::string & folder, DWORD block_size)
 {
 	//FileFinder finder;
 	//stringlist all_files;

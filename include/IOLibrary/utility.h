@@ -151,7 +151,7 @@ namespace IO
 		return addBackSlash(folder) + toNumberString(number) + extension;
 	}
 
-	bool createDirectiry(const path_string & folder, const path_string & new_folder, path_string & result_folder)
+	inline bool createDirectory(const path_string & folder, const path_string & new_folder, path_string & result_folder)
 	{
 		result_folder = addBackSlash(folder) + new_folder;
 		if (!boost::filesystem::exists(result_folder))
