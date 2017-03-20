@@ -63,6 +63,11 @@ const uint32_t expected_blocks_count = 4;
 //}
 //BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_AUTO_TEST_CASE(RawMPEG_calcMpegBlockSize2048_test)
+{
+
+}
+
 BOOST_AUTO_TEST_CASE(RawMPEG_calcMpegBlockSize_test)
 {
 	auto src_file = IO::makeFilePtr(L"d:\\Testing\\mpg\\131072_2.MPG");

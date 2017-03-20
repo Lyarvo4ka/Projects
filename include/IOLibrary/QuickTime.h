@@ -303,13 +303,45 @@ namespace IO
 		{
 			const uint32_t cluster_size = 131072;
 			const uint32_t max_nulls = 875;
-			uint32_t nulls_count = 0;
+			const double entropy_border = 7.9974;
 
 			auto cluster_data = IO::makeDataArray(cluster_size);
 
 			uint64_t offset = start_offset;
 			uint64_t file_size = 0;
 			uint32_t cluster_number = 0;
+
+			std::list<double> entropyList;
+			double prev = 0.0;
+			double curr = 0.0;
+			double next = 0.0;
+
+			for (auto i = 0; i < 10; ++i)
+			{
+				setPosition(offset);
+				if (!ReadData(cluster_data->data(), cluster_data->size()))
+				{
+					printf("Error read cluster %d\n", offset / cluster_size);
+					break;
+				}
+				appendToFile(target_file, offset, cluster_size);
+				offset += cluster_size;
+			}
+
+			setPosition(offset);
+			ReadData(cluster_data->data(), cluster_data->size());
+			offset += cluster_size;
+			prev = calcEntropy(cluster_data->data(), cluster_data->size());
+			appendToFile(target_file, offset, cluster_size);
+
+			setPosition(offset);
+			ReadData(cluster_data->data(), cluster_data->size());
+			offset += cluster_size;
+			curr = calcEntropy(cluster_data->data(), cluster_data->size());
+			appendToFile(target_file, offset, cluster_size);
+
+			uint32_t nCount = 0;
+
 			while (true)
 			{
 				setPosition(offset);
@@ -318,25 +350,24 @@ namespace IO
 					printf("Error read cluster %d\n", offset / cluster_size);
 					break;
 				}
-				nulls_count = 0;
-				if (!calcNullsAndFindMOOV(cluster_data->data(), cluster_data->size() , nulls_count) )
-				{
-					auto entropy = calcEntropy(cluster_data->data(), cluster_data->size());
-					//printf("#%d = %lf \r\n", cluster_number, entropy);
-					if (cluster_number <= 10 )
-						appendToFile(target_file, offset, cluster_data->size());
-					else
-					if (entropy > 7.9974)
-						appendToFile(target_file, offset, cluster_data->size());
+				next = calcEntropy(cluster_data->data(), cluster_data->size());
 
-					//if (nulls_count < max_nulls)
-					//	appendToFile(target_file, offset, cluster_data->size());
-					//else
-					//{
-					//	if (offset == start_offset)
-					//		return 0;
-					//	printf("a lot of nulls \r\n");
-					//}
+				nCount = 0;
+				if (prev > entropy_border)
+					++nCount;
+				if (curr > entropy_border)
+					++nCount;
+				if (next > entropy_border)
+					++nCount;
+
+				if (!findMOOV(cluster_data->data(), cluster_data->size()))
+				{ 
+					if (nCount > 2)
+						appendToFile(target_file, offset, cluster_size);
+					else
+					{
+
+					}
 				}
 				else
 				{
@@ -356,6 +387,8 @@ namespace IO
 					return file_size;
 
 				}
+				prev = curr;
+				curr = next;
 				++cluster_number;
 				offset += cluster_size;
 				file_size += cluster_size;
@@ -363,23 +396,11 @@ namespace IO
 			return file_size;
 
 		}
-		bool calcNullsAndFindMOOV(const ByteArray data, const uint32_t size , uint32_t & nulls_count )
+		bool findMOOV(const ByteArray data, const uint32_t size )
 		{
 			for (auto iByte = 0; iByte < size - sizeof(s_moov); ++iByte)
-			{
 				if (memcmp(data + iByte, s_moov, sizeof(s_moov) ) == 0)
-				{
-					nulls_count = iByte;
 					return true;
-				}
-
-				if (data[iByte] == 0)
-					++nulls_count;
-			}
-
-			for ( auto iByte = size - sizeof(s_moov) ; iByte < size ; ++iByte)
-				if (data[iByte] == 0)
-					++nulls_count;
 
 			return false;
 		}
