@@ -288,12 +288,23 @@ namespace IO
 			return true;
 		}
 	};
+	
+	struct DataEntropy
+	{
+		double entropy;
+		DataArray::Ptr data_array;
+	};
 
-	class Qt_ESER_YDXJ_Raw
+	/*
+		Восстановление фрагментированных видео файлов (QuickTime). Одно видео высокого разрешения одно маленького.
+		Идет подщет ентропии для каждого кластера. Если не подходит под критерий то кластер не сохраняется.
+		Испрользуется окно в 3 кластера чтоб не исключить нужный кластер. 
+	*/
+	class ESER_YDXJ_QtRaw
 		: public QuickTimeRaw
 	{
 	public:
-		Qt_ESER_YDXJ_Raw(IODevicePtr device)
+		ESER_YDXJ_QtRaw(IODevicePtr device)
 			: QuickTimeRaw(device)
 		{
 
@@ -302,22 +313,15 @@ namespace IO
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
 			const uint32_t cluster_size = 131072;
-			const uint32_t max_nulls = 875;
 			const double entropy_border = 7.9974;
-
-			auto cluster_data = IO::makeDataArray(cluster_size);
 
 			uint64_t offset = start_offset;
 			uint64_t file_size = 0;
 			uint32_t cluster_number = 0;
 
-			std::list<double> entropyList;
-			double prev = 0.0;
-			double curr = 0.0;
-			double next = 0.0;
-
 			for (auto i = 0; i < 10; ++i)
 			{
+				auto cluster_data = IO::makeDataArray(cluster_size);
 				setPosition(offset);
 				if (!ReadData(cluster_data->data(), cluster_data->size()))
 				{
@@ -328,67 +332,80 @@ namespace IO
 				offset += cluster_size;
 			}
 
+			std::unique_ptr<DataEntropy> prev = std::make_unique<DataEntropy>();
+			prev->data_array = IO::makeDataArray(cluster_size);
 			setPosition(offset);
-			ReadData(cluster_data->data(), cluster_data->size());
-			offset += cluster_size;
-			prev = calcEntropy(cluster_data->data(), cluster_data->size());
+			ReadData(prev->data_array->data(), prev->data_array->size());
+			prev->entropy = calcEntropy(prev->data_array->data(), prev->data_array->size());
 			appendToFile(target_file, offset, cluster_size);
+			offset += cluster_size;
 
+
+			//uint64_t curr_offset = offset;
+			std::unique_ptr<DataEntropy> curr = std::make_unique<DataEntropy>();
+			curr->data_array = IO::makeDataArray(cluster_size);
 			setPosition(offset);
-			ReadData(cluster_data->data(), cluster_data->size());
+			ReadData(curr->data_array->data(), curr->data_array->size());
 			offset += cluster_size;
-			curr = calcEntropy(cluster_data->data(), cluster_data->size());
-			appendToFile(target_file, offset, cluster_size);
+			curr->entropy = calcEntropy(curr->data_array->data(), curr->data_array->size());
+//			appendToFile(target_file, offset, cluster_size);
 
 			uint32_t nCount = 0;
+			uint32_t moov_offset = 0;
 
 			while (true)
 			{
+				std::unique_ptr<DataEntropy> next = std::make_unique<DataEntropy>();
+				next->data_array = IO::makeDataArray(cluster_size);
 				setPosition(offset);
-				if (!ReadData(cluster_data->data(), cluster_data->size()))
+				if (!ReadData(next->data_array->data(), next->data_array->size()))
 				{
 					printf("Error read cluster %d\n", offset / cluster_size);
 					break;
 				}
-				next = calcEntropy(cluster_data->data(), cluster_data->size());
+				next->entropy = calcEntropy(next->data_array->data(), next->data_array->size());
 
 				nCount = 0;
-				if (prev > entropy_border)
+				if (prev->entropy > entropy_border)
 					++nCount;
-				if (curr > entropy_border)
+				if (curr->entropy > entropy_border)
 					++nCount;
-				if (next > entropy_border)
+				if (next->entropy > entropy_border)
 					++nCount;
 
-				if (!findMOOV(cluster_data->data(), cluster_data->size()))
+				if (!findMOOV(curr->data_array->data(), curr->data_array->size(), moov_offset))
 				{ 
-					if (nCount > 2)
-						appendToFile(target_file, offset, cluster_size);
+					if (nCount >= 2)
+						appendToFile(target_file, offset - cluster_size, cluster_size);
 					else
 					{
-
+						printf("skip cluster #%d\r\n", cluster_number);
 					}
 				}
 				else
 				{
-					uint32_t moov_pos = nulls_count - sizeof(s_moov) + 1 ;
-					appendToFile(target_file, offset, moov_pos);
+					uint32_t moov_pos = moov_offset - sizeof(s_moov) + 1 ;
+					appendToFile(target_file, offset - cluster_size, moov_pos);
 					file_size += moov_pos;
 
-					uint64_t moov_offset = offset + moov_pos;
+					uint64_t moov_offset = offset - cluster_size + moov_pos;
 					qt_block_t qt_block = { 0 };
 
 					setPosition(moov_offset);
 					ReadData((ByteArray)&qt_block, qt_block_struct_size);
-					toBE32((uint32_t &)qt_block.block_size);
+					if (isQuickTime(qt_block) )
+					{
+						toBE32((uint32_t &)qt_block.block_size);
 
-					appendToFile(target_file, moov_offset, qt_block.block_size);
-					file_size += qt_block.block_size;
+						appendToFile(target_file, moov_offset, qt_block.block_size);
+						file_size += qt_block.block_size;
+					}
 					return file_size;
 
 				}
-				prev = curr;
-				curr = next;
+				prev = std::move(curr);
+				curr = std::move(next);
+
 				++cluster_number;
 				offset += cluster_size;
 				file_size += cluster_size;
@@ -396,10 +413,10 @@ namespace IO
 			return file_size;
 
 		}
-		bool findMOOV(const ByteArray data, const uint32_t size )
+		bool findMOOV(const ByteArray data, const uint32_t size , uint32_t & moov_pos)
 		{
-			for (auto iByte = 0; iByte < size - sizeof(s_moov); ++iByte)
-				if (memcmp(data + iByte, s_moov, sizeof(s_moov) ) == 0)
+			for (moov_pos = 0; moov_pos < size - sizeof(s_moov); ++moov_pos)
+				if (memcmp(data + moov_pos, s_moov, sizeof(s_moov) ) == 0)
 					return true;
 
 			return false;
@@ -411,6 +428,18 @@ namespace IO
 		}
 
 	};
+
+	class ESER_YDXJ_QtRawFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new ESER_YDXJ_QtRaw(device);
+		}
+	};
+
+
 
 }
 		// save fragment only 'mdat' data, when found nulls more then 5000, skip this cluster.

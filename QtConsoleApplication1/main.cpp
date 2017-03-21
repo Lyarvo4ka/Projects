@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 			if (raw_factory)
 			{
 				//auto raw_algorithm = raw_factory->createRawAlgorithm(src_device);
-				auto raw_algorithm = new IO::Qt_ESER_YDXJ_Raw(src_device);
+				auto raw_algorithm = new IO::ESER_YDXJ_QtRaw(src_device);
 				if (raw_algorithm->Specify(header_offset))
 				{
 					auto target_file = IO::toFullPath(target_folder, counter++, file_struct->getExtension());
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 						qInfo() << "Exit.";
 						break;
 					}
-
+					
 							
 
 				}
