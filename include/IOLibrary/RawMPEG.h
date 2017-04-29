@@ -191,12 +191,13 @@ namespace IO
 		}
 		bool Specify(const uint64_t start_offset) override
 		{
-			auto new_mpeg_size = calcMpegBlockSize(start_offset);
+
+			auto new_mpeg_size = pickUpBlockSize(start_offset, VALUE_512Kb);
 
 			if (new_mpeg_size == 0)
 			{
-				new_mpeg_size = pickUpBlockSize(start_offset, VALUE_512Kb);
-				if ( new_mpeg_size == 0)
+				//new_mpeg_size = calcMpegBlockSize(start_offset);
+				//if ( new_mpeg_size == 0)
 					return false;
 			}
 
@@ -285,6 +286,10 @@ namespace IO
 				toBE16(toSize);
 				chunk_size = toSize + mpeg_pack_size;
 				mpeg_block_size += chunk_size;
+
+				if (mpeg_block_size > VALUE_512Kb)
+					return 0;
+
 				cur_pos += chunk_size;
 			}
 

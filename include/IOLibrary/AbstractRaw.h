@@ -191,6 +191,7 @@ namespace IO
 		DataArray::Ptr footer_;
 		uint32_t footerTailEndSize_ = 0;
 		uint64_t maxFileSize_ = 0;
+		uint64_t minFileSize_ = 0;
 	public:
 		using Ptr = std::shared_ptr<FileStruct>;
 		FileStruct(const std::string & formatName)
@@ -264,6 +265,15 @@ namespace IO
 		{
 			return maxFileSize_;
 		}
+		void setMinFileSize(const uint64_t minFileSize)
+		{
+			minFileSize_ = minFileSize;
+		}
+		uint64_t getMinFileSize() const 
+		{
+		
+		}
+
 		bool compareWithAllHeaders(ByteArray data, uint32_t size)
 		{
 			for (auto & theHeader : headers_)
@@ -408,6 +418,10 @@ namespace IO
 	public:
 		virtual uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) = 0;
 		virtual bool Specify(const uint64_t start_offset) = 0;
+		virtual bool Verify(const IO::path_string & file_path) 
+		{
+			return true;
+		}
 	};
 
 	class DefaultRaw : public RawAlgorithm

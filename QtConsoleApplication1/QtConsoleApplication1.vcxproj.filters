@@ -33,5 +33,7 @@
   <ItemGroup>
     <None Include="signatures.json" />
     <None Include="video.json" />
+    <None Include="dvd.json" />
+    <None Include="audio.json" />
   </ItemGroup>
 </Project>

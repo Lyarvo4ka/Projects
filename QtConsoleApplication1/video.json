@@ -40,21 +40,47 @@
           ],
           "extension": ".mov"
         },
-
 	"avi":{
-	"header":
-	[
-		{
-			"hexdata":"52494646",
-			"offset": 0
-		},
-		{
-			"hexdata":"415649204C495354",
-			"offset": 8
-		}
-
-	],
+		"header":
+		[
+			{
+				"hexdata":"52494646",
+				"offset": 0
+			},
+			{
+				"hexdata":"415649204C495354",
+				"offset": 8
+			}
+		],
 	"extension":".avi"
 	
+	},
+	"r3d":{
+		"header":
+		[
+			{
+			"hexdata":"52454432",
+			"offset": 4
+			}
+		],
+		"footer": 
+		{
+            "hexdata": "52454F4205105232",
+			"tailsize": 4084
+        },
+		"extension":".r3d",
+		 "maxfilesize": 4294967296
+	},
+	"mxf":{
+		"header":
+		[
+			{
+			"hexdata":"060E2B34020501010D01020101020400",
+			"offset": 0
+			}
+		],
+		"extension":".mxf"
+	
 	}
+	
 }

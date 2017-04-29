@@ -22,7 +22,8 @@
 #include "IOLibrary/RawMTS.h"
 #include "IOLibrary/RawMPEG.h"
 #include "IOLibrary/QuickTime.h"
-#include "IOLibrary/RawAVI.h"
+#include "IOLibrary/RawRIFF.h"
+#include "IOLibrary/RawMXF.h"
 
 const int param_count = 4;
 const int option = 1;
@@ -37,7 +38,12 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 	factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
 	factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
 	factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
-	factory_manager.Register("avi", std::make_unique<IO::RawAVIFactory>());
+	//factory_manager.Register("ESER_YDXJ", std::make_unique<IO::ESER_YDXJ_QtRawFactory>());
+	factory_manager.Register("wav", std::make_unique<IO::RawFIFFFactory>());
+	factory_manager.Register("mx7", std::make_unique<IO::RawFIFFFactory>());
+	factory_manager.Register("avi", std::make_unique<IO::RawFIFFFactory>());
+	//factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
+	//factory_manager.Register("r3d", std::make_unique<IO::StandartRawFactory>());
 
 
 }
@@ -112,7 +118,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0/*1815176*512*/;
+		uint64_t start_offset = 0/*0xD4B7C0000*/;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())
@@ -127,16 +133,26 @@ int main(int argc, char *argv[])
 			qInfo() << "Offset : " << header_offset << "(bytes)";
 
 			start_offset = header_offset;
-			if (file_struct->getName().compare("quicktime") == 0 )
-			{
+
  			auto raw_factory = factory_manager.Lookup(file_struct->getName());
-			if (raw_factory)
+			IO::RawAlgorithm * raw_algorithm = nullptr;
+			if (!raw_factory)
 			{
-				//auto raw_algorithm = raw_factory->createRawAlgorithm(src_device);
-				auto raw_algorithm = new IO::ESER_YDXJ_QtRaw(src_device);
+				IO::StandartRaw * standard_raw = new IO::StandartRaw(src_device);
+				standard_raw->setMaxFileSize(file_struct->getMaxFileSize());
+				standard_raw->setFooter(file_struct->getFooter(), file_struct->getFooterTailEndSize());
+
+				raw_algorithm = standard_raw;
+				
+			}
+			else
+			{
+				raw_algorithm = raw_factory->createRawAlgorithm(src_device);
+			}
+				
 				if (raw_algorithm->Specify(header_offset))
 				{
-					auto target_file = IO::toFullPath(target_folder, counter++, file_struct->getExtension());
+					auto target_file = IO::offsetToPath(target_folder, header_offset, file_struct->getExtension(), 2048);
 					auto dst_file = IO::makeFilePtr(target_file);
 					if (dst_file->Open(IO::OpenMode::Create))
 					{
@@ -151,9 +167,32 @@ int main(int argc, char *argv[])
 						auto dst_size = dst_file->Size();
 						dst_file->Close();
 						qInfo() << "Successfully saved " << target_size << "(bytes)" << endl << endl;
-						target_size /= default_sector_size;
-						target_size *= default_sector_size;
-						start_offset = header_offset + default_sector_size;
+
+						uint64_t jump_size = default_sector_size;
+
+						if ( raw_algorithm->Verify(target_file) )
+						{
+							target_size /= default_sector_size;
+							target_size *= default_sector_size;
+							//////////////////////////////////////////////////////////////////////////
+							jump_size = target_size ;
+						}
+						else
+						{
+							// remove file
+							IO::path_string new_fileName = target_file + L".bad_file";
+							boost::filesystem::rename(target_file, new_fileName);
+							//{
+							//	qInfo() << "File" << target_file.c_str() << "was removed." << endl;
+							//}
+							//else
+							//	qInfo() << "File" << target_file.c_str() << "Error to delete." << endl;
+
+
+						}
+						if (jump_size == 0)
+							jump_size = default_sector_size;
+						start_offset = header_offset + jump_size;
 
 					}
 					else
@@ -169,13 +208,18 @@ int main(int argc, char *argv[])
 				else
 				{
 					qInfo() << "Not specified for " << QString::fromStdString(file_struct->getName()) << "continue search for other signatures."<<endl;
+					start_offset += default_sector_size;
 				}
-			}
+				if ( raw_algorithm)
+					delete raw_algorithm;
+
+				
+
 			}
 
-			start_offset += default_sector_size;
 
-		}
+
+		
 
 
 	}

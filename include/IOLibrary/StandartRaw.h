@@ -13,6 +13,7 @@ namespace IO
 		DataArray::Ptr footer_;
 		uint32_t tailSize_ = 0;
 		uint64_t maxFileSize_ = 0;
+		bool bFoundFooter_ = false;
 	public:
 		StandartRaw(IODevicePtr device)
 			:DefaultRaw(device)
@@ -105,13 +106,33 @@ namespace IO
 				if (findFooter(*buffer.get(), bytes_read, *footer_data, footer_pos))
 				{
 					uint32_t sizeToWrite = footer_pos + footer_data->size() + tailSize_;
+					target_file.setPosition(written_size);
 					bytes_written = target_file.WriteData(buffer->data(), sizeToWrite);
 					written_size += bytes_written;
+					bFoundFooter_ = true;
 					break;
 				}
 
 				if (bytes_read < getBlockSize() )
 					bytes_to_write = bytes_read;
+
+				uint64_t after_written = written_size + bytes_to_write;
+				if (after_written >= maxFileSize_)
+				{
+					auto last_size = after_written - maxFileSize_;
+					if ( last_size > 0 )
+					{
+						target_file.setPosition(written_size);
+						bytes_written = target_file.WriteData(buffer->data(), last_size);
+						if (bytes_written == 0)
+						{
+							wprintf(L"Error write block\n");
+							break;
+						}
+						written_size += last_size;
+					}
+					return written_size;
+				}
 
 				target_file.setPosition(written_size);
 				bytes_written = target_file.WriteData(buffer->data(), bytes_to_write);
@@ -129,6 +150,12 @@ namespace IO
 		}
 		bool Specify(const uint64_t header_offset) override
 		{
+			return true;
+		}
+		bool Verify(const IO::path_string & file_path) override
+		{
+			if ( footer_)
+				return bFoundFooter_;
 			return true;
 		}
 

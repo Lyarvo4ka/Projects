@@ -21,7 +21,10 @@ const QString textdata_txt = "textdata";
 const QString hexdata_txt = "hexdata";
 
 const QString maxfilesize_txt = "maxfilesize";
+const QString minfilesize_txt = "minfilesize";
 const QString extension_txt = "extension";
+
+const QString equally_to_txt = "equally_to";
 
 struct SignatureHandle
 {
@@ -40,6 +43,7 @@ struct JsonFileStruct
 	ArrayOfHeader headers;
 	SignatureHandle footer;
 	qlonglong maxfilesize = 0;
+	qlonglong minfilesize = 0;
 	QString extension;
 };
 
@@ -125,6 +129,11 @@ void ReadJsonFIle(const QByteArray & byte_data, QList<JsonFileStruct> & parsedRe
 			if (!maxsize_value.isUndefined())
 				jsonFileStruct.maxfilesize = maxsize_value.toVariant().toLongLong();
 
+			auto minsize_value = object_value.toObject().value(minfilesize_txt);
+			if (!minsize_value.isUndefined())
+				jsonFileStruct.minfilesize = minsize_value.toVariant().toLongLong();
+
+
 			auto extension_value = object_value.toObject().value(extension_txt);
 			if (extension_value.isString())
 				jsonFileStruct.extension = extension_value.toString();
@@ -184,5 +193,7 @@ IO::FileStruct::Ptr toFileStruct(const JsonFileStruct & jsonFileStruct)
 		file_struct->setFooterTailEndSize(jsonFileStruct.footer.value_int);
 	}
 	file_struct->setExtension(jsonFileStruct.extension.toStdWString());
+	file_struct->setMaxFileSize(jsonFileStruct.maxfilesize);
+	file_struct->setMaxFileSize(jsonFileStruct.minfilesize);
 	return file_struct;
 }

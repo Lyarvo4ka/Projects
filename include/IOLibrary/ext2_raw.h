@@ -501,18 +501,18 @@ using HeaderInfoPtr = std::shared_ptr<HeaderInfo_t> ;
 			//this->addHeaderInfo(pdf_header_info);
 
 			ext2_super_block super_block = { 0 };
-			//if (!read_superblock(&super_block, 0x3FBC0400))
-			//	return;
+			if (!read_superblock(&super_block, 0x3FBC0400))
+				return;
 
-			//if (isSuperblock(&super_block))
-			//{
-			//	wprintf_s(L"Error super_block\n");
-			//	return;
-			//}
+			if (isSuperblock(&super_block))
+			{
+				wprintf_s(L"Error super_block\n");
+				return;
+			}
 			blocks_count_ = super_block.s_blocks_count;
-			blocks_count_ = 0xE8A0DAE;
+			//blocks_count_ = 0xE8A0DAE;
 			// super_block offset = 0x40001000
-			uint64_t offset = 0x5780000000;
+			uint64_t offset = 0x3FBC0400;
 			partition_offset_ = 0x40001000;
 			uint64_t header_offset = 0;
 			uint64_t tmp_offset = 0;

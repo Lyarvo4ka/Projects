@@ -71,9 +71,6 @@
     <ClInclude Include="..\..\include\IOLibrary\DVR_raw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\IOLibrary\MXF_raw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\djvu_raw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -161,7 +158,10 @@
     <ClInclude Include="..\..\include\IOLibrary\RawMPEG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\IOLibrary\RawAVI.h">
+    <ClInclude Include="..\..\include\IOLibrary\RawMXF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\RawRIFF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

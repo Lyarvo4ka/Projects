@@ -371,13 +371,49 @@ const uint8_t ext_qt_header[] = { 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x00, 0x00
 const int param_count = 2;
 const int number = 1;
 
-#include "IOLibrary/Entropy.h"
+//#include "IOLibrary/Entropy.h"
+#include "IOLibrary/Finder.h"
+//#include "IOLibrary/ext2_raw.h"
 
 
 int _tmain(int argc, TCHAR **argv)
 {
-	IO::calcEntropyForFile("f:\\41523_example\\100MEDIA\\YDXJ0516.MP4", 131072);
-	IO::calcEntropyForFile("f:\\41523_example\\100MEDIA\\YDXJ0516_thm.MP4", 131072);
+	IO::path_string folder_path(L"e:\\Name\\");
+	IO::path_list ext_list;
+	ext_list.push_back(L".jpg");
+	auto finder = IO::Finder();
+	finder.FindFiles(folder_path, ext_list);
+
+	//auto drive_number = boost::lexical_cast<uint32_t>(argv[number]);
+
+
+	//auto drive_list = IO::ReadPhysicalDrives();
+	//auto physical_drive = drive_list.find_by_number(drive_number);
+	//if (!physical_drive)
+	//{
+	//	wprintf(L"Wrong drive number.\n");
+	//	return -1;
+	//}
+	//wprintf(L"You selected\n");
+	//wprintf(L"Number : %d\n", drive_number);
+	//auto drive_name = physical_drive->getDriveName().c_str();
+	//wprintf(L"Name : %s\n", drive_name);
+	//printf("Serial number : %s\n", physical_drive->getSerialNumber().c_str());
+	//wprintf(L"Size : %I64d (bytes)", physical_drive->getSize());
+
+	//IO::path_string target_folder = L"e:\\raw\\";
+	//IO::DiskDevice source(physical_drive);
+	//IO::ext2_raw ext2(&source);
+	//ext2.execute(target_folder);
+
+	//IO::Finder finder;
+	//finder.add_extension(L".jpg");
+	//finder.FindFiles(L"e:\\Root\\LostFolders\\");
+
+	//finder.FindFiles(L"e:\\Root\\LostFolders\\LostFolder000027\\Зевс-Д\\Зевс Д 057-14\\приход\\");
+
+	//IO::calcEntropyForFile("f:\\41523_example\\100MEDIA\\YDXJ0516.MP4", 131072);
+	//IO::calcEntropyForFile("f:\\41523_example\\100MEDIA\\YDXJ0516_thm.MP4", 131072);
 
 
 
@@ -565,10 +601,7 @@ int _tmain(int argc, TCHAR **argv)
 	//	return -1;
 
 
-	//IO::path_string target_folder = L"f:\\40863\\";
-	//IO::DiskDevice source(physical_drive);
-	//IO::ext2_raw ext2(&source);
-	//ext2.execute(target_folder);
+
 
 	//auto filePtr = IO::makeFilePtr(L"d:\\incoming\\40873\\40873.img");	
 	//IO::path_string folder(L"d:\\incoming\\40873\\result\\");

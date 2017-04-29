@@ -88,12 +88,17 @@ namespace IO
 			if (hFile_ != INVALID_HANDLE_VALUE)
 			{
 				bOpen_ = true;
-				LARGE_INTEGER liSize = { 0 };
+				LARGE_INTEGER liSize = { 0 }; 
 				::GetFileSizeEx(hFile_, &liSize);
 				size_ = liSize.QuadPart;
 			}
 			else
+			{
 				bOpen_ = false;
+				//DWORD dwError = ::GetLastError();
+				//int k = 1;
+				//k = 2;
+			}
 
 			return bOpen_;
 		}

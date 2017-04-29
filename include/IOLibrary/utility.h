@@ -40,8 +40,14 @@ namespace IO
 	{
 		auto str = text_value;
 		boost::algorithm::to_lower(str);
-		auto findIter = std::find(listToFind.begin(), listToFind.end(), str);
-		return (findIter != listToFind.end()) ? true : false;
+		//auto findIter = std::find(listToFind.begin(), listToFind.end(), str);
+		for (auto & theExt : listToFind)
+		{
+			if (theExt.compare(str) == 0)
+				return true;
+		}
+		//return (findIter != listToFind.end()) ? true : false;
+		return false;
 	}
 
 	inline path_string getExtension(const path_string & file_name)
@@ -142,6 +148,17 @@ namespace IO
 		return number_str;
 	}
 
+	inline path_string toHexString(const uint64_t big_value)
+	{
+		const int numValues = 17;
+		wchar_t buff[numValues] = { 0 };
+		ZeroMemory(buff, sizeof(wchar_t) * numValues);
+
+		swprintf_s(buff, numValues, L"%I64x", big_value);
+		path_string number_str(buff);
+		return number_str;
+	}
+
 	inline path_string toNumberExtension(const uint32_t number, const path_string & extension)
 	{
 		return toNumberString(number) + extension;
@@ -149,6 +166,10 @@ namespace IO
 	inline path_string toFullPath(const path_string & folder, const uint32_t number, const path_string & extension)
 	{
 		return addBackSlash(folder) + toNumberString(number) + extension;
+	}
+	inline path_string offsetToPath(const path_string & folder, const uint64_t byte_offset, const path_string & extension, uint32_t sector_size = 512)
+	{
+		return addBackSlash(folder) + toHexString(byte_offset / sector_size) + extension;
 	}
 
 	inline bool createDirectory(const path_string & folder, const path_string & new_folder, path_string & result_folder)

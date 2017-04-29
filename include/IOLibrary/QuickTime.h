@@ -299,6 +299,27 @@ namespace IO
 		Восстановление фрагментированных видео файлов (QuickTime). Одно видео высокого разрешения одно маленького.
 		Идет подщет ентропии для каждого кластера. Если не подходит под критерий то кластер не сохраняется.
 		Испрользуется окно в 3 кластера чтоб не исключить нужный кластер. 
+
+		"ESER_YDXJ":{
+		"header":
+		[
+		{
+		"textdata":"ftyp",
+		"offset": 4
+		},
+		{
+		"textdata":"moov",
+		"offset": 4
+		},
+		{
+		"textdata":"mdat",
+		"offset": 4
+		}
+
+		],
+		"extension": ".mov"
+		},
+
 	*/
 	class ESER_YDXJ_QtRaw
 		: public QuickTimeRaw
@@ -425,6 +446,21 @@ namespace IO
 		bool Specify(const uint64_t start_offset) override
 		{
 			return true;
+		}
+		bool Verify(const IO::path_string & file_path) override
+		{
+			auto target_file = IO::makeFilePtr(file_path);
+			if (!target_file->Open(IO::OpenMode::OpenRead))
+			{
+				wprintf(L"Target file wasn't opened.\n");
+				return false;
+
+			}
+			QuickTimeRaw qtRaw(target_file);
+			ListQtBlock qtList ;
+			auto file_size = qtRaw.readQtAtoms(0, qtList);
+			return qtRaw.isPresentMainKeywords(qtList);
+
 		}
 
 	};

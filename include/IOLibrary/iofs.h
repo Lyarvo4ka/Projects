@@ -15,7 +15,7 @@ namespace IO
 
 	class DirectoryNode;
 
-	class IOLIBRARY_EXPORT Node
+	class Node
 	{
 	private:
 		DirectoryNode * parent_;

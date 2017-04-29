@@ -58,11 +58,11 @@ namespace IO
 			if (avi_struct.size >= 0xFFFFFFFF - avi_header_struct_size)
 				return false;
 
-			if (avi_struct.size > ONE_MB)
-				return true;
+			//if (avi_struct.size > ONE_MB)
+			//	return true;
 
 
-			return false;
+			return true;
 		}
 		void setMinFileSize(const uint32_t minFileSize)
 		{

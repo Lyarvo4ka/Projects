@@ -7,6 +7,9 @@
 #include <locale>
 #include <codecvt>
 #include <boost/algorithm/string.hpp>
+#include <algorithm>
+
+#include "IODevice.h"
 
 
 namespace IO
@@ -34,10 +37,10 @@ namespace IO
 
 		auto file_size = file.Size();
 		Buffer buffer(sizeToTest);
-		if (file_size > sizeToTest)
+		if (file_size >= sizeToTest)
 		{
-			uint64_t lastBlock = file_size - sizeToTest;
-			file.setPosition(lastBlock);
+			uint64_t lastBlock = file_size /*- sizeToTest*/;
+			file.setPosition(0);
 			auto bytesRead = file.ReadData(buffer.data, buffer.data_size);
 			if (bytesRead == sizeToTest)
 			{
@@ -52,6 +55,73 @@ namespace IO
 		}
 
 	}
+
+	inline void addDateToFile(const path_string & file_path)
+	{
+		File file(file_path);
+		if (!file.Open(OpenMode::OpenWrite))
+		{
+			wprintf_s(L"Error open file.\n");
+			return;
+		}
+
+		const char cmp_to[] = { 0xC2 , 0xF0 , 0xE5 , 0xEC , 0xFF , 0x3A };
+
+		auto file_size = file.Size();
+		Buffer buffer(file_size);
+		auto bytesRead = file.ReadData(buffer.data, buffer.data_size);
+		file.Close();
+
+		bool bFound = false;
+		uint32_t offset_pos = 0;
+		for (offset_pos = 0; offset_pos < file_size; ++offset_pos)
+			if (memcmp(buffer.data + offset_pos, cmp_to, SIZEOF_ARRAY(cmp_to)) == 0 )
+			{
+				bFound = true;
+				break;
+			}
+
+
+		if (!bFound)
+		{
+			wprintf_s(L"Not found string!!!!.\n");
+			return;
+		}
+		const uint32_t date_size = 19 + 1;
+		//const uint32_t date_offset = 0x37;
+		char raw_date[date_size];
+		ZeroMemory(raw_date, date_size);
+
+		memcpy(raw_date, buffer.data + offset_pos + SIZEOF_ARRAY(cmp_to) + 1, date_size - 1);
+
+		std::string date_string(raw_date);
+		std::replace(date_string.begin(), date_string.end(), ' ', '-');
+		std::replace(date_string.begin(), date_string.end(), '.', '-');
+		std::replace(date_string.begin(), date_string.end(), ':', '-');
+
+		IO::path_string new_date_str(date_string.begin(), date_string.end());
+
+		boost::filesystem::path src_path(file_path);
+		auto folder_path = src_path.parent_path().generic_wstring();
+		auto only_name_path = src_path.stem().generic_wstring();
+		auto ext = src_path.extension().generic_wstring();
+		auto new_name = folder_path + L"//" + only_name_path + L"-" + new_date_str + ext;
+
+		try
+		{
+			boost::filesystem::rename(file_path, new_name);
+		}
+		catch (const boost::filesystem::filesystem_error& e)
+		{
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+
+		
+		int k = 1;
+		k = 1;
+	}
+
+
 
 	struct pck_t
 	{
@@ -195,7 +265,60 @@ namespace IO
 			return new_name;
 		}
 	private:
+		void testSignatureMP4(const IO::path_string & filePath)
+		{
+			auto test_file = IO::makeFilePtr(filePath);
+			const uint8_t const_header[] = { 0x66 , 0x74 , 0x79 , 0x70/*0x47 , 0x40 , 0x00 , 0x10 , 0x00 , 0x00 , 0xB , 0x011*/ };
+			const uint32_t offset = 4;
+			const uint32_t header_size = SIZEOF_ARRAY(const_header);
+			uint8_t buff[header_size];
+			ZeroMemory(buff, header_size);
+			if (test_file->Open(IO::OpenMode::OpenRead))
+			{
+				if (test_file->Size() >= header_size)
+				{
+					test_file->setPosition(offset);
+					test_file->ReadData(buff, header_size);
+					test_file->Close();
 
+					if (memcmp(buff, const_header, header_size) != 0)
+					{
+						boost::filesystem::rename(filePath, filePath + L".bad_file");
+					}
+				}
+
+			}
+
+
+		}
+		void TestEndJpg(const IO::path_string & filePath)
+		{
+			auto test_file = IO::makeFilePtr(filePath);
+			const uint32_t constSize = 2;
+			uint8_t buff[constSize];
+			ZeroMemory(buff, constSize);
+
+			//const uint8_t const_r3d_header[] = { 0x52 , 0x45 , 0x44 , 0x32 };
+			const uint8_t const_end_jpg[] = {0xFF, 0xD9};
+			//const uint8_t const_end_pdf[] = { 0x25 , 0x25 , 0x45 , 0x4F , 0x46 , 0x0A };
+
+			if (test_file->Open(IO::OpenMode::OpenRead))
+			{
+				if (test_file->Size() >= constSize)
+				{
+					test_file->setPosition(test_file->Size() - constSize);
+					test_file->ReadData(buff, constSize);
+					test_file->Close();
+
+					if (memcmp(buff, const_end_jpg, constSize) != 0)
+					{
+
+						boost::filesystem::rename(filePath, filePath + L".bad_file");
+					}
+				}
+
+			}
+		}
 		void Find(DirectoryNode::Ptr folder_node)
 		{
 			path_string current_folder = folder_node->getFullPath();
@@ -233,7 +356,16 @@ namespace IO
 							folder_node->AddFile(file_name);
 						else
 						if (isPresentInList(file_ext, this->list_ext_))
+						{
+							auto full_name = addBackSlash(current_folder) + file_name;
+							TestEndJpg(full_name);
+							//removeNullsFromEndFile(full_name, 2048);
+							//addDateToFile(full_name);
+							//testSignatureMP4(full_name);
+							
+
 							folder_node->AddFile(file_name);
+						}
 					}
 
 					//SearchFiles(
