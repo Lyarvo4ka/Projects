@@ -378,11 +378,12 @@ const int number = 1;
 
 int _tmain(int argc, TCHAR **argv)
 {
-	IO::path_string folder_path(L"e:\\Name\\");
+	IO::path_string folder_path(L"g:\\41887\\!Problem\\Baza 1C\\31-BIBICI UKRAINE\\");
 	IO::path_list ext_list;
-	ext_list.push_back(L".jpg");
+	ext_list.push_back(L".dbf");
 	auto finder = IO::Finder();
 	finder.FindFiles(folder_path, ext_list);
+	std::string
 
 	//auto drive_number = boost::lexical_cast<uint32_t>(argv[number]);
 

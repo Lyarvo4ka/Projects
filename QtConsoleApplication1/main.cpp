@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0/*0xD4B7C0000*/;
+		uint64_t start_offset = 0;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 				
 				if (raw_algorithm->Specify(header_offset))
 				{
-					auto target_file = IO::offsetToPath(target_folder, header_offset, file_struct->getExtension(), 2048);
+					auto target_file = IO::offsetToPath(target_folder, header_offset, file_struct->getExtension(), 512);
 					auto dst_file = IO::makeFilePtr(target_file);
 					if (dst_file->Open(IO::OpenMode::Create))
 					{

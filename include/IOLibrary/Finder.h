@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "IODevice.h"
+#include "dbf.h"
 
 
 namespace IO
@@ -358,7 +359,8 @@ namespace IO
 						if (isPresentInList(file_ext, this->list_ext_))
 						{
 							auto full_name = addBackSlash(current_folder) + file_name;
-							TestEndJpg(full_name);
+							//TestEndJpg(full_name);
+							fixDBF(full_name);
 							//removeNullsFromEndFile(full_name, 2048);
 							//addDateToFile(full_name);
 							//testSignatureMP4(full_name);
