@@ -5,6 +5,9 @@
 
 #include "StandartRaw.h"
 
+
+namespace IO
+{
 #pragma pack( push, 1)
 struct dbf_header
 {
@@ -16,11 +19,11 @@ struct dbf_header
 
 }; 
 #pragma pack(pop)
-int dbf_header_size = sizeof(dbf_header);
+const std::size_t dbf_header_size = sizeof(dbf_header);
 
-bool hasNulls(IO::ByteArray data, const uint32_t size)
+inline bool hasNulls(IO::ByteArray data, const uint32_t size)
 {
-	for (auto i = 0; i < size; ++i)
+	for (uint32_t i = 0; i < size; ++i)
 		if (data[i] == 0)
 			return true;
 
@@ -32,7 +35,7 @@ inline void fixDBF(const IO::path_string & file_path)
 	auto dbf_file = IO::makeFilePtr(file_path);
 	if (!dbf_file->Open(IO::OpenMode::OpenWrite))
 	{
-		wprintf(L"Error open file %s." , file_path);
+		wprintf(L"Error open file %s." , file_path.c_str());
 		return;
 	}
 	auto file_size = dbf_file->Size();
@@ -57,7 +60,7 @@ inline void fixDBF(const IO::path_string & file_path)
 	auto tmp_file = IO::makeFilePtr(tmp_path);
 	if (!tmp_file->Open(IO::OpenMode::Create))
 	{
-		wprintf(L"Error open file %s.", file_path);
+		wprintf(L"Error open file %s.", file_path.c_str());
 		return;
 	}
 
@@ -74,7 +77,7 @@ inline void fixDBF(const IO::path_string & file_path)
 	write_offset += dbf_data.header_size;
 
 
-	for (auto i = 0; i < dbf_data.numRecords; ++i)
+	for (uint32_t i = 0; i < dbf_data.numRecords; ++i)
 	{
 		dbf_file->setPosition(offset);
 		bytes_read = dbf_file->ReadData(data_buffer->data(), data_buffer->size());
@@ -94,7 +97,7 @@ inline void fixDBF(const IO::path_string & file_path)
 		offset += data_buffer->size();
 	}
 
-	auto tmp_size = tmp_file->Size();
+	uint32_t tmp_size = (uint32_t)tmp_file->Size();
 	uint32_t numRecords = 0;
 	numRecords = tmp_size - dbf_data.header_size - 1;
 	numRecords /= dbf_data.record_size + 1;
@@ -119,8 +122,7 @@ inline void fixDBF(const IO::path_string & file_path)
 	
 }
 
-namespace IO
-{
+
 	class DBFRaw
 		: public StandartRaw
 	{

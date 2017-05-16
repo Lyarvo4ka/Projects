@@ -35,9 +35,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IOLibraryTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="physicaldrivetest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -78,6 +75,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utilityTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IOLibraryTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

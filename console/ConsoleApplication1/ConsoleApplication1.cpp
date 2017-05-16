@@ -371,19 +371,25 @@ const uint8_t ext_qt_header[] = { 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x00, 0x00
 const int param_count = 2;
 const int number = 1;
 
-//#include "IOLibrary/Entropy.h"
+#include "IOLibrary/Entropy.h"
 #include "IOLibrary/Finder.h"
 //#include "IOLibrary/ext2_raw.h"
 
 
 int _tmain(int argc, TCHAR **argv)
 {
-	IO::path_string folder_path(L"g:\\41887\\!Problem\\Baza 1C\\31-BIBICI UKRAINE\\");
-	IO::path_list ext_list;
-	ext_list.push_back(L".dbf");
-	auto finder = IO::Finder();
-	finder.FindFiles(folder_path, ext_list);
-	std::string
+	//auto src_file = L"d:\\incoming\\41914\\41914.img";
+	IO::calcEntropyForFile("d:\\incoming\\41914\\2\\2.mov ", 32768);
+	//IO::ESER_YDXJ_QtRaw entropy_raw(IO::makeFilePtr(src_file));
+
+	//entropy_raw.SaveRawFile
+
+
+	//IO::path_string folder_path(L"d:\\PaboTa\\41887\\");
+	//IO::path_list ext_list;
+	//ext_list.push_back(L".dbf");
+	//auto finder = IO::Finder();
+	//finder.FindFiles(folder_path, ext_list);
 
 	//auto drive_number = boost::lexical_cast<uint32_t>(argv[number]);
 

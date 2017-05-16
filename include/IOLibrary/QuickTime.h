@@ -9,6 +9,8 @@
 
 #include <iostream>
 
+#include <boost\filesystem.hpp>
+
 namespace IO
 {
 
@@ -333,20 +335,20 @@ namespace IO
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
-			const uint32_t cluster_size = 131072;
+			const uint32_t cluster_size = 32768;
 			const double entropy_border = 7.9974;
 
 			uint64_t offset = start_offset;
 			uint64_t file_size = 0;
 			uint32_t cluster_number = 0;
 
-			for (auto i = 0; i < 10; ++i)
+			for (auto i = 0; i < 1/*10*/; ++i)
 			{
 				auto cluster_data = IO::makeDataArray(cluster_size);
 				setPosition(offset);
 				if (!ReadData(cluster_data->data(), cluster_data->size()))
 				{
-					printf("Error read cluster %d\n", offset / cluster_size);
+					printf("Error read cluster %I64d\n", offset / cluster_size);
 					break;
 				}
 				appendToFile(target_file, offset, cluster_size);
@@ -381,7 +383,7 @@ namespace IO
 				setPosition(offset);
 				if (!ReadData(next->data_array->data(), next->data_array->size()))
 				{
-					printf("Error read cluster %d\n", offset / cluster_size);
+					printf("Error read cluster %I64d\n", offset / cluster_size);
 					break;
 				}
 				next->entropy = calcEntropy(next->data_array->data(), next->data_array->size());
@@ -475,6 +477,174 @@ namespace IO
 		}
 	};
 
+
+	const char str_gpssv[] = "$GPGSV";
+	const uint32_t str_gpssv_size = SIZEOF_ARRAY(str_gpssv) - 1;
+	const char eightNulls[] = { 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 };
+	const uint32_t eightNulls_size = SIZEOF_ARRAY(eightNulls);
+
+
+
+	/*
+	Восстановление фрагментированных видео файлов (QuickTime). Встречаются кластера тексторвый тип(.gps) и  (.3gf).
+	- gps классифицируем наличием ключевого слова ( $GPGSV ).
+	- 3gf классифицируем наличием 8-м нулями.
+
+	*/
+
+	class BlackVue_QtRaw
+		:public ESER_YDXJ_QtRaw
+	{
+	private:
+		uint32_t cluster_size_ = 32768;
+	public:
+		BlackVue_QtRaw(IODevicePtr device)
+			: ESER_YDXJ_QtRaw(device)
+		{
+
+		}
+
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
+		{
+			uint64_t offset = 0;
+			const path_string gps_ext = L".gps";
+			const path_string threeGF_ext = L".3gf";
+
+
+			boost::filesystem::path target_path(target_file.getFileName());
+			auto onlyFileName = target_path.stem();
+			auto folderPath = target_path.parent_path();
+			auto gpsFileName = addBackSlash(folderPath.generic_wstring()) + onlyFileName.generic_wstring() + gps_ext;
+			auto gps_file = makeFilePtr(gpsFileName);
+			if (!gps_file->Open(OpenMode::Create))
+			{
+				wprintf(L"Error create  file ", gpsFileName.c_str());
+				return 0;
+			}
+
+			auto threeGFFileName = addBackSlash(folderPath.generic_wstring()) + onlyFileName.generic_wstring() + threeGF_ext;
+			auto thrgf_file = makeFilePtr(threeGFFileName);
+			if (!thrgf_file->Open(OpenMode::Create))
+			{
+				wprintf(L"Error create  file ", threeGFFileName.c_str());
+				return 0;
+			}
+
+
+			// Save first cluster
+			appendToFile(target_file, start_offset, cluster_size_);
+			uint64_t file_size = cluster_size_;
+
+			DataArray data_buffer(cluster_size_);
+			offset = start_offset;
+			offset += cluster_size_;
+
+			uint32_t moov_offset = 0;
+			uint32_t cluster_number = 1;
+
+			while (true)
+			{
+				setPosition(offset);
+				ReadData(data_buffer.data(), data_buffer.size());
+
+				if (!findMOOV(data_buffer.data(), data_buffer.size(), moov_offset))
+				{
+					if (isGPS(data_buffer.data(), data_buffer.size()))
+					{
+
+						gps_file->WriteData(data_buffer.data(), data_buffer.size());
+						int k = 1;
+						k = 2;
+					}
+					else if (is3GF(data_buffer.data(), data_buffer.size()))
+					{
+						thrgf_file->WriteData(data_buffer.data(), data_buffer.size());
+						int k = 1;
+						k = 2;
+
+					}
+					else
+					{
+						appendToFile(target_file, offset, data_buffer.size());
+						file_size += data_buffer.size();
+					}
+
+				}
+				else
+				{
+					uint32_t moov_pos = moov_offset - sizeof(s_moov) + 1;
+					appendToFile(target_file, offset , moov_pos);
+					file_size += moov_pos;
+
+					uint64_t moov_offset = offset + moov_pos;
+					qt_block_t qt_block = { 0 };
+
+					setPosition(moov_offset);
+					ReadData((ByteArray)&qt_block, qt_block_struct_size);
+					if (isQuickTime(qt_block))
+					{
+						toBE32((uint32_t &)qt_block.block_size);
+
+						appendToFile(target_file, moov_offset, qt_block.block_size);
+						file_size += qt_block.block_size;
+					}
+					return file_size;
+
+				}
+				offset += cluster_size_;
+				++cluster_number;
+			}
+
+
+
+
+
+			return 0;
+		}
+
+		bool Specify(const uint64_t start_offset) override
+		{
+			return true;
+		}
+		
+		bool Verify(const IO::path_string & file_path) override
+		{
+			return ESER_YDXJ_QtRaw::Verify(file_path);
+		}
+		bool isGPS(ByteArray data, const uint32_t size)
+		{
+			for (uint32_t i = 0; i < size - str_gpssv_size; ++i)
+			{
+				if (memcmp(data + i, str_gpssv, str_gpssv_size) == 0)
+					return true;
+			}
+
+			return false;
+		}
+
+		bool is3GF(ByteArray data, const uint32_t size)
+		{
+			for (uint32_t i = 0; i < size - eightNulls_size; ++i)
+			{
+				if (memcmp(data + i, eightNulls, eightNulls_size) == 0)
+					return true;
+			}
+
+			return false;
+		}
+
+
+	};
+
+	class BlackVue_QtRawFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new BlackVue_QtRaw(device);
+		}
+	};
 
 
 }

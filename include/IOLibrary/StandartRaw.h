@@ -119,7 +119,7 @@ namespace IO
 				uint64_t after_written = written_size + bytes_to_write;
 				if (after_written >= maxFileSize_)
 				{
-					auto last_size = after_written - maxFileSize_;
+					uint32_t last_size = (uint32_t)(after_written - maxFileSize_);
 					if ( last_size > 0 )
 					{
 						target_file.setPosition(written_size);

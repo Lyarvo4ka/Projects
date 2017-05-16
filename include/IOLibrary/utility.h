@@ -154,7 +154,7 @@ namespace IO
 		wchar_t buff[numValues] = { 0 };
 		ZeroMemory(buff, sizeof(wchar_t) * numValues);
 
-		swprintf_s(buff, numValues, L"%I64x", big_value);
+		swprintf_s(buff, numValues, L"%.15I64x", big_value);
 		path_string number_str(buff);
 		return number_str;
 	}

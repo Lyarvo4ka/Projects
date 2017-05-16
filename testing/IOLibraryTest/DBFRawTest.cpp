@@ -5,7 +5,7 @@
 BOOST_AUTO_TEST_CASE(Test_isValidData)
 {
 
-	dbf_header header = { 0 };
+	IO::dbf_header header = { 0 };
 	IO::DBFRaw dbf_raw(nullptr);
 
 	BOOST_CHECK_EQUAL(dbf_raw.isValidDate(header), false);

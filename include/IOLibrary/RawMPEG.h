@@ -165,7 +165,7 @@ namespace IO
 			toBE32(end_seq_code);
 			const uint32_t marker_size = sizeof(uint32_t);
 
-			for (auto iBlock = 0; iBlock < data_size - marker_size; ++iBlock)
+			for (uint32_t iBlock = 0; iBlock < data_size - marker_size; ++iBlock)
 			{
 				if ((iBlock % mpegBlockSize_) == 0)
 					if (memcmp(data + iBlock, mpeg_data, mpeg_data_size) != 0)
