@@ -1,0 +1,30 @@
+{        
+"zbk": {
+            "header": 
+            [
+              {
+                "hexdata": "0F000B67636667507267506C7573",
+                "offset": 2
+              }
+            ],
+            "footer": {
+                "hexdata": "504B0506",
+                "tailsize": 18
+            },
+            "maxfilesize":  104857600,
+            "extension": ".zbk"
+        },
+"dt":{
+           "header": 
+            [
+              {
+                "hexdata": "31434942446D7046",
+                "offset": 0
+              }
+            ],
+            "maxfilesize":  1073741824,
+            "extension": ".dt"
+        }
+}        
+        
+}

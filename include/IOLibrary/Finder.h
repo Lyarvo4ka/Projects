@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "IODevice.h"
+#include "QuickTime.h"
 #include "dbf.h"
 
 
@@ -55,6 +56,45 @@ namespace IO
 			}
 		}
 
+	}
+
+	inline void zbk_rename(const path_string & file_path)
+	{
+		Signatures::zbh_header_t zbk_header = Signatures::zbh_header_t();
+
+		File file(file_path);
+		if (!file.Open(OpenMode::OpenWrite))
+		{
+			wprintf_s(L"Error open file.\n");
+			return;
+		}
+
+		auto bytes_read = file.ReadData((IO::ByteArray)&zbk_header, sizeof(Signatures::zbh_header_t));
+//		zbk_header.year = zbk_header.year >> 8 | zbk_header.year << 8;
+		
+		wchar_t buff[1024];
+		ZeroMemory(buff, 1024 * sizeof(wchar_t));
+
+		swprintf_s(buff, 1024, L"%d-%.2d-%.2d-%.2d-%.2d" , zbk_header.year , zbk_header.month , zbk_header.day, zbk_header.hour , zbk_header.seconds);
+		path_string date_str = buff;
+
+		boost::filesystem::path src_path(file_path);
+		auto folder_path = src_path.parent_path().generic_wstring();
+		auto only_name_path = src_path.stem().generic_wstring();
+		auto ext = src_path.extension().generic_wstring();
+		auto new_name = folder_path + L"//" + date_str + L"---" + only_name_path  + ext;
+
+		file.Close();
+		try
+		{
+			boost::filesystem::rename(file_path, new_name);
+		}
+		catch (const boost::filesystem::filesystem_error& e)
+		{
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+
+		
 	}
 
 	inline void addDateToFile(const path_string & file_path)
@@ -266,12 +306,23 @@ namespace IO
 			return new_name;
 		}
 	private:
+		bool isQtSignature(const uint8_t * qt_header , const uint32_t size)
+		{
+			if (memcmp(qt_header, IO::s_ftyp, size) == 0)
+				return true;
+			else if (memcmp(qt_header, IO::s_moov, size) == 0)
+				return true;
+			else if (memcmp(qt_header, IO::s_mdat, size) == 0)
+				return true;
+
+			return false;
+		}
 		void testSignatureMP4(const IO::path_string & filePath)
 		{
 			auto test_file = IO::makeFilePtr(filePath);
-			const uint8_t const_header[] = { 0x66 , 0x74 , 0x79 , 0x70/*0x47 , 0x40 , 0x00 , 0x10 , 0x00 , 0x00 , 0xB , 0x011*/ };
+			//const uint8_t const_header[] = { 0x66 , 0x74 , 0x79 , 0x70/*0x47 , 0x40 , 0x00 , 0x10 , 0x00 , 0x00 , 0xB , 0x011*/ };
 			const uint32_t offset = 4;
-			const uint32_t header_size = SIZEOF_ARRAY(const_header);
+			const uint32_t header_size = 4;
 			uint8_t buff[header_size];
 			ZeroMemory(buff, header_size);
 			if (test_file->Open(IO::OpenMode::OpenRead))
@@ -282,7 +333,7 @@ namespace IO
 					test_file->ReadData(buff, header_size);
 					test_file->Close();
 
-					if (memcmp(buff, const_header, header_size) != 0)
+					if (isQtSignature(buff,header_size) == false)
 					{
 						boost::filesystem::rename(filePath, filePath + L".bad_file");
 					}
@@ -360,10 +411,10 @@ namespace IO
 						{
 							auto full_name = addBackSlash(current_folder) + file_name;
 							//TestEndJpg(full_name);
-							fixDBF(full_name);
+							//zbk_rename(full_name);
 							//removeNullsFromEndFile(full_name, 2048);
 							//addDateToFile(full_name);
-							//testSignatureMP4(full_name);
+							testSignatureMP4(full_name);
 							
 
 							folder_node->AddFile(file_name);

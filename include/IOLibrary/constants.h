@@ -176,7 +176,7 @@ namespace Signatures
 	using u16 = unsigned short;
 	struct zbh_header_t
 	{
-		u16 reserver0;
+		u16 reserver0[8];
 		u8 day;
 		u8 month;
 		u16 year;

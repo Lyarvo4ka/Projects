@@ -647,6 +647,126 @@ namespace IO
 	};
 
 
+	/*
+		Восстановление фрагментированных видео файлов (QuickTime). С начали идут несколько заголовков("moov"), потом сам видео поток ("mdat").
+		В заголовке есть полный размер файла. Из этого размера можно вычислить размер "mdat".
+		Идето поиск "mdat" с таким размером.
+	*/
+	class Canon80D_FragmentRaw
+		: public QuickTimeRaw
+	{
+	public:
+		Canon80D_FragmentRaw(IODevicePtr device)
+			: QuickTimeRaw(device)
+		{
+
+		}
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
+		{
+			const uint32_t fullFileSizeOffset = 2084;
+
+			// 1. Читаем header.
+			qt_block_t qtBlock = qt_block_t();
+			setPosition(start_offset);
+			ReadData((IO::ByteArray)&qtBlock, qt_block_struct_size);
+			if (!isQuickTime(qtBlock))
+			{
+				wprintf(L"Error wrong qt_header.\n");
+				return 0;
+			}
+			uint32_t header_size = qtBlock.block_size;
+			toBE32(header_size);
+
+			uint64_t offset = start_offset;
+			offset += header_size;
+			// 2. Читаем следующий должен быть moov
+			ZeroMemory(&qtBlock, qt_block_struct_size);
+			setPosition(offset);
+			ReadData((IO::ByteArray)&qtBlock, qt_block_struct_size);
+			if (!isQuickTime(qtBlock)||(memcmp(qtBlock.block_type , s_moov, qt_keyword_size) != 0 ))
+			{
+				wprintf(L"Error wrong moov.\n");
+				return 0;
+			}
+
+			uint32_t moov_size = qtBlock.block_size;
+			toBE32(moov_size);
+
+			// 3. Читаем полный размер файла.
+			uint32_t full_size = 0;
+			offset = start_offset;
+			offset += fullFileSizeOffset;
+			setPosition(offset);
+			ReadData((IO::ByteArray) & full_size, 4);
+
+
+			uint32_t mdat_size = full_size - moov_size - header_size;
+
+			int l = 0;
+			l = 1;
+
+			qt_block_t mdat_cmp;
+			mdat_cmp.block_size = mdat_size;
+			toBE32(mdat_cmp.block_size);
+			memcpy(mdat_cmp.block_type, s_mdat, qt_keyword_size);
+
+			DataArray buffer(getBlockSize());
+
+			//const uint32_t GB_4 = UINT32_MAX;
+			uint64_t mdat_start = start_offset;
+			//uint64_t search_end = mdat_start + GB_4;
+			//if (search_end > getSize())
+			//	search_end = getSize();
+			uint32_t bytes_read = 0;
+			while (mdat_start <= getSize())
+			{
+				setPosition(mdat_start);
+				//setPosition(0x7000000);
+				bytes_read = ReadData(buffer.data(), buffer.size());
+				if (bytes_read == 0)
+					return 0;
+
+				for (uint32_t iSector = 0; iSector < buffer.size(); iSector += default_sector_size)
+				{
+					memcpy(&qtBlock, buffer.data() + iSector, qt_block_struct_size);
+					if (memcmp(&qtBlock, &mdat_cmp, qt_block_struct_size) == 0)
+					{
+						uint64_t mdat_offset = mdat_start + iSector;
+						appendToFile(target_file, start_offset, header_size + moov_size);
+						uint32_t write_size = mdat_cmp.block_size;
+						toBE32(write_size);
+						return appendToFile(target_file, mdat_offset, write_size);
+
+					}
+				}
+				mdat_start += buffer.size();
+				
+			}
+
+
+
+			return 0;
+		}
+		bool Specify(const uint64_t start_offset) override
+		{
+			return true;
+		}
+
+		bool Verify(const IO::path_string & file_path) override
+		{
+			return true;
+		}
+	};
+
+	class Canon80D_FragmentRawFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new Canon80D_FragmentRaw(device);
+		}
+	};
 }
 		// save fragment only 'mdat' data, when found nulls more then 5000, skip this cluster.
 		//uint64_t SaveFragmentMdat(File * target_file, uint64_t offset, uint32_t & copy_size)

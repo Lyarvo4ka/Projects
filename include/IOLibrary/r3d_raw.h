@@ -3,22 +3,22 @@
 
 #include "StandartRaw.h"
 
-//namespace IO
-//{
-//	class RawR3D
-//		: public DefaultRaw
-//	{
-//	public:
-//		RawR3D(IODevicePtr device)
-//			: DefaultRaw(device)
-//		{
-//
-//		}
-//
-//
-//
-//	};
-//}
+namespace IO
+{
+	class RawR3D
+		: public DefaultRaw
+	{
+	public:
+		RawR3D(IODevicePtr device)
+			: DefaultRaw(device)
+		{
+
+		}
+
+
+
+	};
+}
 
 
 

@@ -371,7 +371,8 @@ namespace OfficeChecker
         {
             List<string> files = new List<string>();
 
-            var list_files = Delimon.Win32.IO.Directory.GetFiles(_DirPath, _SearchFilter, Delimon.Win32.IO.SearchOption.AllDirectories);
+            //var list_files = Delimon.Win32.IO.Directory.GetFiles(_DirPath, _SearchFilter, Delimon.Win32.IO.SearchOption.AllDirectories);
+            var list_files = System.IO.Directory.GetFiles(_DirPath, _SearchFilter, System.IO.SearchOption.AllDirectories);
             files.AddRange(list_files);
             if (_OfficeVersion == OfficeVersion.Office2003)
             {

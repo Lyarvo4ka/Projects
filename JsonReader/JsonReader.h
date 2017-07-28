@@ -26,10 +26,14 @@ const QString extension_txt = "extension";
 
 const QString equally_to_txt = "equally_to";
 
+const QString search_block_txt = "search_block";
+
 struct SignatureHandle
 {
 	QString value_string;
 	int value_int = 0;
+	int offset = 0;
+	int search_block = 0;
 	bool bHex = false;
 };
 
@@ -94,6 +98,15 @@ void ReadFooter(const QJsonObject footer_object, SignatureHandle & footer)
 	auto tail_size = footer_object.value(tailsize_txt);
 	if (!tail_size.isUndefined())
 		footer.value_int = tail_size.toInt();
+
+	auto offset_value = footer_object.value(offset_txt);
+	if (!offset_value.isUndefined())
+		footer.offset = offset_value.toInt();
+
+	auto search_block_value = footer_object.value(search_block_txt);
+	if (!search_block_value.isUndefined())
+		footer.search_block = search_block_value.toInt();
+
 }
 
 void ReadJsonFIle(const QByteArray & byte_data, QList<JsonFileStruct> & parsedResult)
@@ -191,9 +204,11 @@ IO::FileStruct::Ptr toFileStruct(const JsonFileStruct & jsonFileStruct)
 		auto data_array = JsonToDataArray(jsonFileStruct.footer);
 		file_struct->addFooter(data_array);
 		file_struct->setFooterTailEndSize(jsonFileStruct.footer.value_int);
+		file_struct->setFooterSearchOffset(jsonFileStruct.footer.offset, jsonFileStruct.footer.search_block);
+
 	}
 	file_struct->setExtension(jsonFileStruct.extension.toStdWString());
 	file_struct->setMaxFileSize(jsonFileStruct.maxfilesize);
-	file_struct->setMaxFileSize(jsonFileStruct.minfilesize);
+	file_struct->setMinFileSize(jsonFileStruct.minfilesize);
 	return file_struct;
 }

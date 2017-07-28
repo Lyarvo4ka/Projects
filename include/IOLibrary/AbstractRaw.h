@@ -192,6 +192,8 @@ namespace IO
 		uint32_t footerTailEndSize_ = 0;
 		uint64_t maxFileSize_ = 0;
 		uint64_t minFileSize_ = 0;
+		uint32_t footer_offset_ = 0;
+		uint32_t search_block_ = 0;
 	public:
 		using Ptr = std::shared_ptr<FileStruct>;
 		FileStruct(const std::string & formatName)
@@ -257,6 +259,11 @@ namespace IO
 		{
 			return footerTailEndSize_;
 		}
+		void setFooterSearchOffset(uint32_t footer_offset, uint32_t search_block)
+		{
+			footer_offset_ = footer_offset;
+			search_block_ = search_block;
+		}
 		void setMaxFileSize(uint64_t maxFileSize)
 		{
 			maxFileSize_ = maxFileSize;
@@ -271,7 +278,7 @@ namespace IO
 		}
 		uint64_t getMinFileSize() const 
 		{
-		
+			return minFileSize_;
 		}
 
 		bool compareWithAllHeaders(ByteArray data, uint32_t size)

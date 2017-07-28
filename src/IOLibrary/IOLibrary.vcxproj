@@ -142,6 +142,7 @@
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />
+    <ClInclude Include="..\..\include\IOLibrary\RawIMD.h" />
     <ClInclude Include="..\..\include\IOLibrary\RawMPEG.h" />
     <ClInclude Include="..\..\include\IOLibrary\RawMTS.h" />
     <ClInclude Include="..\..\include\IOLibrary\RawMXF.h" />

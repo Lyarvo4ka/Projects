@@ -91,5 +91,100 @@ namespace IO
 			return new RawRIFF(device);
 		}
 	};
+
+
+	class ZOOMHandyRecorderRaw
+		: public RawRIFF
+	{
+	private:
+		uint32_t cluster_size_ = 32768;
+	public:
+		ZOOMHandyRecorderRaw(IODevicePtr device)
+			: RawRIFF(device)
+		{
+
+		}
+		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
+		{
+			if (!target_file.isOpen())
+			{
+				wprintf(L"Target file wasn't opened.\n");
+				return 0;
+			}
+
+			uint64_t stereo_offset = start_offset;
+			uint64_t mono_offset = start_offset + cluster_size_;
+
+			// read stereo
+			riff_header_struct stereo_struct = riff_header_struct();
+			readRiffStruct(stereo_struct, stereo_offset);
+			wprintf(L"STEREO write size: %d\n", stereo_struct.size);
+
+			// read mono
+			riff_header_struct mono_struct = riff_header_struct();
+			readRiffStruct(mono_struct, mono_offset);
+			wprintf(L"MONO write size: %d\n", mono_struct.size);
+
+
+			auto stereoFileName = target_file.getFileName();
+			boost::filesystem::path mono_path(target_file.getFileName());
+			auto folder = mono_path.parent_path();
+			auto file = mono_path.stem();
+			auto monoFileName = addBackSlash(folder.wstring()) + file.wstring() + L"_Tr1" + L".wav";
+			auto monoFile = makeFilePtr(monoFileName);
+			if (!monoFile->Open(OpenMode::Create))
+			{
+				wprintf(L"Error to create MONO file: %s\n", monoFileName.c_str());
+				return 0;
+			}
+			uint32_t bytes_written = 0;
+
+			bytes_written = appendToFile(target_file, stereo_offset, cluster_size_);
+			uint32_t stereo_size = bytes_written;
+
+			bytes_written = appendToFile(*monoFile, mono_offset, cluster_size_);
+			uint32_t mono_size = bytes_written;
+			
+			stereo_offset = mono_offset + cluster_size_;
+
+			while (stereo_size < stereo_struct.size)
+			{
+				if (stereo_offset >= this->getSize())
+				{
+					wprintf(L"Error end of source.");
+					return 0;
+				}
+
+				stereo_size += appendToFile(target_file, stereo_offset, cluster_size_* 2);
+				mono_offset = stereo_offset + cluster_size_ * 2;
+
+				mono_size += appendToFile(*monoFile, mono_offset, cluster_size_);
+				stereo_offset = mono_offset +cluster_size_;
+			}
+
+			
+			target_file.setSize(stereo_struct.size + riff_header_struct_size);
+			if (mono_struct.size < stereo_struct.size)
+				monoFile->setSize(mono_struct.size + riff_header_struct_size);
+			monoFile->Close();
+			return stereo_size;
+
+		}
+		bool Specify(const uint64_t start_offset) override
+		{
+			return true;
+		}
+
+	};
+
+	class RawZOOMHandyRecorder
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new ZOOMHandyRecorderRaw(device);
+		}
+	};
 }
 

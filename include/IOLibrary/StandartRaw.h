@@ -13,6 +13,8 @@ namespace IO
 		DataArray::Ptr footer_;
 		uint32_t tailSize_ = 0;
 		uint64_t maxFileSize_ = 0;
+		uint32_t footer_offset_ = 0;
+		uint32_t search_block_ = 0;
 		bool bFoundFooter_ = false;
 	public:
 		StandartRaw(IODevicePtr device)
@@ -42,7 +44,11 @@ namespace IO
 		{
 			tailSize_ = tailSize;
 		}
-
+		void setFooterOffsetSearchBlock(uint32_t footer_offset, uint32_t search_block)
+		{
+			footer_offset_ = footer_offset;
+			search_block_ = search_block;
+		}
 		void setMaxFileSize(const uint64_t maxFileSize)
 		{
 			maxFileSize_ = maxFileSize;
@@ -90,7 +96,7 @@ namespace IO
 			uint32_t sizeToRead = getBlockSize() + calcToSectorSize(footer_data->size());
 			auto buffer = makeDataArray(sizeToRead);
 
-			while (offset < this->getSize())
+			while (offset <this->getSize())
 			{
 				sizeToRead = calcBlockSize(offset, this->getSize(), sizeToRead);
 				  
@@ -161,13 +167,28 @@ namespace IO
 
 		bool findFooter(const DataArray &data_array, uint32_t data_size, const DataArray & footer_data, uint32_t & footer_pos)
 		{
-			for (footer_pos = 0; footer_pos < data_size - footer_data.size(); ++footer_pos)
+			if (search_block_ == 0)
 			{
-				if (memcmp(data_array.data() + footer_pos, footer_data.data(), footer_data.size()) == 0)
+				for (footer_pos = 0; footer_pos < data_size - footer_data.size(); ++footer_pos)
 				{
-					printf("Found footer.\r\n");
-					return true;
+					if (memcmp(data_array.data() + footer_pos, footer_data.data(), footer_data.size()) == 0)
+					{
+						printf("Found footer.\r\n");
+						return true;
+					}
 				}
+			}
+			else
+			{
+				for (footer_pos = footer_offset_; footer_pos < data_size - footer_data.size(); footer_pos+=search_block_)
+				{
+					if (memcmp(data_array.data() + footer_pos, footer_data.data(), footer_data.size()) == 0)
+					{
+						printf("Found footer.\r\n");
+						return true;
+					}
+				}
+
 			}
 			return false;
 		}

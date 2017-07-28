@@ -492,7 +492,7 @@ namespace OfficeChecker
                 m_BookExcel = m_AppExcel.Workbooks.Open(m_FilePath,
                                                         UpdateLinks: 2,
                                                         ReadOnly: true,
-                                                        Password:"liberta68");
+                                                        Password:"password");
                 m_OpenStatus = OpenStatus.OpenGOOD;
             }
             catch (System.Runtime.InteropServices.COMException ex)
