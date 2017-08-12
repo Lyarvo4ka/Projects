@@ -58,6 +58,8 @@ namespace IO
 			riff_header_struct riff_struct = { 0 };
 			readRiffStruct(riff_struct, start_offset);
 
+			if (riff_struct.size == 0)
+				return false;
 			if (riff_struct.size >= 0xFFFFFFFF - riff_header_struct_size)
 				return false;
 

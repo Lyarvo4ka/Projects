@@ -343,6 +343,54 @@ namespace IO
 
 
 		}
+
+		void RenameMP4_date(const IO::path_string & filePath)
+		{
+			auto test_file = IO::makeFilePtr(filePath);
+			const uint32_t date_offset = 0x126;
+			const uint32_t date_size = 19;
+			const uint32_t check_size = 0x13A;
+			char buff[date_size + 1];
+			ZeroMemory(buff, date_size + 1);
+
+			if (test_file->Open(IO::OpenMode::OpenRead))
+			{
+				if (check_size > test_file->Size())
+					return;
+
+				test_file->setPosition(date_offset);
+				test_file->ReadData((ByteArray)buff, date_size);
+				test_file->Close();
+
+				if (buff[0] == '2' && buff[1] == '0')
+				{
+
+					std::string date_string(buff);
+					std::replace(date_string.begin(), date_string.end(), ' ', '-');
+					std::replace(date_string.begin(), date_string.end(), '.', '-');
+					std::replace(date_string.begin(), date_string.end(), ':', '-');
+
+					IO::path_string new_date_str(date_string.begin(), date_string.end());
+
+					boost::filesystem::path src_path(filePath);
+					auto folder_path = src_path.parent_path().generic_wstring();
+					auto only_name_path = src_path.stem().generic_wstring();
+					auto ext = src_path.extension().generic_wstring();
+					auto new_name =  folder_path  + L"//" + new_date_str +  L"-" + only_name_path + ext;
+
+					try
+					{
+						boost::filesystem::rename(filePath, new_name);
+					}
+					catch (const boost::filesystem::filesystem_error& e)
+					{
+						std::cout << "Error: " << e.what() << std::endl;
+					}
+
+				}
+			}
+
+		}
 		void TestEndJpg(const IO::path_string & filePath)
 		{
 			auto test_file = IO::makeFilePtr(filePath);
@@ -414,7 +462,8 @@ namespace IO
 							//zbk_rename(full_name);
 							//removeNullsFromEndFile(full_name, 2048);
 							//addDateToFile(full_name);
-							testSignatureMP4(full_name);
+							//testSignatureMP4(full_name);
+							RenameMP4_date(full_name);
 							
 
 							folder_node->AddFile(file_name);

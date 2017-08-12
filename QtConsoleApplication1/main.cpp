@@ -36,18 +36,18 @@ const std::string f_str = "-f";
 
 void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 {
-	//factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
-	//factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
-	//factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
+	factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
+	factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
+	factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
 	//factory_manager.Register("BlackVue", std::make_unique<IO::BlackVue_QtRawFactory>());
 	//factory_manager.Register("wav", std::make_unique<IO::RawFIFFFactory>());
 	//factory_manager.Register("mx7", std::make_unique<IO::RawFIFFFactory>());
-	//factory_manager.Register("avi", std::make_unique<IO::RawFIFFFactory>());
-	//factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
+	factory_manager.Register("wave", std::make_unique<IO::RawFIFFFactory>());
+	factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
 	//factory_manager.Register("r3d", std::make_unique<IO::StandartRawFactory>());
 	//factory_manager.Register("ZOOMHandyRecorder", std::make_unique<IO::RawZOOMHandyRecorder>());
 	//factory_manager.Register("imd", std::make_unique<IO::RawIMDFactory>());
-	factory_manager.Register("Canon80D", std::make_unique<IO::Canon80D_FragmentRawFactory>());
+	//factory_manager.Register("Canon80D", std::make_unique<IO::Canon80D_FragmentRawFactory>());
 
 
 }
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 		QList<JsonFileStruct> listFileStruct;
 
 
-		QFile file("video.json");
+		QFile file("qt_wave.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
 			qInfo() << "Error to open file. \"video.json\"";
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0x0;
+		uint64_t start_offset = 0x74D8A53A00;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())

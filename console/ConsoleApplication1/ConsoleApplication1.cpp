@@ -386,11 +386,11 @@ int _tmain(int argc, TCHAR **argv)
 	//entropy_raw.SaveRawFile
 
 
-	IO::path_string folder_path(L"e:\\Root\\");
+	IO::path_string folder_path(L"d:\\tmp\\1\\");
 	IO::path_list ext_list;
 	//ext_list.push_back(L".mov");
 	//ext_list.push_back(L".mp4");
-	ext_list.push_back(L".3gp");
+	ext_list.push_back(L".mov");
 	auto finder = IO::Finder();
 	finder.FindFiles(folder_path, ext_list);
 
