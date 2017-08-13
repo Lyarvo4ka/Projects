@@ -12,6 +12,7 @@
 #include "IODevice.h"
 #include "QuickTime.h"
 #include "dbf.h"
+#include "tinyxml2.h"
 
 
 namespace IO
@@ -346,6 +347,8 @@ namespace IO
 
 		void RenameMP4_date(const IO::path_string & filePath)
 		{
+			
+
 			auto test_file = IO::makeFilePtr(filePath);
 			const uint32_t date_offset = 0x126;
 			const uint32_t date_size = 19;
@@ -388,7 +391,63 @@ namespace IO
 					}
 
 				}
+				else
+				{
+					
+					const std::string temp_xml = "temp.xml";
+					std::wstring wtemp_xml = L"temp.xml";
+					auto tmp_file = makeFilePtr(wtemp_xml);
+					const char xml_header[] = { 0x3C , 0x3F ,  0x78 , 0x6D , 0x6C };
+					const uint32_t xml_header_size = SIZEOF_ARRAY(xml_header);
+
+					char buffer[default_block_size];
+					ZeroMemory(buffer, default_block_size);
+
+					auto file_size = test_file->Size();
+					test_file->setPosition(file_size - default_block_size);
+					auto byter_read = test_file->ReadData((ByteArray)buffer, default_block_size);
+
+					bool bFoudXml = false;
+					// Find xml signauture
+					for (uint32_t iByte = 0; iByte < byter_read - xml_header_size; ++iByte)
+					{
+						if (memcpy(buffer + iByte, xml_header, xml_header_size) == 0)
+						{
+							// write to temp file
+							tmp_file->WriteData((ByteArray)&buffer[iByte], byter_read - iByte);
+							bFoudXml = true;
+						}
+					}
+
+					if (bFoudXml)
+					{
+						tinyxml2::XMLDocument xml_doc;
+						auto xml_result = xml_doc.LoadFile(temp_xml);
+
+						if (xml_result == tinyxml2::XML_SUCCESS)
+						{
+							auto xml_root = xml_doc.RootElement();
+							auto xmlCreationDate = xml_root->FirstChildElement("CreationDate");
+							if (xmlCreationDate)
+							{
+								auto xml_date_text = xmlCreationDate->Attribute("value");
+								if (xml_date_text)
+								{
+									std::string original_date(xml_date_text);
+									auto str_date = parse_string_date(xml_date_text);
+									std::cout << str_date;
+								}
+							}
+							//auto val_text = xml_date_element->ToText();
+
+							int k = 1;
+							k = 2;
+						}
+					}
+
+				}
 			}
+
 
 		}
 		void TestEndJpg(const IO::path_string & filePath)
