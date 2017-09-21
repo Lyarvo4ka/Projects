@@ -167,6 +167,9 @@
     <ClInclude Include="..\..\include\IOLibrary\RawIMD.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\Temp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

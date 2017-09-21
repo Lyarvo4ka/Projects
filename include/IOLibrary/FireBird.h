@@ -28,7 +28,7 @@ struct firebird_page
 #pragma pack()
 
 const int firebird_size = sizeof(firebird_page);
-const int FB_Size = 4 * 1024;
+const int FB_Size = 8 * 1024;
 
 
 void removeNotFireBirdPages(const std::string & src_file, const std::string & dst_file)

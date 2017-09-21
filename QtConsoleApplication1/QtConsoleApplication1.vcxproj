@@ -14,7 +14,7 @@
     <ProjectGuid>{50A8BBFD-5EBF-45CC-BF89-D7C0387A6260}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
     <ProjectName>RawRecovery</ProjectName>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

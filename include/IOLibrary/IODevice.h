@@ -137,7 +137,10 @@ namespace IO
 
 
 			if (!::ReadFile(hFile_, data, read_size, &bytes_read, NULL))
+			{
+				auto dwError = ::GetLastError();
 				return 0;
+			}
 			return bytes_read;
 		};
 

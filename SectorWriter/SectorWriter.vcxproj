@@ -22,7 +22,7 @@
     <ProjectGuid>{59DBB57F-77F6-4F87-B47A-19F91C650D2E}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SectorWriter</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
     <ProjectName>Sector_writer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

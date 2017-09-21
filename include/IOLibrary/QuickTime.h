@@ -336,13 +336,13 @@ namespace IO
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
 			const uint32_t cluster_size = 32768;
-			const double entropy_border = 7.9974;
+			const double entropy_border = 7.9927;
 
 			uint64_t offset = start_offset;
 			uint64_t file_size = 0;
 			uint32_t cluster_number = 0;
 
-			for (auto i = 0; i < 1/*10*/; ++i)
+			for (auto i = 0; i < 11; ++i)
 			{
 				auto cluster_data = IO::makeDataArray(cluster_size);
 				setPosition(offset);
@@ -352,6 +352,7 @@ namespace IO
 					break;
 				}
 				appendToFile(target_file, offset, cluster_size);
+				++cluster_number;
 				offset += cluster_size;
 			}
 
@@ -376,6 +377,8 @@ namespace IO
 			uint32_t nCount = 0;
 			uint32_t moov_offset = 0;
 
+			uint32_t number_nulls = 0;
+
 			while (true)
 			{
 				std::unique_ptr<DataEntropy> next = std::make_unique<DataEntropy>();
@@ -388,6 +391,8 @@ namespace IO
 				}
 				next->entropy = calcEntropy(next->data_array->data(), next->data_array->size());
 
+				
+
 				nCount = 0;
 				if (prev->entropy > entropy_border)
 					++nCount;
@@ -395,6 +400,12 @@ namespace IO
 					++nCount;
 				if (next->entropy > entropy_border)
 					++nCount;
+
+				//number_nulls = calc_nulls(next->data_array->data(), next->data_array->size());
+				//nCount = 0;
+				//if (number_nulls < 280)
+				//	nCount = 2;
+				
 
 				if (!findMOOV(curr->data_array->data(), curr->data_array->size(), moov_offset))
 				{ 

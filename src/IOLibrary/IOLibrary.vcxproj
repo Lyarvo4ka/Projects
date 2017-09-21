@@ -14,7 +14,7 @@
     <ProjectGuid>{C0525921-31E3-4E1A-B7B6-4EA88D4DE419}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>IOLibrary</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -57,7 +57,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IOLIBRARY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)include\$(ProjectName);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(BOOST_ROOT);$(SolutionDir)include\$(ProjectName);c:\develop\vcpkg\installed\x86-windows\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -157,6 +157,7 @@
     <ClInclude Include="..\..\include\IOLibrary\StandartRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\stdafx.h" />
     <ClInclude Include="..\..\include\IOLibrary\targetver.h" />
+    <ClInclude Include="..\..\include\IOLibrary\Temp.h" />
     <ClInclude Include="..\..\include\IOLibrary\Translator.h" />
     <ClInclude Include="..\..\include\IOLibrary\utility.h" />
   </ItemGroup>

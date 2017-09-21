@@ -373,26 +373,58 @@ const int number = 1;
 
 #include "IOLibrary/Entropy.h"
 #include "IOLibrary/Finder.h"
+#include "IOLibrary\FireBird.h"
 //#include "IOLibrary/ext2_raw.h"
 
 
 int _tmain(int argc, TCHAR **argv)
 {
 	//auto src_file = L"d:\\incoming\\41914\\41914.img";
-	//IO::calcEntropyForFile("d:\\incoming\\42158\\sample\\ZOOM0002\\ZOOM0002_LR.WAV", 32768);
-	//IO::calcEntropyForFile("d:\\incoming\\42158\\sample\\ZOOM0002\\ZOOM0002_Tr1.WAV", 32768);
+	IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.LRV", 32768);
+	IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.MP4 ", 32768);
 	//IO::ESER_YDXJ_QtRaw entropy_raw(IO::makeFilePtr(src_file));
+	//IO::calcEntropyForFile("d:\\incoming\\42706\\1.mp4" , 32768);
+	//IO::calcEntropyForFile("d:\\incoming\\42706\\2.mp4", 32768);
+
+	//auto src_file = "e:\\42707\\p1\\Free_space.bin";
+	//auto dst_folder = "e:\\42707\\p1\\";
+
+	//FireBird_Raw fb_raw(src_file, dst_folder);
+	//fb_raw.execute();
+
+	//int k = 1;
+	//k = 2;
 
 	//entropy_raw.SaveRawFile
+	//auto src_file = IO::makeFilePtr(L"d:\\incoming\\42706\\2.mp4");
+	//if (!src_file->Open(IO::OpenMode::OpenRead))
+	//{
+
+	//	wprintf(L"Error open file to read %s\n", src_file->getFileName().c_str());
+	//	return -1;
+	//}
+	//auto dst_file = IO::makeFilePtr(L"d:\\incoming\\42706\\2-result.mp4");
+	//if (!dst_file->Open(IO::OpenMode::Create))
+	//{
+
+	//	wprintf(L"Error create file\n %s", dst_file->getFileName().c_str());
+	//	return -1;
+	//}
+
+	//IO::ESER_YDXJ_QtRaw ey_raw(src_file);
+	//auto saved_size = ey_raw.SaveRawFile(*dst_file,0);
 
 
-	IO::path_string folder_path(L"d:\\tmp\\1\\");
-	IO::path_list ext_list;
-	//ext_list.push_back(L".mov");
+	//IO::calcEntropyForFile("d:\\incoming\\42706\\1.mp4" , 32768);
+	//IO::calcEntropyForFile("d:\\incoming\\42706\\2.mp4", 32768);
+	//IO::calcEntropyForFile("d:\\incoming\\42706\\example.mp4", 32768);
+
+	//IO::path_string folder_path(L"f:\\42576\\");
+	//IO::path_list ext_list;
+
 	//ext_list.push_back(L".mp4");
-	ext_list.push_back(L".mov");
-	auto finder = IO::Finder();
-	finder.FindFiles(folder_path, ext_list);
+	//auto finder = IO::Finder();
+	//finder.FindFiles(folder_path, ext_list);
 
 	//auto drive_number = boost::lexical_cast<uint32_t>(argv[number]);
 
@@ -695,8 +727,7 @@ int _tmain(int argc, TCHAR **argv)
 	//finder.printAll();
 
 	//auto listFiles = finder.getFiles();
-	int k = 1;
-	k = 2;
+
 
 	//auto k = { 0 };
 

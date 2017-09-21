@@ -179,4 +179,204 @@ namespace IO
 			return boost::filesystem::create_directory(result_folder);
 	}
 
+	inline std::string getDateFromSystemtime(const SYSTEMTIME & system_time)
+	{
+		char tmp_buffer[255];
+		::GetDateFormatA(LOCALE_USER_DEFAULT, 0, &system_time, "yyyy-MM-dd", tmp_buffer, 255);
+		std::string tmp_str = tmp_buffer;
+
+		return tmp_str;
+	}
+
+	inline std::string getTimeFromSystemtime(const SYSTEMTIME & system_time)
+	{
+		char tmp_buffer[255];
+		::GetTimeFormatA(LOCALE_USER_DEFAULT, 0, &system_time, "HH-mm-ss", tmp_buffer, 255);
+		std::string tmp_str = tmp_buffer;
+
+		return tmp_str;
+	}
+
+	inline std::string getDateAndTimeFromSystemtime(const SYSTEMTIME & system_time)
+	{
+		return getDateFromSystemtime(system_time) + '-' + getTimeFromSystemtime(system_time);
+	}
+
+	inline std::string parse_string_date(const std::string & original_date)
+	{
+		// 2017-06-02T13:25:56+03:00
+		SYSTEMTIME sys_time = { 0 };
+		std::string tmp_str;
+		sys_time.wYear = std::stoi(original_date.substr(0, 4));
+		sys_time.wMonth = std::stoi(original_date.substr(5, 2));
+		sys_time.wDay = std::stoi(original_date.substr(8, 2));
+		sys_time.wHour = std::stoi(original_date.substr(11, 2));
+		sys_time.wMinute = std::stoi(original_date.substr(14, 2));
+		sys_time.wSecond = std::stoi(original_date.substr(17, 2));
+
+		return getDateAndTimeFromSystemtime(sys_time);
+	}
+
+	//inline std::string getQuickTimeDate(const IO::path_string & filePath)
+	//{
+
+	//}
+	struct CanonDate
+	{
+		//2017:08:08 11:10:02
+		char year[4];
+		char colon1;
+		char month[2];
+		char colon2;
+		char day[2];
+		char white_space;
+		char hour[2];
+		char colon3;
+		char min[2];
+		char colon4;
+		char sec[2];
+
+	};
+
+	inline uint32_t calc_nulls(const ByteArray data, const uint32_t size)
+	{
+		uint32_t counter = 0;
+		for (uint32_t iByte = 0; iByte < size; ++iByte)
+		{
+			if (data[iByte] == 0)
+				++counter;
+		}
+		return counter;
+	}
+
+	inline void RenameMP4_date(const IO::path_string & filePath)
+	{
+		//auto test_file = IO::makeFilePtr(filePath);
+		//const uint32_t date_offset = 0x126;
+		//const uint32_t date_size = 19;
+		//const uint32_t check_size = 0x13A;
+		//char buff[date_size + 1];
+		//ZeroMemory(buff, date_size + 1);
+
+		//if (test_file->Open(IO::OpenMode::OpenRead))
+		//{
+		//	if (check_size > test_file->Size())
+		//		return;
+
+		//	test_file->setPosition(date_offset);
+		//	test_file->ReadData((ByteArray)buff, date_size);
+
+
+		//	if (buff[0] == '2' && buff[1] == '0')
+		//	{
+		//		// Canon date
+		//		std::string date_string(buff);
+		//		std::replace(date_string.begin(), date_string.end(), ' ', '-');
+		//		std::replace(date_string.begin(), date_string.end(), '.', '-');
+		//		std::replace(date_string.begin(), date_string.end(), ':', '-');
+
+		//		IO::path_string new_date_str(date_string.begin(), date_string.end());
+
+		//		boost::filesystem::path src_path(filePath);
+		//		auto folder_path = src_path.parent_path().generic_wstring();
+		//		auto only_name_path = src_path.stem().generic_wstring();
+		//		auto ext = src_path.extension().generic_wstring();
+		//		auto new_name = folder_path + L"//" + new_date_str + L"-" + only_name_path + ext;
+		//		test_file->Close();
+		//		try
+		//		{
+		//			boost::filesystem::rename(filePath, new_name);
+		//		}
+		//		catch (const boost::filesystem::filesystem_error& e)
+		//		{
+		//			std::cout << "Error: " << e.what() << std::endl;
+		//		}
+
+		//	}
+		//	else
+		//	{
+		//		// Sony xml creation date
+		//		const std::string temp_xml = "temp.xml";
+		//		std::wstring wtemp_xml = L"temp.xml";
+		//		auto tmp_file = makeFilePtr(wtemp_xml);
+		//		tmp_file->Open(OpenMode::Create);
+
+		//		const char xml_header[] = { 0x3C , 0x3F ,  0x78 , 0x6D , 0x6C };
+		//		const uint32_t xml_header_size = SIZEOF_ARRAY(xml_header);
+
+		//		char buffer[default_block_size];
+		//		ZeroMemory(buffer, default_block_size);
+
+		//		auto file_size = test_file->Size();
+		//		test_file->setPosition(file_size - default_block_size);
+		//		auto bytes_read = test_file->ReadData((ByteArray)buffer, default_block_size);
+		//		if (bytes_read == 0)
+		//		{
+		//			wprintf(L"Error. Read size is 0");
+		//			return;
+		//		}
+
+		//		bool bFoudXml = false;
+		//		// Find xml signauture
+		//		for (uint32_t iByte = 0; iByte < bytes_read - xml_header_size; ++iByte)
+		//		{
+		//			if (memcmp(buffer + iByte, xml_header, xml_header_size) == 0)
+		//			{
+		//				// write to temp file
+		//				tmp_file->WriteData((ByteArray)&buffer[iByte], bytes_read - iByte);
+		//				tmp_file->Close();
+		//				bFoudXml = true;
+		//			}
+		//		}
+
+		//		if (bFoudXml)
+		//		{
+		//			tinyxml2::XMLDocument xml_doc;
+		//			auto xml_result = xml_doc.LoadFile(temp_xml.c_str());
+
+		//			if (xml_result == tinyxml2::XML_SUCCESS)
+		//			{
+		//				auto xml_root = xml_doc.RootElement();
+		//				auto xmlCreationDate = xml_root->FirstChildElement("CreationDate");
+		//				if (xmlCreationDate)
+		//				{
+		//					auto xml_date_text = xmlCreationDate->Attribute("value");
+		//					if (xml_date_text)
+		//					{
+		//						std::string original_date(xml_date_text);
+		//						auto str_date = parse_string_date(xml_date_text);
+		//						std::cout << str_date.c_str();
+
+		//						IO::path_string new_date_str(str_date.begin(), str_date.end());
+
+		//						boost::filesystem::path src_path(filePath);
+		//						auto folder_path = src_path.parent_path().generic_wstring();
+		//						auto only_name_path = src_path.stem().generic_wstring();
+		//						auto ext = src_path.extension().generic_wstring();
+		//						auto new_name = folder_path + L"//" + new_date_str + L"-" + only_name_path + ext;
+
+		//						test_file->Close();
+		//						try
+		//						{
+		//							boost::filesystem::rename(filePath, new_name);
+		//						}
+		//						catch (const boost::filesystem::filesystem_error& e)
+		//						{
+		//							std::cout << "Error: " << e.what() << std::endl;
+		//						}
+
+		//					}
+		//				}
+		//				//auto val_text = xml_date_element->ToText();
+
+		//			}
+		//		}
+
+		//	}
+
+		//}
+
+	}
+
+
 };
