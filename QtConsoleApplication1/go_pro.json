@@ -2,18 +2,10 @@
     "go_pro":{
 		"header":
           [
-			{
-                "textdata":"ftyp",
-                "offset": 4
-            },
-            {
-                "textdata":"moov",
-                "offset": 4
-            },
-            {
-                "textdata":"mdat",
-                "offset": 4
-            }            
+			      {
+                "hexdata":"0000000209100000002006000D8099D0",
+                "offset": 0
+            }         
             
           ],
           "extension": ".mov"

@@ -239,13 +239,14 @@ namespace IO
 						if (isPresentInList(file_ext, this->list_ext_))
 						{
 							auto full_name = addBackSlash(current_folder) + file_name;
+
 							//TestEndJpg(full_name);
 							//zbk_rename(full_name);
 							//removeNullsFromEndFile(full_name, 2048);
 							//addDateToFile(full_name);
-							testSignatureMP4(full_name);
+							//testSignatureMP4(full_name);
 							//Rename_wave(full_name);
-							
+							files_.push_back(full_name);
 
 							folder_node->AddFile(file_name);
 						}

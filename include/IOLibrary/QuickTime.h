@@ -32,6 +32,8 @@ namespace IO
 	const char s_uuid[] = "uuid";
 	const char s_meta[] = "meta";
 
+	const char jpg_signature[] = { 0xFF, 0xD8, 0xFF };
+
 	const int qt_keyword_size = 4;
 
 	using array_keywords = std::vector<const char *>;
@@ -75,6 +77,10 @@ namespace IO
 				return true;
 		}
 		return false;
+	}
+	inline bool cmp_keyword(const qt_block_t & qt_block, const char * keyword_name)
+	{
+		return (memcmp(qt_block.block_type, keyword_name, qt_keyword_size) == 0);
 	}
 
 	//inline void to_big_endian64(uint64_t & val)
@@ -778,6 +784,25 @@ namespace IO
 			return new Canon80D_FragmentRaw(device);
 		}
 	};
+
+	struct EntropyCluster
+	{
+		EntropyCluster(uint64_t offset , double theEntropy)
+			: cluster_offset(offset)
+			, entropy(theEntropy)
+		{}
+		uint64_t cluster_offset = 0;
+		double entropy = 0.0;
+	};
+
+	struct FTYP_start
+	{
+		bool bFound = false;
+		uint64_t offset = 0;
+	};
+
+	//const char GP_START_DATA[] = { 0x00 , 0x00 , 0x00 , 0x02 , 0x09 , 0x10 , 0x00 , 0x00 , 0x00 , 0x20 , 0x06 , 0x00 , 0x0D , 0x80 , 0x99 , 0xD0 };
+
 }
 		// save fragment only 'mdat' data, when found nulls more then 5000, skip this cluster.
 		//uint64_t SaveFragmentMdat(File * target_file, uint64_t offset, uint32_t & copy_size)

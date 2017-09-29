@@ -42,7 +42,7 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 	//factory_manager.Register("wave", std::make_unique<IO::RawFIFFFactory>());
 	//factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
 
-	factory_manager.Register("go_pro", std::make_unique<IO::ESER_YDXJ_QtRawFactory>());
+	factory_manager.Register("go_pro", std::make_unique<IO::GoProRawFactory>());
 
 
 	//factory_manager.Register("BlackVue", std::make_unique<IO::BlackVue_QtRawFactory>());
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0x0;
+		uint64_t start_offset = 0x382B8000;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 							target_size /= default_sector_size;
 							target_size *= default_sector_size;
 							//////////////////////////////////////////////////////////////////////////
-							jump_size = target_size ;
+							jump_size = default_sector_size;
 						}
 						else
 						{

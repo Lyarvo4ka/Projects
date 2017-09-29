@@ -373,15 +373,27 @@ const int number = 1;
 
 #include "IOLibrary/Entropy.h"
 #include "IOLibrary/Finder.h"
-#include "IOLibrary\FireBird.h"
+//#include "IOLibrary\FireBird.h"
+#include "IOLibrary\dbf.h"
 //#include "IOLibrary/ext2_raw.h"
 
 
 int _tmain(int argc, TCHAR **argv)
 {
+	IO::Finder finder;
+	finder.add_extension(L".dbf");
+	finder.FindFiles(L"d:\\dbf\\1\\");
+	auto fileList = finder.getFiles();
+	for (auto & theFile : fileList)
+	{
+		IO::fixDBF(theFile);
+	}
+
+
+
 	//auto src_file = L"d:\\incoming\\41914\\41914.img";
-	IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.LRV", 32768);
-	IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.MP4 ", 32768);
+	//IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.LRV", 32768);
+	//IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.MP4 ", 32768);
 	//IO::ESER_YDXJ_QtRaw entropy_raw(IO::makeFilePtr(src_file));
 	//IO::calcEntropyForFile("d:\\incoming\\42706\\1.mp4" , 32768);
 	//IO::calcEntropyForFile("d:\\incoming\\42706\\2.mp4", 32768);
