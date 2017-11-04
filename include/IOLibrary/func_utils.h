@@ -108,4 +108,57 @@ namespace IO
 		}
 
 	}
+
+	void XorFiles(const path_string & filename1, const path_string & filename2, const path_string & resultname)
+	{
+		IO::File file1(filename1);
+		if (!file1.Open(IO::OpenMode::OpenRead))
+		{
+			wprintf(L"Error open file\n %s", file1.getFileName().c_str());
+			return ;
+		}
+
+		IO::File file2(filename2);
+		if (!file2.Open(IO::OpenMode::OpenRead))
+		{
+			wprintf(L"Error open file\n %s", file2.getFileName().c_str());
+			return;
+		}
+
+		IO::File resFile(resultname);
+		if (!resFile.Open(IO::OpenMode::Create))
+		{
+			wprintf(L"Error create file\n %s", resFile.getFileName().c_str());
+			return;
+		}
+
+		auto file1_size = file1.Size();
+		auto file2_size = file2.Size();
+
+		auto theSize = (file1_size < file2_size) ? file1_size : file2_size;
+
+		DataArray data1(theSize);
+		DataArray data2(theSize);
+		file1.ReadData(data1.data(), data1.size());
+		file2.ReadData(data2.data(), data2.size());
+
+		DataArray res_data(theSize);
+
+		for (auto i = 0; i < theSize; ++i)
+		{
+			ByteArray res = (ByteArray) &res_data.data()[i];
+			ByteArray d1= (ByteArray)&data1.data()[i];
+			ByteArray d2 = (ByteArray)&data2.data()[i];
+			*res = *d1 ^ *d2;
+		}
+
+
+		resFile.WriteData(res_data.data(), res_data.size());
+
+
+
+
+
+
+	}
 }

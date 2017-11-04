@@ -85,43 +85,7 @@ namespace IO
 
 		}
 	private:
-		bool isQtSignature(const uint8_t * qt_header , const uint32_t size)
-		{
-			if (memcmp(qt_header, IO::s_ftyp, size) == 0)
-				return true;
-			else if (memcmp(qt_header, IO::s_moov, size) == 0)
-				return true;
-			else if (memcmp(qt_header, IO::s_mdat, size) == 0)
-				return true;
 
-			return false;
-		}
-		void testSignatureMP4(const IO::path_string & filePath)
-		{
-			auto test_file = IO::makeFilePtr(filePath);
-			//const uint8_t const_header[] = { 0x66 , 0x74 , 0x79 , 0x70/*0x47 , 0x40 , 0x00 , 0x10 , 0x00 , 0x00 , 0xB , 0x011*/ };
-			const uint32_t offset = 4;
-			const uint32_t header_size = 4;
-			uint8_t buff[header_size];
-			ZeroMemory(buff, header_size);
-			if (test_file->Open(IO::OpenMode::OpenRead))
-			{
-				if (test_file->Size() >= header_size)
-				{
-					test_file->setPosition(offset);
-					test_file->ReadData(buff, header_size);
-					test_file->Close();
-
-					if (isQtSignature(buff,header_size) == false)
-					{
-						boost::filesystem::rename(filePath, filePath + L".bad_file");
-					}
-				}
-
-			}
-
-
-		}
 		void Rename_wave(const IO::path_string & filePath)
 		{
 			auto test_file = IO::makeFilePtr(filePath);
@@ -172,34 +136,6 @@ namespace IO
 			}
 		}
 
-		void TestEndJpg(const IO::path_string & filePath)
-		{
-			auto test_file = IO::makeFilePtr(filePath);
-			const uint32_t constSize = 2;
-			uint8_t buff[constSize];
-			ZeroMemory(buff, constSize);
-
-			//const uint8_t const_r3d_header[] = { 0x52 , 0x45 , 0x44 , 0x32 };
-			const uint8_t const_end_jpg[] = {0xFF, 0xD9};
-			//const uint8_t const_end_pdf[] = { 0x25 , 0x25 , 0x45 , 0x4F , 0x46 , 0x0A };
-
-			if (test_file->Open(IO::OpenMode::OpenRead))
-			{
-				if (test_file->Size() >= constSize)
-				{
-					test_file->setPosition(test_file->Size() - constSize);
-					test_file->ReadData(buff, constSize);
-					test_file->Close();
-
-					if (memcmp(buff, const_end_jpg, constSize) != 0)
-					{
-
-						boost::filesystem::rename(filePath, filePath + L".bad_file");
-					}
-				}
-
-			}
-		}
 		void Find(DirectoryNode::Ptr folder_node)
 		{
 			path_string current_folder = folder_node->getFullPath();
@@ -233,12 +169,14 @@ namespace IO
 						boost::filesystem::path tmp_path(file_name);
 						path_string file_ext = tmp_path.extension().wstring();
 
+						auto full_name = addBackSlash(current_folder) + file_name;
+						files_.push_back(full_name);
+
 						if ( list_ext_.empty())
 							folder_node->AddFile(file_name);
 						else
 						if (isPresentInList(file_ext, this->list_ext_))
 						{
-							auto full_name = addBackSlash(current_folder) + file_name;
 
 							//TestEndJpg(full_name);
 							//zbk_rename(full_name);
@@ -246,7 +184,7 @@ namespace IO
 							//addDateToFile(full_name);
 							//testSignatureMP4(full_name);
 							//Rename_wave(full_name);
-							files_.push_back(full_name);
+							//files_.push_back(full_name);
 
 							folder_node->AddFile(file_name);
 						}
@@ -265,6 +203,164 @@ namespace IO
 
 
 	};
+
+	//bad sector
+	const char bad_sector_sign[] = { 0x62 , 0x61 , 0x64 , 0x20 , 0x73 , 0x65 , 0x63 , 0x74 , 0x6F , 0x72 };
+	const uint32_t bad_sector_sign_size = SIZEOF_ARRAY(bad_sector_sign);
+
+	inline void testHeaderToBadSectorKeyword(const path_string & file_name)
+	{
+		const uint32_t offset = 0;
+		uint8_t buff[bad_sector_sign_size];
+		ZeroMemory(buff, bad_sector_sign_size);
+
+		auto test_file = makeFilePtr(file_name);
+
+		if (test_file->Open(IO::OpenMode::OpenRead))
+		{
+			if (test_file->Size() >= bad_sector_sign_size)
+			{
+				test_file->setPosition(offset);
+				test_file->ReadData(buff, bad_sector_sign_size);
+				test_file->Close();
+
+				if ( memcmp(buff , bad_sector_sign , bad_sector_sign_size) == 0)
+				{
+					boost::filesystem::rename(file_name, file_name + L".bad_file");
+				}
+			}
+
+		}
+
+	}
+
+	inline void TestEndJpg(const IO::path_string & filePath)
+	{
+		auto test_file = IO::makeFilePtr(filePath);
+		const uint32_t constSize = 2;
+		uint8_t buff[constSize];
+		ZeroMemory(buff, constSize);
+
+		//const uint8_t const_r3d_header[] = { 0x52 , 0x45 , 0x44 , 0x32 };
+		const uint8_t const_end_jpg[] = { 0xFF, 0xD9 };
+		//const uint8_t const_end_pdf[] = { 0x25 , 0x25 , 0x45 , 0x4F , 0x46 , 0x0A };
+
+		if (test_file->Open(IO::OpenMode::OpenRead))
+		{
+			if (test_file->Size() >= constSize)
+			{
+				test_file->setPosition(test_file->Size() - constSize);
+				test_file->ReadData(buff, constSize);
+				test_file->Close();
+
+				if (memcmp(buff, const_end_jpg, constSize) != 0)
+				{
+
+					boost::filesystem::rename(filePath, filePath + L".bad_file");
+				}
+			}
+
+		}
+	}
+
+	inline void Join1Cv8(const IO::path_string & src_name, const IO::path_string & old_name, const IO::path_string & result_name)
+	{
+		const uint32_t Data_Size = 4096;
+		const uint32_t Enc_Size = 1024;
+
+		auto src_file = makeFilePtr(src_name);
+		if (!src_file->Open(OpenMode::OpenRead))
+		{
+			wprintf_s(L"Error %s open file to read.\n", src_file->getFileName().c_str());
+			return;
+		}
+
+		auto old_file = makeFilePtr(old_name);
+		if (!old_file->Open(OpenMode::OpenRead))
+		{
+			wprintf_s(L"Error %s open file to read.\n", old_file->getFileName().c_str());
+			return;
+		}
+
+		auto result_file = makeFilePtr(result_name);
+		if (!result_file->Open(OpenMode::Create))
+		{
+			wprintf_s(L"Error %s create file.\n", result_file->getFileName().c_str());
+			return;
+		}
+
+
+		auto src_buff = IO::makeDataArray(Data_Size);
+		auto old_buff = IO::makeDataArray(Data_Size);
+
+		uint32_t bytes_read = 0;
+		uint64_t offset = 0;
+		while (true)
+		{
+			src_file->setPosition(offset);
+			bytes_read = src_file->ReadData(src_buff->data(), src_buff->size());
+			if (bytes_read == 0)
+				break;
+
+			if (offset < old_file->Size())
+			{
+				if (offset < 24914 * Data_Size)
+				{
+					old_file->setPosition(offset);
+					bytes_read = old_file->ReadData(old_buff->data(), old_buff->size());
+					if (bytes_read == 0)
+						break;
+
+					memcpy(src_buff->data(), old_buff->data(), Enc_Size);
+				}
+			}
+
+			result_file->WriteData(src_buff->data(), src_buff->size());
+
+			offset += Data_Size;
+		}
+
+	}
+
+	inline bool isQtSignature(const uint8_t * qt_header, const uint32_t size)
+	{
+		if (memcmp(qt_header, IO::s_ftyp, size) == 0)
+			return true;
+		else if (memcmp(qt_header, IO::s_moov, size) == 0)
+			return true;
+		else if (memcmp(qt_header, IO::s_mdat, size) == 0)
+			return true;
+
+		return false;
+	}
+
+	inline void testSignatureMP4(const IO::path_string & filePath)
+	{
+		auto test_file = IO::makeFilePtr(filePath);
+		//const uint8_t const_header[] = { 0x66 , 0x74 , 0x79 , 0x70/*0x47 , 0x40 , 0x00 , 0x10 , 0x00 , 0x00 , 0xB , 0x011*/ };
+		const uint32_t offset = 4;
+		const uint32_t header_size = 4;
+		uint8_t buff[header_size];
+		ZeroMemory(buff, header_size);
+		if (test_file->Open(IO::OpenMode::OpenRead))
+		{
+			if (test_file->Size() >= header_size)
+			{
+				test_file->setPosition(offset);
+				test_file->ReadData(buff, header_size);
+				test_file->Close();
+
+				if (isQtSignature(buff, header_size) == false)
+				{
+					boost::filesystem::rename(filePath, filePath + L".bad_file");
+				}
+			}
+
+		}
+
+
+	}
+
 
 };
 

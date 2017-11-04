@@ -79,7 +79,7 @@ namespace IO
 	bool isBlockNot00andFF(const BYTE * data, DWORD size);
 	bool isDataSector( const BYTE * data );
 	void SaveOnlyData( const std::string & source_file , const std::string & target_file );
-	void XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);
+	//void XorFiles( const std::string &file1 , const std::string & file2 , const std::string & target_file);
 	void JoinWithService( const std::string & data_file , const std::string & service_file, const std::string target_file);
 
 	bool isFileHeader00( const std::string & file_name);

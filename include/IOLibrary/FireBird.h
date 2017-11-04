@@ -238,7 +238,7 @@ public:
 		bool bResult = false;
 		
 
-		LONGLONG offset = 0;
+		LONGLONG offset = 0x748141e00;
 		LONGLONG header_offset = 0;
 		if (*hSource == INVALID_HANDLE_VALUE)
 		{

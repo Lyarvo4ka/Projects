@@ -378,16 +378,110 @@ const int number = 1;
 //#include "IOLibrary/ext2_raw.h"
 
 
+
+
+#include "IOLibrary\Finder.h"
+#include "IOLibrary\jpeg.h"
 int _tmain(int argc, TCHAR **argv)
 {
+
+	//const IO::path_string file1 = L"d:\\tmp\\MP0C_003";
+	//const IO::path_string file2 = L"d:\\tmp\\MP0C_003_decoded";
+	//const IO::path_string resFile = L"d:\\tmp\\MP0C_003_xor_result";
+	//IO::XorFiles(file1, file2, resFile);
+	
+	double border_percenteges = 85;
+
+	IO::path_string  jpg_path = L"d:\\Photo\\jpg_test\\bad.jpg";
+	//IO::path_string  jpg_path = L"d:\\incoming\\bad_jped\\004959.jpg";
+
+	const IO::path_string src_folder = L"d:\\Photo\\jpg_test\\bad_file\\";
+	const IO::path_string dst_folder = L"d:\\Photo\\jpg_test\\result\\";
+	const IO::path_string bad_folder = L"d:\\Photo\\jpg_test\\bad\\";
+
 	IO::Finder finder;
-	finder.add_extension(L".dbf");
-	finder.FindFiles(L"d:\\dbf\\1\\");
+	finder.add_extension(L".jpg");
+	finder.add_extension(L".jpeg");
+	finder.FindFiles(src_folder);
 	auto fileList = finder.getFiles();
 	for (auto & theFile : fileList)
 	{
-		IO::fixDBF(theFile);
+		boost::filesystem::path src_path(theFile);
+		auto folder_path = src_path.parent_path().generic_wstring();
+		auto only_name_path = src_path.stem().generic_wstring();
+		auto ext = src_path.extension().generic_wstring();
+
+		IO::path_string new_file_name = bad_folder + only_name_path + ext;
+
+		try
+		{
+			IO::JpegDecoder jpeg_decoder;
+			auto img_data = jpeg_decoder.decompress(theFile);
+			auto percenteges = IO::calcPercentages(img_data.getScanlineCount(), img_data.getHeight());
+
+			auto name_percenteges = std::to_wstring(percenteges);
+			std::replace(name_percenteges.begin(), name_percenteges.end(), '.', '-');
+
+			if (percenteges > border_percenteges)
+			{
+				printf("jpeg file works for %f(percenteges)", percenteges);
+
+
+				new_file_name = dst_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
+
+
+			}
+			else
+				new_file_name = bad_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
+		}
+		catch (IO::my_exception & ex)
+		{
+			printf(ex.what());
+		}
+
+
+		try
+		{
+			boost::filesystem::rename(theFile, new_file_name);
+		}
+		catch (const boost::filesystem::filesystem_error& e)
+		{
+			std::cout << "Error: " << e.what() << std::endl;
+		}
+
 	}
+
+
+	int k = 1;
+	k = 2;
+
+
+	
+	//FireBird_Raw fb_raw(4,"d:\\PaboTa\\43111\\");
+	//fb_raw.execute();
+
+	//IO::path_string bad = L"d:\\PaboTa\\43105\\bad";
+	//IO::path_string good = L"d:\\PaboTa\\43105\\good";
+	//IO::path_string result = L"d:\\PaboTa\\43105\\1Cv8.1CD";
+
+	//IO::Join1Cv8(bad, good, result);
+
+
+	//IO::Finder finder;
+
+	//finder.add_extension(L".mov");
+	//finder.add_extension(L".mp4");
+	//finder.add_extension(L".mpg");
+	//finder.add_extension(L".mts");
+	//finder.FindFiles(L"d:\\PaboTa\\43115\\NoName\\....HFS+ Private Data\\");
+	//auto fileList = finder.getFiles();
+
+	//for (auto & theFile : fileList)
+	//{
+	//	IO::testSignatureMP4(theFile);
+	////	//IO::testHeaderToBadSectorKeyword(theFile);
+	////	IO::TestEndJpg(theFile);
+	//}
 
 
 
@@ -404,8 +498,6 @@ int _tmain(int argc, TCHAR **argv)
 	//FireBird_Raw fb_raw(src_file, dst_folder);
 	//fb_raw.execute();
 
-	//int k = 1;
-	//k = 2;
 
 	//entropy_raw.SaveRawFile
 	//auto src_file = IO::makeFilePtr(L"d:\\incoming\\42706\\2.mp4");

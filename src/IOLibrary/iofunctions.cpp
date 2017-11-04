@@ -644,8 +644,8 @@ void IO::SaveOnlyData( const std::string & source_file , const std::string & tar
 
 }
 
-void IO::XorFiles(const std::string &file1, const std::string & file2, const std::string & target_file)
-{
+//void IO::XorFiles(const std::string &file1, const std::string & file2, const std::string & target_file)
+//{
 	//HANDLE hFile1 = INVALID_HANDLE_VALUE;
 	//HANDLE hFile2 = INVALID_HANDLE_VALUE;
 	//HANDLE hTarget = INVALID_HANDLE_VALUE;
@@ -714,7 +714,7 @@ void IO::XorFiles(const std::string &file1, const std::string & file2, const std
 	//CloseHandle(hTarget);
 
 
-}
+//}
 void IO::JoinWithService(const std::string & data_file, const std::string & service_file, const std::string target_file)
 {
 	HANDLE hData = INVALID_HANDLE_VALUE;
