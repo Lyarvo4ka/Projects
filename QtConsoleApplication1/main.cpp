@@ -25,6 +25,7 @@
 #include "IOLibrary/RawRIFF.h"
 #include "IOLibrary/RawMXF.h"
 #include "IOLibrary/RawIMD.h"
+#include "IOLibrary/keychainraw.h"
 
 const int param_count = 4;
 const int option = 1;
@@ -34,15 +35,20 @@ const int target = 3;
 const std::string d_str = "-d";
 const std::string f_str = "-f";
 
+#include <memory>
+
 void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 {
+	factory_manager.Register("keychain-db", std::make_unique<IO::KeychainRawFactory>());
+
 	//factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
 	//factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
 	//factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
 	//factory_manager.Register("wave", std::make_unique<IO::RawFIFFFactory>());
 	//factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
 
-	factory_manager.Register("go_pro", std::make_unique<IO::GoProRawFactory>());
+	//factory_manager.Register("go_pro", std::make_unique<IO::GoProRawFactory>());
+
 
 
 	//factory_manager.Register("BlackVue", std::make_unique<IO::BlackVue_QtRawFactory>());
@@ -103,7 +109,7 @@ int main(int argc, char *argv[])
 		QList<JsonFileStruct> listFileStruct;
 
 
-		QFile file("go_pro.json");
+		QFile file("keychain.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
 			qInfo() << "Error to open file. \"video.json\"";
@@ -127,7 +133,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0x382B8000;
+		uint64_t start_offset = 0xDEA4000;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())
@@ -171,7 +177,7 @@ int main(int argc, char *argv[])
 						if ( target_size == 0)
 						{
 							qInfo() << "Error to save file. Exit." ;
-							break;
+							//break;
 
 						}
 						auto dst_size = dst_file->Size();

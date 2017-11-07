@@ -66,7 +66,10 @@ namespace IO
 		{
 			return height_;
 		}
-
+		int getOutputComponents() const
+		{
+			return numComponets_;
+		}
 
 	};
 
@@ -112,7 +115,45 @@ namespace IO
 		//	throw std::runtime_error(jpegLastErrorMsg); // or your preffered exception ...
 	}
 
+	void saveBMP_file(const IO::path_string & path , const ImageData & image_data)
+	{
+		IO::File bmp_file(path);
+		bmp_file.Open(IO::OpenMode::Create);
 
+		
+		ImageData img_new(image_data.getWidth(), image_data.getHeight(), image_data.getOutputComponents());
+		for (auto i = 0; i < image_data.getSize(); i = i + image_data.getOutputComponents())
+		{
+			for (auto j = 0; j < image_data.getOutputComponents(); ++j)
+				img_new.getData()[i + j] = image_data.getData()[image_data.getSize() - 1 - i - j];
+		}
+
+
+		BITMAPINFOHEADER bfh = BITMAPINFOHEADER();
+		//BITMAPINFO bi;
+		bfh.biSize = sizeof(BITMAPINFOHEADER);
+		bfh.biHeight = cinfo.output_height;
+		bfh.biWidth = cinfo.output_width;
+		bfh.biBitCount = 24;
+		bfh.biPlanes = 1;
+		bfh.biCompression = BI_RGB;
+
+		const char BM_TEXT[] = "BM";
+
+		BITMAPFILEHEADER bm_header = BITMAPFILEHEADER();
+		memcpy(&bm_header.bfType, BM_TEXT, 2);
+		bm_header.bfSize = sizeof(BITMAPFILEHEADER) + bfh.biSize + image_data.getSize();
+
+
+		auto bytes_written = bmp_file.WriteData((ByteArray)&bm_header, sizeof(BITMAPFILEHEADER));
+		bytes_written += bmp_file.WriteData((ByteArray)&bfh, bfh.biSize);
+		bytes_written += bmp_file.WriteData(img_new.getData(), img_new.getSize());
+		//bytes_written += bmp_file.WriteData(image_data.getData(), image_data.getSize());
+
+		bmp_file.Close();
+
+
+	}
 
 	class JpegDecoder
 	{
@@ -215,33 +256,10 @@ namespace IO
 			cinfo.output_scanline = cinfo.output_height;
 			destroyDecompressor();
 			image_data.setScanlineCount(scanline_count);
-			IO::File bmp_file(L"d:\\Photo\\jpg_test\\bad_file\\bitmap.bmp");
-			bmp_file.Open(IO::OpenMode::Create);
 
-			BITMAPINFOHEADER bfh = BITMAPINFOHEADER();
-			//BITMAPINFO bi;
-			bfh.biSize = sizeof(BITMAPINFOHEADER);
-			bfh.biHeight = cinfo.output_height;
-			bfh.biWidth = cinfo.output_width;
-			bfh.biBitCount = 24;
-			bfh.biPlanes = 1;
-			bfh.biCompression = BI_RGB;
+			//saveBMP_file(L"d:\\Photo\\jpg_test\\bad_file\\bitmap.bmp" , image_data);
 
-			const char BM_TEXT[] = "BM";
-
-			BITMAPFILEHEADER bm_header = BITMAPFILEHEADER();
-			memcpy(&bm_header.bfType, BM_TEXT, 2);
-			bm_header.bfSize = sizeof(BITMAPFILEHEADER) + bfh.biSize + image_data.getSize();
-
-
-			auto bytes_written = bmp_file.WriteData((ByteArray)&bm_header, sizeof(BITMAPFILEHEADER));
-			bytes_written += bmp_file.WriteData((ByteArray)&bfh, bfh.biSize);
-			bytes_written += bmp_file.WriteData(image_data.getData(), image_data.getSize());
-
-			bmp_file.Close();
-			//for ( auto i)
-
-			return image_data;
+ 			return image_data;
 		}
 
 	};

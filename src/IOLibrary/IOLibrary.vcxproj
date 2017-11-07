@@ -140,6 +140,7 @@
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h" />
     <ClInclude Include="..\..\include\IOLibrary\iolibrary_global.h" />
     <ClInclude Include="..\..\include\IOLibrary\jpeg.h" />
+    <ClInclude Include="..\..\include\IOLibrary\keychainraw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MLV_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRaw.h" />
     <ClInclude Include="..\..\include\IOLibrary\MovRename.h" />

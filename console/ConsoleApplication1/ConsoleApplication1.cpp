@@ -385,6 +385,8 @@ const int number = 1;
 int _tmain(int argc, TCHAR **argv)
 {
 
+
+
 	//const IO::path_string file1 = L"d:\\tmp\\MP0C_003";
 	//const IO::path_string file2 = L"d:\\tmp\\MP0C_003_decoded";
 	//const IO::path_string resFile = L"d:\\tmp\\MP0C_003_xor_result";
