@@ -170,7 +170,7 @@ namespace IO
 						path_string file_ext = tmp_path.extension().wstring();
 
 						auto full_name = addBackSlash(current_folder) + file_name;
-						files_.push_back(full_name);
+						//files_.push_back(full_name);
 
 						if ( list_ext_.empty())
 							folder_node->AddFile(file_name);
@@ -184,7 +184,7 @@ namespace IO
 							//addDateToFile(full_name);
 							//testSignatureMP4(full_name);
 							//Rename_wave(full_name);
-							//files_.push_back(full_name);
+							files_.push_back(full_name);
 
 							folder_node->AddFile(file_name);
 						}

@@ -382,6 +382,8 @@ const int number = 1;
 
 #include "IOLibrary\Finder.h"
 #include "IOLibrary\jpeg.h"
+
+#include <cmath>
 int _tmain(int argc, TCHAR **argv)
 {
 
@@ -397,9 +399,9 @@ int _tmain(int argc, TCHAR **argv)
 	IO::path_string  jpg_path = L"d:\\Photo\\jpg_test\\bad.jpg";
 	//IO::path_string  jpg_path = L"d:\\incoming\\bad_jped\\004959.jpg";
 
-	const IO::path_string src_folder = L"d:\\Photo\\jpg_test\\bad_file\\";
-	const IO::path_string dst_folder = L"d:\\Photo\\jpg_test\\result\\";
-	const IO::path_string bad_folder = L"d:\\Photo\\jpg_test\\bad\\";
+	const IO::path_string src_folder = L"e:\\Name\\";
+	const IO::path_string dst_folder = L"e:\\NoName\\jpg\\";
+	const IO::path_string bad_folder = L"e:\\NoName\\bad\\";
 
 	IO::Finder finder;
 	finder.add_extension(L".jpg");
@@ -413,7 +415,7 @@ int _tmain(int argc, TCHAR **argv)
 		auto only_name_path = src_path.stem().generic_wstring();
 		auto ext = src_path.extension().generic_wstring();
 
-		IO::path_string new_file_name = bad_folder + only_name_path + ext;
+		IO::path_string new_file_name = theFile + L".bad_file";//bad_folder + only_name_path + ext;
 
 		try
 		{
@@ -421,24 +423,25 @@ int _tmain(int argc, TCHAR **argv)
 			auto img_data = jpeg_decoder.decompress(theFile);
 			auto percenteges = IO::calcPercentages(img_data.getScanlineCount(), img_data.getHeight());
 
-			auto name_percenteges = std::to_wstring(percenteges);
+			auto perc = std::lround(percenteges);
+			auto name_percenteges = std::to_wstring(perc);
 			std::replace(name_percenteges.begin(), name_percenteges.end(), '.', '-');
 
 			if (percenteges > border_percenteges)
 			{
-				printf("jpeg file works for %f(percenteges)", percenteges);
+				printf("jpeg file works for %f(percenteges)\n", percenteges);
 
 
-				new_file_name = dst_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
-
+				//new_file_name = dst_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
+				continue;
 
 			}
-			else
-				new_file_name = bad_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
+			//else
+			//	new_file_name = bad_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
 		}
 		catch (IO::my_exception & ex)
 		{
-			printf(ex.what());
+			printf("%s\n",ex.what());
 		}
 
 

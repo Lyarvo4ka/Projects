@@ -122,18 +122,18 @@ namespace IO
 
 		
 		ImageData img_new(image_data.getWidth(), image_data.getHeight(), image_data.getOutputComponents());
-		for (auto i = 0; i < image_data.getSize(); i = i + image_data.getOutputComponents())
-		{
-			for (auto j = 0; j < image_data.getOutputComponents(); ++j)
-				img_new.getData()[i + j] = image_data.getData()[image_data.getSize() - 1 - i - j];
-		}
+		//for (auto i = 0; i < image_data.getSize(); i = i + image_data.getOutputComponents())
+		//{
+		//	for (auto j = 0; j < image_data.getOutputComponents(); ++j)
+		//		img_new.getData()[i + j] = image_data.getData()[image_data.getSize() - 1 - i - j];
+		//}
 
 
 		BITMAPINFOHEADER bfh = BITMAPINFOHEADER();
 		//BITMAPINFO bi;
 		bfh.biSize = sizeof(BITMAPINFOHEADER);
-		bfh.biHeight = cinfo.output_height;
-		bfh.biWidth = cinfo.output_width;
+		bfh.biHeight = image_data.getHeight();
+		bfh.biWidth = image_data.getWidth();
 		bfh.biBitCount = 24;
 		bfh.biPlanes = 1;
 		bfh.biCompression = BI_RGB;
