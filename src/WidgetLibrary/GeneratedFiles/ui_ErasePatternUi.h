@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ErasePatternUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -76,11 +76,11 @@ public:
 
     void retranslateUi(QWidget *widget)
     {
-        widget->setWindowTitle(QApplication::translate("widget", "Form", 0));
-        groupBox->setTitle(QApplication::translate("widget", "Erase pattern", 0));
-        button_00->setText(QApplication::translate("widget", "0x00", 0));
-        button_FF->setText(QApplication::translate("widget", "0xFF", 0));
-        button_RAND->setText(QApplication::translate("widget", "Random", 0));
+        widget->setWindowTitle(QApplication::translate("widget", "Form", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("widget", "Erase pattern", Q_NULLPTR));
+        button_00->setText(QApplication::translate("widget", "0x00", Q_NULLPTR));
+        button_FF->setText(QApplication::translate("widget", "0xFF", Q_NULLPTR));
+        button_RAND->setText(QApplication::translate("widget", "Random", Q_NULLPTR));
     } // retranslateUi
 
 };

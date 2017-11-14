@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'DeviceWidgetUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -166,14 +166,14 @@ public:
 
     void retranslateUi(QWidget *deviceWidgetUi)
     {
-        deviceWidgetUi->setWindowTitle(QApplication::translate("deviceWidgetUi", "Form", 0));
+        deviceWidgetUi->setWindowTitle(QApplication::translate("deviceWidgetUi", "Form", Q_NULLPTR));
         deviceGroupBox->setTitle(QString());
-        detectButton->setText(QApplication::translate("deviceWidgetUi", "...", 0));
-        label_5->setText(QApplication::translate("deviceWidgetUi", "Serial number:", 0));
+        detectButton->setText(QApplication::translate("deviceWidgetUi", "...", Q_NULLPTR));
+        label_5->setText(QApplication::translate("deviceWidgetUi", "Serial number:", Q_NULLPTR));
         serialNumberText->setText(QString());
-        label_6->setText(QApplication::translate("deviceWidgetUi", "Sectors count:", 0));
+        label_6->setText(QApplication::translate("deviceWidgetUi", "Sectors count:", Q_NULLPTR));
         sectorsCountText->setText(QString());
-        label_4->setText(QApplication::translate("deviceWidgetUi", "Sector size:", 0));
+        label_4->setText(QApplication::translate("deviceWidgetUi", "Sector size:", Q_NULLPTR));
         sectorSizeText->setText(QString());
     } // retranslateUi
 

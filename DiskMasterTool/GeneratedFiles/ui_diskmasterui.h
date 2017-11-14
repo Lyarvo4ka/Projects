@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'diskmasterui.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -166,19 +166,19 @@ public:
 
     void retranslateUi(QMainWindow *DiskMasterUIClass)
     {
-        DiskMasterUIClass->setWindowTitle(QApplication::translate("DiskMasterUIClass", "DiskMasterTool", 0));
-        actionExit->setText(QApplication::translate("DiskMasterUIClass", "Exit", 0));
-        CopyAction->setText(QApplication::translate("DiskMasterUIClass", "Copying", 0));
-        EraseAction->setText(QApplication::translate("DiskMasterUIClass", "Erasing", 0));
-        action_5->setText(QApplication::translate("DiskMasterUIClass", "\320\277\321\200\320\270\320\276\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214", 0));
-        VerifyAction->setText(QApplication::translate("DiskMasterUIClass", "Verification", 0));
-        StartAction->setText(QApplication::translate("DiskMasterUIClass", "Execute task", 0));
-        StopTask->setText(QApplication::translate("DiskMasterUIClass", "\320\236\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214 \320\267\320\260\320\264\320\260\321\207\321\203", 0));
-        actionOpenTask->setText(QApplication::translate("DiskMasterUIClass", "Open task", 0));
-        actionPreferences->setText(QApplication::translate("DiskMasterUIClass", "Preferences", 0));
-        menu->setTitle(QApplication::translate("DiskMasterUIClass", "File", 0));
-        menu_2->setTitle(QApplication::translate("DiskMasterUIClass", "Task", 0));
-        menu_3->setTitle(QApplication::translate("DiskMasterUIClass", "Settings", 0));
+        DiskMasterUIClass->setWindowTitle(QApplication::translate("DiskMasterUIClass", "DiskMasterTool", Q_NULLPTR));
+        actionExit->setText(QApplication::translate("DiskMasterUIClass", "Exit", Q_NULLPTR));
+        CopyAction->setText(QApplication::translate("DiskMasterUIClass", "Copying", Q_NULLPTR));
+        EraseAction->setText(QApplication::translate("DiskMasterUIClass", "Erasing", Q_NULLPTR));
+        action_5->setText(QApplication::translate("DiskMasterUIClass", "\320\277\321\200\320\270\320\276\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214", Q_NULLPTR));
+        VerifyAction->setText(QApplication::translate("DiskMasterUIClass", "Verification", Q_NULLPTR));
+        StartAction->setText(QApplication::translate("DiskMasterUIClass", "Execute task", Q_NULLPTR));
+        StopTask->setText(QApplication::translate("DiskMasterUIClass", "\320\236\321\201\321\202\320\260\320\275\320\276\320\262\320\270\321\202\321\214 \320\267\320\260\320\264\320\260\321\207\321\203", Q_NULLPTR));
+        actionOpenTask->setText(QApplication::translate("DiskMasterUIClass", "Open task", Q_NULLPTR));
+        actionPreferences->setText(QApplication::translate("DiskMasterUIClass", "Preferences", Q_NULLPTR));
+        menu->setTitle(QApplication::translate("DiskMasterUIClass", "File", Q_NULLPTR));
+        menu_2->setTitle(QApplication::translate("DiskMasterUIClass", "Task", Q_NULLPTR));
+        menu_3->setTitle(QApplication::translate("DiskMasterUIClass", "Settings", Q_NULLPTR));
     } // retranslateUi
 
 };

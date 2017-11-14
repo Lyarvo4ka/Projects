@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CopyPropertiesUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -169,12 +169,12 @@ public:
 
     void retranslateUi(QWidget *CopyPropertiesWidget)
     {
-        CopyPropertiesWidget->setWindowTitle(QApplication::translate("CopyPropertiesWidget", "Form", 0));
-        groupBox->setTitle(QApplication::translate("CopyPropertiesWidget", "Copy options", 0));
-        label_3->setText(QApplication::translate("CopyPropertiesWidget", "Jump size when bad sector", 0));
-        label_4->setText(QApplication::translate("CopyPropertiesWidget", "( sectors )", 0));
-        label_5->setText(QApplication::translate("CopyPropertiesWidget", "Copy direction", 0));
-        readUnread->setText(QApplication::translate("CopyPropertiesWidget", "Reread unread", 0));
+        CopyPropertiesWidget->setWindowTitle(QApplication::translate("CopyPropertiesWidget", "Form", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("CopyPropertiesWidget", "Copy options", Q_NULLPTR));
+        label_3->setText(QApplication::translate("CopyPropertiesWidget", "Jump size when bad sector", Q_NULLPTR));
+        label_4->setText(QApplication::translate("CopyPropertiesWidget", "( sectors )", Q_NULLPTR));
+        label_5->setText(QApplication::translate("CopyPropertiesWidget", "Copy direction", Q_NULLPTR));
+        readUnread->setText(QApplication::translate("CopyPropertiesWidget", "Reread unread", Q_NULLPTR));
     } // retranslateUi
 
 };

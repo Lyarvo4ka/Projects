@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainTaskPanel.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -138,14 +138,14 @@ public:
 
     void retranslateUi(QWidget *MainTaskWidget)
     {
-        MainTaskWidget->setWindowTitle(QApplication::translate("MainTaskWidget", "Form", 0));
-        groupBox->setTitle(QApplication::translate("MainTaskWidget", "DiskMaster list:", 0));
-        groupBox_2->setTitle(QApplication::translate("MainTaskWidget", "Select a task", 0));
-        CopylButton->setText(QApplication::translate("MainTaskWidget", "Copying", 0));
-        VerifylButton->setText(QApplication::translate("MainTaskWidget", "Verification", 0));
-        EraseButton->setText(QApplication::translate("MainTaskWidget", "Eraseing", 0));
+        MainTaskWidget->setWindowTitle(QApplication::translate("MainTaskWidget", "Form", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("MainTaskWidget", "DiskMaster list:", Q_NULLPTR));
+        groupBox_2->setTitle(QApplication::translate("MainTaskWidget", "Select a task", Q_NULLPTR));
+        CopylButton->setText(QApplication::translate("MainTaskWidget", "Copying", Q_NULLPTR));
+        VerifylButton->setText(QApplication::translate("MainTaskWidget", "Verification", Q_NULLPTR));
+        EraseButton->setText(QApplication::translate("MainTaskWidget", "Eraseing", Q_NULLPTR));
         modifyMBRButton->setText(QApplication::translate("MainTaskWidget", "Modifying\n"
-"MBR ", 0));
+"MBR ", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'EraseDetectUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -197,14 +197,14 @@ public:
 
     void retranslateUi(QDialog *EraseDetectUi)
     {
-        EraseDetectUi->setWindowTitle(QApplication::translate("EraseDetectUi", "Erasing", 0));
-        label_5->setText(QApplication::translate("EraseDetectUi", "Task name:", 0));
-        label_6->setText(QApplication::translate("EraseDetectUi", "<html><head/><body><p>Work folder:</p></body></html>", 0));
-        openFolderButton_2->setText(QApplication::translate("EraseDetectUi", "...", 0));
+        EraseDetectUi->setWindowTitle(QApplication::translate("EraseDetectUi", "Erasing", Q_NULLPTR));
+        label_5->setText(QApplication::translate("EraseDetectUi", "Task name:", Q_NULLPTR));
+        label_6->setText(QApplication::translate("EraseDetectUi", "<html><head/><body><p>Work folder:</p></body></html>", Q_NULLPTR));
+        openFolderButton_2->setText(QApplication::translate("EraseDetectUi", "...", Q_NULLPTR));
         groupBox->setTitle(QString());
-        label->setText(QApplication::translate("EraseDetectUi", "Device to erase:", 0));
-        okButton->setText(QApplication::translate("EraseDetectUi", "OK", 0));
-        cancelButton->setText(QApplication::translate("EraseDetectUi", "Cancel", 0));
+        label->setText(QApplication::translate("EraseDetectUi", "Device to erase:", Q_NULLPTR));
+        okButton->setText(QApplication::translate("EraseDetectUi", "OK", Q_NULLPTR));
+        cancelButton->setText(QApplication::translate("EraseDetectUi", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "physicaldrive.h"
 #include <string>
+#include "dataarray.h"
 
 namespace IO
 {
@@ -22,94 +23,6 @@ namespace IO
 		return (number % multiple_by == 0);
 	}
 
-	class DataArray
-	{
-		ByteArray data_;
-		uint32_t size_;
-	public:
-		using Ptr = std::unique_ptr<DataArray>;
-		DataArray(const uint32_t size)
-			:data_(nullptr)
-			, size_(size)
-		{
-			if (size > 0)
-			{
-				data_ = new uint8_t[size];
-			}
-		}
-		DataArray(ByteArray data, uint32_t size)
-			: data_(data)
-			, size_(size)
-		{
-
-		}
-		DataArray(const uint8_t const_data[], uint32_t size)
-			: data_(nullptr)
-			, size_(size)
-		{
-			if (size_ > 0)
-			{
-				data_ = new uint8_t[size_];
-				memcpy(data_, const_data, size_);
-
-			}
-		}
-		DataArray(DataArray && tmp_data_array)
-			: data_(tmp_data_array.data_)
-			, size_(tmp_data_array.size_)
-		{
-			//printf("Move constructor called.");
-			tmp_data_array.data_ = nullptr;
-			tmp_data_array.size_ = 0;
-		}
-
-		~DataArray()
-		{
-			if (data_)
-			{
-				delete[] data_;
-				data_ = nullptr;
-				//				printf("delete data\r\n");
-			}
-		}
-		uint32_t size() const
-		{
-			return size_;
-		}
-		ByteArray data()
-		{
-			return data_;
-		}
-		ByteArray data() const
-		{
-			return data_;
-		}
-		operator ByteArray()
-		{
-			return data_;
-		}
-		friend bool operator == (const DataArray::Ptr & left, const DataArray::Ptr & right)
-		{
-			if (left->size() == right->size())
-				return (memcmp(left->data(), right->data(), left->size()) == 0);
-			return false;
-		}
-		bool compareData(const ByteArray data, uint32_t size, uint32_t offset = 0)
-		{
-			if (size >= this->size())
-			{
-
-				if (std::memcmp(data_, data + offset, this->size()) == 0)
-					return true;
-			}
-			return false;
-		}
-		bool compareData(const DataArray & dataArray, uint32_t offset = 0)
-		{
-
-			return compareData(dataArray.data(), dataArray.size(), offset);
-		}
-	};
 
 	class IODevice
 	{

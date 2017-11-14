@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'OptionsWidget.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -199,16 +199,16 @@ public:
 
     void retranslateUi(QWidget *OptionWidgetForm)
     {
-        OptionWidgetForm->setWindowTitle(QApplication::translate("OptionWidgetForm", "Form", 0));
-        groupBox->setTitle(QApplication::translate("OptionWidgetForm", "Disk Master Options", 0));
-        label_5->setText(QApplication::translate("OptionWidgetForm", "Block size", 0));
-        label->setText(QApplication::translate("OptionWidgetForm", "Number of read bad sectors:", 0));
-        label_4->setText(QApplication::translate("OptionWidgetForm", "Bad sectors marker", 0));
-        label_3->setText(QApplication::translate("OptionWidgetForm", "Shake power limit", 0));
-        label_2->setText(QApplication::translate("OptionWidgetForm", "Limit time to read:", 0));
-        ChirpCheck->setText(QApplication::translate("OptionWidgetForm", "Chirp", 0));
-        EndBeepCheck->setText(QApplication::translate("OptionWidgetForm", "End Beep", 0));
-        CrcBeepCheck->setText(QApplication::translate("OptionWidgetForm", "CRC Beep", 0));
+        OptionWidgetForm->setWindowTitle(QApplication::translate("OptionWidgetForm", "Form", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("OptionWidgetForm", "Disk Master Options", Q_NULLPTR));
+        label_5->setText(QApplication::translate("OptionWidgetForm", "Block size", Q_NULLPTR));
+        label->setText(QApplication::translate("OptionWidgetForm", "Number of read bad sectors:", Q_NULLPTR));
+        label_4->setText(QApplication::translate("OptionWidgetForm", "Bad sectors marker", Q_NULLPTR));
+        label_3->setText(QApplication::translate("OptionWidgetForm", "Shake power limit", Q_NULLPTR));
+        label_2->setText(QApplication::translate("OptionWidgetForm", "Limit time to read:", Q_NULLPTR));
+        ChirpCheck->setText(QApplication::translate("OptionWidgetForm", "Chirp", Q_NULLPTR));
+        EndBeepCheck->setText(QApplication::translate("OptionWidgetForm", "End Beep", Q_NULLPTR));
+        CrcBeepCheck->setText(QApplication::translate("OptionWidgetForm", "CRC Beep", Q_NULLPTR));
     } // retranslateUi
 
 };

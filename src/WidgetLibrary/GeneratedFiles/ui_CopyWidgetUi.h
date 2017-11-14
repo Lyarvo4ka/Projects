@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CopyWidgetUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -392,33 +392,33 @@ public:
 
     void retranslateUi(QWidget *CopyWidgetUi)
     {
-        CopyWidgetUi->setWindowTitle(QApplication::translate("CopyWidgetUi", "Form", 0));
+        CopyWidgetUi->setWindowTitle(QApplication::translate("CopyWidgetUi", "Form", Q_NULLPTR));
         label_3->setText(QString());
-        groupBox_4->setTitle(QApplication::translate("CopyWidgetUi", "\320\237\321\200\320\276\320\263\321\200\320\265\321\201\321\201", 0));
-        label_8->setText(QApplication::translate("CopyWidgetUi", "\320\242\320\265\320\272\321\203\321\211\320\260\321\217 \320\267\320\260\320\264\320\260\321\207\320\260: \320\237\320\276\320\273\320\275\320\260\321\217 \320\272\320\276\320\277\320\270\321\217", 0));
-        label_16->setText(QApplication::translate("CopyWidgetUi", "\320\241\320\265\320\272\321\202\320\276\321\200:", 0));
+        groupBox_4->setTitle(QApplication::translate("CopyWidgetUi", "\320\237\321\200\320\276\320\263\321\200\320\265\321\201\321\201", Q_NULLPTR));
+        label_8->setText(QApplication::translate("CopyWidgetUi", "\320\242\320\265\320\272\321\203\321\211\320\260\321\217 \320\267\320\260\320\264\320\260\321\207\320\260: \320\237\320\276\320\273\320\275\320\260\321\217 \320\272\320\276\320\277\320\270\321\217", Q_NULLPTR));
+        label_16->setText(QApplication::translate("CopyWidgetUi", "\320\241\320\265\320\272\321\202\320\276\321\200:", Q_NULLPTR));
         currentSector->setText(QString());
-        label_4->setText(QApplication::translate("CopyWidgetUi", "\320\222\321\200\320\265\320\274\321\217:", 0));
-        timeText->setText(QApplication::translate("CopyWidgetUi", "0", 0));
-        label->setText(QApplication::translate("CopyWidgetUi", "\320\241\320\272\320\276\321\200\320\276\321\201\321\202\321\214:", 0));
-        speedText->setText(QApplication::translate("CopyWidgetUi", "0", 0));
-        label_6->setText(QApplication::translate("CopyWidgetUi", "\320\236\321\201\321\202\320\260\320\273\320\276\321\201\321\214:", 0));
-        remainingText->setText(QApplication::translate("CopyWidgetUi", "0", 0));
-        label_2->setText(QApplication::translate("CopyWidgetUi", "<html><head/><body><p>- \320\235\320\265\321\207\320\270\321\202\320\260\320\265\320\274\321\213\320\265 \321\201\320\265\320\272\321\202\320\276\321\200\320\260 : </p></body></html>", 0));
-        badSectorsText->setText(QApplication::translate("CopyWidgetUi", "0", 0));
-        label_5->setText(QApplication::translate("CopyWidgetUi", "<html><head/><body><p>- \320\237\321\200\320\276\321\207\320\270\321\202\320\260\321\202\321\213\320\265 \321\201\320\265\320\272\321\202\320\276\321\200\320\260</p></body></html>", 0));
-        readSectorsText->setText(QApplication::translate("CopyWidgetUi", "0", 0));
-        label_7->setText(QApplication::translate("CopyWidgetUi", "<html><head/><body><p>- \320\235\320\265\320\277\321\200\320\276\321\207\320\270\321\202\320\260\320\275\321\213\320\265 \321\201\320\265\320\272\321\202\320\276\321\200\320\260</p></body></html>", 0));
-        unreadText->setText(QApplication::translate("CopyWidgetUi", "0", 0));
+        label_4->setText(QApplication::translate("CopyWidgetUi", "\320\222\321\200\320\265\320\274\321\217:", Q_NULLPTR));
+        timeText->setText(QApplication::translate("CopyWidgetUi", "0", Q_NULLPTR));
+        label->setText(QApplication::translate("CopyWidgetUi", "\320\241\320\272\320\276\321\200\320\276\321\201\321\202\321\214:", Q_NULLPTR));
+        speedText->setText(QApplication::translate("CopyWidgetUi", "0", Q_NULLPTR));
+        label_6->setText(QApplication::translate("CopyWidgetUi", "\320\236\321\201\321\202\320\260\320\273\320\276\321\201\321\214:", Q_NULLPTR));
+        remainingText->setText(QApplication::translate("CopyWidgetUi", "0", Q_NULLPTR));
+        label_2->setText(QApplication::translate("CopyWidgetUi", "<html><head/><body><p>- \320\235\320\265\321\207\320\270\321\202\320\260\320\265\320\274\321\213\320\265 \321\201\320\265\320\272\321\202\320\276\321\200\320\260 : </p></body></html>", Q_NULLPTR));
+        badSectorsText->setText(QApplication::translate("CopyWidgetUi", "0", Q_NULLPTR));
+        label_5->setText(QApplication::translate("CopyWidgetUi", "<html><head/><body><p>- \320\237\321\200\320\276\321\207\320\270\321\202\320\260\321\202\321\213\320\265 \321\201\320\265\320\272\321\202\320\276\321\200\320\260</p></body></html>", Q_NULLPTR));
+        readSectorsText->setText(QApplication::translate("CopyWidgetUi", "0", Q_NULLPTR));
+        label_7->setText(QApplication::translate("CopyWidgetUi", "<html><head/><body><p>- \320\235\320\265\320\277\321\200\320\276\321\207\320\270\321\202\320\260\320\275\321\213\320\265 \321\201\320\265\320\272\321\202\320\276\321\200\320\260</p></body></html>", Q_NULLPTR));
+        unreadText->setText(QApplication::translate("CopyWidgetUi", "0", Q_NULLPTR));
         logText->setHtml(QApplication::translate("CopyWidgetUi", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_log), QApplication::translate("CopyWidgetUi", "\320\237\321\200\320\276\321\202\320\276\320\272\320\276\320\273", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_sector), QApplication::translate("CopyWidgetUi", "\320\232\320\260\321\200\321\202\320\260 \321\201\320\265\320\272\321\202\320\276\321\200\320\276\320\262", 0));
-        startButton->setText(QApplication::translate("CopyWidgetUi", "\320\241\321\202\320\260\321\200\321\202", 0));
-        toolButton->setText(QApplication::translate("CopyWidgetUi", "\320\222\321\213\321\205\320\276\320\264", 0));
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_log), QApplication::translate("CopyWidgetUi", "\320\237\321\200\320\276\321\202\320\276\320\272\320\276\320\273", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_sector), QApplication::translate("CopyWidgetUi", "\320\232\320\260\321\200\321\202\320\260 \321\201\320\265\320\272\321\202\320\276\321\200\320\276\320\262", Q_NULLPTR));
+        startButton->setText(QApplication::translate("CopyWidgetUi", "\320\241\321\202\320\260\321\200\321\202", Q_NULLPTR));
+        toolButton->setText(QApplication::translate("CopyWidgetUi", "\320\222\321\213\321\205\320\276\320\264", Q_NULLPTR));
     } // retranslateUi
 
 };

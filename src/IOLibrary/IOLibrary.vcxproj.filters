@@ -176,6 +176,9 @@
     <ClInclude Include="..\..\include\IOLibrary\keychainraw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\dataarray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

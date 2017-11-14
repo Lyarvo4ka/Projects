@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'PhysicalDialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -257,20 +257,20 @@ public:
 
     void retranslateUi(QDialog *PhysicalDialog)
     {
-        PhysicalDialog->setWindowTitle(QApplication::translate("PhysicalDialog", "Dialog", 0));
-        TargetText->setText(QApplication::translate("PhysicalDialog", "Target devices", 0));
-        label_4->setText(QApplication::translate("PhysicalDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Path to log-file</span></p></body></html>", 0));
-        pathlButton->setText(QApplication::translate("PhysicalDialog", "...", 0));
+        PhysicalDialog->setWindowTitle(QApplication::translate("PhysicalDialog", "Dialog", Q_NULLPTR));
+        TargetText->setText(QApplication::translate("PhysicalDialog", "Target devices", Q_NULLPTR));
+        label_4->setText(QApplication::translate("PhysicalDialog", "<html><head/><body><p><span style=\" font-weight:600;\">Path to log-file</span></p></body></html>", Q_NULLPTR));
+        pathlButton->setText(QApplication::translate("PhysicalDialog", "...", Q_NULLPTR));
         groupBox->setTitle(QString());
-        checkBox->setText(QApplication::translate("PhysicalDialog", "Full copy", 0));
-        label->setText(QApplication::translate("PhysicalDialog", "<html><head/><body><p>Start setor (<span style=\" font-weight:600; text-decoration: underline;\">source</span>)</p></body></html>", 0));
-        SourceStartSector->setText(QApplication::translate("PhysicalDialog", "0", 0));
-        label_2->setText(QApplication::translate("PhysicalDialog", "<html><head/><body><p>Start sector (<span style=\" font-weight:600; text-decoration: underline;\">target</span>)</p></body></html>", 0));
-        TargetStartSector->setText(QApplication::translate("PhysicalDialog", "0", 0));
-        label_3->setText(QApplication::translate("PhysicalDialog", "Sectors Count", 0));
-        SectorsCount->setText(QApplication::translate("PhysicalDialog", "0", 0));
-        okButton->setText(QApplication::translate("PhysicalDialog", "OK", 0));
-        cancelButton->setText(QApplication::translate("PhysicalDialog", "Cancel", 0));
+        checkBox->setText(QApplication::translate("PhysicalDialog", "Full copy", Q_NULLPTR));
+        label->setText(QApplication::translate("PhysicalDialog", "<html><head/><body><p>Start setor (<span style=\" font-weight:600; text-decoration: underline;\">source</span>)</p></body></html>", Q_NULLPTR));
+        SourceStartSector->setText(QApplication::translate("PhysicalDialog", "0", Q_NULLPTR));
+        label_2->setText(QApplication::translate("PhysicalDialog", "<html><head/><body><p>Start sector (<span style=\" font-weight:600; text-decoration: underline;\">target</span>)</p></body></html>", Q_NULLPTR));
+        TargetStartSector->setText(QApplication::translate("PhysicalDialog", "0", Q_NULLPTR));
+        label_3->setText(QApplication::translate("PhysicalDialog", "Sectors Count", Q_NULLPTR));
+        SectorsCount->setText(QApplication::translate("PhysicalDialog", "0", Q_NULLPTR));
+        okButton->setText(QApplication::translate("PhysicalDialog", "OK", Q_NULLPTR));
+        cancelButton->setText(QApplication::translate("PhysicalDialog", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

@@ -154,7 +154,7 @@ namespace IO
 
 
 	}
-
+	//class Jpeg_
 	class JpegDecoder
 	{
 	private:

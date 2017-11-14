@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'SelectionDialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -91,10 +91,10 @@ public:
 
     void retranslateUi(QDialog *SelectionDialog)
     {
-        SelectionDialog->setWindowTitle(QApplication::translate("SelectionDialog", "Select Device", 0));
-        SourceText->setText(QApplication::translate("SelectionDialog", "Source Devices", 0));
-        okButton->setText(QApplication::translate("SelectionDialog", "OK", 0));
-        cancelButton->setText(QApplication::translate("SelectionDialog", "Cancel", 0));
+        SelectionDialog->setWindowTitle(QApplication::translate("SelectionDialog", "Select Device", Q_NULLPTR));
+        SourceText->setText(QApplication::translate("SelectionDialog", "Source Devices", Q_NULLPTR));
+        okButton->setText(QApplication::translate("SelectionDialog", "OK", Q_NULLPTR));
+        cancelButton->setText(QApplication::translate("SelectionDialog", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

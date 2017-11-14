@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CopyRangeWidgetUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -128,11 +128,11 @@ public:
 
     void retranslateUi(QWidget *copyRangeWidget)
     {
-        copyRangeWidget->setWindowTitle(QApplication::translate("copyRangeWidget", "Form", 0));
-        groupBox->setTitle(QApplication::translate("copyRangeWidget", "The boundaries of copying", 0));
-        labelSourceOffset->setText(QApplication::translate("copyRangeWidget", "Source offset:", 0));
-        labelTargetOffset->setText(QApplication::translate("copyRangeWidget", "Target offset:", 0));
-        labelSectorsCount->setText(QApplication::translate("copyRangeWidget", "Number of sectors:", 0));
+        copyRangeWidget->setWindowTitle(QApplication::translate("copyRangeWidget", "Form", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("copyRangeWidget", "The boundaries of copying", Q_NULLPTR));
+        labelSourceOffset->setText(QApplication::translate("copyRangeWidget", "Source offset:", Q_NULLPTR));
+        labelTargetOffset->setText(QApplication::translate("copyRangeWidget", "Target offset:", Q_NULLPTR));
+        labelSectorsCount->setText(QApplication::translate("copyRangeWidget", "Number of sectors:", Q_NULLPTR));
     } // retranslateUi
 
 };

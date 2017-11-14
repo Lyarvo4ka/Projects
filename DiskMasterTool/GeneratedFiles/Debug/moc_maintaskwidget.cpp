@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'maintaskwidget.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.8.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,12 +12,14 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'maintaskwidget.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.5.0. It"
+#error "This file was generated using the moc from 5.8.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_SectorModifyDialog_t {
     QByteArrayData data[5];
     char stringdata0[67];
@@ -281,30 +283,35 @@ void MainTaskWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
             typedef void (MainTaskWidget::*_t)(const DMItemIdex * , int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&MainTaskWidget::ShowCurrentWidget)) {
                 *result = 0;
+                return;
             }
         }
         {
             typedef void (MainTaskWidget::*_t)(const DMItemIdex * , const QString & );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&MainTaskWidget::LoadTask)) {
                 *result = 1;
+                return;
             }
         }
         {
             typedef void (MainTaskWidget::*_t)(const DMItemIdex * );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&MainTaskWidget::DeviceDisappered)) {
                 *result = 2;
+                return;
             }
         }
         {
             typedef void (MainTaskWidget::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&MainTaskWidget::SelectedItem)) {
                 *result = 3;
+                return;
             }
         }
         {
             typedef void (MainTaskWidget::*_t)(const DMItemIdex * );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&MainTaskWidget::ItemSelected)) {
                 *result = 4;
+                return;
             }
         }
     }
@@ -379,4 +386,5 @@ void MainTaskWidget::ItemSelected(const DMItemIdex * _t1)
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
+QT_WARNING_POP
 QT_END_MOC_NAMESPACE

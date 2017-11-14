@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CopyWidgetUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -410,34 +410,34 @@ public:
 
     void retranslateUi(QWidget *CopyWidget)
     {
-        CopyWidget->setWindowTitle(QApplication::translate("CopyWidget", "Form", 0));
+        CopyWidget->setWindowTitle(QApplication::translate("CopyWidget", "Form", Q_NULLPTR));
         label_3->setText(QString());
-        groupBox_4->setTitle(QApplication::translate("CopyWidget", "Progress", 0));
-        label_8->setText(QApplication::translate("CopyWidget", "Current task", 0));
-        currentTaskText->setText(QApplication::translate("CopyWidget", "Full copy", 0));
-        label_16->setText(QApplication::translate("CopyWidget", "Sector:", 0));
+        groupBox_4->setTitle(QApplication::translate("CopyWidget", "Progress", Q_NULLPTR));
+        label_8->setText(QApplication::translate("CopyWidget", "Current task", Q_NULLPTR));
+        currentTaskText->setText(QApplication::translate("CopyWidget", "Full copy", Q_NULLPTR));
+        label_16->setText(QApplication::translate("CopyWidget", "Sector:", Q_NULLPTR));
         currentSector->setText(QString());
-        label_4->setText(QApplication::translate("CopyWidget", "Time:", 0));
-        timeText->setText(QApplication::translate("CopyWidget", "0", 0));
-        label->setText(QApplication::translate("CopyWidget", "Speed:", 0));
-        speedText->setText(QApplication::translate("CopyWidget", "0", 0));
-        label_6->setText(QApplication::translate("CopyWidget", "Remaining:", 0));
-        remainingText->setText(QApplication::translate("CopyWidget", "0", 0));
-        label_2->setText(QApplication::translate("CopyWidget", "<html><head/><body><p>- Bad sectors : </p></body></html>", 0));
-        badSectorsText->setText(QApplication::translate("CopyWidget", "0", 0));
-        label_5->setText(QApplication::translate("CopyWidget", "<html><head/><body><p>- Read sectors :</p></body></html>", 0));
-        readSectorsText->setText(QApplication::translate("CopyWidget", "0", 0));
-        label_7->setText(QApplication::translate("CopyWidget", "<html><head/><body><p>- Not read sectors</p></body></html>", 0));
-        unreadText->setText(QApplication::translate("CopyWidget", "0", 0));
+        label_4->setText(QApplication::translate("CopyWidget", "Time:", Q_NULLPTR));
+        timeText->setText(QApplication::translate("CopyWidget", "0", Q_NULLPTR));
+        label->setText(QApplication::translate("CopyWidget", "Speed:", Q_NULLPTR));
+        speedText->setText(QApplication::translate("CopyWidget", "0", Q_NULLPTR));
+        label_6->setText(QApplication::translate("CopyWidget", "Remaining:", Q_NULLPTR));
+        remainingText->setText(QApplication::translate("CopyWidget", "0", Q_NULLPTR));
+        label_2->setText(QApplication::translate("CopyWidget", "<html><head/><body><p>- Bad sectors : </p></body></html>", Q_NULLPTR));
+        badSectorsText->setText(QApplication::translate("CopyWidget", "0", Q_NULLPTR));
+        label_5->setText(QApplication::translate("CopyWidget", "<html><head/><body><p>- Read sectors :</p></body></html>", Q_NULLPTR));
+        readSectorsText->setText(QApplication::translate("CopyWidget", "0", Q_NULLPTR));
+        label_7->setText(QApplication::translate("CopyWidget", "<html><head/><body><p>- Not read sectors</p></body></html>", Q_NULLPTR));
+        unreadText->setText(QApplication::translate("CopyWidget", "0", Q_NULLPTR));
         logText->setHtml(QApplication::translate("CopyWidget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_log), QApplication::translate("CopyWidget", "Log", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_sector), QApplication::translate("CopyWidget", "Sector map", 0));
-        startButton->setText(QApplication::translate("CopyWidget", "Start", 0));
-        toolButton->setText(QApplication::translate("CopyWidget", "Exit", 0));
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_log), QApplication::translate("CopyWidget", "Log", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_sector), QApplication::translate("CopyWidget", "Sector map", Q_NULLPTR));
+        startButton->setText(QApplication::translate("CopyWidget", "Start", Q_NULLPTR));
+        toolButton->setText(QApplication::translate("CopyWidget", "Exit", Q_NULLPTR));
     } // retranslateUi
 
 };

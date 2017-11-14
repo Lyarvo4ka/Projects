@@ -7,23 +7,12 @@
 #include <memory>
 
 #include "utility.h"
+#include "dataarray.h"
 
 namespace IO
 {
 
-	inline DataArray::Ptr makeDataArray(ByteArray data, uint32_t size)
-	{
-		return std::make_unique<DataArray>(data, size);
-	}
-	inline DataArray::Ptr makeDataArray(const uint8_t const_data[], uint32_t size)
-	{
-		return std::make_unique<DataArray>(const_data, size);
-	}
 
-	inline DataArray::Ptr makeDataArray(uint32_t size)
-	{
-		return std::make_unique<DataArray>(size);
-	}
 
 	using SignatureArray = std::vector<DataArray::Ptr>;
 

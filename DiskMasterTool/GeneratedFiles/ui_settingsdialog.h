@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'settingsdialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -126,12 +126,12 @@ public:
 
     void retranslateUi(QDialog *SettingsDialog)
     {
-        SettingsDialog->setWindowTitle(QApplication::translate("SettingsDialog", "SettingsDialog", 0));
+        SettingsDialog->setWindowTitle(QApplication::translate("SettingsDialog", "SettingsDialog", Q_NULLPTR));
         groupBox->setTitle(QString());
-        label->setText(QApplication::translate("SettingsDialog", "Select work default folder:", 0));
-        toolButton->setText(QApplication::translate("SettingsDialog", "...", 0));
-        pushButton->setText(QApplication::translate("SettingsDialog", "OK", 0));
-        pushButton_2->setText(QApplication::translate("SettingsDialog", "Cancel", 0));
+        label->setText(QApplication::translate("SettingsDialog", "Select work default folder:", Q_NULLPTR));
+        toolButton->setText(QApplication::translate("SettingsDialog", "...", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("SettingsDialog", "OK", Q_NULLPTR));
+        pushButton_2->setText(QApplication::translate("SettingsDialog", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

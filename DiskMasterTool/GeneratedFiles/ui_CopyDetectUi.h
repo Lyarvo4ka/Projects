@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CopyDetectUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -294,19 +294,19 @@ public:
 
     void retranslateUi(QDialog *copyDetectDialog)
     {
-        copyDetectDialog->setWindowTitle(QApplication::translate("copyDetectDialog", "Copying - Device detection", 0));
-        label_5->setText(QApplication::translate("copyDetectDialog", "Task name:", 0));
-        label_6->setText(QApplication::translate("copyDetectDialog", "<html><head/><body><p>Work folder:</p></body></html>", 0));
-        openFolderButton_2->setText(QApplication::translate("copyDetectDialog", "...", 0));
-        label->setText(QApplication::translate("copyDetectDialog", "Soruce device:", 0));
+        copyDetectDialog->setWindowTitle(QApplication::translate("copyDetectDialog", "Copying - Device detection", Q_NULLPTR));
+        label_5->setText(QApplication::translate("copyDetectDialog", "Task name:", Q_NULLPTR));
+        label_6->setText(QApplication::translate("copyDetectDialog", "<html><head/><body><p>Work folder:</p></body></html>", Q_NULLPTR));
+        openFolderButton_2->setText(QApplication::translate("copyDetectDialog", "...", Q_NULLPTR));
+        label->setText(QApplication::translate("copyDetectDialog", "Soruce device:", Q_NULLPTR));
         label_7->setText(QString());
-        label_3->setText(QApplication::translate("copyDetectDialog", "Target device:", 0));
-        fullCopyButton->setText(QApplication::translate("copyDetectDialog", "Full copy", 0));
-        partitionCopyButton->setText(QApplication::translate("copyDetectDialog", "Partition copy", 0));
-        userCopyButton->setText(QApplication::translate("copyDetectDialog", "Custom copy", 0));
-        toolButton->setText(QApplication::translate("copyDetectDialog", "Preferences", 0));
-        okButton->setText(QApplication::translate("copyDetectDialog", "Ok", 0));
-        cancelButton->setText(QApplication::translate("copyDetectDialog", "Cancel", 0));
+        label_3->setText(QApplication::translate("copyDetectDialog", "Target device:", Q_NULLPTR));
+        fullCopyButton->setText(QApplication::translate("copyDetectDialog", "Full copy", Q_NULLPTR));
+        partitionCopyButton->setText(QApplication::translate("copyDetectDialog", "Partition copy", Q_NULLPTR));
+        userCopyButton->setText(QApplication::translate("copyDetectDialog", "Custom copy", Q_NULLPTR));
+        toolButton->setText(QApplication::translate("copyDetectDialog", "Preferences", Q_NULLPTR));
+        okButton->setText(QApplication::translate("copyDetectDialog", "Ok", Q_NULLPTR));
+        cancelButton->setText(QApplication::translate("copyDetectDialog", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

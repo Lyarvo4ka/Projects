@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'CopyPropertiesDialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -217,15 +217,15 @@ public:
 
     void retranslateUi(QDialog *CopyPropertiesDlg)
     {
-        CopyPropertiesDlg->setWindowTitle(QApplication::translate("CopyPropertiesDlg", "Copy settings", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("CopyPropertiesDlg", "Main parameters", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("CopyPropertiesDlg", "DiskMaster options", 0));
+        CopyPropertiesDlg->setWindowTitle(QApplication::translate("CopyPropertiesDlg", "Copy settings", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("CopyPropertiesDlg", "Main parameters", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("CopyPropertiesDlg", "DiskMaster options", Q_NULLPTR));
         groupBox->setTitle(QString());
-        fullCopyButton->setText(QApplication::translate("CopyPropertiesDlg", "Full copy", 0));
-        partitionCopyButton->setText(QApplication::translate("CopyPropertiesDlg", "Partition copy", 0));
-        userCopyButton->setText(QApplication::translate("CopyPropertiesDlg", "User copy", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("CopyPropertiesDlg", "Copy options", 0));
-        okButton->setText(QApplication::translate("CopyPropertiesDlg", "OK", 0));
+        fullCopyButton->setText(QApplication::translate("CopyPropertiesDlg", "Full copy", Q_NULLPTR));
+        partitionCopyButton->setText(QApplication::translate("CopyPropertiesDlg", "Partition copy", Q_NULLPTR));
+        userCopyButton->setText(QApplication::translate("CopyPropertiesDlg", "User copy", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("CopyPropertiesDlg", "Copy options", Q_NULLPTR));
+        okButton->setText(QApplication::translate("CopyPropertiesDlg", "OK", Q_NULLPTR));
     } // retranslateUi
 
 };

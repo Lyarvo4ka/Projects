@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\include\IOLibrary\cdw_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\ChangeHeader.h" />
     <ClInclude Include="..\..\include\IOLibrary\constants.h" />
+    <ClInclude Include="..\..\include\IOLibrary\dataarray.h" />
     <ClInclude Include="..\..\include\IOLibrary\dbf.h" />
     <ClInclude Include="..\..\include\IOLibrary\djvu_raw.h" />
     <ClInclude Include="..\..\include\IOLibrary\DVR_raw.h" />

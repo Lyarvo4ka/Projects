@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'abstract_task.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.8.0)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,12 +12,14 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'abstract_task.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.5.0. It"
+#error "This file was generated using the moc from 5.8.0. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
 QT_BEGIN_MOC_NAMESPACE
+QT_WARNING_PUSH
+QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_AbstractTask_t {
     QByteArrayData data[13];
     char stringdata0[148];
@@ -113,54 +115,63 @@ void AbstractTask::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
             typedef void (AbstractTask::*_t)(const DM::PORT * );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::new_device)) {
                 *result = 0;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(const DM::PORT * );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::disk_removed)) {
                 *result = 1;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(const DM::PORT * , int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::not_detected)) {
                 *result = 2;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(const qlonglong );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::update_lba)) {
                 *result = 3;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(const qlonglong );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::finish_task)) {
                 *result = 4;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(const qlonglong );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::break_task)) {
                 *result = 5;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)();
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::finish_detect)) {
                 *result = 6;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(int );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::error_task)) {
                 *result = 7;
+                return;
             }
         }
         {
             typedef void (AbstractTask::*_t)(const qlonglong );
             if (*reinterpret_cast<_t *>(func) == static_cast<_t>(&AbstractTask::bad_sector)) {
                 *result = 8;
+                return;
             }
         }
     }
@@ -263,4 +274,5 @@ void AbstractTask::bad_sector(const qlonglong _t1)
     void *_a[] = { Q_NULLPTR, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
     QMetaObject::activate(this, &staticMetaObject, 8, _a);
 }
+QT_WARNING_POP
 QT_END_MOC_NAMESPACE

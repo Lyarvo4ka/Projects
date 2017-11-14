@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterLib", "src\DiskMasterLib\DiskMasterLib.vcxproj", "{B12702AD-ABFB-343A-A199-8E24837244A3}"
 EndProject
@@ -61,7 +61,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OfficeChecker", "console\Of
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfCheckerConsole", "console\PdfChecker\PdfChecker.vcxproj", "{25E7C402-13A6-4865-87A0-37675EABA997}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RawRecovery", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testJPG", "console\ConsoleApplication1\ConsoleApplication1.vcxproj", "{14C2973D-DC7A-492A-9393-45E41F2B59D3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiskMasterTestQt", "testing\DiskMasterTestQt\DiskMasterTestQt.vcxproj", "{D3F22268-53BD-447E-940B-AC0F5BD7DABA}"
 EndProject
@@ -75,7 +75,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpsd", "libpsd\libpsd.vcx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeTestConsole", "OfficeTestFiles_2003\OfficeTestConsole\OfficeTestConsole.csproj", "{B5CF2221-E38A-41A3-8296-DC3D78FB4F60}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtConsoleApplication1", "QtConsoleApplication1\QtConsoleApplication1.vcxproj", "{50A8BBFD-5EBF-45CC-BF89-D7C0387A6260}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RawRecovery", "QtConsoleApplication1\QtConsoleApplication1.vcxproj", "{50A8BBFD-5EBF-45CC-BF89-D7C0387A6260}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SignaturesEditor", "SignaturesEditor\SignaturesEditor.vcxproj", "{BBD3B9C3-6FF9-4299-A247-CAA27FCDAD8F}"
 EndProject
@@ -83,7 +83,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LinuxApp", "LinuxApp\LinuxA
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JsonReader", "JsonReader\JsonReader.vcxproj", "{A519D8A9-C4BE-4669-B0B3-18F563864D80}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SectorWriter", "SectorWriter\SectorWriter.vcxproj", "{59DBB57F-77F6-4F87-B47A-19F91C650D2E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sector_writer", "SectorWriter\SectorWriter.vcxproj", "{59DBB57F-77F6-4F87-B47A-19F91C650D2E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iolibTest", "testing\iolibTest\iolibTest.vcxproj", "{51E95C0E-ACF7-497C-930C-D2CC28EA4418}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -737,6 +739,26 @@ Global
 		{59DBB57F-77F6-4F87-B47A-19F91C650D2E}.ReleaseNew|Win32.Build.0 = Release|Win32
 		{59DBB57F-77F6-4F87-B47A-19F91C650D2E}.ReleaseNew|x64.ActiveCfg = Release|x64
 		{59DBB57F-77F6-4F87-B47A-19F91C650D2E}.ReleaseNew|x64.Build.0 = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Debug|ARM.ActiveCfg = Debug|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Debug|Win32.ActiveCfg = Debug|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Debug|Win32.Build.0 = Debug|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Debug|x64.ActiveCfg = Debug|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Debug|x64.Build.0 = Debug|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Release|Any CPU.ActiveCfg = Release|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Release|ARM.ActiveCfg = Release|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Release|Win32.ActiveCfg = Release|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Release|Win32.Build.0 = Release|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Release|x64.ActiveCfg = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.Release|x64.Build.0 = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|Any CPU.ActiveCfg = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|Any CPU.Build.0 = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|ARM.ActiveCfg = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|ARM.Build.0 = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|Win32.ActiveCfg = Release|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|Win32.Build.0 = Release|Win32
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|x64.ActiveCfg = Release|x64
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418}.ReleaseNew|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -778,6 +800,10 @@ Global
 		{47AA60C4-C872-4F52-831B-859BD342C861} = {48A54E45-2C44-4E20-B776-BE5DFB693A34}
 		{A519D8A9-C4BE-4669-B0B3-18F563864D80} = {4B9D109F-2499-4334-82CF-38D8360BFF62}
 		{59DBB57F-77F6-4F87-B47A-19F91C650D2E} = {48A54E45-2C44-4E20-B776-BE5DFB693A34}
+		{51E95C0E-ACF7-497C-930C-D2CC28EA4418} = {F5AEE42D-9C64-40AF-95C9-C830A93F32C4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5B36D636-6D9C-4B1F-8D14-72D16BB73AA6}
 	EndGlobalSection
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True

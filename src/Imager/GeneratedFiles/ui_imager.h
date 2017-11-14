@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'imager.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -274,21 +274,21 @@ public:
 
     void retranslateUi(QMainWindow *ImagerClass)
     {
-        ImagerClass->setWindowTitle(QApplication::translate("ImagerClass", "Imager", 0));
-        actionPreferences->setText(QApplication::translate("ImagerClass", "Preferences", 0));
-        actionExit->setText(QApplication::translate("ImagerClass", "Exit", 0));
-        SourceGroupBox->setTitle(QApplication::translate("ImagerClass", "Source Device", 0));
+        ImagerClass->setWindowTitle(QApplication::translate("ImagerClass", "Imager", Q_NULLPTR));
+        actionPreferences->setText(QApplication::translate("ImagerClass", "Preferences", Q_NULLPTR));
+        actionExit->setText(QApplication::translate("ImagerClass", "Exit", Q_NULLPTR));
+        SourceGroupBox->setTitle(QApplication::translate("ImagerClass", "Source Device", Q_NULLPTR));
         SourceButton->setText(QString());
-        groupBox->setTitle(QApplication::translate("ImagerClass", "GroupBox", 0));
-        CurrentLBAText->setText(QApplication::translate("ImagerClass", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Current LBA:</span></p></body></html>", 0));
-        CurrentSpeedText->setText(QApplication::translate("ImagerClass", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Current Speed:</span></p></body></html>", 0));
-        pushButton->setText(QApplication::translate("ImagerClass", "--->", 0));
-        TargetGroupBox->setTitle(QApplication::translate("ImagerClass", "Target Device", 0));
+        groupBox->setTitle(QApplication::translate("ImagerClass", "GroupBox", Q_NULLPTR));
+        CurrentLBAText->setText(QApplication::translate("ImagerClass", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Current LBA:</span></p></body></html>", Q_NULLPTR));
+        CurrentSpeedText->setText(QApplication::translate("ImagerClass", "<html><head/><body><p><span style=\" font-weight:600; text-decoration: underline;\">Current Speed:</span></p></body></html>", Q_NULLPTR));
+        pushButton->setText(QApplication::translate("ImagerClass", "--->", Q_NULLPTR));
+        TargetGroupBox->setTitle(QApplication::translate("ImagerClass", "Target Device", Q_NULLPTR));
         TargetButton->setText(QString());
-        StartButton->setText(QApplication::translate("ImagerClass", "Start", 0));
-        StopButton->setText(QApplication::translate("ImagerClass", "Stop", 0));
-        menuFile->setTitle(QApplication::translate("ImagerClass", "File", 0));
-        menuSetting->setTitle(QApplication::translate("ImagerClass", "Setting", 0));
+        StartButton->setText(QApplication::translate("ImagerClass", "Start", Q_NULLPTR));
+        StopButton->setText(QApplication::translate("ImagerClass", "Stop", Q_NULLPTR));
+        menuFile->setTitle(QApplication::translate("ImagerClass", "File", Q_NULLPTR));
+        menuSetting->setTitle(QApplication::translate("ImagerClass", "Setting", Q_NULLPTR));
     } // retranslateUi
 
 };

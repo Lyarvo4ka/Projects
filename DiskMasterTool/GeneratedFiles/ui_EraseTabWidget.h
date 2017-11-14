@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'EraseTabWidget.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -190,18 +190,18 @@ public:
 
     void retranslateUi(QWidget *EraseWidget)
     {
-        EraseWidget->setWindowTitle(QApplication::translate("EraseWidget", "Form", 0));
+        EraseWidget->setWindowTitle(QApplication::translate("EraseWidget", "Form", Q_NULLPTR));
         groupBox_4->setTitle(QString());
-        label_16->setText(QApplication::translate("EraseWidget", "Sector:", 0));
+        label_16->setText(QApplication::translate("EraseWidget", "Sector:", Q_NULLPTR));
         currentSector->setText(QString());
         logText->setHtml(QApplication::translate("EraseWidget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", 0));
-        tabWidget->setTabText(tabWidget->indexOf(tab_log), QApplication::translate("EraseWidget", "\320\237\321\200\320\276\321\202\320\276\320\272\320\276\320\273", 0));
-        startButton->setText(QApplication::translate("EraseWidget", "Start", 0));
-        cancelButton->setText(QApplication::translate("EraseWidget", "Exit", 0));
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tab_log), QApplication::translate("EraseWidget", "\320\237\321\200\320\276\321\202\320\276\320\272\320\276\320\273", Q_NULLPTR));
+        startButton->setText(QApplication::translate("EraseWidget", "Start", Q_NULLPTR));
+        cancelButton->setText(QApplication::translate("EraseWidget", "Exit", Q_NULLPTR));
     } // retranslateUi
 
 };

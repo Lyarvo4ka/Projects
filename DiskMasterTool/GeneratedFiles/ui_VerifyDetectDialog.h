@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'VerifyDetectDialog.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -213,14 +213,14 @@ public:
 
     void retranslateUi(QDialog *VerifyDetectUi)
     {
-        VerifyDetectUi->setWindowTitle(QApplication::translate("VerifyDetectUi", "Verification - Detect device", 0));
-        label_5->setText(QApplication::translate("VerifyDetectUi", "Task name:", 0));
-        label_6->setText(QApplication::translate("VerifyDetectUi", "<html><head/><body><p>Work folder</p></body></html>", 0));
-        openFolderButton_2->setText(QApplication::translate("VerifyDetectUi", "...", 0));
+        VerifyDetectUi->setWindowTitle(QApplication::translate("VerifyDetectUi", "Verification - Detect device", Q_NULLPTR));
+        label_5->setText(QApplication::translate("VerifyDetectUi", "Task name:", Q_NULLPTR));
+        label_6->setText(QApplication::translate("VerifyDetectUi", "<html><head/><body><p>Work folder</p></body></html>", Q_NULLPTR));
+        openFolderButton_2->setText(QApplication::translate("VerifyDetectUi", "...", Q_NULLPTR));
         groupBox->setTitle(QString());
-        label->setText(QApplication::translate("VerifyDetectUi", "Device to verify:", 0));
-        okButton->setText(QApplication::translate("VerifyDetectUi", "OK", 0));
-        cancelButton->setText(QApplication::translate("VerifyDetectUi", "Cancel", 0));
+        label->setText(QApplication::translate("VerifyDetectUi", "Device to verify:", Q_NULLPTR));
+        okButton->setText(QApplication::translate("VerifyDetectUi", "OK", Q_NULLPTR));
+        cancelButton->setText(QApplication::translate("VerifyDetectUi", "Cancel", Q_NULLPTR));
     } // retranslateUi
 
 };

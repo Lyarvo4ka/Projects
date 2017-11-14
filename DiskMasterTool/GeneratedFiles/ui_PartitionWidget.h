@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'PartitionWidget.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -71,8 +71,8 @@ public:
 
     void retranslateUi(QWidget *PartitionForm)
     {
-        PartitionForm->setWindowTitle(QApplication::translate("PartitionForm", "Form", 0));
-        groupBox->setTitle(QApplication::translate("PartitionForm", "Partition copy", 0));
+        PartitionForm->setWindowTitle(QApplication::translate("PartitionForm", "Form", Q_NULLPTR));
+        groupBox->setTitle(QApplication::translate("PartitionForm", "Partition copy", Q_NULLPTR));
     } // retranslateUi
 
 };

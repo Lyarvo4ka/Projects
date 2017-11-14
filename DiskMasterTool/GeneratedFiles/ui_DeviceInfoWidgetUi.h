@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'DeviceInfoWidgetUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -81,11 +81,11 @@ public:
 
     void retranslateUi(QWidget *Form)
     {
-        Form->setWindowTitle(QApplication::translate("Form", "Form", 0));
-        diskMasterText->setText(QApplication::translate("Form", "DiskMasterUSB :", 0));
-        idText->setText(QApplication::translate("Form", "id # 0001", 0));
-        statusText->setText(QApplication::translate("Form", "status Ready", 0));
-        toolButton->setText(QApplication::translate("Form", "...", 0));
+        Form->setWindowTitle(QApplication::translate("Form", "Form", Q_NULLPTR));
+        diskMasterText->setText(QApplication::translate("Form", "DiskMasterUSB :", Q_NULLPTR));
+        idText->setText(QApplication::translate("Form", "id # 0001", Q_NULLPTR));
+        statusText->setText(QApplication::translate("Form", "status Ready", Q_NULLPTR));
+        toolButton->setText(QApplication::translate("Form", "...", Q_NULLPTR));
     } // retranslateUi
 
 };

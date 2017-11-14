@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'ModifySectorUi.ui'
 **
-** Created by: Qt User Interface Compiler version 5.5.0
+** Created by: Qt User Interface Compiler version 5.8.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -121,11 +121,11 @@ public:
 
     void retranslateUi(QDialog *ModifySectorUi)
     {
-        ModifySectorUi->setWindowTitle(QApplication::translate("ModifySectorUi", "Dialog", 0));
-        ModifyButton->setText(QApplication::translate("ModifySectorUi", "Modify", 0));
-        WriteButton->setText(QApplication::translate("ModifySectorUi", "Write signature", 0));
-        VerifyButton->setText(QApplication::translate("ModifySectorUi", "Check signature", 0));
-        okButton->setText(QApplication::translate("ModifySectorUi", "Exit", 0));
+        ModifySectorUi->setWindowTitle(QApplication::translate("ModifySectorUi", "Dialog", Q_NULLPTR));
+        ModifyButton->setText(QApplication::translate("ModifySectorUi", "Modify", Q_NULLPTR));
+        WriteButton->setText(QApplication::translate("ModifySectorUi", "Write signature", Q_NULLPTR));
+        VerifyButton->setText(QApplication::translate("ModifySectorUi", "Check signature", Q_NULLPTR));
+        okButton->setText(QApplication::translate("ModifySectorUi", "Exit", Q_NULLPTR));
     } // retranslateUi
 
 };
