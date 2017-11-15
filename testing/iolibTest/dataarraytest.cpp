@@ -16,6 +16,9 @@ const uint32_t const_header_1_size = SIZEOF_ARRAY(const_header_1);
 const uint8_t const_header_2[] = { 0x00, 0x11 , 0x22 , 0x33, 0x44, 0x55 };
 const uint32_t const_header_2_size = SIZEOF_ARRAY(const_header_2);
 
+const uint8_t const_header_3[] = { 0x00, 0x11 , 0x22 , 0x33, 0x44};
+const uint32_t const_header_3_size = SIZEOF_ARRAY(const_header_3);
+
 const uint32_t offset_1 = 0;
 const uint32_t offset_2 = 10;
 
@@ -70,6 +73,16 @@ TEST(DataArrayTest , DataArrayEqual)
 
 	EXPECT_TRUE(data1 == data2);
 	EXPECT_FALSE(data1 == data3);
+
+	IO::DataArray data_array1(const_header_1, const_header_1_size);
+	IO::DataArray same_data_array1(const_header_1, const_header_1_size);
+	IO::DataArray data_array2(const_header_2, const_header_2_size);
+	IO::DataArray data_array3(const_header_3, const_header_3_size);
+
+	EXPECT_TRUE(data_array1 == same_data_array1);
+	EXPECT_FALSE(data_array1 == data_array2);
+	EXPECT_FALSE(data_array2 == data_array3);
+
 }
 
 TEST(DataArrayTest, indexTest)

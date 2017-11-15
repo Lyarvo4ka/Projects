@@ -386,75 +386,31 @@ const int number = 1;
 #include <cmath>
 int _tmain(int argc, TCHAR **argv)
 {
-
-
-
 	//const IO::path_string file1 = L"d:\\tmp\\MP0C_003";
 	//const IO::path_string file2 = L"d:\\tmp\\MP0C_003_decoded";
 	//const IO::path_string resFile = L"d:\\tmp\\MP0C_003_xor_result";
 	//IO::XorFiles(file1, file2, resFile);
-	
-	double border_percenteges = 85;
 
-	IO::path_string  jpg_path = L"d:\\Photo\\jpg_test\\bad.jpg";
+	if (argc != 3)
+	{
+		wprintf(L"Invalid params.");
+		return -1;
+	}
+
+	IO::path_string src_folder = argv[1];
+	auto drive_number = boost::lexical_cast<uint32_t>(argv[2]);
+	double border_percenteges = (double)drive_number;
+	IO::JpegTester jpg_tester;
+	jpg_tester.test_jpeg_files(src_folder, border_percenteges);
+
+
+	//IO::path_string  jpg_path = L"d:\\Photo\\jpg_test\\bad.jpg";
 	//IO::path_string  jpg_path = L"d:\\incoming\\bad_jped\\004959.jpg";
 
-	const IO::path_string src_folder = L"e:\\Name\\";
-	const IO::path_string dst_folder = L"e:\\NoName\\jpg\\";
-	const IO::path_string bad_folder = L"e:\\NoName\\bad\\";
+	//const IO::path_string src_folder = L"e:\\Name\\";
+	//const IO::path_string dst_folder = L"e:\\NoName\\jpg\\";
+	//const IO::path_string bad_folder = L"e:\\NoName\\bad\\";
 
-	IO::Finder finder;
-	finder.add_extension(L".jpg");
-	finder.add_extension(L".jpeg");
-	finder.FindFiles(src_folder);
-	auto fileList = finder.getFiles();
-	for (auto & theFile : fileList)
-	{
-		boost::filesystem::path src_path(theFile);
-		auto folder_path = src_path.parent_path().generic_wstring();
-		auto only_name_path = src_path.stem().generic_wstring();
-		auto ext = src_path.extension().generic_wstring();
-
-		IO::path_string new_file_name = theFile + L".bad_file";//bad_folder + only_name_path + ext;
-
-		try
-		{
-			IO::JpegDecoder jpeg_decoder;
-			auto img_data = jpeg_decoder.decompress(theFile);
-			auto percenteges = IO::calcPercentages(img_data.getScanlineCount(), img_data.getHeight());
-
-			auto perc = std::lround(percenteges);
-			auto name_percenteges = std::to_wstring(perc);
-			std::replace(name_percenteges.begin(), name_percenteges.end(), '.', '-');
-
-			if (percenteges > border_percenteges)
-			{
-				printf("jpeg file works for %f(percenteges)\n", percenteges);
-
-
-				//new_file_name = dst_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
-				continue;
-
-			}
-			//else
-			//	new_file_name = bad_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
-		}
-		catch (IO::my_exception & ex)
-		{
-			printf("%s\n",ex.what());
-		}
-
-
-		try
-		{
-			boost::filesystem::rename(theFile, new_file_name);
-		}
-		catch (const boost::filesystem::filesystem_error& e)
-		{
-			std::cout << "Error: " << e.what() << std::endl;
-		}
-
-	}
 
 
 	int k = 1;

@@ -4,6 +4,7 @@
 #include "AbstractRaw.h"
 #include <exception>
 #include <Wingdi.h>
+#include "Finder.h"
 
 namespace IO
 {
@@ -81,7 +82,7 @@ namespace IO
 		return percent * 100.00;
 	}
 
-	void jpegErrorExit(j_common_ptr cinfo)
+	void jpegErrorExit_throw(j_common_ptr cinfo)
 	{
 		char jpegLastErrorMsg[JMSG_LENGTH_MAX];
 		/* Create the message */
@@ -90,6 +91,17 @@ namespace IO
 		/* Jump to the setjmp point */
 		//throw std::runtime_error(jpegLastErrorMsg); // or your preffered exception ...
 		throw my_exception(jpegLastErrorMsg);
+	}
+
+	void jpegErrorExit_nothrow(j_common_ptr cinfo)
+	{
+		char jpegLastErrorMsg[JMSG_LENGTH_MAX];
+		/* Create the message */
+		(*(cinfo->err->format_message)) (cinfo, jpegLastErrorMsg);
+
+		/* Jump to the setjmp point */
+		//throw std::runtime_error(jpegLastErrorMsg); // or your preffered exception ...
+		//throw my_exception(jpegLastErrorMsg);
 	}
 
 	bool isVaidMSGCode(const int msg_code)
@@ -154,19 +166,22 @@ namespace IO
 
 
 	}
-	//class Jpeg_
-	class JpegDecoder
+
+	class Jpegdata
 	{
 	private:
-
+		//std::unique_ptr<jpeg_decompress_struct> jpg_struct_ptr_;
 		jpeg_error_mgr err = jpeg_error_mgr();
 		jpeg_decompress_struct cinfo = jpeg_decompress_struct();
 	public:
-		//JpegDecoder(const IO::path_string & jpeg_filename)
-		//	: jpeg_filename_(jpeg_filename)
-		//{
-
-		//}
+		Jpegdata()
+		{
+			createDecompressor();
+		}
+		~Jpegdata()
+		{
+			destroyDecompressor();
+		}
 		void Init()
 		{
 			ZeroMemory(&err, sizeof(jpeg_error_mgr));
@@ -178,15 +193,36 @@ namespace IO
 			jpeg_create_decompress(&cinfo);
 			cinfo.err = jpeg_std_error(&err);
 			cinfo.do_fancy_upsampling = FALSE;
-			err.error_exit = jpegErrorExit;
+			err.error_exit = jpegErrorExit_throw;
 			err.output_message = jpegOutputMessage;
 			//err.trace_level = 1;
 		}
+		jpeg_decompress_struct * getDecompressStruct()
+		{
+			return &cinfo;
+		}
 		void destroyDecompressor()
 		{
-			jpeg_finish_decompress(&cinfo);
+			err.error_exit = jpegErrorExit_nothrow;
 			jpeg_destroy_decompress(&cinfo);
 		}
+
+	};
+
+
+	class JpegDecoder
+	{
+	private:
+		//using jpg_struct_ptr = std::unique_ptr<jpeg_decompress_struct> ;
+		//jpeg_error_mgr err = jpeg_error_mgr();
+		//jpeg_decompress_struct cinfo = jpeg_decompress_struct();
+		std::unique_ptr<Jpegdata> jpgPtr_ = std::make_unique<Jpegdata>();
+	public:
+		//JpegDecoder(const IO::path_string & jpeg_filename)
+		//	: jpeg_filename_(jpeg_filename)
+		//{
+
+		//}
 
 		IO::DataArray ReadJpegFile(const IO::path_string & jpeg_filename)
 		{
@@ -207,43 +243,46 @@ namespace IO
 
 		ImageData decompress(const IO::path_string & jpeg_filename)
 		{
-			createDecompressor();
+			//createDecompressor();
 
 			auto data_array = ReadJpegFile(jpeg_filename);
 			if (data_array.size() == 0)
 				return ImageData();
 
+			auto cinfo_ptr = jpgPtr_->getDecompressStruct();
+			auto err_ptr = cinfo_ptr->err;
+
 			/* set source buffer */
-			jpeg_mem_src(&cinfo, data_array.data(), data_array.size());
+			jpeg_mem_src(cinfo_ptr, data_array.data(), data_array.size());
 
 			/* read jpeg header */
-			jpeg_read_header(&cinfo, 1);
+			jpeg_read_header(cinfo_ptr, 1);
 
 
-			auto bRes = jpeg_start_decompress(&cinfo);
-			if (err.num_warnings > 0)
+			auto bRes = jpeg_start_decompress(jpgPtr_->getDecompressStruct());
+			if (err_ptr->num_warnings > 0)
 			{
 				return ImageData();
 			}
 
 
 			JSAMPROW output_data;
-			auto scanline_len = cinfo.output_width * cinfo.output_components;
+			auto scanline_len = cinfo_ptr->output_width * cinfo_ptr->output_components;
 
 			auto scanline_count = 0;
-			ImageData image_data(cinfo.output_width, cinfo.output_height, cinfo.output_components);
+			ImageData image_data(cinfo_ptr->output_width, cinfo_ptr->output_height, cinfo_ptr->output_components);
 
 
 
-			while (cinfo.output_scanline < cinfo.output_height)
+			while (cinfo_ptr->output_scanline < cinfo_ptr->output_height)
 			{
 				output_data = (image_data.getData() + (scanline_count * scanline_len));
-				jpeg_read_scanlines(&cinfo, &output_data, 1);
+				jpeg_read_scanlines(cinfo_ptr, &output_data, 1);
 
-				if (err.num_warnings > 0)
+				if (err_ptr->num_warnings > 0)
 					break;
 
-				if (!isVaidMSGCode(err.msg_code))
+				if (!isVaidMSGCode(err_ptr->msg_code))
 				{
 					//int k = cinfo.next_scanline;
 					//cinfo.output_scanline = cinfo.output_height;
@@ -253,13 +292,81 @@ namespace IO
 				scanline_count++;
 			}
 
-			cinfo.output_scanline = cinfo.output_height;
-			destroyDecompressor();
+			cinfo_ptr->output_scanline = cinfo_ptr->output_height;	// to prevent exception 			
+			jpeg_finish_decompress(cinfo_ptr);
 			image_data.setScanlineCount(scanline_count);
 
 			//saveBMP_file(L"d:\\Photo\\jpg_test\\bad_file\\bitmap.bmp" , image_data);
 
  			return image_data;
+		}
+
+	};
+
+	class JpegTester
+	{
+	public:
+		void test_jpeg_files(const path_string & src_folder , const double border_percenteges)
+		{
+			IO::Finder finder;
+			finder.add_extension(L".jpg");
+			finder.add_extension(L".jpeg");
+			finder.FindFiles(src_folder);
+			auto fileList = finder.getFiles();
+			for (auto & theFile : fileList)
+			{
+				boost::filesystem::path src_path(theFile);
+				auto folder_path = src_path.parent_path().generic_wstring();
+				auto only_name_path = src_path.stem().generic_wstring();
+				auto ext = src_path.extension().generic_wstring();
+
+				IO::path_string new_file_name = theFile + L".bad_file";//bad_folder + only_name_path + ext;
+
+
+				try
+				{
+					IO::JpegDecoder jpeg_decoder;
+					auto img_data = jpeg_decoder.decompress(theFile);
+					auto percenteges = IO::calcPercentages(img_data.getScanlineCount(), img_data.getHeight());
+
+					auto perc = std::lround(percenteges);
+					auto name_percenteges = std::to_wstring(perc);
+					std::replace(name_percenteges.begin(), name_percenteges.end(), '.', '-');
+
+					if (percenteges > border_percenteges)
+					{
+						wprintf(L"%s - GOOD\n", theFile.c_str());
+
+						new_file_name = theFile;
+						//new_file_name = dst_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
+						continue;
+
+					}
+					//else
+					//	new_file_name = bad_folder + only_name_path + L" [" + name_percenteges + L"]" + ext;
+				}
+				catch (IO::my_exception & ex)
+				{
+					printf("%s\n", ex.what());
+				}
+				catch (...)
+				{
+					printf("FATAL ERROR\n");
+				}
+
+				wprintf(L"%s - FAILED\n", theFile.c_str());
+
+				try
+				{
+					boost::filesystem::rename(theFile, new_file_name);
+				}
+				catch (const boost::filesystem::filesystem_error& e)
+				{
+					std::cout << "Error: " << e.what() << std::endl;
+				}
+
+			}
+
 		}
 
 	};

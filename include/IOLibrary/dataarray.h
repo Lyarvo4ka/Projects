@@ -54,7 +54,6 @@ namespace IO
 			{
 				delete[] data_;
 				data_ = nullptr;
-				//				printf("delete data\r\n");
 			}
 		}
 		uint32_t size() const
@@ -69,14 +68,23 @@ namespace IO
 		{
 			return data_;
 		}
-		friend bool operator == (const DataArray::Ptr & left, const DataArray::Ptr & right)
+		static bool compareData(const DataArray & left, const DataArray & right)
 		{
-			if (left->size() == right->size())
-				return (memcmp(left->data(), right->data(), left->size()) == 0);
+			if (left.size() == right.size())
+				return (memcmp(left.data(), right.data(), left.size()) == 0);
 			return false;
 		}
+		friend bool operator == (const DataArray & left, const DataArray & right)
+		{
+			return compareData(left, right);
+		}	
 
-		uint8_t & operator[](size_t index) 
+		friend bool operator == (const DataArray::Ptr & left, const DataArray::Ptr & right)
+		{
+			return compareData(*left , *right);
+		}
+	
+		uint8_t & operator[](size_t index)
 		{
 			return data_[index];
 		}
@@ -98,7 +106,6 @@ namespace IO
 		}
 		bool compareData(const DataArray & dataArray, uint32_t offset = 0)
 		{
-
 			return compareData(dataArray.data(), dataArray.size(), offset);
 		}
 
