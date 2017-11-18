@@ -46,7 +46,10 @@ namespace IO
 		{
 			return pixelsArray_->data();
 		}
-
+		IO::ByteArray getData() const
+		{
+			return pixelsArray_->data();
+		}
 		uint32_t getSize() const
 		{
 			return pixelsArray_->size();
@@ -118,8 +121,8 @@ namespace IO
 		(*(cinfo->err->format_message)) (cinfo, jpegLastErrorMsg);
 		printf("%s (error_code [%d])\n", jpegLastErrorMsg, cinfo->err->msg_code);
 		//printf("Error code [%d]\n", cinfo->err->msg_code);
-		if (!isVaidMSGCode(cinfo->err->msg_code))
-			printf("Not Valid error code");
+		//if (!isVaidMSGCode(cinfo->err->msg_code))
+		//	printf("Not Valid error code");
 
 
 		/* Jump to the setjmp point */
@@ -132,13 +135,15 @@ namespace IO
 		IO::File bmp_file(path);
 		bmp_file.Open(IO::OpenMode::Create);
 
-		
+
 		ImageData img_new(image_data.getWidth(), image_data.getHeight(), image_data.getOutputComponents());
-		//for (auto i = 0; i < image_data.getSize(); i = i + image_data.getOutputComponents())
-		//{
-		//	for (auto j = 0; j < image_data.getOutputComponents(); ++j)
-		//		img_new.getData()[i + j] = image_data.getData()[image_data.getSize() - 1 - i - j];
-		//}
+		auto src_data = (ByteArray) image_data.getData();
+		auto byteArray = img_new.getData();
+		for (auto i = 0; i < image_data.getSize(); i = i + image_data.getOutputComponents())
+		{
+			for (auto j = 0; j < image_data.getOutputComponents(); ++j)
+				byteArray[i + j] = src_data[image_data.getSize() - 1 - i - j];
+		}
 
 
 		BITMAPINFOHEADER bfh = BITMAPINFOHEADER();
@@ -160,7 +165,7 @@ namespace IO
 		auto bytes_written = bmp_file.WriteData((ByteArray)&bm_header, sizeof(BITMAPFILEHEADER));
 		bytes_written += bmp_file.WriteData((ByteArray)&bfh, bfh.biSize);
 		bytes_written += bmp_file.WriteData(img_new.getData(), img_new.getSize());
-		//bytes_written += bmp_file.WriteData(image_data.getData(), image_data.getSize());
+		//bytes_written += bmp_file.WriteData(byteArray, image_data.getSize());
 
 		bmp_file.Close();
 
@@ -250,7 +255,9 @@ namespace IO
 				return ImageData();
 
 			auto cinfo_ptr = jpgPtr_->getDecompressStruct();
+			
 			auto err_ptr = cinfo_ptr->err;
+			//err_ptr->trace_level = 3;
 
 			/* set source buffer */
 			jpeg_mem_src(cinfo_ptr, data_array.data(), data_array.size());
@@ -260,11 +267,11 @@ namespace IO
 
 
 			auto bRes = jpeg_start_decompress(jpgPtr_->getDecompressStruct());
-			if (err_ptr->num_warnings > 0)
+			if (err_ptr->num_warnings > 1)
 			{
 				return ImageData();
 			}
-
+			//err_ptr->num_warnings = 0;
 
 			JSAMPROW output_data;
 			auto scanline_len = cinfo_ptr->output_width * cinfo_ptr->output_components;
@@ -273,20 +280,23 @@ namespace IO
 			ImageData image_data(cinfo_ptr->output_width, cinfo_ptr->output_height, cinfo_ptr->output_components);
 
 
+			//err_ptr->msg_code = 85;
 
 			while (cinfo_ptr->output_scanline < cinfo_ptr->output_height)
 			{
 				output_data = (image_data.getData() + (scanline_count * scanline_len));
 				jpeg_read_scanlines(cinfo_ptr, &output_data, 1);
 
-				if (err_ptr->num_warnings > 0)
+				if (err_ptr->num_warnings > 1)
 					break;
 
 				if (!isVaidMSGCode(err_ptr->msg_code))
 				{
 					//int k = cinfo.next_scanline;
 					//cinfo.output_scanline = cinfo.output_height;
-					break;
+					int k = 0;
+					k = 1;
+					//break;
 				}
 
 				scanline_count++;
@@ -296,7 +306,7 @@ namespace IO
 			jpeg_finish_decompress(cinfo_ptr);
 			image_data.setScanlineCount(scanline_count);
 
-			//saveBMP_file(L"d:\\Photo\\jpg_test\\bad_file\\bitmap.bmp" , image_data);
+//			saveBMP_file(L"d:\\Photo\\jpg_test\\not_bad\\bitmap.bmp" , image_data);
 
  			return image_data;
 		}
