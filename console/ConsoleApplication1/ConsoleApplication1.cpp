@@ -391,6 +391,8 @@ int _tmain(int argc, TCHAR **argv)
 	//const IO::path_string resFile = L"d:\\tmp\\MP0C_003_xor_result";
 	//IO::XorFiles(file1, file2, resFile);
 
+	//////////////////////////////////////////
+/*
 	if (argc != 3)
 	{
 		wprintf(L"Invalid params.");
@@ -403,6 +405,8 @@ int _tmain(int argc, TCHAR **argv)
 	IO::JpegTester jpg_tester;
 	jpg_tester.test_jpeg_files(src_folder, border_percenteges);
 
+*/
+	/////////////////////////////////////
 
 	//IO::path_string  jpg_path = L"d:\\Photo\\jpg_test\\bad.jpg";
 	//IO::path_string  jpg_path = L"d:\\incoming\\bad_jped\\004959.jpg";
@@ -428,21 +432,22 @@ int _tmain(int argc, TCHAR **argv)
 	//IO::Join1Cv8(bad, good, result);
 
 
-	//IO::Finder finder;
+	IO::Finder finder;
 
-	//finder.add_extension(L".mov");
-	//finder.add_extension(L".mp4");
-	//finder.add_extension(L".mpg");
-	//finder.add_extension(L".mts");
-	//finder.FindFiles(L"d:\\PaboTa\\43115\\NoName\\....HFS+ Private Data\\");
-	//auto fileList = finder.getFiles();
+	finder.add_extension(L".mov");
+	finder.add_extension(L".mp4");
+	finder.add_extension(L".mpg");
+	finder.add_extension(L".mts");
+	finder.add_extension(L".avi");
+	finder.FindFiles(L"e:\\43268\\");
+	auto fileList = finder.getFiles();
 
-	//for (auto & theFile : fileList)
-	//{
-	//	IO::testSignatureMP4(theFile);
-	////	//IO::testHeaderToBadSectorKeyword(theFile);
-	////	IO::TestEndJpg(theFile);
-	//}
+	for (auto & theFile : fileList)
+	{
+		IO::testSignatureMP4(theFile);
+	//	//IO::testHeaderToBadSectorKeyword(theFile);
+	//	IO::TestEndJpg(theFile);
+	}
 
 
 

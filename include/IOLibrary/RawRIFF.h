@@ -43,7 +43,7 @@ namespace IO
 			wprintf(L"Riff write size: %d\n", riff_struct.size);
 			if (riff_struct.size > 0)
 			{
-				riff_struct.size += riff_header_struct_size;
+				riff_struct.size += riff_header_struct_size*2;
 
 				return appendToFile(target_file, start_offset, riff_struct.size);
 			}

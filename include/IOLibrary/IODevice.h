@@ -96,6 +96,7 @@ namespace IO
 			else
 			{
 				bOpen_ = false;
+				// promt error
 				//DWORD dwError = ::GetLastError();
 				//int k = 1;
 				//k = 2;
