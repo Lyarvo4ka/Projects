@@ -27,13 +27,16 @@
 #include "IOLibrary/RawIMD.h"
 #include "IOLibrary/keychainraw.h"
 
-const int param_count = 4;
-const int option = 1;
-const int source = 2;
-const int target = 3;
+const int param_count = 6;
+const int offset_param = 1;
+const int offset_value = 2;
+const int disk_file_param = 3;
+const int source_value = 4;
+const int target_value = 5;
 
 const std::string d_str = "-d";
 const std::string f_str = "-f";
+const std::string offset_str = "-offset";
 
 #include <memory>
 
@@ -41,9 +44,9 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 {
 	//factory_manager.Register("keychain-db", std::make_unique<IO::KeychainRawFactory>());
 
-	//factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
-	//factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
-	//factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
+	factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
+	factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
+	factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
 	//factory_manager.Register("wave", std::make_unique<IO::RawFIFFFactory>());
 	//factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
 
@@ -52,7 +55,7 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 
 
 	//factory_manager.Register("BlackVue", std::make_unique<IO::BlackVue_QtRawFactory>());
-	factory_manager.Register("wav", std::make_unique<IO::RawFIFFFactory>());
+	factory_manager.Register("avi", std::make_unique<IO::RawFIFFFactory>());
 	//factory_manager.Register("mx7", std::make_unique<IO::RawFIFFFactory>());
 
 	//factory_manager.Register("r3d", std::make_unique<IO::StandartRawFactory>());
@@ -70,13 +73,23 @@ int main(int argc, char *argv[])
 
 	if (argc == param_count)
 	{
-		std::string option_str(argv[option]);
-		if (option_str.compare(d_str) == 0)
+		uint64_t start_offset = 0;
+		std::string offset_txt(argv[offset_param]);
+		if (offset_txt.compare(offset_str) == 0)
 		{
-			auto drive_number = boost::lexical_cast<uint32_t>(argv[source]);
+			start_offset = boost::lexical_cast<uint64_t>(argv[offset_value]);
+			qInfo() << "offset : " << start_offset <<"(sectors)";
+		}
+
+
+		std::string disk_file_string(argv[disk_file_param]);
+		if (disk_file_string.compare(d_str) == 0)
+		{
+			auto drive_number = boost::lexical_cast<uint32_t>(argv[source_value]);
 
 			auto drive_list = IO::ReadPhysicalDrives();
 			auto physical_drive = drive_list.find_by_number(drive_number);
+			start_offset *= physical_drive->getBytesPerSector();
 			if (physical_drive)
 			{
 				qInfo() << "You selected";
@@ -87,10 +100,11 @@ int main(int argc, char *argv[])
 			}
 			src_device = std::make_shared<IO::DiskDevice>(physical_drive);
 		}
-		else if (option_str.compare(f_str) == 0)
+		else if (disk_file_string.compare(f_str) == 0)
 		{
-			std::string src_path = argv[source];
+			std::string src_path = argv[source_value];
 			src_device = IO::makeFilePtr(IO::path_string(src_path.begin(), src_path.end()));
+			start_offset *= default_sector_size;
 		}
 
 		if (!src_device->Open(IO::OpenMode::OpenRead))
@@ -99,7 +113,7 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 
-		std::string targer_path = argv[target];
+		std::string targer_path = argv[target_value];
 		IO::path_string target_folder(targer_path.begin(), targer_path.end());
 
 		if (!src_device)
@@ -109,7 +123,7 @@ int main(int argc, char *argv[])
 		QList<JsonFileStruct> listFileStruct;
 
 
-		QFile file("audio.json");
+		QFile file("video.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
 			qInfo() << "Error to open file. \"video.json\"";
@@ -133,7 +147,7 @@ int main(int argc, char *argv[])
 
 		IO::SignatureFinder signatureFinder(src_device, headerBase);
 
-		uint64_t start_offset = 0x0;
+		//uint64_t start_offset = 0x0;
 		uint64_t header_offset = 0;
 		uint32_t counter = 0;
 		while (start_offset < src_device->Size())
@@ -191,7 +205,7 @@ int main(int argc, char *argv[])
 							target_size /= default_sector_size;
 							target_size *= default_sector_size;
 							//////////////////////////////////////////////////////////////////////////
-							jump_size = default_sector_size;
+							jump_size = target_size;
 						}
 						else
 						{
