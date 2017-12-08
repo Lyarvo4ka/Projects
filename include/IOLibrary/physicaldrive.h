@@ -37,6 +37,15 @@ namespace IO
 		{
 			return ::ReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
 		}
+		virtual BOOL WriteFile(
+			HANDLE       hFile,
+			LPVOID       lpBuffer,
+			DWORD        nNumberOfBytesToWrite,
+			LPDWORD      lpNumberOfBytesWritten,
+			LPOVERLAPPED lpOverlapped)
+		{
+			return ::WriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, lpNumberOfBytesWritten, lpOverlapped);
+		}
 		virtual HANDLE OpenPhysicalDrive(const path_string & drive_path)
 		{
 			HANDLE hDevice = this->CreateFile(drive_path.c_str(),

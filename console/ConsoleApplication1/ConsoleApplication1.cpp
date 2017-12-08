@@ -420,7 +420,42 @@ int _tmain(int argc, TCHAR **argv)
 	int k = 1;
 	k = 2;
 
+	IO::path_string src_folder = argv[1];
+	auto drive_number = boost::lexical_cast<uint32_t>(argv[2]);
 
+
+	auto drive_list = IO::ReadPhysicalDrives();
+	auto physical_drive = drive_list.find_by_number(drive_number);
+	if (!physical_drive)
+	{
+		wprintf(L"Wrong drive number.\n");
+		return -1;
+	}
+	wprintf(L"You selected\n");
+	wprintf(L"Number : %d\n", drive_number);
+	auto drive_name = physical_drive->getDriveName().c_str();
+	wprintf(L"Name : %s\n", drive_name);
+	printf("Serial number : %s\n", physical_drive->getSerialNumber().c_str());
+	wprintf(L"Size : %I64d (bytes)\n", physical_drive->getSize());
+
+	wprintf(L"Press any key to start.");
+	_getch();
+
+	auto disk = std::make_shared<IO::DiskDevice>(physical_drive);
+
+	IO::FileOffsetWriter foWriter(disk);
+
+	IO::Finder finder;
+
+	finder.add_extension(L".bin");
+	//finder.FindFiles(L"d:\\Temp\\2\\");
+	finder.FindFiles(src_folder);
+	auto fileList = finder.getFiles();
+
+	for (auto & theFile : fileList)
+	{
+		foWriter.saveFileToDisk(theFile);
+	}
 	
 	//FireBird_Raw fb_raw(4,"d:\\PaboTa\\43111\\");
 	//fb_raw.execute();
@@ -431,7 +466,7 @@ int _tmain(int argc, TCHAR **argv)
 
 	//IO::Join1Cv8(bad, good, result);
 
-
+/*
 	IO::Finder finder;
 
 	finder.add_extension(L".mov");
@@ -449,7 +484,7 @@ int _tmain(int argc, TCHAR **argv)
 	//	IO::TestEndJpg(theFile);
 	}
 
-
+*/
 
 	//auto src_file = L"d:\\incoming\\41914\\41914.img";
 	//IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.LRV", 32768);

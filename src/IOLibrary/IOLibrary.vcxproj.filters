@@ -45,6 +45,9 @@
     <ClCompile Include="factories.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\IOLibrary\iofunctions.h">
@@ -180,6 +183,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\IOLibrary\log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\IOLibrary\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

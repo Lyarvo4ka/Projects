@@ -6,6 +6,15 @@
 namespace IO
 {
 
+	enum class device_error
+	{
+		open = 1,
+		create,
+		read,
+		write
+		
+
+	};
 
 	inline uint32_t calcBlockSize(uint64_t current, uint64_t size, uint32_t block_size)
 	{
@@ -342,9 +351,29 @@ namespace IO
 				return ReadDataNotAligned(data, read_size);
 			}
 		}
-		uint32_t WriteData(ByteArray data, uint32_t read_size) override
+		uint32_t WriteData(ByteArray data, uint32_t write_size) override
 		{
-			return 0;
+			DWORD bytes_written = 0;
+			uint64_t data_pos = 0;
+			uint32_t bytes_to_write = default_block_size;
+
+			// copy paste
+			auto transfer_size = this->physical_drive_->getTransferLength();
+			while (data_pos < write_size)
+			{
+				bytes_to_write = calcBlockSize(data_pos, write_size, transfer_size);
+				setPosition(position_);// ??? not work
+				if (!system_oi_->WriteFile(hDrive_, data + data_pos, bytes_to_write, &bytes_written, NULL))
+					return 0;
+				if (bytes_to_write == 0)
+					return 0;
+
+				data_pos += bytes_written;
+				position_ += bytes_written;
+			}
+			bytes_written = data_pos;
+			return bytes_written;
+
 		}
 
 		uint64_t Size() const override
@@ -389,14 +418,14 @@ namespace IO
 		}
 		uint32_t WriteBlock(ByteArray data, uint32_t write_size) override
 		{
-			if ( !isOpen())
-			return 0;
-			DWORD bytesWritten = 0;
+			//if ( !isOpen())
+			//	return 0;
+			DWORD bytes_written = 0;
 
-			BOOL bResult = ::WriteFile(hDrive_, data, write_size, &bytesWritten, NULL);
+			BOOL bResult = WriteFile(hDrive_, data , write_size, &bytes_written, NULL);
 			if (!bResult)
 				return 0;
-			return bytesWritten;
+			return bytes_written;
 		}
 
 
