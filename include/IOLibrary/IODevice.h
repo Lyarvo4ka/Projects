@@ -2,19 +2,12 @@
 #include "physicaldrive.h"
 #include <string>
 #include "dataarray.h"
+#include "error.h"
 
 namespace IO
 {
 
-	enum class device_error
-	{
-		open = 1,
-		create,
-		read,
-		write
-		
 
-	};
 
 	inline uint32_t calcBlockSize(uint64_t current, uint64_t size, uint32_t block_size)
 	{
@@ -105,6 +98,7 @@ namespace IO
 			else
 			{
 				bOpen_ = false;
+				//ErrorHandler::get()->showMessage()
 				// promt error
 				//DWORD dwError = ::GetLastError();
 				//int k = 1;
