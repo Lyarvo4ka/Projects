@@ -98,7 +98,8 @@ namespace IO
 			else
 			{
 				bOpen_ = false;
-				//ErrorHandler::get()->showMessage()
+				auto err = ErrorHandler::get();
+				err->showMessage()
 				// promt error
 				//DWORD dwError = ::GetLastError();
 				//int k = 1;

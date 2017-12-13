@@ -55,6 +55,32 @@ namespace IO
 	    debug,
 	    trace
 	};
+	class Error 
+	{
+	public:
+		DWORD last() const
+		{
+			return ::GetLastError();
+		}
+		std::wstring Error::getMessage(DWORD errorCode)
+		{
+			std::wstring errMsg;
+			DWORD dwFlg = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+			LPWSTR lpMsgBuf = 0;
+			if (FormatMessageW(dwFlg, 0, errorCode, 0, (LPWSTR)& lpMsgBuf, 0, NULL))
+				errMsg = lpMsgBuf;
+
+//				UnicodeConverter::toUTF8(lpMsgBuf, errMsg);
+//#else
+//			LPTSTR lpMsgBuf = 0;
+//			if (FormatMessageA(dwFlg, 0, errorCode, 0, (LPTSTR)& lpMsgBuf, 0, NULL))
+//				errMsg = lpMsgBuf;
+//#endif
+			LocalFree(lpMsgBuf);
+			return errMsg;
+		}
+	};
 
 	class ErrorHandler
 	{
@@ -67,34 +93,43 @@ namespace IO
 		{
 			return error_handler_;
 		}
-		void showMessage()
+		void showMessage(DWORD error_code , const std::wstring & sourceOfError)
+		{
+			Error error;
+			std::wstring error_string = L"Error: ";
+			error.getMessage(error.last());
+			wprintf(messageText.c_str());
+			wprintf(L"\n");
+		}
 	};
 
 	enum class device_error
 	{
-		open ,
-		create,
-		read,
-		write
+		openRead_err = 1,
+		openWrite_err,
+		create_err,
+		read_err,
+		write_err
+
 	};
 
-	class DeviceErrorCategory :
-		public std::error_category
-	{
-	public:
-		virtual const char * name() const override
-		{
-			return "device error";
-		}
-		virtual std::string message(int ev) const override
-		{
-			switch (static_cast<device_error>(ev))
-			{
-			case device_error::open:
-				return "Error open device";
-			}
+	//class DeviceErrorCategory :
+	//	public std::error_category
+	//{
+	//public:
+	//	virtual const char * name() const override
+	//	{
+	//		return "device error";
+	//	}
+	//	virtual std::string message(int ev) const override
+	//	{
+	//		switch (static_cast<device_error>(ev))
+	//		{
+	//		case device_error::openRead_err:
+	//			return "Error open device";
+	//		}
 
-		}
-	};
+	//	}
+	//};
 	//std::error_category
 }
