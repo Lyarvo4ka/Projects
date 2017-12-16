@@ -1,10 +1,9 @@
 #pragma once
 #include <system_error>
+#include <windows.h>
 
 namespace IO
 {
-
-
 
 	template <class S>
 	class SingletonHolder
@@ -98,7 +97,7 @@ namespace IO
 			Error error;
 			std::wstring error_string = L"Error: ";
 			error.getMessage(error.last());
-			wprintf(messageText.c_str());
+			//wprintf(messageText.c_str());
 			wprintf(L"\n");
 		}
 	};

@@ -99,7 +99,7 @@ namespace IO
 			{
 				bOpen_ = false;
 				auto err = ErrorHandler::get();
-				err->showMessage()
+				//err->showMessage()
 				// promt error
 				//DWORD dwError = ::GetLastError();
 				//int k = 1;

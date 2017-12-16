@@ -40,14 +40,27 @@ const std::string offset_str = "-offset";
 
 #include <memory>
 
-void initFactoryMananger(IO::RawFactoryManager & factory_manager)
+void initVideoFactoryManager(IO::RawFactoryManager & factory_manager)
 {
-	//factory_manager.Register("keychain-db", std::make_unique<IO::KeychainRawFactory>());
-
 	factory_manager.Register("mts", std::make_unique<IO::RawMTSFactory>());
 	factory_manager.Register("mpeg", std::make_unique<IO::RawMPEGFactory>());
 	factory_manager.Register("quicktime", std::make_unique<IO::QuickTimeRawFactory>());
-	//factory_manager.Register("wave", std::make_unique<IO::RawFIFFFactory>());
+	factory_manager.Register("avi", std::make_unique<IO::RawFIFFFactory>());
+
+}
+void initAudioFactoryManager(IO::RawFactoryManager & factory_manager)
+{
+	factory_manager.Register("wave", std::make_unique<IO::RawFIFFFactory>());
+}
+
+void initFactoryMananger(IO::RawFactoryManager & factory_manager)
+{
+	//initVideoFactoryManager(factory_manager);
+	initAudioFactoryManager(factory_manager);
+
+
+	//factory_manager.Register("keychain-db", std::make_unique<IO::KeychainRawFactory>());
+
 	//factory_manager.Register("mxf", std::make_unique<IO::RawMXFFactory>());
 
 	//factory_manager.Register("go_pro", std::make_unique<IO::GoProRawFactory>());
@@ -55,7 +68,6 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 
 
 	//factory_manager.Register("BlackVue", std::make_unique<IO::BlackVue_QtRawFactory>());
-	factory_manager.Register("avi", std::make_unique<IO::RawFIFFFactory>());
 	//factory_manager.Register("mx7", std::make_unique<IO::RawFIFFFactory>());
 
 	//factory_manager.Register("r3d", std::make_unique<IO::StandartRawFactory>());
@@ -123,10 +135,10 @@ int main(int argc, char *argv[])
 		QList<JsonFileStruct> listFileStruct;
 
 
-		QFile file("video.json");
+		QFile file("audio.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
-			qInfo() << "Error to open file. \"video.json\"";
+			qInfo() << "Error to open file. \"" << file.fileName() << "\"";
 			return -1;
 		}
 
