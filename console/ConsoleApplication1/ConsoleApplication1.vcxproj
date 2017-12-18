@@ -14,7 +14,7 @@
     <ProjectGuid>{14C2973D-DC7A-492A-9393-45E41F2B59D3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ConsoleApplication1</RootNamespace>
-    <ProjectName>imagerWriter</ProjectName>
+    <ProjectName>decompress_tib</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -115,6 +115,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\IOLibrary\IOLibrary.vcxproj">
       <Project>{c0525921-31e3-4e1a-b7b6-4ea88d4de419}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ZipLib\extlibs\zlib\zlib.vcxproj">
+      <Project>{baeb16b3-db4c-432f-9e6a-2acadea0691d}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

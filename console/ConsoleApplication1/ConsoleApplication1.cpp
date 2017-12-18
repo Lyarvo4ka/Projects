@@ -383,9 +383,52 @@ const int number = 1;
 #include "IOLibrary\Finder.h"
 #include "IOLibrary\jpeg.h"
 
+#include <zlib\zlib.h>
+
 #include <cmath>
 int _tmain(int argc, TCHAR **argv)
 {
+	//IO::path_string tib_file = L"d:\\PaboTa\\43410\\src_file.bin";
+	IO::path_string tib_file = L"f:\\src_file.bin";
+	IO::path_string decompressed_file = L"e:\\43410\\dst_file.bin";
+
+	IO::AcronisDecompress acronis_decompressor(tib_file);
+	acronis_decompressor.saveToFile(decompressed_file, 0x481D2);
+	int k = 1;
+	k = 2;
+
+/*
+	IO::File file(test_file);
+	if (!file.Open(IO::OpenMode::OpenRead))
+		return -1;
+
+	IO::DataArray data_array(file.Size());
+	file.ReadData(data_array.data(), data_array.size());
+
+	const uint32_t def_size = 256 * 1024;
+	uint8_t dst_array[def_size];
+
+
+	//file.Open(IO::OpenMode::OpenRead);
+	//file.Open(IO::OpenMode::OpenWrite);
+	//file.Open(IO::OpenMode::Create);
+
+//////////////////////////////////////
+
+	
+	uLongf dst_size = def_size;
+	auto ires = uncompress(dst_array, &dst_size, data_array.data(), data_array.size());
+
+	IO::path_string dst_name = L"d:\\PaboTa\\43410\\dst.bin";
+	IO::File dst_file(dst_name);
+	if (!dst_file.Open(IO::OpenMode::Create))
+		return -1;
+	dst_file.WriteData(dst_array , def_size);
+	dst_file.Close();
+*/
+/////////////////////////////////////////////////////////
+
+
 	//const IO::path_string file1 = L"d:\\tmp\\MP0C_003";
 	//const IO::path_string file2 = L"d:\\tmp\\MP0C_003_decoded";
 	//const IO::path_string resFile = L"d:\\tmp\\MP0C_003_xor_result";
@@ -416,7 +459,7 @@ int _tmain(int argc, TCHAR **argv)
 	//const IO::path_string bad_folder = L"e:\\NoName\\bad\\";
 
 
-
+/*
 	int k = 1;
 	k = 2;
 
@@ -456,7 +499,7 @@ int _tmain(int argc, TCHAR **argv)
 	{
 		foWriter.saveFileToDisk(theFile);
 	}
-	
+*/	
 	//FireBird_Raw fb_raw(4,"d:\\PaboTa\\43111\\");
 	//fb_raw.execute();
 

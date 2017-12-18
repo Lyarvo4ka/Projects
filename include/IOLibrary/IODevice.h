@@ -99,11 +99,15 @@ namespace IO
 			{
 				bOpen_ = false;
 				auto err = ErrorHandler::get();
-				//err->showMessage()
-				// promt error
-				//DWORD dwError = ::GetLastError();
-				//int k = 1;
-				//k = 2;
+				DWORD dwError = ::GetLastError();
+
+				int k = 1;
+				k = 2;
+				//auto device_err = make_error_condition(openModeToIOError(openMode));
+				
+				//device_err.message()
+				//auto device_error = openModeToIOError(openMode);
+				//err->showMessage(dwError, ioDeviceErrorToString(device_error), file_name_);
 			}
 
 			return bOpen_;

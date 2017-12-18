@@ -494,5 +494,103 @@ namespace IO
 	};
 
 
+#include <zlib.h>
 
+	const uint8_t EIGHT_FF[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF , 0x78 , 0xDA };
+	const uint32_t EIGHT_FF_SIZE = SIZEOF_ARRAY(EIGHT_FF);
+
+	const uint32_t ACRONIS_BLOCK_SIZE = 256 * 1024;
+
+	class AcronisDecompress
+	{
+	private:
+		File file_;
+	public:
+		AcronisDecompress(const path_string & acronis_file)
+			: file_(acronis_file)
+		{}
+		uint64_t find_8FF(const uint64_t start_offset )
+		{
+			uint64_t offset = start_offset;
+			DataArray data_array(ACRONIS_BLOCK_SIZE);
+			uint32_t bytes_read = 0;
+
+			while (offset < file_.Size())
+			{
+				file_.setPosition(offset);
+				bytes_read = file_.ReadData(data_array.data(), data_array.size());
+				if (bytes_read == 0)
+					break;
+
+				for (uint32_t iByte = 0; iByte < bytes_read - EIGHT_FF_SIZE; ++iByte)
+					if (memcmp(data_array.data() + iByte, EIGHT_FF, EIGHT_FF_SIZE) == 0)
+					{
+						return offset + iByte;
+					}
+
+				offset += bytes_read;
+			}
+			return start_offset;
+		}
+
+		int decode_block(const uint64_t start_offset , const uint64_t end_offset , DataArray & dst_data_array)
+		{
+			auto read_block_size = end_offset - start_offset;
+			DataArray src_data_array(read_block_size);
+			file_.setPosition(start_offset);
+			file_.ReadData(src_data_array.data(), src_data_array.size());
+
+
+			uLongf dst_size = dst_data_array.size();
+			auto ires = uncompress(dst_data_array.data(), &dst_size, src_data_array.data(), src_data_array.size());
+			return ires;
+		}
+
+		void saveToFile(const path_string & target_file_name, const uint64_t start_offset = 0)
+		{
+			if (!this->file_.Open(OpenMode::OpenRead))
+			{
+				wprintf(L"Error open source file.\n");
+				return;
+			}
+
+			File target_file(target_file_name);
+			if (!target_file.Open(OpenMode::Create))
+			{
+				wprintf(L"Error Create target file.\n");
+				return;
+			}
+
+			uint64_t target_offset = 0;
+
+			uint64_t offset = start_offset;
+			while (true)
+			{
+				auto new_block_offset = find_8FF(offset);
+				if (new_block_offset == offset)
+				{
+					wprintf(L"Not found next 0xFFFFFFFFFF\n");
+					return;
+				}
+
+				DataArray decompressed_data(ACRONIS_BLOCK_SIZE);
+				auto iRes = decode_block(offset, new_block_offset, decompressed_data);
+				if (iRes != 0)
+				{
+					wprintf(L"Can't decompress data.\n");
+					return;
+				}
+				target_file.setPosition(target_offset);
+				if ( target_file.WriteData(decompressed_data.data(), decompressed_data.size()) == 0)
+				{
+					wprintf(L"Error write to file.\n");
+				}
+				target_offset += decompressed_data.size();
+
+				offset = new_block_offset + EIGHT_FF_SIZE - 2;
+			}
+		}
+
+	};
+	
 };
