@@ -494,9 +494,8 @@ namespace IO
 	};
 
 
-#include <zlib.h>
 
-	const uint8_t EIGHT_FF[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF , 0x78 , 0xDA };
+	const uint8_t EIGHT_FF[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF , 0x78 , 0x01 };
 	const uint32_t EIGHT_FF_SIZE = SIZEOF_ARRAY(EIGHT_FF);
 
 	const uint32_t ACRONIS_BLOCK_SIZE = 256 * 1024;
@@ -533,18 +532,7 @@ namespace IO
 			return start_offset;
 		}
 
-		int decode_block(const uint64_t start_offset , const uint64_t end_offset , DataArray & dst_data_array)
-		{
-			auto read_block_size = end_offset - start_offset;
-			DataArray src_data_array(read_block_size);
-			file_.setPosition(start_offset);
-			file_.ReadData(src_data_array.data(), src_data_array.size());
-
-
-			uLongf dst_size = dst_data_array.size();
-			auto ires = uncompress(dst_data_array.data(), &dst_size, src_data_array.data(), src_data_array.size());
-			return ires;
-		}
+		int decode_block(const uint64_t start_offset, const uint64_t end_offset, DataArray & dst_data_array);
 
 		void saveToFile(const path_string & target_file_name, const uint64_t start_offset = 0)
 		{
@@ -562,10 +550,11 @@ namespace IO
 			}
 
 			uint64_t target_offset = 0;
-
-			uint64_t offset = start_offset;
+			uint64_t ff_start = find_8FF(start_offset);
+			uint64_t offset = ff_start + 8;
 			while (true)
 			{
+				wprintf(L"offset: %I64d\n", offset);
 				auto new_block_offset = find_8FF(offset);
 				if (new_block_offset == offset)
 				{
@@ -592,5 +581,5 @@ namespace IO
 		}
 
 	};
-	
+
 };

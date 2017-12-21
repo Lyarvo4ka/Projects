@@ -56,7 +56,7 @@ void initAudioFactoryManager(IO::RawFactoryManager & factory_manager)
 void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 {
 	//initVideoFactoryManager(factory_manager);
-	initAudioFactoryManager(factory_manager);
+	//initAudioFactoryManager(factory_manager);
 
 
 	//factory_manager.Register("keychain-db", std::make_unique<IO::KeychainRawFactory>());
@@ -77,6 +77,8 @@ void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 
 
 }
+
+#include "zlib.h"
 
 int main(int argc, char *argv[])
 {
@@ -135,7 +137,7 @@ int main(int argc, char *argv[])
 		QList<JsonFileStruct> listFileStruct;
 
 
-		QFile file("audio.json");
+		QFile file("r3d.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
 			qInfo() << "Error to open file. \"" << file.fileName() << "\"";
@@ -146,7 +148,7 @@ int main(int argc, char *argv[])
 		ReadJsonFIle(json_str, listFileStruct);
 		if ( listFileStruct.empty())
 		{
-			qInfo() << "Error to read video.json file. Wrong syntax.";
+			qInfo() << "Error to read" << file.fileName() << "file. Wrong syntax.";
 			return -1;
 		}
 
@@ -182,7 +184,7 @@ int main(int argc, char *argv[])
 				IO::StandartRaw * standard_raw = new IO::StandartRaw(src_device);
 				standard_raw->setMaxFileSize(file_struct->getMaxFileSize());
 				standard_raw->setFooter(file_struct->getFooter(), file_struct->getFooterTailEndSize());
-				//standard_raw->setFooterOffsetSearchBlock(4, 4096);
+				standard_raw->setFooterOffsetSearchBlock(4, 4096);
 
 				raw_algorithm = standard_raw;
 				

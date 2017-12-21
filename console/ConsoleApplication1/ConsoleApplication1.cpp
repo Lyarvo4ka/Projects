@@ -68,98 +68,103 @@ void thread_read(IO::DiskDevice & disk, uint64_t position ,IO::Buffer & buffer ,
 /*                              RAID 0                                  */
 /************************************************************************/
 
-/*
-auto list_drives = IO::ReadPhysicalDrives();
-
-IO::DiskDevice source_1(list_drives.find_by_number(4));
-IO::DiskDevice source_2(list_drives.find_by_number(2));
-IO::DiskDevice target(list_drives.find_by_number(3));
-
-if (!source_1.Open(IO::OpenMode::OpenRead))
+void RAID0(uint32_t src_1 , uint32_t src_2 , uint32_t dst )
 {
-printf("Error open source 1\n");
-return -1;
+
+	auto list_drives = IO::ReadPhysicalDrives();
+
+	IO::DiskDevice source_1(list_drives.find_by_number(src_1));
+	IO::DiskDevice source_2(list_drives.find_by_number(src_2));
+	IO::DiskDevice target(list_drives.find_by_number(dst));
+
+	if (!source_1.Open(IO::OpenMode::OpenRead))
+	{
+	printf("Error open source 1\n");
+	return ;
+	}
+	if (!source_2.Open(IO::OpenMode::OpenRead))
+	{
+	printf("Error open source 2\n");
+	return ;
+	}
+	if (!target.Open(IO::OpenMode::OpenRead))
+	{
+	printf("Error open target\n");
+	return ;
+	}
+	auto target_size = target.Size();
+
+	if (target_size == 0)
+	{
+	printf("Error target size is 0\n");
+	return ;
+	}
+
+	uint32_t bytes_read1 = 0;
+	uint32_t bytes_read2 = 0;
+	uint32_t bytes_written = 0;
+	uint32_t read_size = 0;
+	uint32_t write_size = 0;
+
+	//uint64_t offset_sectors = 351080219;
+	//offset_sectors *= 512;
+
+	uint64_t offset = 0;
+	const uint32_t read_block_size = default_block_size;
+	IO::Buffer buffer1(read_block_size);
+	IO::Buffer buffer2(read_block_size);
+	IO::Buffer target_buffer(read_block_size * 2);
+
+
+	uint64_t write_offset = offset *2;
+	uint64_t source_size = source_1.Size();
+	if (source_size == 0)
+		return;
+	while ( true)
+	{
+		read_size = IO::calcBlockSize(offset, source_size, read_block_size);
+
+		if ( read_size == 0)
+			break;
+
+		source_1.setPosition(offset);
+		bytes_read1 = source_1.ReadBlock(buffer1.data, read_size);
+		if (bytes_read1 == 0)
+		{
+		printf("error read disk 1 offset =  %I64d\n", offset);
+		break;
+		}
+
+		source_2.setPosition(offset);
+		bytes_read2 = source_2.ReadBlock(buffer2.data, read_size);
+		if (bytes_read2 == 0)
+		{
+		printf("error read disk 2offset =  %I64d\n", offset);
+		break;
+		}
+
+
+		for (auto iSector = 0; iSector < read_size; iSector += default_sector_size)
+		{
+		memcpy(target_buffer.data + iSector * 2, buffer1.data + iSector, default_sector_size);
+		memcpy(target_buffer.data + iSector * 2 + default_sector_size, buffer2.data + iSector, default_sector_size);
+		}
+
+		write_size = read_size*2;
+		target.setPosition(write_offset);
+		bytes_written = target.WriteBlock(target_buffer.data, write_size);
+		if (bytes_written == 0)
+		{
+		printf("error write target offset =  %I64d\n", write_offset);
+		break;
+		}
+
+		offset += read_size;
+		write_offset += write_size;
+	}
 }
-if (!source_2.Open(IO::OpenMode::OpenRead))
-{
-printf("Error open source 2\n");
-return -1;
-}
-if (!target.Open(IO::OpenMode::OpenRead))
-{
-printf("Error open target\n");
-return -1;
-}
-auto target_size = target.Size();
-
-if (target_size == 0)
-{
-printf("Error target size is 0\n");
-return -1;
-}
-
-uint32_t bytes_read1 = 0;
-uint32_t bytes_read2 = 0;
-uint32_t bytes_written = 0;
-uint32_t read_size = 0;
-uint32_t write_size = 0;
-
-uint64_t offset = 0;
-const uint32_t read_block_size = default_block_size;
-IO::Buffer buffer1(read_block_size);
-IO::Buffer buffer2(read_block_size);
-IO::Buffer target_buffer(read_block_size * 2);
 
 
-uint64_t write_offset = 0;
-uint64_t source_size = source_1.Size();
-if (source_size == 0)
-return -1;
-while ( true)
-{
-read_size = IO::calcBlockSize(offset, source_size, read_block_size);
-
-if ( read_size == 0)
-break;
-
-source_1.setPosition(offset);
-bytes_read1 = source_1.ReadBlock(buffer1.data, read_size);
-if (bytes_read1 == 0)
-{
-printf("error read disk 1\n");
-break;
-}
-
-source_2.setPosition(offset);
-bytes_read2 = source_2.ReadBlock(buffer2.data, read_size);
-if (bytes_read2 == 0)
-{
-printf("error read disk 2\n");
-break;
-}
-
-
-for (auto iSector = 0; iSector < read_size; iSector += default_sector_size)
-{
-memcpy(target_buffer.data + iSector * 2, buffer1.data + iSector, default_sector_size);
-memcpy(target_buffer.data + iSector * 2 + default_sector_size, buffer2.data + iSector, default_sector_size);
-}
-
-write_size = read_size*2;
-target.setPosition(write_offset);
-bytes_written = target.WriteBlock(target_buffer.data, write_size);
-if (bytes_written == 0)
-{
-printf("error write target\n");
-break;
-}
-
-offset += read_size;
-write_offset += write_size;
-}
-
-
-*/
 
 //#include "IOLibrary/func_utils.h"
 //#include "IOLibrary/Finder.h"
@@ -388,25 +393,28 @@ const int number = 1;
 #include <cmath>
 int _tmain(int argc, TCHAR **argv)
 {
+	//RAID0(2, 3, 4);
+	
 	//IO::path_string tib_file = L"d:\\PaboTa\\43410\\src_file.bin";
-	IO::path_string tib_file = L"f:\\src_file.bin";
-	IO::path_string decompressed_file = L"e:\\43410\\dst_file.bin";
+	IO::path_string tib_file = L"d:\\Мои резервные копии\\Win8Backup\\Win8Backup_full_b1_s1_v1.tib";
+	IO::path_string decompressed_file = L"d:\\Мои резервные копии\\Win8Backup\\result.bin";
 
 	IO::AcronisDecompress acronis_decompressor(tib_file);
-	acronis_decompressor.saveToFile(decompressed_file, 0x481D2);
+	acronis_decompressor.saveToFile(decompressed_file);
 	int k = 1;
 	k = 2;
+	
+	
 
-/*
-	IO::File file(test_file);
-	if (!file.Open(IO::OpenMode::OpenRead))
-		return -1;
+	//IO::File file(tib_file);
+	//if (!file.Open(IO::OpenMode::OpenRead))
+	//	return -1;
 
-	IO::DataArray data_array(file.Size());
-	file.ReadData(data_array.data(), data_array.size());
+	//IO::DataArray data_array(file.Size());
+	//file.ReadData(data_array.data(), data_array.size());
 
-	const uint32_t def_size = 256 * 1024;
-	uint8_t dst_array[def_size];
+	//const uint32_t def_size = 256 * 1024;
+	//uint8_t dst_array[def_size];
 
 
 	//file.Open(IO::OpenMode::OpenRead);
@@ -416,16 +424,16 @@ int _tmain(int argc, TCHAR **argv)
 //////////////////////////////////////
 
 	
-	uLongf dst_size = def_size;
-	auto ires = uncompress(dst_array, &dst_size, data_array.data(), data_array.size());
+	//uLongf dst_size = def_size;
+	//auto ires = uncompress(dst_array, &dst_size, data_array.data(), data_array.size());
 
-	IO::path_string dst_name = L"d:\\PaboTa\\43410\\dst.bin";
-	IO::File dst_file(dst_name);
-	if (!dst_file.Open(IO::OpenMode::Create))
-		return -1;
-	dst_file.WriteData(dst_array , def_size);
-	dst_file.Close();
-*/
+	//IO::path_string dst_name = L"d:\\PaboTa\\43410\\dst.bin";
+	//IO::File dst_file(dst_name);
+	//if (!dst_file.Open(IO::OpenMode::Create))
+	//	return -1;
+	//dst_file.WriteData(dst_array , def_size);
+	//dst_file.Close();
+
 /////////////////////////////////////////////////////////
 
 
