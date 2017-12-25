@@ -1,7 +1,8 @@
 #pragma once
 #include <system_error>
-#include <windows.h>
+#include "windows.h"
 #include "constants.h"
+#include <string_view>
 
 namespace IO
 {
@@ -55,6 +56,21 @@ namespace IO
 	    debug,
 	    trace
 	};
+
+	//static constexpr auto ErrorLevelStr = std::string_view::make_literal_array(
+	//	"none",
+	//	"fatal",
+	//	"critical",
+	//	"error",
+	//	"warning",
+	//	"notice",
+	//	"information",
+	//	"debug",
+	//	"trace"
+
+	//);
+
+
 	class Error 
 	{
 	public:
@@ -81,6 +97,11 @@ namespace IO
 			return errMsg;
 		}
 	};
+
+	inline path_string FormatErrorString(ErrorLevel error_level, path_string error_type, path_string soucre_of_error, uint32_t error_code)
+	{
+		//auto error_level
+	}
 
 	class ErrorHandler
 	{
