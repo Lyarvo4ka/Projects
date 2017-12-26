@@ -100,7 +100,16 @@ namespace IO
 				bOpen_ = false;
 				auto err = ErrorHandler::get();
 				DWORD dwError = ::GetLastError();
+				//Error error();
 
+
+				//***********************
+				//1. (OpenMode::OpenRead)			Error opening the file for reading
+				//2. (OpenMode::OpenWrite)			Error opening file for writing
+				//3. (OpenMode::Create)				Error creating file
+				//4. (ReadData)						Error reading from file
+				//4. (WriteData)					Error writing to file
+				//***********************
 				int k = 1;
 				k = 2;
 				//auto device_err = make_error_condition(openModeToIOError(openMode));

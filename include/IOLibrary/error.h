@@ -57,6 +57,11 @@ namespace IO
 	    trace
 	};
 
+	constexpr ErrorLevel defaulErrorLevel()
+	{
+		return ErrorLevel::error;
+	}
+
 	//static constexpr auto ErrorLevelStr = std::string_view::make_literal_array(
 	//	"none",
 	//	"fatal",
@@ -73,12 +78,44 @@ namespace IO
 
 	class Error 
 	{
+	private:
+		uint32_t error_code_ = 0;
+		path_string error_message_;
+		ErrorLevel error_level_ = defaulErrorLevel();
+
 	public:
-		DWORD last() const
+		Error(uint32_t last_error)
+			: error_code_(last_error)
+		{
+			error_message_ = getMessage(error_code_);
+		}
+		Error(const path_string & error_message)
+		{
+			error_message_ = error_message;
+		}
+		Error(const path_string & error_message , uint32_t last_error)
+			: error_code_(last_error)
+		{
+			error_message_ = error_message;
+		}
+		void setErrorCode(uint32_t error_code)
+		{
+			error_code_ = error_code;
+		}
+		uint32_t getErrorCode() const
+		{
+			return error_code_;
+		}
+		path_string error_message() const 
+		{
+			return error_message_;
+		}
+
+		uint32_t last() const
 		{
 			return ::GetLastError();
 		}
-		std::wstring Error::getMessage(DWORD errorCode)
+		std::wstring Error::getMessage(uint32_t errorCode)
 		{
 			std::wstring errMsg;
 			DWORD dwFlg = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
