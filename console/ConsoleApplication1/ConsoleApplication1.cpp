@@ -396,11 +396,23 @@ int _tmain(int argc, TCHAR **argv)
 	//RAID0(2, 3, 4);
 	
 	//IO::path_string tib_file = L"d:\\PaboTa\\43410\\src_file.bin";
-	IO::path_string tib_file = L"d:\\Мои резервные копии\\Win8Backup\\Win8Backup_full_b1_s1_v1.tib";
-	IO::path_string decompressed_file = L"d:\\Мои резервные копии\\Win8Backup\\result.bin";
+	IO::path_string tib_file = L"g:\\src_file.bin";
+	IO::path_string dst_folder = L"g:\\decompress\\";
+	uint32_t counter = 0;
+	
 
 	IO::AcronisDecompress acronis_decompressor(tib_file);
-	acronis_decompressor.saveToFile(decompressed_file);
+	uint64_t offset = 0x92EE3FB7F;
+	do
+	{
+		auto file_name = IO::offsetToPath(dst_folder, offset,L".bin");
+		offset = acronis_decompressor.saveToFile(file_name,offset);
+
+	} while (offset != 0);
+
+	
+
+
 	int k = 1;
 	k = 2;
 	

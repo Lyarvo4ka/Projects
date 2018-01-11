@@ -495,7 +495,7 @@ namespace IO
 
 
 
-	const uint8_t EIGHT_FF[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF , 0x78 , 0x01 };
+	const uint8_t EIGHT_FF[] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF , 0x78 , 0xDA };
 	const uint32_t EIGHT_FF_SIZE = SIZEOF_ARRAY(EIGHT_FF);
 
 	const uint32_t ACRONIS_BLOCK_SIZE = 256 * 1024;
@@ -534,19 +534,19 @@ namespace IO
 
 		int decode_block(const uint64_t start_offset, const uint64_t end_offset, DataArray & dst_data_array);
 
-		void saveToFile(const path_string & target_file_name, const uint64_t start_offset = 0)
+		uint64_t saveToFile(const path_string & target_file_name, const uint64_t start_offset = 0)
 		{
 			if (!this->file_.Open(OpenMode::OpenRead))
 			{
 				wprintf(L"Error open source file.\n");
-				return;
+				return 0 ;
 			}
 
 			File target_file(target_file_name);
 			if (!target_file.Open(OpenMode::Create))
 			{
 				wprintf(L"Error Create target file.\n");
-				return;
+				return 0 ;
 			}
 
 			uint64_t target_offset = 0;
@@ -559,7 +559,7 @@ namespace IO
 				if (new_block_offset == offset)
 				{
 					wprintf(L"Not found next 0xFFFFFFFFFF\n");
-					return;
+					return 0 ;
 				}
 
 				DataArray decompressed_data(ACRONIS_BLOCK_SIZE);
@@ -567,7 +567,7 @@ namespace IO
 				if (iRes != 0)
 				{
 					wprintf(L"Can't decompress data.\n");
-					return;
+					return new_block_offset;
 				}
 				target_file.setPosition(target_offset);
 				if ( target_file.WriteData(decompressed_data.data(), decompressed_data.size()) == 0)
@@ -578,6 +578,7 @@ namespace IO
 
 				offset = new_block_offset + EIGHT_FF_SIZE - 2;
 			}
+			return offset;
 		}
 
 	};

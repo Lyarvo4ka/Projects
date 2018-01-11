@@ -1,7 +1,7 @@
 #include "utility.h"
 #include "zlib.h"
 
-inline int IO::AcronisDecompress::decode_block(const uint64_t start_offset, const uint64_t end_offset, DataArray & dst_data_array)
+int IO::AcronisDecompress::decode_block(const uint64_t start_offset, const uint64_t end_offset, DataArray & dst_data_array)
 {
 	auto read_block_size = end_offset - start_offset;
 	DataArray src_data_array(read_block_size);
