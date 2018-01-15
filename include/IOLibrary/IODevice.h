@@ -6,7 +6,7 @@
 
 namespace IO
 {
-
+	
 
 
 	inline uint32_t calcBlockSize(uint64_t current, uint64_t size, uint32_t block_size)
@@ -102,7 +102,7 @@ namespace IO
 				DWORD dwError = ::GetLastError();
 				//Error error();
 
-
+				auto error_string = Error::getDiskOrFileError(Error::DeviceErrors::kOpenRead, "file");
 				//***********************
 				//1. (OpenMode::OpenRead)			Error opening the file for reading
 				//2. (OpenMode::OpenWrite)			Error opening file for writing
@@ -282,6 +282,14 @@ namespace IO
 
 			}
 			bOpen_ = false;
+			//***********************
+			//1. (OpenMode::OpenRead)			Error opening the disk for reading
+			//2. (OpenMode::OpenWrite)			Error opening disk for writing
+			//3. (OpenMode::Create)				Error cannot open physical drive for creating
+			//4. (ReadData)						Error reading from disk
+			//4. (WriteData)					Error writing to disk
+			//***********************
+
 			return bOpen_;
 		}
 		void Close() override

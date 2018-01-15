@@ -4,6 +4,7 @@
 #include "IODevice.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+//#include <boost\variant\variant.hpp>
 
 namespace IO
 {

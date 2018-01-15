@@ -7,6 +7,46 @@
 namespace IO
 {
 
+	namespace Error
+	{
+		const std::string OpenRead_str = "Error opening the file for reading.";
+		const std::string OpenWrite_str = "Error opening file for writing.";
+		const std::string Create_str = "Error creating file.";
+		const std::string ReadData_str = "Error reading from file.";
+		const std::string WriteData_str = "Error writing to file.";
+		const std::string Unknown_str = "Unknown error";
+
+		enum class DeviceErrors
+		{
+			kOpenRead = 1,
+			kOpenWrite,
+			kCreate,
+			kReadData,
+			kWriteData,
+			unknown_err
+
+		};
+
+		static std::string getDiskOrFileError(const DeviceErrors error, const std::string & sourceName)
+		{
+			std::string resString;
+			switch (error)
+			{
+			case DeviceErrors::kOpenRead:
+				return "Error opening the " + sourceName + " for reading.";
+			case DeviceErrors::kOpenWrite:
+				return "Error opening " + sourceName + " for writing.";
+			case DeviceErrors::kCreate:
+				return "Error creating " + sourceName;
+			case DeviceErrors::kReadData:
+				return "Error reading from " + sourceName;
+			case DeviceErrors::kWriteData:
+				return "Error writing to " + sourceName;
+			default:
+				return Unknown_str;
+			}
+		}
+	}
 	template <class S>
 	class SingletonHolder
 		/// This is a helper template class for managing
@@ -204,96 +244,5 @@ namespace IO
 
 
 
-	//inline std::wstring ioDeviceErrorToString(const iodevice_error iodev_error)
-	//{
-	//	switch (iodev_error)
-	//	{
-	//	case iodevice_error::openRead_err:
-	//		return L"open read";
-	//	case iodevice_error::openWrite_err:
-	//		return L"open write";
-	//	case iodevice_error::create_err:
-	//		return L"create";
-	//	case iodevice_error::read_err:
-	//		return L"read";
-	//	case iodevice_error::write_err:
-	//		return L"write";
 
-	//	}
-	//	return L"Unknown error";
-
-	//}
-
-	enum class iodevice_error
-	{
-		openRead_err = 1,
-		openWrite_err,
-		create_err,
-		read_err,
-		write_err,
-		unknown_err
-
-	};
-
-	inline iodevice_error openModeToIOError(OpenMode open_mode)
-	{
-		switch (open_mode)
-		{
-		case IO::OpenMode::OpenRead:
-			return iodevice_error::openRead_err;
-		case IO::OpenMode::OpenWrite:
-			return iodevice_error::openWrite_err;
-		case IO::OpenMode::Create:
-			return iodevice_error::create_err;
-		default:
-			return iodevice_error::unknown_err;
-		}
-
-	}
-
-	//class DeviceErrorCategory :
-	//	public std::error_category
-	//{
-	//public:
-	//	virtual const char * name() const override
-	//	{
-	//		return "device error";
-	//	}
-	//	virtual std::string message(int ev) const override
-	//	{
-	//		switch (static_cast<iodevice_error>(ev))
-	//		{
-	//		case iodevice_error::openRead_err:
-	//			return "Error open read";
-	//		case iodevice_error::openWrite_err:
-	//			return "Error open write";
-	//		case iodevice_error::create_err:
-	//			return "Error create";
-	//		case iodevice_error::read_err:
-	//			return "Error read";
-	//		case iodevice_error::write_err:
-	//			return "Error write";
-	//		default:
-	//			return "(unrecognized error)";
-
-	//		}
-
-	//	}
-	//};
-
-	//const std::error_category & device_error_category()
-	//{
-	//	static DeviceErrorCategory instance;
-	//	return instance;
-	//}
-
-	//std::error_condition make_error_condition(iodevice_error e)
-	//{
-	//	return std::error_condition
-	//	(
-	//		static_cast<int>(e),
-	//		device_error_category()
-	//	);
-	//}
-	//std::error_category
 }
