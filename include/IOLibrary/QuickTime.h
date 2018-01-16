@@ -116,29 +116,42 @@ namespace IO
 		virtual ~QuickTimeRaw()
 		{
 		}
+		uint64_t readQtAtom(const uint64_t start_offset, qt_block_t & qt_block)
+		{
+			//qt_block_t qt_block = { 0 };
+			uint32_t bytes_read = 0;
+			/*uint64_t keyword_offset = start_offset;*/
+			uint64_t full_size = 0;
 
-		uint64_t readQtAtoms(const uint64_t start_offset, ListQtBlock & list_blocks)
+			this->setPosition(start_offset);
+			if (!(bytes_read = this->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t))))
+				return 0;
+
+			if (!isQuickTime(qt_block))
+				return 0;
+
+			if (qt_block.block_size == 0)
+				return 0;
+
+			toBE32((uint32_t &)qt_block.block_size);
+
+			uint64_t write_size = ReadQtAtomSize(qt_block, start_offset);
+			if (write_size == 0)
+				return 0;
+
+
+		}
+		uint64_t readAllQtAtoms(const uint64_t start_offset, ListQtBlock & list_blocks)
 		{
 			qt_block_t qt_block = { 0 };
 			uint32_t bytes_read = 0;
 			uint64_t keyword_offset = start_offset;
+			uint64_t write_size = 0;
 			uint64_t full_size = 0;
 
 			while (true)
 			{
-				this->setPosition(keyword_offset);
-				if (!(bytes_read = this->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t))))
-					 break;
-
-				if (!isQuickTime(qt_block))
-					break;
-
-				if (qt_block.block_size == 0)
-					break;
-
-				toBE32((uint32_t &)qt_block.block_size);
-
-				uint64_t write_size = ReadQtAtomSize(qt_block, keyword_offset);
+				write_size = readQtAtom(keyword_offset, qt_block);
 				if (write_size == 0)
 					break;
 
@@ -166,7 +179,7 @@ namespace IO
 		bool Specify(const uint64_t start_offset) override
 		{
 			keywords_.clear();
-			auto sizeKeywords = readQtAtoms(start_offset, keywords_);
+			auto sizeKeywords = readAllQtAtoms(start_offset, keywords_);
 			if (isPresentMainKeywords(keywords_))
 			{
 				sizeToWrite_ = sizeKeywords;
@@ -236,59 +249,15 @@ namespace IO
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
 			setBlockSize(32768);
-			ListQtBlock qt_list;
-			auto target_size = readQtAtoms(start_offset, qt_list);
-			qt_block_t mdat_block = { 0 };
-			uint64_t write_size = 0;
-			for (auto theKeyword : qt_list)
+			qt_block_t mdat_block = qt_block_t();
+
+			auto mdat_size = readQtAtom(start_offset, mdat_block);
+			if (mdat_size == 0)
 			{
-				if (memcmp(theKeyword.block_type, s_mdat, qt_keyword_size) == 0)
-				{
-					// write header data
-					appendToFile(target_file, start_offset, write_size + qt_block_struct_size);
-
-					auto data_array = IO::makeDataArray(getBlockSize());
-					uint64_t mdat_start = start_offset - getBlockSize();
-					uint32_t bytes_read = 0;
-					//while (mdat_start>0)
-					//{
-					//	setPosition(mdat_start);
-					//	bytes_read = ReadData(data_array->data(), data_array->size());
-					//	if ( bytes_read == 0)
-					//		break;
-
-					//	for (auto iSector = 0; iSector < data_array->size(); iSector += default_sector_size)
-					//	{
-					//		if (memcmp(data_array->data() + iSector, mdat_header_start, SIZEOF_ARRAY(mdat_header_start)) == 0)
-					//		{
-					//			uint32_t mdat2ndSize = theKeyword.block_size - qt_block_struct_size;
-					//			mdat_start = mdat_start + iSector;
-
-					//			uint64_t free_pos = mdat_start + mdat2ndSize;
-					//			qt_block_t free_block = { 0 };
-					//			setPosition(free_pos);
-					//			bytes_read = ReadData((ByteArray)&free_block, qt_block_struct_size);
-					//			if (memcmp(free_block.block_type, s_free, qt_keyword_size) == 0)
-					//			{
-					//				toBE32(free_block.block_size);
-					//				uint64_t main_offset = mdat_start + mdat2ndSize + free_block.block_size ;
-					//				if ( main_offset == start_offset)
-					//				{
-					//					appendToFile(target_file, mdat_start, mdat2ndSize + free_block.block_size);
-					//					return 0;
-					//				}
-					//			}
-
-					//		}
-					//	}
-					//	mdat_start -= getBlockSize();
-					//}
-
-					
-
-				}
-				write_size += theKeyword.block_size;
+				printf("mdat size is 0");
+				return 0;
 			}
+
 			return 0;
 		}
 		bool Specify(const uint64_t start_offset) override

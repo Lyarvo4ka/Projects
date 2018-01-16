@@ -23,9 +23,24 @@ namespace IO
 			kCreate,
 			kReadData,
 			kWriteData,
-			unknown_err
+			kUnknown
 
 		};
+
+		DeviceErrors OpenModeToError(IO::OpenMode open_mode)
+		{
+			switch (open_mode)
+			{
+			case IO::OpenMode::OpenRead:
+				return DeviceErrors::kOpenRead;
+			case IO::OpenMode::OpenWrite:
+				return DeviceErrors::kOpenWrite;
+			case IO::OpenMode::Create:
+				return DeviceErrors::kCreate;
+			default:
+				return DeviceErrors::kUnknown;
+			}
+		}
 
 		static std::string getDiskOrFileError(const DeviceErrors error, const std::string & sourceName)
 		{
@@ -196,6 +211,12 @@ namespace IO
 			wprintf(messageText.c_str());
 			wprintf(L"\n");
 		}
+		void showMessage(const std::string & messageText)
+		{
+			printf(messageText.c_str());
+			printf("\n");
+		}
+
 		//void showMessage(DWORD error_code , const std::wstring error_type, const std::wstring & sourceOfError)
 		//{
 		//	std::wstring output_text;

@@ -101,8 +101,11 @@ namespace IO
 				auto err = ErrorHandler::get();
 				DWORD dwError = ::GetLastError();
 				//Error error();
+				auto openmode_error = Error::OpenModeToError(openMode);
+				auto error_string = Error::getDiskOrFileError(openmode_error, "file");
+				err->showMessage(error_string);
 
-				auto error_string = Error::getDiskOrFileError(Error::DeviceErrors::kOpenRead, "file");
+				//printf(error_string.c_str());
 				//***********************
 				//1. (OpenMode::OpenRead)			Error opening the file for reading
 				//2. (OpenMode::OpenWrite)			Error opening file for writing
@@ -157,6 +160,8 @@ namespace IO
 
 			if (!::ReadFile(hFile_, data, read_size, &bytes_read, NULL))
 			{
+				auto err = ErrorHandler::get();
+				err->showMessage(Error::getDiskOrFileError(Error::DeviceErrors::kReadData, "file"));
 				auto dwError = ::GetLastError();
 				return 0;
 			}
@@ -175,10 +180,17 @@ namespace IO
 				bytes_to_read = calcBlockSize(data_pos, data_array.size(), transfer_size);
 				setPosition(position_);
 				if (!::ReadFile(hFile_, data_array.data() + data_pos, bytes_to_read, &bytes_read, NULL))
+				{
+					auto err = ErrorHandler::get();
+					err->showMessage(Error::getDiskOrFileError(Error::DeviceErrors::kReadData, "file"));
 					return 0;
+				}
 				if (bytes_read == 0)
+				{
+					auto err = ErrorHandler::get();
+					err->showMessage(Error::getDiskOrFileError(Error::DeviceErrors::kReadData, "file"));
 					return 0;
-
+				}
 				data_pos += bytes_read;
 				position_ += bytes_read;
 			}
@@ -197,7 +209,11 @@ namespace IO
 
 
 			if (!::WriteFile(hFile_, data, write_size, &bytes_written, NULL))
+			{
+				auto err = ErrorHandler::get();
+				err->showMessage(Error::getDiskOrFileError(Error::DeviceErrors::kWriteData, "file"));
 				return 0;
+			}
 			size_ += bytes_written;
 			return bytes_written;
 		};
