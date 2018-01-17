@@ -27,7 +27,7 @@ namespace IO
 
 		};
 
-		DeviceErrors OpenModeToError(IO::OpenMode open_mode)
+		inline DeviceErrors OpenModeToError(IO::OpenMode open_mode)
 		{
 			switch (open_mode)
 			{
@@ -42,7 +42,7 @@ namespace IO
 			}
 		}
 
-		static std::string getDiskOrFileError(const DeviceErrors error, const std::string & sourceName)
+		static inline std::string getDiskOrFileError(const DeviceErrors error, const std::string & sourceName)
 		{
 			std::string resString;
 			switch (error)
@@ -130,7 +130,7 @@ namespace IO
 
 	//);
 
-
+/*
 	class Error 
 	{
 	private:
@@ -189,7 +189,7 @@ namespace IO
 			return errMsg;
 		}
 	};
-
+*/
 	inline path_string FormatErrorString(ErrorLevel error_level, path_string error_type, path_string soucre_of_error, uint32_t error_code)
 	{
 		//auto error_level

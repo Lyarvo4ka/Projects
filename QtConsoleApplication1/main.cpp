@@ -55,6 +55,7 @@ void initAudioFactoryManager(IO::RawFactoryManager & factory_manager)
 
 void initFactoryMananger(IO::RawFactoryManager & factory_manager)
 {
+	factory_manager.Register("qt_fragment", std::make_unique<IO::QTFragmentRawFactory>());
 	//initVideoFactoryManager(factory_manager);
 	//initAudioFactoryManager(factory_manager);
 
@@ -137,7 +138,7 @@ int main(int argc, char *argv[])
 		QList<JsonFileStruct> listFileStruct;
 
 
-		QFile file("r3d.json");
+		QFile file("qt_fragment.json");
 		if (!file.open(QIODevice::ReadOnly))
 		{
 			qInfo() << "Error to open file. \"" << file.fileName() << "\"";
@@ -234,7 +235,7 @@ int main(int argc, char *argv[])
 
 
 						}
-						if (jump_size == 0)
+						//if (jump_size == 0)
 							jump_size = default_sector_size;
 						start_offset = header_offset + jump_size;
 

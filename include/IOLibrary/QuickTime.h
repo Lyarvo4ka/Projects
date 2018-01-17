@@ -250,12 +250,89 @@ namespace IO
 		{
 			setBlockSize(32768);
 			qt_block_t mdat_block = qt_block_t();
-
+			// read mdat size
 			auto mdat_size = readQtAtom(start_offset, mdat_block);
 			if (mdat_size == 0)
 			{
 				printf("mdat size is 0");
 				return 0;
+			}
+
+			uint64_t find_pos = start_offset + mdat_size;
+			find_pos /= default_sector_size;
+			++find_pos;
+			find_pos *= default_sector_size;
+
+			qt_block_t qt_block = qt_block_t();
+
+			//ByteArray pQtBlock = static_cast<ByteArray>(&qt_block);
+			ByteArray pQtBlock = (ByteArray)(&qt_block);
+
+			uint32_t bytesRead = 0;
+
+			DataArray data_array(this->getBlockSize());
+
+
+			while (find_pos < this->getSize())
+			{
+				this->setPosition(find_pos);
+				bytesRead = this->ReadData(data_array.data(), data_array.size());
+				if (bytesRead != data_array.size())
+					break;
+
+				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
+				{
+					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
+					if (cmp_keyword(*pQt_block, "ftyp"))
+					{
+						uint64_t ftyp_offset = find_pos + iSector;
+						qt_block_t ftyp_block = qt_block_t();
+						auto ftyp_size = readQtAtom(ftyp_offset, ftyp_block);
+						if (ftyp_size == 0)
+						{
+							printf("ftyp size is 0");
+							return 0;
+						}
+
+						uint64_t moov_offset = ftyp_offset + ftyp_size;
+						ZeroMemory(&qt_block, qt_block_struct_size);
+						setPosition(moov_offset);
+						bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
+						if (cmp_keyword(qt_block, "moov"))
+						{
+							qt_block_t moov_block = qt_block_t();
+							auto moov_size = readQtAtom(moov_offset, moov_block);
+							if (moov_size == 0)
+							{
+								printf("moov size is 0");
+								return 0;
+							}	
+
+
+							uint64_t free_offset = moov_offset + moov_size ;
+							setPosition(free_offset); 
+							ZeroMemory(&qt_block, qt_block_struct_size);
+							bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
+							if (cmp_keyword(qt_block, "free"))
+							{
+								qt_block_t free_block = qt_block_t();
+								auto free_size = readQtAtom(free_offset, free_block);
+
+								uint64_t header_size = ftyp_size + moov_size + free_size;
+								uint64_t target_size = appendToFile(target_file, ftyp_offset, header_size);
+								target_size += appendToFile(target_file, start_offset, mdat_size);
+								return target_size;
+							}
+						}
+
+					}
+				}
+
+				//bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
+				//if (bytesRead == 0)
+				//	break;
+				find_pos += data_array.size();
+
 			}
 
 			return 0;
@@ -265,7 +342,18 @@ namespace IO
 			return true;
 		}
 	};
+
 	
+	class QTFragmentRawFactory
+		: public RawFactory
+	{
+	public:
+		RawAlgorithm * createRawAlgorithm(IODevicePtr device) override
+		{
+			return new QTFragmentRaw(device);
+		}
+	};
+
 	struct DataEntropy
 	{
 		double entropy;
@@ -446,7 +534,7 @@ namespace IO
 			}
 			QuickTimeRaw qtRaw(target_file);
 			ListQtBlock qtList ;
-			auto file_size = qtRaw.readQtAtoms(0, qtList);
+			auto file_size = qtRaw.readAllQtAtoms(0, qtList);
 			return qtRaw.isPresentMainKeywords(qtList);
 
 		}
