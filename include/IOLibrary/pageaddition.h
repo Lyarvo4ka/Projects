@@ -183,3 +183,101 @@ public:
 	}
 
 };
+
+namespace IO
+{
+	void add2bytesInEachPage(const ByteArray source_data, const uint32_t source_size, ByteArray dst_data, uint32_t dst_size)
+	{
+		const uint32_t page_1110 = 1110;
+		const uint32_t page_1102 = 1102;
+		const uint8_t add_data[] = { 0xFF,0xFF };
+		const uint32_t add_size = SIZEOF_ARRAY(add_data);
+		const uint32_t pages_count = 15;
+		const uint32_t end_size = 24;
+
+		uint32_t src_offset = 0;
+		uint32_t dst_offset = 0;
+
+		memset(dst_data, 0xFF, dst_size);
+		memcpy(dst_data, source_data, page_1110);
+
+		for (uint32_t iPage = 0; iPage < pages_count; ++iPage)
+		{
+			src_offset = page_1110 + iPage * page_1102;
+			dst_offset = page_1110 + iPage * (page_1102 + add_size);
+			memcpy(dst_data + dst_offset, source_data + src_offset, page_1102);
+
+		}
+		src_offset = page_1110 + pages_count* page_1102;
+		dst_offset = page_1110 + pages_count* (page_1102 + add_size);
+		memcpy(dst_data + dst_offset, source_data + src_offset, end_size);
+
+	}
+	void add2BytesInFile(const path_string & src_name, const path_string & dst_name)
+	{
+		const uint32_t SourcePageSize = 17664;
+		const uint32_t countBlock = 15;
+		const uint32_t SourceBlockSize = SourcePageSize * countBlock;	//264660(bytes)
+
+		const uint32_t DstPageSize = SourcePageSize + 30 + 2;
+		const uint32_t DstBlockSize = DstPageSize* countBlock;
+
+
+		IO::File src_file(src_name);
+		if (!src_file.Open(IO::OpenMode::OpenRead))
+			return;
+
+		IO::File dst_file(dst_name);
+		if (!dst_file.Open(IO::OpenMode::Create))
+			return;
+
+
+		DataArray src_block(SourceBlockSize);
+		DataArray dst_block(DstBlockSize);
+
+		uint32_t src_offset = 0;
+		uint32_t dst_offset = 0;
+
+		uint64_t src_pos = 0;
+		uint64_t dst_pos = 0;
+
+		uint32_t bytesRead = 0;
+		uint32_t bytesWritten = 0;
+		
+		while (true)
+		{
+			// Read file
+			src_file.setPosition(src_pos);
+			bytesRead = src_file.ReadData(src_block.data(), src_block.size());
+			if (bytesRead == 0)
+				break;
+			
+
+		
+			for (uint32_t iPage = 0; iPage < countBlock; ++iPage)
+			{
+				src_offset = SourcePageSize * iPage;
+				dst_offset = DstPageSize * iPage;
+				auto src_ptr = src_block.data() + src_offset;
+				auto dst_ptr = dst_block.data() + dst_offset;
+				add2bytesInEachPage(src_ptr, SourcePageSize, dst_ptr, DstPageSize);
+
+			}
+			// Write file
+			dst_file.setPosition(dst_pos);
+			bytesWritten = dst_file.WriteData(dst_block.data(), dst_block.size());
+			if (bytesWritten == 0)
+				break;
+
+			src_pos += bytesRead;
+			dst_pos += bytesWritten;
+		}
+		src_file.Close();
+		dst_file.Close();
+
+	}
+
+	//void add2bytesInEachPage(const DataArray & src_block, DataArray & dst_block)
+
+}
+

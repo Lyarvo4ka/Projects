@@ -1,7 +1,7 @@
 #pragma once
 
 
-
+ 
 #include "constants.h"
 #include "iofs.h"
 #include "StandartRaw.h"
@@ -223,6 +223,7 @@ namespace IO
 			return write_size;
 		}
 	};
+
 
 	class QuickTimeRawFactory
 		: public RawFactory

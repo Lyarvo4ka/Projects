@@ -389,32 +389,100 @@ const int number = 1;
 #include "IOLibrary\jpeg.h"
 
 #include <zlib\zlib.h>
+#include "IOLibrary\pageaddition.h"
 
 #include <cmath>
 int _tmain(int argc, TCHAR **argv)
 {
+
+	if (argc != 3)
+	{
+		wprintf(L"Invalid params.");
+		return -1;
+	}
+	IO::path_string src_folder = argv[1];
+	IO::path_string dst_folder = argv[2];
+
+
+	IO::Finder finder;
+	finder.add_extension(L".dump");
+	finder.FindFiles(src_folder);
+	auto fileList = finder.getFiles();
+	for (auto & theFile : fileList)
+	{
+		boost::filesystem::path src_name(theFile);
+		auto folder_path = src_name.parent_path().generic_wstring();
+		auto only_name_path = src_name.stem().generic_wstring();
+		auto ext = src_name.extension().generic_wstring();
+		auto new_name = dst_folder + only_name_path + ext;
+		IO::add2BytesInFile(theFile, new_name);
+	}
+
+	/*
+	IO::Finder finder;
+
+	finder.add_extension(L".mov");
+	finder.add_extension(L".mp4");
+	finder.add_extension(L".mpg");
+	finder.add_extension(L".mpeg");
+	finder.add_extension(L".mts");
+	finder.add_extension(L".avi");
+	finder.add_extension(L".vob");
+	finder.FindFiles(L"e:\\Root\\");
+	auto fileList = finder.getFiles();
+
+	for (auto & theFile : fileList)
+	{
+	//IO::testSignatureMP4(theFile);
+		IO::testHeaderToBadSectorKeyword(theFile);
+	//	IO::TestEndJpg(theFile);
+	}
+
+	*/
+
+
+	//IO::File file(src_file);
+	//if (!file.Open(IO::OpenMode::OpenRead))
+	//	return -1;
+
+	//IO::File write_file(dst_file);
+	//if (!write_file.Open(IO::OpenMode::Create))
+	//	return -1;
+
+	//IO::DataArray src_data(file.Size());
+	//file.ReadData(src_data.data(), src_data.size());
+
+	//IO::DataArray dst_data(17664 + 30 + 2);
+	//add2bytesInEachPage(src_data, dst_data);
+	//write_file.WriteData(dst_data.data(), dst_data.size());
+
+	//file.Close();
+	//write_file.Close();
+
 	//RAID0(2, 3, 4);
 	
+
+
 	//IO::path_string tib_file = L"d:\\PaboTa\\43410\\src_file.bin";
-	IO::path_string tib_file = L"g:\\src_file.bin";
-	IO::path_string dst_folder = L"g:\\decompress\\";
-	uint32_t counter = 0;
-	
+	//IO::path_string tib_file = L"g:\\src_file.bin";
+	//IO::path_string dst_folder = L"g:\\decompress\\";
+	//uint32_t counter = 0;
+	//
 
-	IO::AcronisDecompress acronis_decompressor(tib_file);
-	uint64_t offset = 0x92EE3FB7F;
-	do
-	{
-		auto file_name = IO::offsetToPath(dst_folder, offset,L".bin");
-		offset = acronis_decompressor.saveToFile(file_name,offset);
+	//IO::AcronisDecompress acronis_decompressor(tib_file);
+	//uint64_t offset = 0x92EE3FB7F;
+	//do
+	//{
+	//	auto file_name = IO::offsetToPath(dst_folder, offset,L".bin");
+	//	offset = acronis_decompressor.saveToFile(file_name,offset);
 
-	} while (offset != 0);
+	//} while (offset != 0);
 
-	
+	//
 
 
-	int k = 1;
-	k = 2;
+	//int k = 1;
+	//k = 2;
 	
 	
 
@@ -529,25 +597,7 @@ int _tmain(int argc, TCHAR **argv)
 
 	//IO::Join1Cv8(bad, good, result);
 
-/*
-	IO::Finder finder;
 
-	finder.add_extension(L".mov");
-	finder.add_extension(L".mp4");
-	finder.add_extension(L".mpg");
-	finder.add_extension(L".mts");
-	finder.add_extension(L".avi");
-	finder.FindFiles(L"e:\\43268\\");
-	auto fileList = finder.getFiles();
-
-	for (auto & theFile : fileList)
-	{
-		IO::testSignatureMP4(theFile);
-	//	//IO::testHeaderToBadSectorKeyword(theFile);
-	//	IO::TestEndJpg(theFile);
-	}
-
-*/
 
 	//auto src_file = L"d:\\incoming\\41914\\41914.img";
 	//IO::calcEntropyForFile("d:\\incoming\\42757\\example\\GOPR1276.LRV", 32768);
