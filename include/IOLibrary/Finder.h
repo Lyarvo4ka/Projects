@@ -16,6 +16,52 @@
 
 namespace IO
 {
+	inline int NotNullPosFromEnd(const ByteArray data, const uint32_t size)
+	{
+		int pos = size - 1;
+		while (pos >= 0)
+		{
+			if (data[pos] != 0)
+				return (size - pos);
+			--pos;
+		}
+		return 0;
+	}
+
+	inline void removeNullsFromEndFile(const path_string & file_path, uint32_t sizeToTest = default_block_size)
+	{
+		File file(file_path);
+		if (!file.Open(OpenMode::OpenWrite))
+		{
+			wprintf_s(L"Error open file.\n");
+			return;
+		}
+		//sizeToTest = default_block_size;
+		auto file_size = file.Size();
+		DataArray buffer(sizeToTest);
+	//	if (file_size >= sizeToTest)
+		{
+			uint64_t lastBlock = sizeToTest;
+			if (file_size < sizeToTest)
+				lastBlock = file_size;
+
+			uint64_t offset = file_size - lastBlock;
+			file.setPosition(offset);
+			auto bytesRead = file.ReadData(buffer.data(), lastBlock);
+			if (bytesRead == lastBlock)
+			{
+				int not_null = NotNullPosFromEnd(buffer.data() , lastBlock);
+				if (not_null > 0)
+				{
+					uint64_t new_size = file_size - not_null + 1;
+					file.setSize(new_size);
+					wprintf_s(L"FIle size has been changed %s.\n", file_path.c_str());
+				}
+			}
+		}
+	
+	}
+
 	class Finder
 	{
 	private:
@@ -170,10 +216,13 @@ namespace IO
 						path_string file_ext = tmp_path.extension().wstring();
 
 						auto full_name = addBackSlash(current_folder) + file_name;
-						//files_.push_back(full_name);
+						
 
-						if ( list_ext_.empty())
+						if (list_ext_.empty())
+						{
 							folder_node->AddFile(file_name);
+							files_.push_back(full_name);
+						}
 						else
 						if (isPresentInList(file_ext, this->list_ext_))
 						{

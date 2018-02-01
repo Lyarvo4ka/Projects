@@ -11,6 +11,8 @@
 
 #include <boost\filesystem.hpp>
 
+
+
 namespace IO
 {
 
@@ -118,9 +120,7 @@ namespace IO
 		}
 		uint64_t readQtAtom(const uint64_t start_offset, qt_block_t & qt_block)
 		{
-			//qt_block_t qt_block = { 0 };
 			uint32_t bytes_read = 0;
-			/*uint64_t keyword_offset = start_offset;*/
 			uint64_t full_size = 0;
 
 			this->setPosition(start_offset);
@@ -237,7 +237,34 @@ namespace IO
 
 	const uint8_t mdat_header_start[] = { 0x00, 0x00, 0x00, 0x02, 0x09, 0x10, 0x00, 0x00 };
 
-	class QTFragmentRaw
+
+/*
+{
+  "qt_fragment":
+  { 
+		"header":
+          [
+            {
+                "textdata":"mdat",
+                "offset": 4
+            }            
+            
+          ],
+          "extension": ".mov"
+	}
+}
+*/
+/*
+	Восстановление фрагментированных файлов QuickTime.
+	1. Ищем сигнатуру "mdat".
+	2. Отпрыгиваем на размер который хранится в заголовке "mdat" (может быть 64bit).
+	3. Выравниваем по размеру сектора. И ищем сигнатуру "ftyp".
+	4. После "ftyp" должна бить сигнатура "moov", а "free" не обьязательно.
+	5. Сохраняем сначала структуры "ftyp", "moov", "free", а потом "mdat".
+*/
+
+
+	class QTFragmentRaw 
 		: public QuickTimeRaw
 	{
 	public:
@@ -255,14 +282,12 @@ namespace IO
 			auto mdat_size = readQtAtom(start_offset, mdat_block);
 			if (mdat_size == 0)
 			{
-				printf("mdat size is 0");
+				LOG_MESSAGE("mdat size is 0");
 				return 0;
 			}
-
 			uint64_t find_pos = start_offset + mdat_size;
-			find_pos /= default_sector_size;
-			++find_pos;
-			find_pos *= default_sector_size;
+			find_pos = alingToSector(find_pos);
+			find_pos += this->getSectorSize();
 
 			qt_block_t qt_block = qt_block_t();
 

@@ -117,83 +117,7 @@ namespace IO
 		return ErrorLevel::error;
 	}
 
-	//static constexpr auto ErrorLevelStr = std::string_view::make_literal_array(
-	//	"none",
-	//	"fatal",
-	//	"critical",
-	//	"error",
-	//	"warning",
-	//	"notice",
-	//	"information",
-	//	"debug",
-	//	"trace"
 
-	//);
-
-/*
-	class Error 
-	{
-	private:
-		uint32_t error_code_ = 0;
-		path_string error_message_;
-		ErrorLevel error_level_ = defaulErrorLevel();
-
-	public:
-		Error(uint32_t last_error)
-			: error_code_(last_error)
-		{
-			error_message_ = getMessage(error_code_);
-		}
-		Error(const path_string & error_message)
-		{
-			error_message_ = error_message;
-		}
-		Error(const path_string & error_message , uint32_t last_error)
-			: error_code_(last_error)
-		{
-			error_message_ = error_message;
-		}
-		void setErrorCode(uint32_t error_code)
-		{
-			error_code_ = error_code;
-		}
-		uint32_t getErrorCode() const
-		{
-			return error_code_;
-		}
-		path_string error_message() const 
-		{
-			return error_message_;
-		}
-
-		uint32_t last() const
-		{
-			return ::GetLastError();
-		}
-		std::wstring Error::getMessage(uint32_t errorCode)
-		{
-			std::wstring errMsg;
-			DWORD dwFlg = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-
-			LPWSTR lpMsgBuf = 0;
-			if (FormatMessageW(dwFlg, 0, errorCode, 0, (LPWSTR)& lpMsgBuf, 0, NULL))
-				errMsg = lpMsgBuf;
-
-//				UnicodeConverter::toUTF8(lpMsgBuf, errMsg);
-//#else
-//			LPTSTR lpMsgBuf = 0;
-//			if (FormatMessageA(dwFlg, 0, errorCode, 0, (LPTSTR)& lpMsgBuf, 0, NULL))
-//				errMsg = lpMsgBuf;
-//#endif
-			LocalFree(lpMsgBuf);
-			return errMsg;
-		}
-	};
-*/
-	inline path_string FormatErrorString(ErrorLevel error_level, path_string error_type, path_string soucre_of_error, uint32_t error_code)
-	{
-		//auto error_level
-	}
 
 	class ErrorHandler
 	{
@@ -217,52 +141,92 @@ namespace IO
 			printf("\n");
 		}
 
-		//void showMessage(DWORD error_code , const std::wstring error_type, const std::wstring & sourceOfError)
-		//{
-		//	std::wstring output_text;
-
-		//	if (!error_type.empty())
-		//	{
-		//		output_text += error_type;
-		//		output_text += L" ";
-		//	}
-
-		//	if (!sourceOfError.empty())
-		//	{
-		//		output_text += sourceOfError;
-		//		output_text += L" ";
-
-		//	}
-
-		//	Error error;
-		//	auto lastError_string = error.getMessage(error_code);
-		//	if (!lastError_string.empty())
-		//		output_text += lastError_string;
-
-		//	wprintf(L"%s (code #%d)\n", lastError_string , error_code);
-		//}
-		//void showMessage(std::error_condition err_cond, const std::wstring & sourceOfError)
-		//{
-		//	auto err_msg = err_cond.message();
-		//	std::wstring output_text(err_msg.begin(), err_msg.end());
-
-		//	if (!sourceOfError.empty())
-		//	{
-		//		output_text += sourceOfError;
-		//		output_text += L" ";
-
-		//	}
-
-		//	Error error;
-		//	auto lastError_string = error.getMessage(error.last());
-		//		if (!lastError_string.empty())
-		//		output_text += lastError_string;
-
-		//	wprintf(L"%s (code #%d)\n", lastError_string, error.last());
-		//}
 
 	};
 
+	static void LOG_MESSAGE(const std::wstring & messageText)
+	{
+		ErrorHandler::get()->showMessage(messageText);
+	}
+	static void LOG_MESSAGE(const std::string & messageText)
+	{
+		ErrorHandler::get()->showMessage(messageText);
+	}
+
+
+	//static constexpr auto ErrorLevelStr = std::string_view::make_literal_array(
+	//	"none",
+	//	"fatal",
+	//	"critical",
+	//	"error",
+	//	"warning",
+	//	"notice",
+	//	"information",
+	//	"debug",
+	//	"trace"
+
+	//);
+
+	/*
+	class Error
+	{
+	private:
+	uint32_t error_code_ = 0;
+	path_string error_message_;
+	ErrorLevel error_level_ = defaulErrorLevel();
+
+	public:
+	Error(uint32_t last_error)
+	: error_code_(last_error)
+	{
+	error_message_ = getMessage(error_code_);
+	}
+	Error(const path_string & error_message)
+	{
+	error_message_ = error_message;
+	}
+	Error(const path_string & error_message , uint32_t last_error)
+	: error_code_(last_error)
+	{
+	error_message_ = error_message;
+	}
+	void setErrorCode(uint32_t error_code)
+	{
+	error_code_ = error_code;
+	}
+	uint32_t getErrorCode() const
+	{
+	return error_code_;
+	}
+	path_string error_message() const
+	{
+	return error_message_;
+	}
+
+	uint32_t last() const
+	{
+	return ::GetLastError();
+	}
+	std::wstring Error::getMessage(uint32_t errorCode)
+	{
+	std::wstring errMsg;
+	DWORD dwFlg = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+	LPWSTR lpMsgBuf = 0;
+	if (FormatMessageW(dwFlg, 0, errorCode, 0, (LPWSTR)& lpMsgBuf, 0, NULL))
+	errMsg = lpMsgBuf;
+
+	//				UnicodeConverter::toUTF8(lpMsgBuf, errMsg);
+	//#else
+	//			LPTSTR lpMsgBuf = 0;
+	//			if (FormatMessageA(dwFlg, 0, errorCode, 0, (LPTSTR)& lpMsgBuf, 0, NULL))
+	//				errMsg = lpMsgBuf;
+	//#endif
+	LocalFree(lpMsgBuf);
+	return errMsg;
+	}
+	};
+	*/
 
 
 

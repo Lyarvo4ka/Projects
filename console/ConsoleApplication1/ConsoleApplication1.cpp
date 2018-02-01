@@ -394,7 +394,18 @@ const int number = 1;
 #include <cmath>
 int _tmain(int argc, TCHAR **argv)
 {
+	IO::Finder finder;
+	finder.FindFiles(L"d:\\PaboTa\\43582\\FOUND.000\\");
+	auto fileList = finder.getFiles();
 
+	for (auto & theFile : fileList)
+	{
+		//IO::testSignatureMP4(theFile);
+		IO::removeNullsFromEndFile(theFile);
+		//	IO::TestEndJpg(theFile);
+	}
+
+/*
 	if (argc != 3)
 	{
 		wprintf(L"Invalid params.");
@@ -417,7 +428,7 @@ int _tmain(int argc, TCHAR **argv)
 		auto new_name = dst_folder + only_name_path + ext;
 		IO::add2BytesInFile(theFile, new_name);
 	}
-
+*/
 	/*
 	IO::Finder finder;
 

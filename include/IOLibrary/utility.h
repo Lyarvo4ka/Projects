@@ -584,4 +584,18 @@ namespace IO
 
 	};
 
+
+	inline uint64_t alingToValue(const uint64_t theValue, const uint32_t toValue)
+	{
+		if (toValue == 0)
+			return 0;
+		uint64_t resValue = theValue / toValue;
+		resValue *= toValue;
+		return resValue;
+	}
+
+	inline uint64_t alingToSector(const uint64_t offset, const uint32_t sector_size = default_sector_size)
+	{
+		return alingToValue(offset, sector_size);
+	}
 };
