@@ -255,6 +255,8 @@ namespace IO
 
 	//bad sector
 	const char bad_sector_sign[] = { 0x62 , 0x61 , 0x64 , 0x20 , 0x73 , 0x65 , 0x63 , 0x74 , 0x6F , 0x72 };
+	const char nulls_sign[] = { 0x00 , 0x00 , 0x00 , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00  , 0x00 };
+	const uint32_t nulls_sing_size = SIZEOF_ARRAY(nulls_sign);
 	const uint32_t bad_sector_sign_size = SIZEOF_ARRAY(bad_sector_sign);
 
 	inline void testHeaderToBadSectorKeyword(const path_string & file_name)
@@ -283,6 +285,31 @@ namespace IO
 
 	}
 
+	inline void testHeaderToNullsKeywords(const path_string & file_name)
+	{
+		const uint32_t offset = 0;
+		uint8_t buff[nulls_sing_size];
+		ZeroMemory(buff, nulls_sing_size);
+
+		auto test_file = makeFilePtr(file_name);
+
+		if (test_file->Open(IO::OpenMode::OpenRead))
+		{
+			if (test_file->Size() >= nulls_sing_size)
+			{
+				test_file->setPosition(offset);
+				test_file->ReadData(buff, nulls_sing_size);
+				test_file->Close();
+
+				if (memcmp(buff, nulls_sign, nulls_sing_size) == 0)
+				{
+					boost::filesystem::rename(file_name, file_name + L".bad_file");
+				}
+			}
+
+		}
+
+	}
 	inline void TestEndJpg(const IO::path_string & filePath)
 	{
 		auto test_file = IO::makeFilePtr(filePath);

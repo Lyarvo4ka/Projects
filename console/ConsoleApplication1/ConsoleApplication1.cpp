@@ -395,13 +395,14 @@ const int number = 1;
 int _tmain(int argc, TCHAR **argv)
 {
 	IO::Finder finder;
-	finder.FindFiles(L"d:\\PaboTa\\43582\\FOUND.000\\");
+	finder.FindFiles(L"e:\\43456\\!Problem\\");
 	auto fileList = finder.getFiles();
 
 	for (auto & theFile : fileList)
 	{
 		//IO::testSignatureMP4(theFile);
-		IO::removeNullsFromEndFile(theFile);
+		//IO::removeNullsFromEndFile(theFile);
+		IO::testHeaderToNullsKeywords(theFile);
 		//	IO::TestEndJpg(theFile);
 	}
 
@@ -429,7 +430,7 @@ int _tmain(int argc, TCHAR **argv)
 		IO::add2BytesInFile(theFile, new_name);
 	}
 */
-	/*
+/*	
 	IO::Finder finder;
 
 	finder.add_extension(L".mov");
@@ -448,8 +449,8 @@ int _tmain(int argc, TCHAR **argv)
 		IO::testHeaderToBadSectorKeyword(theFile);
 	//	IO::TestEndJpg(theFile);
 	}
-
-	*/
+*/
+	
 
 
 	//IO::File file(src_file);
