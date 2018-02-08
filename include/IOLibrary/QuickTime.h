@@ -272,7 +272,41 @@ namespace IO
 			: QuickTimeRaw(device)
 		{
 		}
+		uint64_t find_ftyp(const uint64_t offset , qt_block_t & ftyp_block)
+		{
+			uint64_t ftyp_pos = offset;
+			DataArray data_array(this->getBlockSize());
+			uint32_t bytesRead = 0;
+			ZeroMemory(ftyp_block, qt_block_struct_size);
 
+			while (ftyp_pos < this->getSize())
+			{
+				this->setPosition(ftyp_pos);
+				bytesRead = this->ReadData(data_array.data(), data_array.size());
+				if (bytesRead != data_array.size())
+					break;
+
+				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
+				{
+					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
+					if (cmp_keyword(*pQt_block, "ftyp"))
+					{
+						uint64_t ftyp_offset = ftyp_pos + iSector;
+						auto ftyp_size = readQtAtom(ftyp_offset, ftyp_block);
+						if (ftyp_size == 0)
+						{
+							ftyp_block.block_size = 0;
+							LOG_MESSAGE("ftyp size is 0");
+							return offset;
+						}
+						return ftyp_pos + iSector;
+					}
+				}
+				ftyp_pos += data_array.size();
+			}
+			return offset;
+
+		}
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
@@ -298,66 +332,48 @@ namespace IO
 
 			DataArray data_array(this->getBlockSize());
 
+			uint64_t ftyp_offset = find_ftyp(find_pos, qt_block);
+			if (qt_block.block_size == 0)
+				return 0;
 
-			while (find_pos < this->getSize())
+
+			uint64_t moov_offset = ftyp_offset + ftyp_size;
+			ZeroMemory(&qt_block, qt_block_struct_size);
+			setPosition(moov_offset);
+			bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
+			if (cmp_keyword(qt_block, "moov"))
 			{
-				this->setPosition(find_pos);
-				bytesRead = this->ReadData(data_array.data(), data_array.size());
-				if (bytesRead != data_array.size())
-					break;
-
-				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
+				qt_block_t moov_block = qt_block_t();
+				auto moov_size = readQtAtom(moov_offset, moov_block);
+				if (moov_size == 0)
 				{
-					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
-					if (cmp_keyword(*pQt_block, "ftyp"))
-					{
-						uint64_t ftyp_offset = find_pos + iSector;
-						qt_block_t ftyp_block = qt_block_t();
-						auto ftyp_size = readQtAtom(ftyp_offset, ftyp_block);
-						if (ftyp_size == 0)
-						{
-							printf("ftyp size is 0");
-							return 0;
-						}
-
-						uint64_t moov_offset = ftyp_offset + ftyp_size;
-						ZeroMemory(&qt_block, qt_block_struct_size);
-						setPosition(moov_offset);
-						bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
-						if (cmp_keyword(qt_block, "moov"))
-						{
-							qt_block_t moov_block = qt_block_t();
-							auto moov_size = readQtAtom(moov_offset, moov_block);
-							if (moov_size == 0)
-							{
-								printf("moov size is 0");
-								return 0;
-							}	
+					printf("moov size is 0");
+					return 0;
+				}	
 
 
-							uint64_t free_offset = moov_offset + moov_size ;
-							setPosition(free_offset); 
-							ZeroMemory(&qt_block, qt_block_struct_size);
-							bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
-							if (cmp_keyword(qt_block, "free"))
-							{
-								qt_block_t free_block = qt_block_t();
-								auto free_size = readQtAtom(free_offset, free_block);
+				uint64_t free_offset = moov_offset + moov_size ;
+				setPosition(free_offset); 
+				ZeroMemory(&qt_block, qt_block_struct_size);
+				bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
+				if (cmp_keyword(qt_block, "free"))
+				{
+					qt_block_t free_block = qt_block_t();
+					auto free_size = readQtAtom(free_offset, free_block);
 
-								uint64_t header_size = ftyp_size + moov_size + free_size;
-								uint64_t target_size = appendToFile(target_file, ftyp_offset, header_size);
-								target_size += appendToFile(target_file, start_offset, mdat_size);
-								return target_size;
-							}
-						}
-
-					}
+					uint64_t header_size = ftyp_size + moov_size + free_size;
+					uint64_t target_size = appendToFile(target_file, ftyp_offset, header_size);
+					target_size += appendToFile(target_file, start_offset, mdat_size);
+					return target_size;
 				}
+			}
+
+		}
+	}
 
 				//bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
 				//if (bytesRead == 0)
 				//	break;
-				find_pos += data_array.size();
 
 			}
 
