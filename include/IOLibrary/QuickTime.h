@@ -254,16 +254,52 @@ namespace IO
 	}
 }
 */
-/*
+
+	class QtHandle
+	{
+		qt_block_t qtBlock_ = qt_block_t();
+		uint64_t offset_ = 0;
+		uint64_t size_ = 0;
+		bool valid_ = false;
+	public:
+		qt_block_t * getBlock()
+		{
+			return &qtBlock_;
+		}
+		void setOffset(const uint64_t offset)
+		{
+			offset_ = offset;
+		}
+		uint64_t offset() const
+		{
+			return offset_;
+		}
+		void setSize(const uint64_t size)
+		{
+			size_ = size;
+		}
+		uint64_t size() const
+		{
+			return size_;
+		}
+		void setValid()
+		{
+			valid_ = true;
+		}
+		bool isValid() const
+		{
+			return valid_;
+		}
+	};
+
+	/*
 	Восстановление фрагментированных файлов QuickTime.
 	1. Ищем сигнатуру "mdat".
 	2. Отпрыгиваем на размер который хранится в заголовке "mdat" (может быть 64bit).
 	3. Выравниваем по размеру сектора. И ищем сигнатуру "ftyp".
 	4. После "ftyp" должна бить сигнатура "moov", а "free" не обьязательно.
 	5. Сохраняем сначала структуры "ftyp", "moov", "free", а потом "mdat".
-*/
-
-
+	*/
 	class QTFragmentRaw 
 		: public QuickTimeRaw
 	{
@@ -272,12 +308,13 @@ namespace IO
 			: QuickTimeRaw(device)
 		{
 		}
-		uint64_t find_ftyp(const uint64_t offset , qt_block_t & ftyp_block)
+
+		QtHandle find_ftyp(const uint64_t offset)
 		{
+			QtHandle ftyp_block = QtHandle();
 			uint64_t ftyp_pos = offset;
 			DataArray data_array(this->getBlockSize());
 			uint32_t bytesRead = 0;
-			ZeroMemory(ftyp_block, qt_block_struct_size);
 
 			while (ftyp_pos < this->getSize())
 			{
@@ -291,20 +328,19 @@ namespace IO
 					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
 					if (cmp_keyword(*pQt_block, "ftyp"))
 					{
-						uint64_t ftyp_offset = ftyp_pos + iSector;
-						auto ftyp_size = readQtAtom(ftyp_offset, ftyp_block);
-						if (ftyp_size == 0)
+						ftyp_block.setOffset(ftyp_pos + iSector);
+						ftyp_block.setSize(readQtAtom(ftyp_block.offset(), *ftyp_block.getBlock()));
+						if (ftyp_block.size() == 0)
 						{
-							ftyp_block.block_size = 0;
 							LOG_MESSAGE("ftyp size is 0");
-							return offset;
+							return QtHandle();
 						}
-						return ftyp_pos + iSector;
+						return ftyp_block;
 					}
 				}
 				ftyp_pos += data_array.size();
 			}
-			return offset;
+			return QtHandle();
 
 		}
 
@@ -332,8 +368,8 @@ namespace IO
 
 			DataArray data_array(this->getBlockSize());
 
-			uint64_t ftyp_offset = find_ftyp(find_pos, qt_block);
-			if (qt_block.block_size == 0)
+			auto ftyp_atom = find_ftyp(find_pos);
+			if (!ftyp_atom.isValid())
 				return 0;
 
 

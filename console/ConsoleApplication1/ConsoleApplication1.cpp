@@ -392,6 +392,42 @@ const int number = 1;
 #include "IOLibrary\pageaddition.h"
 
 #include <cmath>
+
+//#include <experimental/coroutine>
+//
+//
+//template <typename Acceptor> auto async_accept(Acceptor &acceptor) {
+//	struct Awaiter {
+//		Acceptor &acceptor;
+//
+//		tcp::socket socket;
+//		std::error_code ec;
+//
+//		bool await_ready() { return false; }
+//		auto await_resume() { return std::make_pair(ec, std::move(socket)); }
+//		void await_suspend(std::experimental::coroutine_handle<> coro) {
+//			acceptor.async_accept([this, coro](auto ec, auto socket) mutable {
+//				this->ec = ec;
+//				this->socket = std::move(socket);
+//				coro.resume();
+//			});
+//		}
+//	};
+//	return Awaiter{ acceptor, tcp::socket(acceptor.get_executor().context()) };
+//}
+//
+//void do_accept() {
+//	while (true) {
+//		auto[ec, socket] = co_await async_accept(acceptor_);
+//		if (!ec) {
+//			std::make_shared<session>(std::move(socket))->start();
+//		}
+//		else {
+//			std::cout << "Error accepting connection: " << ec << std::endl;
+//		}
+//	}
+//}
+
 int _tmain(int argc, TCHAR **argv)
 {
 	IO::Finder finder;
