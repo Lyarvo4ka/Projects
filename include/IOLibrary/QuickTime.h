@@ -308,17 +308,22 @@ namespace IO
 			: QuickTimeRaw(device)
 		{
 		}
-
-		QtHandle find_ftyp(const uint64_t offset)
+		QtHandle find_qt_keyword(const uint64_t offset, const std::string & keyword_name)
 		{
-			QtHandle ftyp_block = QtHandle();
-			uint64_t ftyp_pos = offset;
+			if (keyword_name.length() != qt_keyword_size)
+			{
+				LOG_MESSAGE("Error keyword name is not equal to 4 bytes.");
+				return QtHandle();
+			}
+
+			QtHandle keyword_block = QtHandle();
+			uint64_t keyword_pos = offset;
 			DataArray data_array(this->getBlockSize());
 			uint32_t bytesRead = 0;
 
-			while (ftyp_pos < this->getSize())
+			while (keyword_pos < this->getSize())
 			{
-				this->setPosition(ftyp_pos);
+				this->setPosition(keyword_pos);
 				bytesRead = this->ReadData(data_array.data(), data_array.size());
 				if (bytesRead != data_array.size())
 					break;
@@ -326,22 +331,34 @@ namespace IO
 				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
 				{
 					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
-					if (cmp_keyword(*pQt_block, "ftyp"))
+
+					/// ??? static_cast
+					//qt_block_t * pQt_block2 = static_cast<qt_block_t*> (&data_array.data()[iSector]);	
+					//void * pVoid = (void *)&data_array.data()[iSector];
+					//qt_block_t * pQt_block3 = static_cast<qt_block_t*> (pVoid);
+
+					if (cmp_keyword(*pQt_block, keyword_name.c_str()))
 					{
-						ftyp_block.setOffset(ftyp_pos + iSector);
-						ftyp_block.setSize(readQtAtom(ftyp_block.offset(), *ftyp_block.getBlock()));
-						if (ftyp_block.size() == 0)
+						keyword_block.setOffset(keyword_pos + iSector);
+						keyword_block.setSize(readQtAtom(keyword_block.offset(), *keyword_block.getBlock()));
+						if (keyword_block.size() == 0)
 						{
 							LOG_MESSAGE("ftyp size is 0");
 							return QtHandle();
 						}
-						return ftyp_block;
+						keyword_block.setValid();
+						return keyword_block;
 					}
 				}
-				ftyp_pos += data_array.size();
+				keyword_pos += data_array.size();
 			}
-			return QtHandle();
 
+
+			return QtHandle();
+		}
+		QtHandle find_ftyp(const uint64_t offset)
+		{
+			return find_qt_keyword(offset, s_ftyp);
 		}
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
@@ -373,7 +390,7 @@ namespace IO
 				return 0;
 
 
-			uint64_t moov_offset = ftyp_offset + ftyp_size;
+			uint64_t moov_offset = 0;// ftyp_offset + ftyp_size;
 			ZeroMemory(&qt_block, qt_block_struct_size);
 			setPosition(moov_offset);
 			bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
@@ -397,24 +414,25 @@ namespace IO
 					qt_block_t free_block = qt_block_t();
 					auto free_size = readQtAtom(free_offset, free_block);
 
-					uint64_t header_size = ftyp_size + moov_size + free_size;
-					uint64_t target_size = appendToFile(target_file, ftyp_offset, header_size);
-					target_size += appendToFile(target_file, start_offset, mdat_size);
-					return target_size;
+					//uint64_t header_size = ftyp_size + moov_size + free_size;
+					//uint64_t target_size = appendToFile(target_file, ftyp_offset, header_size);
+					//target_size += appendToFile(target_file, start_offset, mdat_size);
+					//return target_size;
+
 				}
 			}
 
-		}
-	}
+		
+	
 
 				//bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
 				//if (bytesRead == 0)
 				//	break;
-
+			return 0;
 			}
 
-			return 0;
-		}
+
+		
 		bool Specify(const uint64_t start_offset) override
 		{
 			return true;

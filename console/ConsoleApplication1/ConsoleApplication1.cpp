@@ -431,17 +431,36 @@ const int number = 1;
 int _tmain(int argc, TCHAR **argv)
 {
 	IO::Finder finder;
-	finder.FindFiles(L"e:\\43456\\!Problem\\");
+
+	finder.add_extension(L".mov");
+	finder.add_extension(L".mp4");
+	finder.add_extension(L".mpg");
+	finder.add_extension(L".mpeg");
+	finder.add_extension(L".mts");
+	finder.add_extension(L".avi");
+	finder.add_extension(L".vob");
+	finder.FindFiles(L"f:\\43788\\");
+	auto fileList = finder.getFiles();
+
+	for (auto & theFile : fileList)
+	{
+		//IO::testSignatureMP4(theFile);
+		IO::testHeaderToBadSectorKeyword(theFile);
+		//	IO::TestEndJpg(theFile);
+	}
+	/*
+	IO::Finder finder;
+	finder.FindFiles(L"h:\\BRAVIS\\Root\\");
 	auto fileList = finder.getFiles();
 
 	for (auto & theFile : fileList)
 	{
 		//IO::testSignatureMP4(theFile);
 		//IO::removeNullsFromEndFile(theFile);
-		IO::testHeaderToNullsKeywords(theFile);
+		//IO::testHeaderToNullsKeywords(theFile);
 		//	IO::TestEndJpg(theFile);
 	}
-
+	*/
 /*
 	if (argc != 3)
 	{
