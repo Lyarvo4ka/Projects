@@ -99,6 +99,67 @@ namespace IO
 	//}
 
 
+	class QtHandle
+	{
+		qt_block_t qtBlock_ = qt_block_t();
+		uint64_t offset_ = 0;
+		uint64_t size_ = 0;
+		bool valid_ = false;
+	public:
+		QtHandle()
+		{}
+		QtHandle(const uint64_t offset, const uint64_t size)
+			: offset_(offset)
+			, size_(size)
+		{
+			if (size != 0)
+				setValid();
+		}
+		qt_block_t * getBlock()
+		{
+			return &qtBlock_;
+		}
+		void setBlock(const qt_block_t & qt_block)
+		{
+			memcpy(&qtBlock_, &qtBlock_, qt_block_struct_size);
+		}
+		void setOffset(const uint64_t offset)
+		{
+			offset_ = offset;
+		}
+		bool compareKeyword(const std::string & keyword_name)
+		{
+			if (keyword_name.length() != qt_keyword_size)
+			{
+				LOG_MESSAGE("Error keyword length is not equal to 4 bytes.");
+				return false;
+			}
+			return (memcmp(keyword_name.c_str(), qtBlock_.block_type, qt_keyword_size) == 0);
+			
+		}
+		uint64_t offset() const
+		{
+			return offset_;
+		}
+		void setSize(const uint64_t size)
+		{
+			size_ = size;
+			if (size_ != 0)
+				setValid();
+		}
+		uint64_t size() const
+		{
+			return size_;
+		}
+		void setValid()
+		{
+			valid_ = true;
+		}
+		bool isValid() const
+		{
+			return valid_;
+		}
+	};
 
 	
 
@@ -139,7 +200,21 @@ namespace IO
 			if (write_size == 0)
 				return 0;
 
+			return write_size;
 
+		}
+		QtHandle readQtAtom(const uint64_t start_offset)
+		{
+			QtHandle atom_handle;
+			atom_handle.setOffset(start_offset);
+			auto atom_size = readQtAtom(start_offset, *atom_handle.getBlock());
+			if  (atom_size == 0)
+			{
+				LOG_MESSAGE("atom size is 0");
+				return QtHandle();
+			}
+			atom_handle.setSize();
+			return atom_handle;
 		}
 		uint64_t readAllQtAtoms(const uint64_t start_offset, ListQtBlock & list_blocks)
 		{
@@ -205,14 +280,19 @@ namespace IO
 			
 			return false;
 		}
-		uint64_t ReadQtAtomSize(qt_block_t &qt_block, uint64_t keyword_offset)
+		uint64_t ReadQtAtomSize(const qt_block_t &qt_block, uint64_t keyword_offset)
 		{
 			uint64_t write_size = qt_block.block_size;
+			return ReadQtAtomSize(write_size, keyword_offset);
+		}
+		uint64_t ReadQtAtomSize(const uint32_t block_size, uint64_t keyword_offset)
+		{
+			uint64_t write_size = block_size;
 
-			if (qt_block.block_size == 1)
+			if (write_size == 1)
 			{
 				uint64_t ext_size = 0;
-				uint64_t ext_size_offset = keyword_offset + sizeof(qt_block_t);
+				uint64_t ext_size_offset = keyword_offset + qt_block_struct_size;
 
 				this->setPosition(ext_size_offset);
 				if (!this->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
@@ -222,6 +302,7 @@ namespace IO
 			}
 			return write_size;
 		}
+
 	};
 
 
@@ -255,42 +336,6 @@ namespace IO
 }
 */
 
-	class QtHandle
-	{
-		qt_block_t qtBlock_ = qt_block_t();
-		uint64_t offset_ = 0;
-		uint64_t size_ = 0;
-		bool valid_ = false;
-	public:
-		qt_block_t * getBlock()
-		{
-			return &qtBlock_;
-		}
-		void setOffset(const uint64_t offset)
-		{
-			offset_ = offset;
-		}
-		uint64_t offset() const
-		{
-			return offset_;
-		}
-		void setSize(const uint64_t size)
-		{
-			size_ = size;
-		}
-		uint64_t size() const
-		{
-			return size_;
-		}
-		void setValid()
-		{
-			valid_ = true;
-		}
-		bool isValid() const
-		{
-			return valid_;
-		}
-	};
 
 	/*
 	Восстановление фрагментированных файлов QuickTime.
@@ -312,7 +357,7 @@ namespace IO
 		{
 			if (keyword_name.length() != qt_keyword_size)
 			{
-				LOG_MESSAGE("Error keyword name is not equal to 4 bytes.");
+				LOG_MESSAGE("Error keyword length is not equal to 4 bytes.");
 				return QtHandle();
 			}
 
@@ -340,7 +385,7 @@ namespace IO
 					if (cmp_keyword(*pQt_block, keyword_name.c_str()))
 					{
 						keyword_block.setOffset(keyword_pos + iSector);
-						keyword_block.setSize(readQtAtom(keyword_block.offset(), *keyword_block.getBlock()));
+						keyword_block.setSize(ReadQtAtomSize( *keyword_block.getBlock(), keyword_block.offset()));
 						if (keyword_block.size() == 0)
 						{
 							LOG_MESSAGE("ftyp size is 0");
@@ -360,76 +405,58 @@ namespace IO
 		{
 			return find_qt_keyword(offset, s_ftyp);
 		}
+		QtHandle readAndTestAtom(const uint64_t offset,  const std::string & keyword_name)
+		{
+			if (keyword_name.length() == qt_keyword_size)
+			{
+				LOG_MESSAGE("Error keyword length is not equal to 4 bytes.");
+				return QtHandle();
+			}
+
+			QtHandle qt_handle = readQtAtom(offset);
+			if (qt_handle.isValid())
+				if (cmp_keyword(*qt_handle.getBlock(), keyword_name.c_str()))
+					return qt_handle;
+
+			return QtHandle();
+		}
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
 			setBlockSize(32768);
 			qt_block_t mdat_block = qt_block_t();
 			// read mdat size
-			auto mdat_size = readQtAtom(start_offset, mdat_block);
-			if (mdat_size == 0)
-			{
-				LOG_MESSAGE("mdat size is 0");
+			auto mdat_atom = readQtAtom(start_offset);
+			if (!mdat_atom.isValid())
 				return 0;
-			}
-			uint64_t find_pos = start_offset + mdat_size;
+
+			uint64_t find_pos = start_offset + mdat_atom.size();
 			find_pos = alingToSector(find_pos);
 			find_pos += this->getSectorSize();
-
-			qt_block_t qt_block = qt_block_t();
-
-			//ByteArray pQtBlock = static_cast<ByteArray>(&qt_block);
-			ByteArray pQtBlock = (ByteArray)(&qt_block);
-
-			uint32_t bytesRead = 0;
-
-			DataArray data_array(this->getBlockSize());
 
 			auto ftyp_atom = find_ftyp(find_pos);
 			if (!ftyp_atom.isValid())
 				return 0;
 
-
-			uint64_t moov_offset = 0;// ftyp_offset + ftyp_size;
-			ZeroMemory(&qt_block, qt_block_struct_size);
-			setPosition(moov_offset);
-			bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
-			if (cmp_keyword(qt_block, "moov"))
-			{
-				qt_block_t moov_block = qt_block_t();
-				auto moov_size = readQtAtom(moov_offset, moov_block);
-				if (moov_size == 0)
+			uint64_t moov_offset = ftyp_atom.offset() + ftyp_atom.size();
+			auto moov_atom = readQtAtom(moov_offset);
+			if (!moov_atom.isValid())
+				if (moov_atom.compareKeyword(s_moov))
 				{
-					printf("moov size is 0");
-					return 0;
-				}	
+					uint64_t writeSize = ftyp_atom.size() + moov_atom.size();
 
+					uint64_t free_offset = moov_atom.offset() + moov_atom.size();
+					auto free_atom = readQtAtom(free_offset);
+					if (free_atom.isValid())
+						if (free_atom.compareKeyword(s_free))
+							writeSize += free_atom.size();
 
-				uint64_t free_offset = moov_offset + moov_size ;
-				setPosition(free_offset); 
-				ZeroMemory(&qt_block, qt_block_struct_size);
-				bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
-				if (cmp_keyword(qt_block, "free"))
-				{
-					qt_block_t free_block = qt_block_t();
-					auto free_size = readQtAtom(free_offset, free_block);
-
-					//uint64_t header_size = ftyp_size + moov_size + free_size;
-					//uint64_t target_size = appendToFile(target_file, ftyp_offset, header_size);
-					//target_size += appendToFile(target_file, start_offset, mdat_size);
-					//return target_size;
-
+					uint64_t target_size = appendToFile(target_file, ftyp_atom.offset(), writeSize);
+					target_size += appendToFile(target_file, start_offset, mdat_atom.size());
+					return target_size;
 				}
-			}
-
-		
-	
-
-				//bytesRead = this->ReadData(pQtBlock, qt_block_struct_size);
-				//if (bytesRead == 0)
-				//	break;
 			return 0;
-			}
+		}
 
 
 		
