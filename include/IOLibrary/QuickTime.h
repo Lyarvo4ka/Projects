@@ -196,7 +196,7 @@ namespace IO
 
 			toBE32((uint32_t &)qt_block.block_size);
 
-			uint64_t write_size = ReadQtAtomSize(qt_block, start_offset);
+			uint64_t write_size = readQtAtomSize(qt_block, start_offset);
 			if (write_size == 0)
 				return 0;
 
@@ -213,7 +213,7 @@ namespace IO
 				LOG_MESSAGE("atom size is 0");
 				return QtHandle();
 			}
-			atom_handle.setSize();
+			atom_handle.setSize(atom_size);
 			return atom_handle;
 		}
 		uint64_t readAllQtAtoms(const uint64_t start_offset, ListQtBlock & list_blocks)
@@ -236,6 +236,65 @@ namespace IO
 			}
 
 			return full_size;
+		}
+		uint64_t readQtAtomSize(const qt_block_t &qt_block, uint64_t keyword_offset)
+		{
+			uint64_t write_size = qt_block.block_size;
+			return readQtAtomSize(write_size, keyword_offset);
+		}
+		uint64_t readQtAtomSize(const uint32_t block_size, uint64_t keyword_offset)
+		{
+			uint64_t write_size = block_size;
+
+			if (write_size == 1)
+			{
+				uint64_t ext_size = 0;
+				uint64_t ext_size_offset = keyword_offset + qt_block_struct_size;
+
+				this->setPosition(ext_size_offset);
+				if (!this->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
+					return 0;
+				toBE64(ext_size);
+				write_size = ext_size;
+			}
+			return write_size;
+		}
+
+		QtHandle findQtKeyword(const uint64_t start_offset, const std::string & keyword_name)
+		{
+			if (keyword_name.length() != qt_keyword_size)
+			{
+				LOG_MESSAGE("Error keyword length is not equal to 4 bytes.");
+				return QtHandle();
+			}
+
+			uint64_t keyword_pos = start_offset;
+			DataArray data_array(this->getBlockSize());
+			uint32_t bytesRead = 0;
+
+			while (keyword_pos < this->getSize())
+			{
+				this->setPosition(keyword_pos);
+				bytesRead = this->ReadData(data_array.data(), data_array.size());
+				if (bytesRead != data_array.size())
+					break;
+
+				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
+				{
+					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
+
+					if (cmp_keyword(*pQt_block, keyword_name.c_str()))
+					{
+						auto keyword_block = readQtAtom(keyword_pos + iSector);
+						if (keyword_block.isValid())
+							return keyword_block;
+					}
+				}
+				keyword_pos += data_array.size();
+			}
+
+
+			return QtHandle();
 		}
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
@@ -279,28 +338,6 @@ namespace IO
 			}
 			
 			return false;
-		}
-		uint64_t ReadQtAtomSize(const qt_block_t &qt_block, uint64_t keyword_offset)
-		{
-			uint64_t write_size = qt_block.block_size;
-			return ReadQtAtomSize(write_size, keyword_offset);
-		}
-		uint64_t ReadQtAtomSize(const uint32_t block_size, uint64_t keyword_offset)
-		{
-			uint64_t write_size = block_size;
-
-			if (write_size == 1)
-			{
-				uint64_t ext_size = 0;
-				uint64_t ext_size_offset = keyword_offset + qt_block_struct_size;
-
-				this->setPosition(ext_size_offset);
-				if (!this->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
-					return 0;
-				toBE64(ext_size);
-				write_size = ext_size;
-			}
-			return write_size;
 		}
 
 	};
@@ -353,73 +390,6 @@ namespace IO
 			: QuickTimeRaw(device)
 		{
 		}
-		QtHandle find_qt_keyword(const uint64_t offset, const std::string & keyword_name)
-		{
-			if (keyword_name.length() != qt_keyword_size)
-			{
-				LOG_MESSAGE("Error keyword length is not equal to 4 bytes.");
-				return QtHandle();
-			}
-
-			QtHandle keyword_block = QtHandle();
-			uint64_t keyword_pos = offset;
-			DataArray data_array(this->getBlockSize());
-			uint32_t bytesRead = 0;
-
-			while (keyword_pos < this->getSize())
-			{
-				this->setPosition(keyword_pos);
-				bytesRead = this->ReadData(data_array.data(), data_array.size());
-				if (bytesRead != data_array.size())
-					break;
-
-				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
-				{
-					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
-
-					/// ??? static_cast
-					//qt_block_t * pQt_block2 = static_cast<qt_block_t*> (&data_array.data()[iSector]);	
-					//void * pVoid = (void *)&data_array.data()[iSector];
-					//qt_block_t * pQt_block3 = static_cast<qt_block_t*> (pVoid);
-
-					if (cmp_keyword(*pQt_block, keyword_name.c_str()))
-					{
-						keyword_block.setOffset(keyword_pos + iSector);
-						keyword_block.setSize(ReadQtAtomSize( *keyword_block.getBlock(), keyword_block.offset()));
-						if (keyword_block.size() == 0)
-						{
-							LOG_MESSAGE("ftyp size is 0");
-							return QtHandle();
-						}
-						keyword_block.setValid();
-						return keyword_block;
-					}
-				}
-				keyword_pos += data_array.size();
-			}
-
-
-			return QtHandle();
-		}
-		QtHandle find_ftyp(const uint64_t offset)
-		{
-			return find_qt_keyword(offset, s_ftyp);
-		}
-		QtHandle readAndTestAtom(const uint64_t offset,  const std::string & keyword_name)
-		{
-			if (keyword_name.length() == qt_keyword_size)
-			{
-				LOG_MESSAGE("Error keyword length is not equal to 4 bytes.");
-				return QtHandle();
-			}
-
-			QtHandle qt_handle = readQtAtom(offset);
-			if (qt_handle.isValid())
-				if (cmp_keyword(*qt_handle.getBlock(), keyword_name.c_str()))
-					return qt_handle;
-
-			return QtHandle();
-		}
 
 		uint64_t SaveRawFile(File & target_file, const uint64_t start_offset) override
 		{
@@ -434,7 +404,7 @@ namespace IO
 			find_pos = alingToSector(find_pos);
 			find_pos += this->getSectorSize();
 
-			auto ftyp_atom = find_ftyp(find_pos);
+			auto ftyp_atom = findQtKeyword(find_pos, s_ftyp);
 			if (!ftyp_atom.isValid())
 				return 0;
 

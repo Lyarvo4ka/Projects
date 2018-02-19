@@ -9,6 +9,7 @@ private:
 	IO::DataArray::Ptr data_;
 	uint64_t offset_ = 0;
 public:
+	using Ptr = std::shared_ptr<MockFile>;
 	MockFile(uint32_t file_size)
 		: IO::File(L"")
 		, data_(IO::makeDataArray(file_size))
@@ -63,7 +64,7 @@ public:
 
 };
 
-static std::shared_ptr<MockFile> makeMockFile(uint32_t size)
+static MockFile::Ptr makeMockFile(uint32_t size)
 {
 	return std::make_shared<MockFile>(size);
 }
