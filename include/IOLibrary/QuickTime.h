@@ -181,11 +181,9 @@ namespace IO
 		}
 		uint64_t readQtAtom(const uint64_t start_offset, qt_block_t & qt_block)
 		{
-			uint32_t bytes_read = 0;
-			uint64_t full_size = 0;
-
 			this->setPosition(start_offset);
-			if (!(bytes_read = this->ReadData((uint8_t*)&qt_block, sizeof(qt_block_t))))
+			auto bytes_read = this->ReadData((uint8_t*)&qt_block, qt_keyword_size);
+			if (bytes_read != qt_keyword_size)
 				return 0;
 
 			if (!isQuickTime(qt_block))
@@ -194,14 +192,9 @@ namespace IO
 			if (qt_block.block_size == 0)
 				return 0;
 
-			toBE32((uint32_t &)qt_block.block_size);
+			toBE32(qt_block.block_size);
 
-			uint64_t write_size = readQtAtomSize(qt_block, start_offset);
-			if (write_size == 0)
-				return 0;
-
-			return write_size;
-
+			return readQtAtomSize(qt_block, start_offset);
 		}
 		QtHandle readQtAtom(const uint64_t start_offset)
 		{
