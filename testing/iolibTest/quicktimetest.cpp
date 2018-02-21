@@ -7,11 +7,17 @@ const uint32_t cftyp_size = 10;
 const uint32_t cmoov_size = 20;
 const uint32_t cmdat_size = 30;
 
+const uint32_t ftyp_ofset = 0;
+const uint32_t moov_offset = cftyp_size;
+const uint32_t mdat_offset = cftyp_size + cmoov_size;
+
 IO::qt_block_t generateQtBlock(const char * keyword_name, uint32_t block_size)
 {
 	IO::qt_block_t qt_block;
 	memcpy(qt_block.block_type, keyword_name, IO::qt_keyword_size);
-	qt_block.block_size = block_size;
+	auto be_size = block_size;
+	IO::toBE32(be_size);
+	qt_block.block_size = be_size;
 	return qt_block;
 }
 
@@ -27,20 +33,26 @@ MockFile::Ptr createFtypMoovMdat(uint32_t ftyp_size , uint32_t moov_size, uint32
 {
 	const uint32_t file_size = ftyp_size + moov_size + mdat_size;
 	auto src_file = makeMockFile(file_size);
-	uint32_t offset = 0;
-
-
 	auto data_array = src_file->getData();
 
-	auto ftyp_block = writeQtAtom(*data_array, offset, ftyp_size, IO::s_ftyp);
-	offset += ftyp_block.block_size;
+	auto ftyp_block = writeQtAtom(*data_array, ftyp_ofset, ftyp_size, IO::s_ftyp);
+	auto moov_block = writeQtAtom(*data_array, moov_offset, moov_size, IO::s_moov);
 
-	auto moov_block = writeQtAtom(*data_array, offset, moov_size, IO::s_moov);
-	data_array = src_file->getData() + offset;
-	offset += moov_block.block_size;
-
-	auto mdat_block = writeQtAtom(*data_array, offset, mdat_size, IO::s_mdat);
+	auto mdat_block = writeQtAtom(*data_array, mdat_offset, mdat_size, IO::s_mdat);
 	return src_file;
+}
+
+TEST(QuickTimeTest, readQtAtom)
+{
+	using namespace IO;
+	QuickTimeRaw qt_raw(createFtypMoovMdat(cftyp_size, cmoov_size , cmdat_size));
+
+	qt_block_t ftyp_block;
+	auto ftyp_size = qt_raw.readQtAtom(0, ftyp_block);
+	EXPECT_EQ(ftyp_size, cftyp_size);
+	EXPECT_TRUE(cmp_keyword(ftyp_block,s_ftyp));
+	EXPECT_EQ(ftyp_block.block_size, cftyp_size);
+
 }
 
 TEST(QuickTimeTest, findQtKeywordTest)
