@@ -53,7 +53,7 @@ namespace IO
 	};
 #pragma pack()
 
-	using ListQtBlock = std::list<qt_block_t>;
+	//using ListQtBlock = std::list<qt_block_t>;
 
 	const uint32_t qt_block_struct_size = sizeof(qt_block_t);
 
@@ -85,19 +85,6 @@ namespace IO
 		return (memcmp(qt_block.block_type, keyword_name, qt_keyword_size) == 0);
 	}
 
-	//inline void to_big_endian64(uint64_t & val)
-	//{
-	//	const int type_size = sizeof(uint64_t);
-	//	uint8_t * byte_buffer = (uint8_t *)&val;
-	//	uint8_t temp = 0;
-	//	for (int iByte = 0; iByte < type_size / 2; ++iByte)
-	//	{
-	//		temp = byte_buffer[iByte];
-	//		byte_buffer[iByte] = byte_buffer[type_size - iByte - 1];
-	//		byte_buffer[type_size - iByte - 1] = temp;
-	//	}
-	//}
-
 
 	class QtHandle
 	{
@@ -118,6 +105,10 @@ namespace IO
 		qt_block_t * getBlock()
 		{
 			return &qtBlock_;
+		}
+		const char * block_type() const
+		{
+			return qtBlock_.block_type;
 		}
 		void setBlock(const qt_block_t & qt_block)
 		{
@@ -160,6 +151,8 @@ namespace IO
 			return valid_;
 		}
 	};
+	using QuickTimeList = std::list<QtHandle>;
+
 
 	
 
@@ -167,7 +160,7 @@ namespace IO
 		: public StandartRaw
 	{
 	private:
-		ListQtBlock keywords_;
+		QuickTimeList keywordsList_;
 		uint64_t sizeToWrite_ = 0;
 	public:
 		explicit QuickTimeRaw(IODevicePtr device)
@@ -182,8 +175,8 @@ namespace IO
 		uint64_t readQtAtom(const uint64_t start_offset, qt_block_t & qt_block)
 		{
 			this->setPosition(start_offset);
-			auto bytes_read = this->ReadData((uint8_t*)&qt_block, qt_keyword_size);
-			if (bytes_read != qt_keyword_size)
+			auto bytes_read = this->ReadData((ByteArray)&qt_block, qt_block_struct_size);
+			if (bytes_read != qt_block_struct_size)
 				return 0;
 
 			if (!isQuickTime(qt_block))
@@ -194,7 +187,7 @@ namespace IO
 
 			toBE32(qt_block.block_size);
 
-			return readQtAtomSize(qt_block, start_offset);
+			return readQtAtomSize(qt_block.block_size, start_offset);
 		}
 		QtHandle readQtAtom(const uint64_t start_offset)
 		{
@@ -209,22 +202,20 @@ namespace IO
 			atom_handle.setSize(atom_size);
 			return atom_handle;
 		}
-		uint64_t readAllQtAtoms(const uint64_t start_offset, ListQtBlock & list_blocks)
+		uint64_t readAllQtAtoms(const uint64_t start_offset, QuickTimeList & keywordsList)
 		{
-			qt_block_t qt_block = { 0 };
-			uint32_t bytes_read = 0;
 			uint64_t keyword_offset = start_offset;
 			uint64_t write_size = 0;
 			uint64_t full_size = 0;
 
 			while (true)
 			{
-				write_size = readQtAtom(keyword_offset, qt_block);
-				if (write_size == 0)
+				auto qt_handle = readQtAtom(keyword_offset);
+				if (!qt_handle.isValid())
 					break;
 
-				list_blocks.push_back(qt_block);
-				full_size += write_size;
+				full_size += qt_handle.size();
+				keywordsList.push_back(qt_handle);
 				keyword_offset += write_size;
 			}
 
@@ -245,7 +236,7 @@ namespace IO
 				uint64_t ext_size_offset = keyword_offset + qt_block_struct_size;
 
 				this->setPosition(ext_size_offset);
-				if (!this->ReadData((uint8_t*)&ext_size, sizeof(uint64_t)))
+				if (!this->ReadData((ByteArray)&ext_size, sizeof(uint64_t)))
 					return 0;
 				toBE64(ext_size);
 				write_size = ext_size;
@@ -305,25 +296,26 @@ namespace IO
 		}
 		bool Specify(const uint64_t start_offset) override
 		{
-			keywords_.clear();
-			auto sizeKeywords = readAllQtAtoms(start_offset, keywords_);
-			if (isPresentMainKeywords(keywords_))
+			keywordsList_.clear();
+			
+			auto sizeKeywords = readAllQtAtoms(start_offset, keywordsList_);
+			if (isPresentMainKeywords(keywordsList_))
 			{
 				sizeToWrite_ = sizeKeywords;
 				return true;
 			}
 			return false;
 		}
-		bool isPresentMainKeywords(const ListQtBlock & keywords )
+		bool isPresentMainKeywords(const QuickTimeList & keywordsList_)
 		{
 			bool bmdat = false;
 			bool bmoov = false;
 
-			for (auto & refQtBlock : keywords)
+			for (auto & refQtHandle : keywordsList_)
 			{
-				if (memcmp(refQtBlock.block_type, s_mdat, qt_keyword_size) == 0)
+				if (memcmp(refQtHandle.block_type(), s_mdat, qt_keyword_size) == 0)
 					bmdat = true;
-				else if (memcmp(refQtBlock.block_type, s_moov, qt_keyword_size) == 0)
+				else if (memcmp(refQtHandle.block_type(), s_moov, qt_keyword_size) == 0)
 					bmoov = true;
 
 				if (bmdat && bmoov)
@@ -619,9 +611,10 @@ namespace IO
 
 			}
 			QuickTimeRaw qtRaw(target_file);
-			ListQtBlock qtList ;
-			auto file_size = qtRaw.readAllQtAtoms(0, qtList);
-			return qtRaw.isPresentMainKeywords(qtList);
+			//ListQtBlock qtList ;
+			QuickTimeList keywrodsList;
+			auto file_size = qtRaw.readAllQtAtoms(0, keywrodsList);
+			return qtRaw.isPresentMainKeywords(keywrodsList);
 
 		}
 

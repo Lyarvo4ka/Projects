@@ -31,28 +31,56 @@ IO::qt_block_t writeQtAtom(IO::DataArray & data_array, uint32_t offset, uint32_t
 // not implemented when block_size 1 (64bit size)
 MockFile::Ptr createFtypMoovMdat(uint32_t ftyp_size , uint32_t moov_size, uint32_t mdat_size)
 {
+
 	const uint32_t file_size = ftyp_size + moov_size + mdat_size;
+	
 	auto src_file = makeMockFile(file_size);
 	auto data_array = src_file->getData();
 
 	auto ftyp_block = writeQtAtom(*data_array, ftyp_ofset, ftyp_size, IO::s_ftyp);
+
 	auto moov_block = writeQtAtom(*data_array, moov_offset, moov_size, IO::s_moov);
 
 	auto mdat_block = writeQtAtom(*data_array, mdat_offset, mdat_size, IO::s_mdat);
+
 	return src_file;
 }
 
 TEST(QuickTimeTest, readQtAtom)
 {
 	using namespace IO;
-	QuickTimeRaw qt_raw(createFtypMoovMdat(cftyp_size, cmoov_size , cmdat_size));
+	QuickTimeRaw qt_clear(makeMockFile(10));
+	auto nulls_block = qt_clear.readQtAtom(0);
+	EXPECT_FALSE(nulls_block.isValid());
+
+	QuickTimeRaw qt_raw(createFtypMoovMdat(cftyp_size, cmoov_size, cmdat_size));
 
 	qt_block_t ftyp_block;
 	auto ftyp_size = qt_raw.readQtAtom(0, ftyp_block);
 	EXPECT_EQ(ftyp_size, cftyp_size);
-	EXPECT_TRUE(cmp_keyword(ftyp_block,s_ftyp));
 	EXPECT_EQ(ftyp_block.block_size, cftyp_size);
+	EXPECT_TRUE(cmp_keyword(ftyp_block,s_ftyp));
+	auto ftyp_handle = qt_raw.readQtAtom(ftyp_ofset);
+	EXPECT_EQ(ftyp_handle.size(), cftyp_size);
+	EXPECT_EQ(ftyp_handle.offset() , ftyp_ofset);
 
+	qt_block_t moov_block;
+	auto moov_size = qt_raw.readQtAtom(moov_offset, moov_block);
+	EXPECT_EQ(moov_size,cmoov_size);
+	EXPECT_EQ(moov_block.block_size, cmoov_size);
+	EXPECT_TRUE(cmp_keyword(moov_block,s_moov));
+	auto moov_handle = qt_raw.readQtAtom(moov_offset);
+	EXPECT_EQ(moov_handle.size(), cmoov_size);
+	EXPECT_EQ(moov_handle.offset() , moov_offset);
+
+	qt_block_t mdat_block;
+	auto mdat_size = qt_raw.readQtAtom(mdat_offset, mdat_block);
+	EXPECT_EQ(mdat_size,cmdat_size);
+	EXPECT_EQ(mdat_block.block_size,cmdat_size);
+	EXPECT_TRUE(cmp_keyword(mdat_block,s_mdat));
+	auto mdat_handle = qt_raw.readQtAtom(mdat_offset);
+	EXPECT_EQ(mdat_handle.size(), cmdat_size);
+	EXPECT_EQ(mdat_handle.offset(), mdat_offset);
 }
 
 TEST(QuickTimeTest, findQtKeywordTest)

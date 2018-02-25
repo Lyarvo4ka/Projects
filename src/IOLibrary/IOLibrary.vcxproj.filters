@@ -191,6 +191,9 @@
     <ClInclude Include="..\..\include\IOLibrary\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="qtfragment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">

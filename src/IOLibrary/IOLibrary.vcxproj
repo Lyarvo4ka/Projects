@@ -167,6 +167,7 @@
     <ClInclude Include="..\..\include\IOLibrary\Temp.h" />
     <ClInclude Include="..\..\include\IOLibrary\Translator.h" />
     <ClInclude Include="..\..\include\IOLibrary\utility.h" />
+    <ClInclude Include="qtfragment.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\include\IOLibrary\signatures.xml">
