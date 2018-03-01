@@ -34,7 +34,6 @@ namespace IO
 	const char s_uuid[] = "uuid";
 	const char s_meta[] = "meta";
 
-	const char jpg_signature[] = { 0xFF, 0xD8, 0xFF };
 
 	const int qt_keyword_size = 4;
 
@@ -223,8 +222,7 @@ namespace IO
 		}
 		uint64_t readQtAtomSize(const qt_block_t &qt_block, uint64_t keyword_offset)
 		{
-			uint64_t write_size = qt_block.block_size;
-			return readQtAtomSize(write_size, keyword_offset);
+			return readQtAtomSize(qt_block.block_size, keyword_offset);
 		}
 		uint64_t readQtAtomSize(const uint32_t block_size, uint64_t keyword_offset)
 		{
@@ -263,7 +261,7 @@ namespace IO
 				if (bytesRead != data_array.size())
 					break;
 
-				for (auto iSector = 0; iSector < bytesRead; iSector += default_sector_size)
+				for (uint32_t iSector = 0; iSector < bytesRead; iSector += default_sector_size)
 				{
 					qt_block_t * pQt_block = (qt_block_t*)(data_array.data() + iSector);
 
@@ -671,7 +669,7 @@ namespace IO
 			auto gps_file = makeFilePtr(gpsFileName);
 			if (!gps_file->Open(OpenMode::Create))
 			{
-				wprintf(L"Error create  file ", gpsFileName.c_str());
+				wprintf_s(L"Error create  file %s", gpsFileName.c_str());
 				return 0;
 			}
 
@@ -679,7 +677,7 @@ namespace IO
 			auto thrgf_file = makeFilePtr(threeGFFileName);
 			if (!thrgf_file->Open(OpenMode::Create))
 			{
-				wprintf(L"Error create  file ", threeGFFileName.c_str());
+				wprintf_s(L"Error create  file %s", threeGFFileName.c_str());
 				return 0;
 			}
 

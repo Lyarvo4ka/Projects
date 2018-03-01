@@ -41,9 +41,9 @@ namespace IO
 		DataArray buffer(sizeToTest);
 	//	if (file_size >= sizeToTest)
 		{
-			uint64_t lastBlock = sizeToTest;
+			uint32_t lastBlock = sizeToTest;
 			if (file_size < sizeToTest)
-				lastBlock = file_size;
+				lastBlock = static_cast<uint32_t>(file_size);
 
 			uint64_t offset = file_size - lastBlock;
 			file.setPosition(offset);

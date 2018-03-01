@@ -403,8 +403,7 @@ namespace IO
 				data_pos += bytes_written;
 				position_ += bytes_written;
 			}
-			bytes_written = data_pos;
-			return bytes_written;
+			return static_cast<uint32_t>(data_pos);
 
 		}
 
