@@ -20,8 +20,23 @@ _build/
 _lib/
 _obj/
 
-# Visual Studio 2015 cache/options directory
-.vs/
+#
+*.[Dd]ebug/
+*.[Rr]elease/
+*.x64/
+*.Win32/
+*.build/
+*.[Bb]in/
+*.[Oo]bj/
+*._bin/
+*._build/
+*._lib/
+*._obj/
+
+# Visual Studio 2015/2017 cache/options directory
+*.vs/
+
+
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
 
