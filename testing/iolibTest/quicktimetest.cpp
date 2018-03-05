@@ -7,6 +7,8 @@ const uint32_t cftyp_size = 10;
 const uint32_t cmoov_size = 20;
 const uint32_t cmdat_size = 30;
 
+const uint32_t qtTest_full_size = cftyp_size + cmoov_size + cmdat_size;
+
 const uint32_t ftyp_ofset = 0;
 const uint32_t moov_offset = cftyp_size;
 const uint32_t mdat_offset = cftyp_size + cmoov_size;
@@ -46,6 +48,16 @@ MockFile::Ptr createFtypMoovMdat(uint32_t ftyp_size , uint32_t moov_size, uint32
 	return src_file;
 }
 
+class QuickTtmeFMM : public ::testing::Test
+{
+protected:
+	void SetUp() override
+	{
+		testFile_ = createFtypMoovMdat(cftyp_size, cmoov_size, cmdat_size);
+	}
+	MockFile::Ptr testFile_;
+};
+
 TEST(QuickTimeTest, readQtAtom)
 {
 	using namespace IO;
@@ -82,6 +94,25 @@ TEST(QuickTimeTest, readQtAtom)
 	EXPECT_EQ(mdat_handle.size(), cmdat_size);
 	EXPECT_EQ(mdat_handle.offset(), mdat_offset);
 }
+
+TEST_F(QuickTtmeFMM, readAllQtAtomsTest)
+{
+	using namespace IO;
+	QuickTimeRaw qt_raw(testFile_);
+	QuickTimeList qtList;
+	auto all_size = qt_raw.readAllQtAtoms(0,qtList);
+	EXPECT_EQ(all_size, qtTest_full_size);
+
+	EXPECT_EQ(qtList.size(),3);
+	auto ftyp_handle = qtList.front();
+	EXPECT_TRUE(cmp_keyword(*ftyp_handle.getBlock(), IO::s_ftyp ));
+	auto moov_handle = qtList.front();
+	EXPECT_TRUE(cmp_keyword(*moov_handle.getBlock(), IO::s_moov));
+	auto mdat_handle = qtList.front();
+	EXPECT_TRUE(cmp_keyword(*mdat_handle.getBlock(), IO::s_mdat));
+
+}
+
 
 TEST(QuickTimeTest, findQtKeywordTest)
 {

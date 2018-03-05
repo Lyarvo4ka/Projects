@@ -215,7 +215,7 @@ namespace IO
 
 				full_size += qt_handle.size();
 				keywordsList.push_back(qt_handle);
-				keyword_offset += write_size;
+				keyword_offset += qt_handle.size();
 			}
 
 			return full_size;
