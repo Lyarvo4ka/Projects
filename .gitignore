@@ -19,6 +19,7 @@ _bin/
 _build/
 _lib/
 _obj/
+src/ImageWriter/ver_0.1/
 
 #
 *.[Dd]ebug/
@@ -39,6 +40,9 @@ _obj/
 
 # Enable "build/" folder in the NuGet Packages folder since NuGet packages use it for MSBuild targets
 !packages/*/build/
+
+# MS packages
+packages/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
